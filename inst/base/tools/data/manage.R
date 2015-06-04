@@ -67,6 +67,61 @@ factorizer <- function(dat) {
   mutate_each_(dat, funs(as.factor), vars = toFct)
 }
 
+################# Load dataframe (Clinical data, Profile Data, ...) in Datasets
+loadInDatasets <- function(fname, header= TRUE){
+
+  objname <- fname
+  if(fname=="ProfData"){
+  GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+  dat <- as.data.frame(getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
+  r_data[[objname]] <- dat %>% add_rownames("Patients")
+
+
+  }else if (fname=="ClinicalData"){
+    dat <- as.data.frame(getClinicalData(cgds, input$CasesID))
+  r_data[[objname]] <- dat %>% add_rownames("Patients")
+
+  }else if (fname=="MutData"){
+    GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+    dat <- as.data.frame((getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)))
+    r_data[[objname]] <- dat %>% add_rownames("Patients")
+  }
+  r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
+  r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
+}
+
+
+## Load Gene Lists example from package to r_data$genelist
+loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, sep = "\n") {
+
+  if (Sys.info()["sysname"] == "Windows") {
+    GeneList <- try(read.table("clipboard", header = header, sep = sep), silent = TRUE)
+    GeneList <- t(GeneList)
+  } else if (Sys.info()["sysname"] == "Darwin") {
+    GeneList <- try(read.table(pipe("pbpaste"), header = header, sep = sep), silent = TRUE)
+   GeneList <- t(GeneList)
+  } else {
+    GeneList <- try(read.table(text = input$load_cdata, header = header, sep = sep), silent = TRUE)
+    GeneList <- t(GeneList)
+  }
+
+  if (is(GeneList, 'try-error')) {
+    if (ret == "") ret <- c("### Data in clipboard was not well formatted. Try exporting the data to csv format.")
+    upload_error_handler(objname,ret)
+  } else {
+    ret <- paste0("### Clipboard data\nData copied from clipboard on", lubridate::now())
+    r_data[[objname]] <- data.frame(GeneList, check.names = FALSE)
+    #r_data[[paste0(objname,"description")]] <- ret
+  }
+  r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
+
+
+}
+
+###################
+
+
+
 loadUserData <- function(fname, uFile, ext,
                          header = TRUE,
                          man_str_as_factor = TRUE,
@@ -106,6 +161,9 @@ loadUserData <- function(fname, uFile, ext,
       r_data[[objname]] <- as.data.frame(get(robjname))
       r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
     }
+    #############
+    r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
+    ############
   }
 
   if (ext == 'csv') {
@@ -117,12 +175,27 @@ loadUserData <- function(fname, uFile, ext,
       { if (is(., 'try-error')) upload_error_handler(objname, "### There was an error loading the data. Please make sure the data are in either rda or csv format.")
         else . } %>%
       { if (man_str_as_factor) factorizer(.) else . } # %>% tbl_df
+    ##########
+    r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
+    ##########
+  }
+  ############################
+  if (ext == 'txt') {
+    # r_data[[objname]] <- read.csv(uFile, header=header, sep=sep, dec=dec,
+    # r_data[[objname]] <- readr::read_csv(uFile, col_names=header)
+    # stringsAsFactors=man_str_as_factor), silent = TRUE) %>%
+    r_data[[objname]] <- try(read.table(uFile, header=header, sep=sep, dec=dec,
+                                        stringsAsFactors=FALSE), silent = TRUE) %>%
+                                        { if (is(., 'try-error')) upload_error_handler(objname, "### There was an error loading the data. Please make sure the data are in either txt format, one gene by row.")
+                                          else . } %>%
+                                          { if (man_str_as_factor) factorizer(.) else . } # %>% tbl_df
+    r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
   }
 
-  r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
+  #r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
+  #############################
 }
-
-# dat <- read.csv("~/gh/radiant/inst/examples/houseprices.csv", stringsAsFactors = FALSE)
+# dat <- read.csv("~/gh/radiant_dev/inst/examples/houseprices.csv", stringsAsFactors = FALSE)
 # getclass(dat)
 # factorizer(dat) %>% getclass
 # dat

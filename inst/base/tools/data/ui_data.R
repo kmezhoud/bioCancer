@@ -10,8 +10,8 @@ output$ui_filter_error <- renderUI({
 # data ui and tabs
 output$ui_data <- renderUI({
   tagList(
-    includeCSS(file.path(r_path,"base/www/style.css")),
-    includeScript(file.path(r_path,"base/www/js/returnTextAreaBinding.js")),
+    #includeCSS(file.path(r_path,"base/www/style.css")),
+    #includeScript(file.path(r_path,"base/www/js/returnTextAreaBinding.js")),
     sidebarLayout(
       sidebarPanel(
         # based on https://groups.google.com/forum/?fromgroups=#!topic/shiny-discuss/PzlSAmAxxwo
@@ -21,8 +21,21 @@ output$ui_data <- renderUI({
             checkboxInput('show_filter', 'Filter (e.g., price > 5000)', value = state_init("show_filter",FALSE)),
             conditionalPanel("input.show_filter == true",
               returnTextAreaInput("data_filter", label = "", value = state_init("data_filter")),
-              uiOutput("ui_filter_error")))
+              uiOutput("ui_filter_error"))),
+
+          ################# Include selectize prompt Studies, Clinical data and Profile data
+          selectizeInput('StudiesID', 'Studies List', choices=NULL, multiple = FALSE),
+          uiOutput("ui_Cases"),
+          uiOutput("ui_GenProfs"),
+          uiOutput("ui_GeneList")
+          #selectizeInput('GeneListID', 'Gene List', choices=NULL, multiple = FALSE)
+
+          ##################
+
         ),
+        conditionalPanel("input.datatabs == 'Clinical'", uiOutput("ui_ClinicalData")),
+        conditionalPanel("input.datatabs == 'ProfData'", uiOutput("ui_ProfData")),
+        conditionalPanel("input.datatabs == 'MutData'", uiOutput("ui_MutData")),
         conditionalPanel("input.datatabs == 'Manage'", uiOutput("ui_Manage")),
         conditionalPanel("input.datatabs == 'View'",uiOutput("ui_View")),
         # conditionalPanel("input.datatabs == 'View_old'",uiOutput("ui_View_old")),
@@ -30,21 +43,33 @@ output$ui_data <- renderUI({
         conditionalPanel("input.datatabs == 'Pivot'",uiOutput("ui_Pivot")),
         conditionalPanel("input.datatabs == 'Explore'", uiOutput("ui_Explore")),
         conditionalPanel("input.datatabs == 'Transform'", uiOutput("ui_Transform")),
-        conditionalPanel("input.datatabs == 'Combine'", uiOutput("ui_Combine"))),
+        conditionalPanel("input.datatabs == 'Combine'", uiOutput("ui_Combine"))
+        ),
+
       mainPanel(
         tabsetPanel(id = "datatabs",
+
+
+          ##########
+          tabPanel("Clinical", DT::dataTableOutput(outputId="ClinicalDataTable")),
+          tabPanel("ProfData", DT::dataTableOutput(outputId ="ProfDataTable")),
+          tabPanel("MutData", DT::dataTableOutput(outputId ="MutDataTable")),
+          #tabPanel("Manag", htmlOutput("ProfDataTable")),
+          ##########
+
+
           tabPanel("Manage", htmlOutput("htmlDataExample"),
             conditionalPanel("input.man_add_descr == false", uiOutput("dataDescriptionHTML")),
             conditionalPanel("input.man_add_descr == true", uiOutput("dataDescriptionMD"))),
+
           tabPanel("View", DT::dataTableOutput("dataviewer")),
-          # tabPanel("View", DT::dataTableOutput("dataviewer"), verbatimTextOutput("tbl_state")),
-          # tabPanel("View_old", shiny::dataTableOutput("dataviewer_old")),
-          tabPanel("Visualize", plotOutput("visualize", width = "100%", height = "100%")),
+          #tabPanel("View_old", shiny::dataTableOutput("dataviewer_old")),
+          tabPanel("Visualize",plotOutput("visualize", width = "100%", height = "100%")),
           tabPanel("Pivot", rpivotTable::rpivotTableOutput("pivotData")),
           tabPanel("Explore", verbatimTextOutput("expl_summary"), plotOutput("expl_plots", width = "100%", height = "100%")),
           tabPanel("Transform", htmlOutput("transform_data"), verbatimTextOutput("transform_summary")),
-          tabPanel("Combine", htmlOutput("cmb_data1"),
-                   htmlOutput("cmb_data2"), htmlOutput("cmb_possible"), htmlOutput("cmb_data"))
+          tabPanel("Combine", htmlOutput("cmb_possible"), htmlOutput("cmb_data1"))
+           #        htmlOutput("cmb_data2"), htmlOutput("cmb_data"))
           # tabPanel("Generate", HTML("<h3>Generate input data for simulation and prediction</h3>")),
         )
       )

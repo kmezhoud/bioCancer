@@ -15,12 +15,15 @@ init_state <- function(r_data) {
   # Therefore, the data need to be a reactive value so the other reactive
   # functions and outputs that depend on these datasets will know when they
   # are changed."
+
+
   robj <- load(file.path(r_path,"base/data/diamonds.rda"))
   df <- get(robj)
   r_data[["diamonds"]] <- df
   r_data[["diamonds_descr"]] <- attr(df,'description')
   r_data$datasetlist <- c("diamonds")
   r_data
+
 }
 
 if (!r_local) {
@@ -31,11 +34,11 @@ if (!r_local) {
       library(sendmailR)
     }
 
-    from <- '<vincent.nijs@gmail.com>'
-    to <- '<vincent.nijs@gmail.com>'
+    from <- '<kmezhoud@gmail.com>'
+    to <- '<kmezhoud@gmail.com>'
     body <- paste0(body,collapse="\n")
     sendmail(from, to, subject, body,
-             control=list(smtpServer='ASPMX.L.GOOGLE.COM'))
+            control=list(smtpServer='ASPMX.L.GOOGLE.COM'))
   }
 
   check_age_and_size <- function() {
@@ -97,10 +100,9 @@ if (r_local) {
   # does *not* make a copy of the data - nice
   r_env <<- pryr::where("r_data")
 
-  # adding any data.frame from the global environment to r_data should not affect
+  # adding any data.frame in the global environment to r_data should not affect
   # memory usage ... at least until the entry in r_data is changed
-  df_list <- sapply(mget(ls(envir = .GlobalEnv), envir = .GlobalEnv), is.data.frame) %>%
-    { names(.[.]) }
+  df_list <- sapply(mget(ls(envir = .GlobalEnv), envir = .GlobalEnv), is.data.frame) %>% { names(.[.]) }
 
   for (df in df_list) {
     isolate({
@@ -109,7 +111,7 @@ if (r_local) {
       r_data[[paste0(df,"_descr")]] <- attr(r_data[[df]],'description') %>%
         { if (is.null(.)) "No description provided. Please use Radiant to add an overview of the data in markdown format.\n Check the 'Add/edit data description' box on the left of your screen" else . }
       r_data$datasetlist %<>% c(df, .) %>% unique
-      # rm(list = df, envir = .GlobalEnv)
+      rm(list = df, envir = .GlobalEnv)
     })
   }
 }

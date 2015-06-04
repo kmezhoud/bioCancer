@@ -2,7 +2,7 @@
 # Manage datasets in/out of Radiant
 #######################################
 
-output$ui_fileUpload <- renderUI({
+output$ui_fileUploadManage <- renderUI({
 
   if (is.null(input$dataType)) return()
   if (input$dataType == "csv") {
@@ -60,7 +60,7 @@ output$ui_Manage <- renderUI({
           radioButtons('man_dec', "Decimal:", c(Period='.', Comma=','),
                        '.', inline = TRUE)
         ),
-        uiOutput("ui_fileUpload")
+        uiOutput("ui_fileUploadManage")
       ),
       conditionalPanel(condition = "input.dataType == 'clipboard'",
         uiOutput("ui_clipboard_load")
@@ -97,7 +97,7 @@ output$ui_Manage <- renderUI({
         actionButton('removeDataButton', 'Remove data')
       )
     ),
-    help_modal('Manage','manage_help',inclMD(file.path(r_path,"base/tools/help/manage.md")))
+    help_modal('Manage','manageHelp',inclMD(file.path(r_path,"base/tools/help/manage.md")))
   )
 })
 
@@ -215,6 +215,13 @@ observe({
   }
 })
 
+##################
+
+
+
+#####################
+
+
 # loading all examples files (linked to helpfiles)
 observe({
   if (not_pressed(input$loadExampleData)) return()
@@ -330,6 +337,7 @@ output$ui_datasets <- renderUI({
   tagList(
     selectInput(inputId = "dataset", label = "Datasets:", choices = r_data$datasetlist,
       selected = state_init("dataset"), multiple = FALSE),
+
     conditionalPanel(condition = "input.datatabs == 'Manage'",
       checkboxInput("man_add_descr","Add/edit data description", FALSE),
       conditionalPanel(condition = "input.man_add_descr == true",
@@ -359,3 +367,15 @@ output$htmlDataExample <- renderText({
     { is_empty(.) %>% ifelse(., 30, 10) } %>%
     show_data_snippet(nshow = .)
 })
+
+
+##################
+
+
+## get Gene List in side bar panel
+#updateSelectizeInput(session, 'GeneListID', choices= names(GeneLists))
+output$ui_GeneList <- renderUI({
+  selectInput("GeneListID", "Gene List Examples", r_data$genelist)
+})
+
+##################
