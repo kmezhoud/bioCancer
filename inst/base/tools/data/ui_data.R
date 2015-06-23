@@ -3,28 +3,38 @@
 #######################################
 
 output$ui_filter_error <- renderUI({
-  if (is_empty(r_data$filter_error)) return()
+  if (is_empty(r_data$filter_error))
+    return()
   helpText(r_data$filter_error)
 })
 
 # data ui and tabs
 output$ui_data <- renderUI({
-  tagList(
-    #includeCSS(file.path(r_path,"base/www/style.css")),
+  tagList(#includeCSS(file.path(r_path,"base/www/style.css")),
     #includeScript(file.path(r_path,"base/www/js/returnTextAreaBinding.js")),
     sidebarLayout(
       sidebarPanel(
         # based on https://groups.google.com/forum/?fromgroups=#!topic/shiny-discuss/PzlSAmAxxwo
         wellPanel(
           uiOutput("ui_datasets"),
-          conditionalPanel("input.datatabs != 'Manage'",
-            checkboxInput('show_filter', 'Filter (e.g., price > 5000)', value = state_init("show_filter",FALSE)),
-            conditionalPanel("input.show_filter == true",
-              returnTextAreaInput("data_filter", label = "", value = state_init("data_filter")),
-              uiOutput("ui_filter_error"))),
+          conditionalPanel(
+            "input.datatabs != 'Manage'",
+            checkboxInput(
+              'show_filter', 'Filter (e.g., price > 5000)', value = state_init("show_filter",FALSE)
+            ),
+            conditionalPanel(
+              "input.show_filter == true",
+              returnTextAreaInput(
+                "data_filter", label = "", value = state_init("data_filter")
+              ),
+              uiOutput("ui_filter_error")
+            )
+          ),
 
           ################# Include selectize prompt Studies, Clinical data and Profile data
-          selectizeInput('StudiesID', 'Studies List', choices=NULL, multiple = FALSE),
+          selectizeInput(
+            'StudiesID', 'Studies List', choices = NULL, multiple = FALSE
+          ),
           uiOutput("ui_Cases"),
           uiOutput("ui_GenProfs"),
           uiOutput("ui_GeneList")
@@ -36,6 +46,9 @@ output$ui_data <- renderUI({
         conditionalPanel("input.datatabs == 'Clinical'", uiOutput("ui_ClinicalData")),
         conditionalPanel("input.datatabs == 'ProfData'", uiOutput("ui_ProfData")),
         conditionalPanel("input.datatabs == 'MutData'", uiOutput("ui_MutData")),
+        conditionalPanel("input.datatabs == 'Circomics'", uiOutput("ui_Circomics")),
+
+
         conditionalPanel("input.datatabs == 'Manage'", uiOutput("ui_Manage")),
         conditionalPanel("input.datatabs == 'View'",uiOutput("ui_View")),
         # conditionalPanel("input.datatabs == 'View_old'",uiOutput("ui_View_old")),
@@ -44,35 +57,77 @@ output$ui_data <- renderUI({
         conditionalPanel("input.datatabs == 'Explore'", uiOutput("ui_Explore")),
         conditionalPanel("input.datatabs == 'Transform'", uiOutput("ui_Transform")),
         conditionalPanel("input.datatabs == 'Combine'", uiOutput("ui_Combine"))
-        ),
+      ),
 
       mainPanel(
-        tabsetPanel(id = "datatabs",
+        tabsetPanel(
+          id = "datatabs",
 
 
           ##########
-          tabPanel("Clinical", DT::dataTableOutput(outputId="ClinicalDataTable")),
+          #tabPanel("Clinical", DT::dataTableOutput(outputId="ClinicalDataTable")),
           tabPanel("ProfData", DT::dataTableOutput(outputId ="ProfDataTable")),
-          tabPanel("MutData", DT::dataTableOutput(outputId ="MutDataTable")),
-          #tabPanel("Manag", htmlOutput("ProfDataTable")),
+          #tabPanel("MutData", DT::dataTableOutput(outputId ="MutDataTable")),
+          #           tabPanel("Circomics",
+          #                    conditionalPanel("input.WheelID"="Zoom",  coffeewheelOutput('getCoffeeWheel',width=500, height=500)),
+          #                    conditionalPanel("input.WheelID"="Static", metabologramOutput('metabologram',width=500, height=500))
+          #
+          #                    ),
+
+          tabPanel(
+            "Circomics",
+            conditionalPanel("input.WheelID =='init'",
+                             h3("Available Profiles data in select Studies", align="center"),
+                             DT::dataTableOutput(outputId ="CircosInit")),
+
+
+            conditionalPanel(
+              "input.WheelID == 'Zoom'",
+              h3("Profiles Data: CNA, Exp, RPPA, miRNA", align='center'),
+              coffeewheelOutput('getCoffeeWheel', width = 600, height = 600),
+              h3("Methylation Data", align='center'),
+              coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
+
+             # uiOutput("dataDescriptionHTML")
+            )
+           # conditionalPanel("input.WheelID == 'Zoom'", uiOutput("dataDescriptionHTML"))
+
+#              conditionalPanel(
+#               "input.WheelID == 'Static'",
+#               metabologramOutput('metabologram')
+#             )
+
+
+          ),
           ##########
 
 
-          tabPanel("Manage", htmlOutput("htmlDataExample"),
-            conditionalPanel("input.man_add_descr == false", uiOutput("dataDescriptionHTML")),
-            conditionalPanel("input.man_add_descr == true", uiOutput("dataDescriptionMD"))),
+          tabPanel(
+            "Manage", htmlOutput("htmlDataExample"),
+            #conditionalPanel("input.man_add_descr == false", uiOutput("dataDescriptionHTML")),
+            conditionalPanel(
+              "input.man_add_descr == true", uiOutput("dataDescriptionMD")
+            )
+          ),
 
-          tabPanel("View", DT::dataTableOutput("dataviewer")),
+          #tabPanel("View", DT::dataTableOutput("dataviewer")),
           #tabPanel("View_old", shiny::dataTableOutput("dataviewer_old")),
-          tabPanel("Visualize",plotOutput("visualize", width = "100%", height = "100%")),
+          tabPanel(
+            "Visualize",plotOutput("visualize", width = "100%", height = "100%")
+          ),
           tabPanel("Pivot", rpivotTable::rpivotTableOutput("pivotData")),
-          tabPanel("Explore", verbatimTextOutput("expl_summary"), plotOutput("expl_plots", width = "100%", height = "100%")),
-          tabPanel("Transform", htmlOutput("transform_data"), verbatimTextOutput("transform_summary")),
-          tabPanel("Combine", htmlOutput("cmb_possible"), htmlOutput("cmb_data1"))
-           #        htmlOutput("cmb_data2"), htmlOutput("cmb_data"))
+          tabPanel(
+            "Explore", verbatimTextOutput("expl_summary"), plotOutput("expl_plots", width = "100%", height = "100%")
+          ),
+          tabPanel(
+            "Transform", htmlOutput("transform_data"), verbatimTextOutput("transform_summary")
+          ),
+          tabPanel(
+            "Combine", htmlOutput("cmb_possible"), htmlOutput("cmb_data1")
+          )
+          #        htmlOutput("cmb_data2"), htmlOutput("cmb_data"))
           # tabPanel("Generate", HTML("<h3>Generate input data for simulation and prediction</h3>")),
         )
       )
-    )
-  )
+    ))
 })

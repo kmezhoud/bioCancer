@@ -1,9 +1,13 @@
 shinyServer(function(input, output, session) {
-
+  library(cgdsr)
+  library(coffeewheel)
+  library(metabologram)
+  library(tcltk)
+  library(animation)
 
   ##################
   # for cgdsr
-  library(cgdsr)
+
   cgds <- CGDS("http://www.cbioportal.org/public-portal/")
   Studies<- getCancerStudies(cgds)
   updateSelectizeInput(session, 'StudiesID', choices = Studies[,1], selected = "gbm_tcga_pub")
@@ -31,6 +35,8 @@ shinyServer(function(input, output, session) {
   output$ui_GenProfs <- renderUI({
     selectInput("GenProfID", "Genetic Profiles",getGeneticProfiles(cgds,input$StudiesID)[,1] )
   })
+
+
 
   # source shared functions
 	source("init.R", local = TRUE)

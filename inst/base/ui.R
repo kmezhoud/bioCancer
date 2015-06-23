@@ -1,4 +1,4 @@
-shinyUI(navbarPage("Cancer Portal", windowTitle = "Cancer Portal", id = "nav_radiant",
+shinyUI(navbarPage("CancerPortal", windowTitle = "CancerPortal", id = "nav_radiant",
         inverse = TRUE, collapsible = TRUE,
 
   tabPanel("Data", withMathJax(), uiOutput('ui_data')),

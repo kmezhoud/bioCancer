@@ -215,11 +215,6 @@ observe({
   }
 })
 
-##################
-
-
-
-#####################
 
 
 # loading all examples files (linked to helpfiles)
