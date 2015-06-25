@@ -3,56 +3,82 @@
 #' @details See \url{http://vnijs.github.io/radiant/base/explore.html} for an example in Radiant
 #'
 #' @param dataset Dataset name (string). This can be a dataframe in the global environment or an element in an r_data list from Radiant
-#' @param expl_vars (Numerical) variables to summaries
+#' @param vars (Numerical) variables to summaries
+#' @param byvar Variable(s) to group data by before summarizing
+#' @param fun Functions to use for summarizing
 #' @param data_filter Expression entered in, e.g., Data > View to filter the dataset in Radiant. The expression should be a string (e.g., "price > 10000")
-#' @param expl_byvar Variable(s) to group data by before summarizing
-#' @param expl_fun Functions to use for summarizing
 #'
 #' @return A list of all variables defined in the function as an object of class explore
 #'
 #' @examples
 #' result <- explore("diamonds", "price:x")
 #' summary(result)
-#' result <- explore("diamonds", "price", expl_byvar = "cut", expl_fun = c("length", "skew"))
+#' result <- explore("diamonds", "price", byvar = "cut", fun = c("length", "skew"))
 #' summary(result)
-#' diamonds %>% explore("price", expl_byvar = "cut", expl_fun = c("length", "skew"))
+#' diamonds %>% explore("price", byvar = "cut", fun = c("length", "skew"))
 #'
 #' @seealso \code{\link{summary.explore}} to show summaries
 #' @seealso \code{\link{plot.explore}} to plot summaries
 #'
 #' @export
-explore <- function(dataset, expl_vars = "",
-                    data_filter = "",
-                    expl_byvar = "",
-                    expl_fun = c("length", "mean_rm")) {
+explore <- function(dataset, vars = "",
+                    byvar = "",
+                    fun = c("length", "mean_rm"),
+                    data_filter = "") {
 
-  vars <- expl_vars
-  if (!is_empty(expl_byvar))
-    vars %<>% c(expl_byvar)
+# https://github.com/hadley/dplyr/issues/893
+# structure(list(price = c(580L, 650L, 630L, 706L, 1080L, 3082L,
+# 3328L, 4229L, 1895L, 3546L, 752L, 13003L, 814L, 6115L, 645L,
+# 3749L, 2926L, 765L, 1140L, 1158L), cut = structure(c(2L, 4L,
+# 4L, 2L, 3L, 2L, 2L, 3L, 4L, 1L, 1L, 3L, 2L, 4L, 3L, 3L, 1L, 2L,
+# 2L, 2L), .Label = c("Good", "Ideal", "Premium", "Very Good"), class = "factor")), row.names = c(NA,
+# -20L), .Names = c("price", "cut"), class = "data.frame") %>%
+  # diamonds %>%
+  # group_by(cut) %>%
+  # select(price) %>%
+  # # mutate_each("as.numeric") %>%
+  # summarise(price = median(price))
 
-  dat <- getdata(dataset, vars, filt = data_filter)
+  tvars <- vars
+  if (!is_empty(byvar)) tvars %<>% c(byvar)
+
+  dat <- getdata(dataset, tvars, filt = data_filter)
   if (!is_string(dataset)) dataset <- "-----"
 
-  # in case : was used
-  expl_vars <- colnames(head(dat) %>% select_(.dots = expl_vars))
+  ## in case : was used
+  vars <- colnames(head(dat) %>% select_(.dots = vars))
 
-  if (is_empty(expl_byvar)) {
+  if (is_empty(byvar)) {
     res <- capture.output(getsummary(dat))
   } else {
     res <- list()
+    for(bv in byvar)
+      if (!is.factor(dat[[bv]])) dat[[bv]] %<>% as.factor
     dc <- getclass(dat)
     isNum <- "numeric" == dc | "integer" == dc
-    dat %<>% group_by_(.dots = expl_byvar) %>% select(which(isNum))
-    for (f in expl_fun) {
-      gf <- get(f)
-      res[[f]] <- dat %>% summarise_each(funs(gf)) %>% as.data.frame
-    }
+
+    ##################################################
+    ##################################################
+    ##################################################
+    ##################################################
+    # remove mutate_each in next line one the median fix comes out in 0.5.0
+    ##################################################
+    ##################################################
+    ##################################################
+    ##################################################
+    dat %<>% group_by_(.dots = byvar) %>% select(which(isNum)) %>% mutate_each("as.numeric")
+    ##################################################
+    ##################################################
+    ##################################################
+
+    for (f in fun)
+      res[[f]] <- dat %>% summarise_each(as.formula(paste0("~",f))) %>% as.data.frame
   }
 
-  # dat no longer needed
+  ## dat no longer needed
   rm(dat)
 
-  environment() %>% as.list %>% set_class(c("explore",class(.)))
+  environment() %>% as.list %>% set_class(c("explore", class(.)))
 }
 
 #' Summary method for the explore function
@@ -65,10 +91,10 @@ explore <- function(dataset, expl_vars = "",
 #' @examples
 #' result <- explore("diamonds", "price:x")
 #' summary(result)
-#' result <- explore("diamonds", "price", expl_byvar = "cut", expl_fun = c("length", "skew"))
+#' result <- explore("diamonds", "price", byvar = "cut", fun = c("length", "skew"))
 #' summary(result)
 #' diamonds %>% explore("price:x") %>% summary
-#' diamonds %>% explore("price", expl_byvar = "cut", expl_fun = c("length", "skew")) %>% summary
+#' diamonds %>% explore("price", byvar = "cut", fun = c("length", "skew")) %>% summary
 #'
 #' @seealso \code{\link{explore}} to generate summaries
 #' @seealso \code{\link{plot.explore}} to plot summaries
@@ -86,15 +112,15 @@ summary.explore <- function(object, ...) {
   } else {
 
     if (!exists("expl_functions"))
-      funcs <- object$expl_fun %>% set_names(.,.)
+      funcs <- object$fun %>% set_names(.,.)
     else
       funcs <- get("expl_functions")
 
-    for (f in object$expl_fun) {
-      cat("Results grouped by: ", object$expl_byvar, "\n")
+    for (f in object$fun) {
+      cat("Results grouped by: ", object$byvar, "\n")
       cat("Function used: ", names(which(funcs == f)), "\n")
       object$res[[f]] %>%
-        { .[,-c(1:length(object$expl_byvar))] %<>% round(3); . } %>%
+        { .[,-c(1:length(object$byvar))] %<>% round(3); . } %>%
         print
       cat("\n")
     }
@@ -112,7 +138,7 @@ summary.explore <- function(object, ...) {
 #' @param ... further arguments passed to or from other methods
 #'
 #' @examples
-#' result <- explore("diamonds", "price", expl_byvar = "cut", expl_fun = c("length", "skew"))
+#' result <- explore("diamonds", "price", byvar = "cut", fun = c("length", "skew"))
 #' plot(result)
 #'
 #' @seealso \code{\link{explore}} to generate summaries
@@ -126,24 +152,24 @@ plot.explore <- function(x, shiny = FALSE, ...) {
   if (class(object$res)[1] == "character")
     return(invisible())
 
-  by_var <- fill_var <- object$expl_byvar[1]
-  if (length(object$expl_byvar) > 1) fill_var <- object$expl_byvar[2]
+  by_var <- fill_var <- object$byvar[1]
+  if (length(object$byvar) > 1) fill_var <- object$byvar[2]
 
   if (!exists("expl_functions")) {
-    funcs <- object$expl_fun %>% set_names(.,.)
+    funcs <- object$fun %>% set_names(.,.)
   } else {
     funcs <- get("expl_functions")
   }
 
   plots <- list()
-  for (f in object$expl_fun) {
-    for (var in object$expl_vars) {
+  for (f in object$fun) {
+    for (var in object$vars) {
       plots[[paste0(var,"_",f)]] <-
         ggplot(data = object$res[[f]], aes_string(x = by_var, y = var, fill = fill_var)) +
           geom_bar(stat="identity", position = "dodge", alpha=.7) +
           ggtitle(paste("Function used:", names(which(funcs == f))))
 
-      if (length(object$expl_byvar) == 1) {
+      if (length(object$byvar) == 1) {
         plots[[paste0(var,"_",f)]] <- plots[[paste0(var,"_",f)]] +
           theme(legend.position = "none")
       }

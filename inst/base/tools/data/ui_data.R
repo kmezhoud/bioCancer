@@ -17,8 +17,9 @@ output$ui_data <- renderUI({
         # based on https://groups.google.com/forum/?fromgroups=#!topic/shiny-discuss/PzlSAmAxxwo
         wellPanel(
           uiOutput("ui_datasets"),
+
           conditionalPanel(
-            "input.datatabs != 'Manage'",
+            "input.tabs_data != 'Manage'",
             checkboxInput(
               'show_filter', 'Filter (e.g., price > 5000)', value = state_init("show_filter",FALSE)
             ),
@@ -43,37 +44,31 @@ output$ui_data <- renderUI({
           ##################
 
         ),
-        conditionalPanel("input.datatabs == 'Clinical'", uiOutput("ui_ClinicalData")),
-        conditionalPanel("input.datatabs == 'ProfData'", uiOutput("ui_ProfData")),
-        conditionalPanel("input.datatabs == 'MutData'", uiOutput("ui_MutData")),
-        conditionalPanel("input.datatabs == 'Circomics'", uiOutput("ui_Circomics")),
+        conditionalPanel("input.tabs_data == 'Clinical'", uiOutput("ui_ClinicalData")),
+        conditionalPanel("input.tabs_data == 'ProfData'", uiOutput("ui_ProfData")),
+        conditionalPanel("input.tabs_data == 'MutData'", uiOutput("ui_MutData")),
+        conditionalPanel("input.tabs_data == 'Circomics'", uiOutput("ui_Circomics")),
 
 
-        conditionalPanel("input.datatabs == 'Manage'", uiOutput("ui_Manage")),
-        conditionalPanel("input.datatabs == 'View'",uiOutput("ui_View")),
-        # conditionalPanel("input.datatabs == 'View_old'",uiOutput("ui_View_old")),
-        conditionalPanel("input.datatabs == 'Visualize'", uiOutput("ui_Visualize")),
-        conditionalPanel("input.datatabs == 'Pivot'",uiOutput("ui_Pivot")),
-        conditionalPanel("input.datatabs == 'Explore'", uiOutput("ui_Explore")),
-        conditionalPanel("input.datatabs == 'Transform'", uiOutput("ui_Transform")),
-        conditionalPanel("input.datatabs == 'Combine'", uiOutput("ui_Combine"))
+        conditionalPanel("input.tabs_data == 'Manage'", uiOutput("ui_Manage")),
+        conditionalPanel("input.tabs_data == 'View'",uiOutput("ui_View")),
+        # conditionalPanel("input.tabs_data == 'View_old'",uiOutput("ui_View_old")),
+        conditionalPanel("input.tabs_data == 'Visualize'", uiOutput("ui_Visualize")),
+        conditionalPanel("input.tabs_data == 'Pivot'",uiOutput("ui_Pivot")),
+        conditionalPanel("input.tabs_data == 'Explore'", uiOutput("ui_Explore")),
+        conditionalPanel("input.tabs_data == 'Transform'", uiOutput("ui_Transform")),
+        conditionalPanel("input.tabs_data == 'Combine'", uiOutput("ui_Combine"))
       ),
 
       mainPanel(
         tabsetPanel(
-          id = "datatabs",
+          id = "tabs_data",
 
 
           ##########
-          #tabPanel("Clinical", DT::dataTableOutput(outputId="ClinicalDataTable")),
+          tabPanel("Clinical", DT::dataTableOutput(outputId="ClinicalDataTable")),
           tabPanel("ProfData", DT::dataTableOutput(outputId ="ProfDataTable")),
-          #tabPanel("MutData", DT::dataTableOutput(outputId ="MutDataTable")),
-          #           tabPanel("Circomics",
-          #                    conditionalPanel("input.WheelID"="Zoom",  coffeewheelOutput('getCoffeeWheel',width=500, height=500)),
-          #                    conditionalPanel("input.WheelID"="Static", metabologramOutput('metabologram',width=500, height=500))
-          #
-          #                    ),
-
+          tabPanel("MutData", DT::dataTableOutput(outputId ="MutDataTable")),
           tabPanel(
             "Circomics",
             conditionalPanel("input.WheelID =='init'",
@@ -89,13 +84,13 @@ output$ui_data <- renderUI({
               coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
 
              # uiOutput("dataDescriptionHTML")
-            )
+            ),
            # conditionalPanel("input.WheelID == 'Zoom'", uiOutput("dataDescriptionHTML"))
 
-#              conditionalPanel(
-#               "input.WheelID == 'Static'",
-#               metabologramOutput('metabologram')
-#             )
+             conditionalPanel(
+              "input.WheelID == 'Static'",
+              metabologramOutput('metabologram')
+            )
 
 
           ),
@@ -110,11 +105,12 @@ output$ui_data <- renderUI({
             )
           ),
 
-          #tabPanel("View", DT::dataTableOutput("dataviewer")),
+          tabPanel("View", DT::dataTableOutput("dataviewer")),
           #tabPanel("View_old", shiny::dataTableOutput("dataviewer_old")),
           tabPanel(
             "Visualize",plotOutput("visualize", width = "100%", height = "100%")
           ),
+
           tabPanel("Pivot", rpivotTable::rpivotTableOutput("pivotData")),
           tabPanel(
             "Explore", verbatimTextOutput("expl_summary"), plotOutput("expl_plots", width = "100%", height = "100%")
@@ -127,6 +123,7 @@ output$ui_data <- renderUI({
           )
           #        htmlOutput("cmb_data2"), htmlOutput("cmb_data"))
           # tabPanel("Generate", HTML("<h3>Generate input data for simulation and prediction</h3>")),
+          # , selected = ifelse(is_empty(r_url$tab), "Manage", r_url$tab)
         )
       )
     ))

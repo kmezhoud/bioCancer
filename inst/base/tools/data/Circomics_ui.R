@@ -7,7 +7,7 @@ output$ui_Circomics <- renderUI({
 #,"prad_tcga_pub","ucec_tcga_pub"
 
   wellPanel(
-  conditionalPanel("input.datatabs == 'Circomics'",
+  conditionalPanel("input.tabs_data == 'Circomics'",
 
                    selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=NULL, multiple = TRUE),
 

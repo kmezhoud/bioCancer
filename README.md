@@ -6,7 +6,9 @@
 
 Radiant is a platform-independent browser-based interface for business analytics in [R](http://www.r-project.org/), based on the [Shiny](http://www.rstudio.com/shiny/) package. Developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Vincent Nijs</a>. Please use the issue tracker on GitHub to suggest enhancements or report problems: https://github.com/vnijs/radiant/issues. For other questions and comments please use radiant@rady.ucsd.edu.
 
-<!-- Version: 0.2.19, Date: 2015-5-24 -->
+## Breaking change (6/15/2015)
+
+If you are using Radiant for Rmarkdown documents, State files, or from R-code please be aware that (most) function arguments have changed as of version 0.2.30. The full function manual is available at <a href="http://vnijs.github.io/radiant/radiant.pdf" target="_blank">http://vnijs.github.io/radiant/radiant.pdf</a>. 
 
 ## Key features
 
@@ -88,21 +90,21 @@ Please use the GitHub issue tracker at <a href="https://github.com/vnijs/radiant
 
 Not ready to install Radiant on your computer? Try it online at the links below:
 
-<a href="https://vnijs.shinyapps.io/base" target="_blank">vnijs.shinyapps.io/base</a>
+<a href="https://vnijs.shinyapps.io/marketing" target="_blank">vnijs.shinyapps.io/marketing</a>
 
 <a href="https://vnijs.shinyapps.io/quant" target="_blank">vnijs.shinyapps.io/quant</a>
 
-<a href="https://vnijs.shinyapps.io/marketing" target="_blank">vnijs.shinyapps.io/marketing</a>
+<a href="https://vnijs.shinyapps.io/base" target="_blank">vnijs.shinyapps.io/base</a>
 
 ## Running Radiant on shinyapps.io / shiny-server
 
 You can run Radiant on a (linux) server. See links above as evidence. There are also (slightly older) instances you can access that will not affect my personal usage of shinyapps.io:
 
-<a href="https://gallery.shinyapps.io/base" target="_blank">gallery.shinyapps.io/base</a>
+<a href="https://gallery.shinyapps.io/marketing" target="_blank">gallery.shinyapps.io/marketing</a>
 
 <a href="https://gallery.shinyapps.io/quant" target="_blank">gallery.shinyapps.io/quant</a>
 
-<a href="https://gallery.shinyapps.io/marketing" target="_blank">gallery.shinyapps.io/marketing</a>
+<a href="https://gallery.shinyapps.io/base" target="_blank">gallery.shinyapps.io/base</a>
 
 To run your own server instance copy/fork the repo from github and [deploy to shinyapps.io as usual](http://shiny.rstudio.com/articles/shinyapps.html). Shinyapps.io may complain about paths but you shouldn’t have any trouble if you know how to deploy to shinyapps.io. You can also host Radiant using [shiny-server](http://www.rstudio.com/products/rstudio/download-server/). Just point shiny-server to the directory in inst/ you want to use. As a courtesy, please let me know if you intend to use on a server.
 
@@ -123,6 +125,10 @@ numericInput("sm_comp_value", "Comparison value:", state_init('sm_comp_value',sm
 ## Source code
 
 The source code is available on GitHub at <https://github.com/vnijs/radiant>. Three (related) apps are included in the inst/ directory. `Base`, offers data loading, saving, viewing, visualizing, merging, and transforming tools. The `quant` app sources the code from base and extends it. This app is used in the _Quantitative Analysis_ class at the Rady School of Management (UCSD). Finally, the `marketing` app sources the code from `base` and `quant` and extends it with additional tools. The `quant` app focuses on (basic) quantitative analysis (e.g., comparing means, regression, etc.). The `marketing` app focuses on marketing analytics by adding clustering, principle component analysis, conjoint analysis, etc. This app is used in the _Research for Marketing Decisions_ class at Rady (UCSD).
+
+## Credits
+
+Radiant would not be possible without [R](http://cran.rstudio.com/) and [Shiny](http://shiny.rstudio.com/). I would like to thank [Joe Cheng](https://github.com/jcheng5), [Winston Chang](https://github.com/wch), and [Yihui Xie](https://github.com/yihui) for answering questions, providing suggestions, and creating amazing tools for the R community. For an overview of other packages that Radiant relies on please see the <a href="http://vnijs.github.io/radiant/about.html" target="_blank">about</a> page.
 
 
 ## License

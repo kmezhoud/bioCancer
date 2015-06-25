@@ -2,7 +2,7 @@ observe({
   # reset r_state on dataset change ... when you are not on the
   # Manage > Data tab
   if (is.null(r_state$dataset) || is.null(input$dataset)) return()
-  if (input$datatabs != "Manage" || input$nav_radiant != "Data")
+  if (input$tabs_data != "Manage" || input$nav_radiant != "Data")
     if (r_state$dataset != input$dataset) r_state <<- list()
 })
 
@@ -15,11 +15,16 @@ saveStateOnRefresh <- function(session = session) {
       if (not_pressed(input$resetState) && not_pressed(input$quitApp) &&
          is.null(input$uploadState)) {
         r_sessions[[r_ssuid]] <- list(
-          r_data = reactiveValuesToList(r_data),
-          r_state = reactiveValuesToList(input),
+          r_data    = reactiveValuesToList(r_data),
+          r_state   = reactiveValuesToList(input),
           timestamp = Sys.time()
         )
-        if (r_local) rm(r_env, envir = .GlobalEnv)
+        if (r_local) {
+          rm(r_env, envir = .GlobalEnv)
+        } else {
+          ## saving session information to file
+          saveRDS(r_sessions[[r_ssuid]], file = paste0("~/r_sessions/r_", r_ssuid, ".rds"))
+        }
       } else {
         if (is.null(input$uploadState)) {
           if (exists("r_sessions")) try(r_sessions[[r_ssuid]] <- NULL, silent = TRUE)
@@ -130,6 +135,7 @@ trunc_char <- function(x) if (is.character(x)) strtrim(x,17) else x
 
 ## show a few rows of a dataframe
 show_data_snippet <- function(dat = input$dataset, nshow = 7, title = "") {
+
   n <- 0
   {if (is.character(dat) && length(dat) == 1) r_data[[dat]] else dat} %>%
     { n <<- nrow(.); . } %>%
@@ -137,10 +143,12 @@ show_data_snippet <- function(dat = input$dataset, nshow = 7, title = "") {
     mutate_each(funs(d2c)) %>%
     mutate_each(funs(trunc_char)) %>%
     xtable::xtable(.) %>%
-    print(type = 'html',  print.results = FALSE, include.rownames = FALSE) %>%
+    print(type = 'html',  print.results = FALSE, include.rownames = FALSE,
+          sanitize.text.function = identity,
+          html.table.attributes = "class='table table-condensed table-hover'") %>%
+    # sub("<table border=*.1*.>","<table class='table table-condensed table-hover'>", .,
+    #     perl = TRUE) %>%
     paste0(title, .) %>%
-    sub("<table border=*.1*.>","<table class='table table-condensed table-hover'>", .,
-        perl = TRUE) %>%
     {if (n <= nshow) . else paste0(.,'\n<label>',nshow,' of ', n, ' rows shown. See View-tab for details.</label>')} %>%
     enc2utf8
 }
@@ -230,10 +238,10 @@ stat_tab_panel <- function(menu, tool, tool_ui, output_panels,
   sidebarLayout(
     sidebarPanel(
       wellPanel(
-        HTML(paste("<label><strong>Menu:",menu,"</strong></label><br>")),
-        HTML(paste("<label><strong>Tool:",tool,"</strong></label><br>")),
+        HTML(paste("<label><strong>Menu:", menu, "</strong></label><br>")),
+        HTML(paste("<label><strong>Tool:", tool, "</strong></label><br>")),
         if (!is.null(data))
-          HTML(paste("<label><strong>Data:",data,"</strong></label>"))
+          HTML(paste("<label><strong>Data:", data, "</strong></label>"))
       ),
       uiOutput(tool_ui)
     ),
@@ -288,13 +296,13 @@ help_and_report <- function(modal_title, fun_name, help_file) {
 
 # function to render .md files to html
 inclMD <- function(path) {
-  markdown::markdownToHTML(path, fragment.only = TRUE, options = c(""),
-                           stylesheet=file.path(r_path,"base/www/empty.css"))
+  markdown::markdownToHTML(path, fragment.only = TRUE, options = "",
+                           stylesheet="")
 }
 
 # function to render .Rmd files to html - does not embed image or add css
 inclRmd <- function(path) {
   paste(readLines(path, warn = FALSE), collapse = '\n') %>%
   knitr::knit2html(text = ., fragment.only = TRUE, options = "",
-                   stylesheet=file.path(r_path,"base/www/empty.css"))
+                   stylesheet="")
 }

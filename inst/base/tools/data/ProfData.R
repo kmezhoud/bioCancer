@@ -52,7 +52,9 @@ output$ProfDataTable <- DT::renderDataTable({
   # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
   action = DT::dataTableAjax(session, dat, rownames = FALSE)
 
-  DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
+  #DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
+  DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
+                              rownames = FALSE, style = "bootstrap", escape = FALSE,
                 # class = "compact",
                 options = list(
                   ajax = list(url = action),

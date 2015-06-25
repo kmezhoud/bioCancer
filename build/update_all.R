@@ -1,24 +1,26 @@
-# deploy to shinyapps.io
+## deploy to shinyapps.io
 
 library(devtools)
+library(magrittr)
 setwd("~/gh/radiant")
 document(roclets = c('rd', 'collate', 'namespace'))
 # install()
 
-library(magrittr)
-fn <- "~/gh/radiant/inst/base/www/style.css"
-readLines(fn) %>%
-  gsub("top: 95px;", "top: 145px;", .) %>%
-  cat(file = fn, sep = "\n")
-
-Sys.sleep(5)
+# fn <- "~/gh/radiant/inst/base/www/style.css"
+# readLines(fn) %>%
+#   gsub("top: 95px;", "top: 145px;", .) %>%
+#   cat(file = fn, sep = "\n")
+#
+# Sys.sleep(5)
 
 system("git add --all .")
-system("git commit -m 'Update css for shinyapps.io [ci skip]'")
+# system("git commit -m 'Update css for shinyapps.io [ci skip]'")
+system("git commit -m 'Update [ci skip]'")
 system("git push")
 
 # options(repos = "http://cran.rstudio.com")
 # install.packages("rmarkdown"); install.packages("ggvis"); install.packages("testthat")
+# install.packages("jsonlite"); install.packages("RcppEigen")
 
 # devtools::install_github(c("smartinsightsfromdata/rpivotTable","trestletech/shinyAce"))
 # devtools::install_github(c("rstudio/shinyapps", "themel/sendmailR", "jimhester/covr"))
@@ -40,30 +42,30 @@ deployApp(account = "vnijs", launch.browser = FALSE)
 setwd(file.path(fpath,"../marketing"))
 deployApp(account = "vnijs", launch.browser = FALSE)
 
-fn <- "~/gh/radiant/inst/base/www/style.css"
-readLines(fn) %>%
-  gsub("top: 145px;", "top: 95px;", .) %>%
-  cat(file = fn, sep = "\n")
+# fn <- "~/gh/radiant/inst/base/www/style.css"
+# readLines(fn) %>%
+#   gsub("top: 145px;", "top: 95px;", .) %>%
+#   cat(file = fn, sep = "\n")
 
 setwd("~/gh/radiant/")
 Sys.sleep(5)
 
-system("git add --all .")
-system("git commit -m 'Undo css change for shinyapps.io [ci skip]'")
-system("git push")
+# system("git add --all .")
+# system("git commit -m 'Undo css change for shinyapps.io [ci skip]'")
+# system("git push")
 
 answ <- readline("Did you create binary packages for Windows? (y/n) ")
 if (substr(answ, 1, 1) %in% c("y","Y")) {
   system("sh build/build_mac_win.sh")
 }
 
-# in case of problems
+## in case of problems
 # shinyapps::showLogs(entries=1000)
 
 ## Uncomment when rsm server has been upgraded to R 3.2.0
-# system("osascript ~/gh/update.scpt")
+system("osascript ~/gh/update.scpt")
 
-# for major pull problems
+## for major pull problems
 # git fetch --all
 # git reset --hard origin/master
 # rm(list = ls())

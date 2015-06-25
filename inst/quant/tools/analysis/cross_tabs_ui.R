@@ -1,18 +1,19 @@
-# alternative hypothesis options
+## alternative hypothesis options
 base_alt <- list("Two sided" = "two.sided", "Less than" = "less", "Greater than" = "greater")
 ct_check <- c("Observed" = "observed", "Expected" = "expected",
               "Chi-squared" = "chi_sq", "Deviation std." = "dev_std",
               "Deviation %" = "dev_perc")
 
-# list of function arguments
+## list of function arguments
 ct_args <- as.list(formals(cross_tabs))
 
-# list of function inputs selected by user
+## list of function inputs selected by user
 ct_inputs <- reactive({
-  # loop needed because reactive values don't allow single bracket indexing
-  for (i in names(ct_args))
-    ct_args[[i]] <- input[[i]]
-  if (!input$show_filter) ct_args$data_filter = ""
+  ## loop needed because reactive values don't allow single bracket indexing
+  ct_args$data_filter <- if (input$show_filter) input$data_filter else ""
+  ct_args$dataset <- input$dataset
+  for (i in r_drop(names(ct_args)))
+    ct_args[[i]] <- input[[paste0("ct_",i)]]
   ct_args
 })
 
@@ -57,7 +58,7 @@ ct_plot_width <- function()
 ct_plot_height <- function()
 	ct_plot() %>% { if (is.list(.)) .$plot_height else 400 }
 
-# output is called from the main radiant ui.R
+## output is called from the main radiant ui.R
 output$cross_tabs <- renderUI({
 
 		register_print_output("summary_cross_tabs", ".summary_cross_tabs")
@@ -65,7 +66,7 @@ output$cross_tabs <- renderUI({
                          height_fun = "ct_plot_height",
                          width_fun = "ct_plot_width")
 
-		# two separate tabs
+		## two separate tabs
 		ct_output_panels <- tabsetPanel(
 	    id = "tabs_cross_tabs",
 	    tabPanel("Summary", verbatimTextOutput("summary_cross_tabs")),
@@ -87,14 +88,14 @@ output$cross_tabs <- renderUI({
 	if (input$ct_var2 %>% not_available)
 		return("This analysis requires variables of type factor.\nIf none are available please select another dataset.")
 
-	summary(.cross_tabs(), ct_check = input$ct_check)
+	summary(.cross_tabs(), check = input$ct_check)
 })
 
 .plot_cross_tabs <- reactive({
 	if (input$ct_var2 %>% not_available)
 		return("This analysis requires variables of type factor.\nIf none are available please select another dataset.")
 
-	plot(.cross_tabs(), ct_check = input$ct_check, shiny = TRUE)
+	plot(.cross_tabs(), check = input$ct_check, shiny = TRUE)
 })
 
 observe({
@@ -104,7 +105,7 @@ observe({
   	figs <- FALSE
   	if (length(input$ct_check) > 0) {
 			outputs <- c("summary","plot")
-  		inp_out <- list(ct_check = input$ct_check) %>% list(.,.)
+  		inp_out <- list(check = input$ct_check) %>% list(.,.)
   		figs <- TRUE
   	}
 

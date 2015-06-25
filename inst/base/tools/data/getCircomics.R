@@ -127,7 +127,7 @@
   #options(viewer = NULL)
 
   getListProfData()
-
+  #Shiny.unbindAll()
   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData)
   #title<- paste("Profiles Data: CNA, Exp, RPPA, miRNA")
   coffeewheel(CoffeewheelTreeProfData, width=600, height=600, partitionAttribute="value") # main=title
@@ -321,7 +321,8 @@
   # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
   action = DT::dataTableAjax(session, dat, rownames = FALSE)
 
-  DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
+  DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
+                              rownames = FALSE, style = "bootstrap", escape = FALSE,
                 # class = "compact",
                 options = list(
                   ajax = list(url = action),
