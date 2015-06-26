@@ -4,7 +4,7 @@
 <!-- [![Coverage Status](https://img.shields.io/coveralls/vnijs/radiant.svg)](https://coveralls.io/r/vnijs/radiant?branch=master) -->
 
 
-CancerPortal is a platform-independent browser-based interface for Cancer Genomics Data analytics in [R](http://www.r-project.org/), based on the [Shiny](http://www.rstudio.com/shiny/) package. It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Vincent Nijs</a>. 
+CancerPortal is a platform-independent browser-based interface for Cancer Genomics Data analytics in [R](http://www.r-project.org/), based on the [Shiny](http://www.rstudio.com/shiny/) package. It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Dr. Vincent Nijs</a>. 
 
 
 ## Key features
@@ -91,7 +91,7 @@ The source code is available on GitHub at <https://github.com/vnijs/radiant>. Th
 
 ## Acknowledgment
 
-CancerPortal is inspired from [radiant](https://github.com/vnijs/radiant). I would like to thank Dr. Vincent Nijs for sharing his work for R community.
+CancerPortal is inspired from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
 
 
 ## License
