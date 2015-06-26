@@ -66,6 +66,7 @@ output$ui_data <- renderUI({
 
 
           ##########
+          tabPanel("Studies", DT::dataTableOutput(outputId = "StudiesTable")),
           tabPanel("Clinical", DT::dataTableOutput(outputId="ClinicalDataTable")),
           tabPanel("ProfData", DT::dataTableOutput(outputId ="ProfDataTable")),
           tabPanel("MutData", DT::dataTableOutput(outputId ="MutDataTable")),
@@ -84,13 +85,13 @@ output$ui_data <- renderUI({
               coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
 
              # uiOutput("dataDescriptionHTML")
-            ),
+            )
            # conditionalPanel("input.WheelID == 'Zoom'", uiOutput("dataDescriptionHTML"))
 
-             conditionalPanel(
-              "input.WheelID == 'Static'",
-              metabologramOutput('metabologram')
-            )
+#              conditionalPanel(
+#               "input.WheelID == 'Static'",
+#               metabologramOutput('metabologram')
+#             )
 
 
           ),
