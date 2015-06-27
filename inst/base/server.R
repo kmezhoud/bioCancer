@@ -3,7 +3,7 @@ shinyServer(function(input, output, session) {
   library(coffeewheel)
   library(metabologram)
   library(tcltk)
-  library("coffeewheel")
+  library(coffeewheel)
   #library("Metabologram")
 
   ##################

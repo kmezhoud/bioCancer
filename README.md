@@ -48,7 +48,7 @@ CancerPortal focuses on Cancer Genomics data visualisation and Genes Classificat
 CancerPortal is under development:
 ```r
  devtools::install_github("kmezhoud/CancerPortal")
- library("metabologram")
+ library("CancerPortal")
 ```
 
 

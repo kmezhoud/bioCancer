@@ -26,6 +26,7 @@ output$StudiesTable <- DT::renderDataTable({
 
 
 
+
 output$ClinicalDataTable <- DT::renderDataTable({
 
   #if (not_available(input$view_vars)) return()
@@ -35,6 +36,7 @@ output$ClinicalDataTable <- DT::renderDataTable({
   ## change rownames in the first column
   dat <- dat %>% add_rownames("Patients")
   ####
+  dat <- dat[input$ui_Clinical_vars]
 
   # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
   action = DT::dataTableAjax(session, dat, rownames = FALSE)
@@ -54,3 +56,8 @@ output$ClinicalDataTable <- DT::renderDataTable({
                 )
   )
 })
+
+
+
+
+

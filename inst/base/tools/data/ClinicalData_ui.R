@@ -9,10 +9,26 @@ output$ui_clipboard_load_Clinical <- renderUI({
   }
 })
 
+output$ui_Clinical_vars <- renderUI({
+  ##### get Clinical Data for selected Case
+  dat <- getClinicalData(cgds, input$CasesID)
+  ## change rownames in the first column
+  dat <- dat %>% add_rownames("Patients")
+
+  vars <- names(dat)
+  selectInput("ui_Clinical_vars", "Select variables to show:", choices  = vars,
+              selected = state_multiple("Clinical_vars",vars, vars), multiple = TRUE,
+              selectize = FALSE, size = min(10, length(vars)))
+})
+
 
 output$ui_ClinicalData <- renderUI({
 
   list(
+    wellPanel(
+      uiOutput("ui_Clinical_vars")
+    ),
+
     wellPanel(
       radioButtons(inputId = "ClinicalDataID", label = "Load Clinical Data to Datasets:",
                    c("Load ClinicalData"="ClinicalData","clipboard" = "clipboard_Clin"),
