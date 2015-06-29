@@ -4,6 +4,8 @@ shinyServer(function(input, output, session) {
   library(metabologram)
   library(tcltk)
   library(coffeewheel)
+  library(PSICQUIC)
+  library(networkD3)
   #library("Metabologram")
 
   ##################
