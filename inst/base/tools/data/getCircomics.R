@@ -51,12 +51,16 @@
   }
 
   attriColorGene <- function(df){
-    ## if df is for CNA levels(-2,-1,0,1,2)
-    if(any(df[1,]=="-2", na.rm=TRUE)||
-       any(df[1,]=="-1", na.rm=TRUE)||
+    if(any(df[1,]%%1==0, na.rm = TRUE)&& any(df[1,]>0, na.rm = TRUE)){
+      dfMeansOrCNA <- df
+    } else
+
+      ## if df is for CNA levels(-2,-1,0,1,2)
+   if(any(df[1,]=="-2", na.rm=TRUE)||
+       any(df[1,]=="-1", na.rm=TRUE)
        #any(df[1,]=="0", rn.rm=TRUE)||
-       any(df[1,]=="1", na.rm=TRUE)||
-       any(df[1,]=="2", na.rm=TRUE)
+       #any(df[1,]=="1", na.rm=TRUE)||
+       #any(df[1,]=="2", na.rm=TRUE)
     ){
 
       ListFreqCNA <- apply(df, 2, function(x) as.data.frame(table(x[order(x)])))
@@ -91,12 +95,12 @@
   ## this function restructure the Diseases
   reStrDisease <- function(List){
     print("restructuring Selected Diseases...")
-    circos<-lapply(List, function(x)attriColorGene(x))
-    for(i in 1: length(names(circos))){
-      circos[[i]]$name <- names(circos)[i]
+    child<-lapply(List, function(x)attriColorGene(x))
+    for(i in 1: length(names(child))){
+      child[[i]]$name <- names(child)[i]
     }
-    circos <-unname(circos)
-    return(circos)
+    child <-unname(child)
+    return(child)
   }
 
 
@@ -104,20 +108,17 @@
   ## This function restructure the Dimensions
   reStrDimension <- function(LIST){
     print("restructuring Dimensions...")
-    CIRCOS <- lapply(LIST, function(x)list(name="Dimension",children=reStrDisease(x)))
-    for(i in 1: length(names(CIRCOS))){
-      CIRCOS[[i]]$name <- names(CIRCOS)[i]
+    Parent <- lapply(LIST, function(x)list(name="Dimension",children=reStrDisease(x)))
+    for(i in 1: length(names(Parent))){
+      Parent[[i]]$name <- names(Parent)[i]
     }
-    CIRCOS <- unname(CIRCOS)
-    return(CIRCOS)
+    Parent <- unname(Parent)
+    return(Parent)
   }
 
 
 
-  #CIRCOS <- reStrDimension(r_data$ListProfData)
-
-
-
+  #Parent <- reStrDimension(r_data$ListProfData)
 
  ## get Wheel for Profiles Data
   output$getCoffeeWheel <- renderCoffeewheel({
@@ -152,6 +153,23 @@
   })
 
 
+  ## get Wheel for Mutation
+  output$getCoffeeWheel_Mut <- renderCoffeewheel({
+    withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+      Sys.sleep(0.25)
+      ## Open graph in Browser and not in Viewer
+      #options(viewer = NULL)
+
+      listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
+      TreeMutData <- reStrDisease(listMut_df)
+      coffeewheel(TreeMutData, width=600, height=600) # main=title
+    })
+
+  })
+
+
+
+
   output$metabologram <- renderMetabologram({
 
     CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
@@ -164,7 +182,7 @@
 
 
   })
-
+ ## CNA, mRNA, methylation HM450/HM27, miRNA, RPPPA, Mutation
   checkDimensions<- function(){
 
     checked_Studies <- input$StudiesIDCircos
@@ -202,7 +220,7 @@
           GenProf_Mut<- paste(checked_Studies[i],"_mutations", sep="")
           Case_Mut   <- paste(checked_Studies[i],"_sequenced", sep="")
 
-          c(df,checked_Studies[i]==0)
+          #c(df,checked_Studies[i]==0)
 
 
           if(length(grep(Case_CNA, CasesRefStudies)!=0)){

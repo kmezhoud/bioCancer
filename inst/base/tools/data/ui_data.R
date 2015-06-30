@@ -84,11 +84,12 @@ output$ui_data <- renderUI({
 
             conditionalPanel(
               "input.WheelID == 'Zoom'",
-              h3("Profiles Data: CNA, Exp, RPPA, miRNA", align='center'),
+              h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)"),
               coffeewheelOutput('getCoffeeWheel', width = 600, height = 600),
-              h3("Methylation Data", align='center'),
-              coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
-
+              h3("Correlation of silencing gene by Methylation: (0:1)"),
+              coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600),
+              h3("Mutation Frequency: (Min,Max)"),
+              coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
              # uiOutput("dataDescriptionHTML")
             )
            # conditionalPanel("input.WheelID == 'Zoom'", uiOutput("dataDescriptionHTML"))

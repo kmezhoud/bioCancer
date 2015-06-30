@@ -1,3 +1,14 @@
+output$LegendCircos <- renderPlot({
+  my.colors = colorRampPalette(c("blue3","cyan","white","yellow", "red","black"))
+  z=matrix(1:100,nrow=1)
+  x=1
+  y=seq(3,2345,len=100) # supposing 3 and 2345 are the range of your data
+  image(x,y,z,col=my.colors(100),axes=FALSE,xlab="",ylab="")
+  #axis(2)
+  mtext(text=c("Min","Law","middle","High","Max","NA"), line=1.8, las=2, side=4, at=c(50,500,900, 1400,1900,2300),adj = 1)
+  mtext(text=c("Down","Law","0","High","Up","NA"), line=0.5, las=2, side=2, outer = FALSE, at=c(50,500,900, 1400,1900,2300),adj = 1)
+})
+
 
 
 output$ui_Circomics <- renderUI({
@@ -25,13 +36,15 @@ output$ui_Circomics <- renderUI({
                    conditionalPanel(condition = "input.saveWheelID == 'Gif'",
                                     downloadButton("SaveGif")),
                    wellPanel(
-                   h4("Wheel Legend"),
-                   p(span("Black", style="color:black"),": Non available data."),
-                   p(span("White", style="color:black"),": Non significant rate."),
-                   p(span("Cyan", style="color:deepskyblue"),": Middle Negative significant rate."),
-                   p(span("Blue", style="color:blue"),": Negative significant rate."),
-                   p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
-                   p(span("Red", style="color:red"),": Positive significant rate.")
+
+                     plotOutput("LegendCircos")
+#                    h4("Wheel Legend"),
+#                    p(span("Black", style="color:black"),": Non available data."),
+#                    p(span("White", style="color:black"),": Non significant rate."),
+#                    p(span("Cyan", style="color:deepskyblue"),": Middle Negative significant rate."),
+#                    p(span("Blue", style="color:blue"),": Negative significant rate."),
+#                    p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
+#                    p(span("Red", style="color:red"),": Positive significant rate.")
 )
 
                   )

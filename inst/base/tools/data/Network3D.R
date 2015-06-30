@@ -36,7 +36,7 @@
       Sys.sleep(0.25)
 
     psicquic <- PSICQUIC()
-    tbl <- interactions(psicquic, id=GeneList,species="9606", provider = input$ProviderID ,quiet=TRUE)
+    tbl <- interactions(psicquic, id=GeneList, species="9606", provider = input$ProviderID ,quiet=TRUE)
     if(nrow(tbl)==0){
         src <- c("N","O","_" ,"I", "n", "T", "E", "R", "A", "C", "t","i","o")
          target <- c("O","_","I" ,"n", "T", "E", "R", "A", "C", "t", "i","o","n!")
@@ -78,9 +78,12 @@
       tbl <- subset(tbl, Freq > 0)
       tbl <- tbl[!duplicated(tbl[,c("A.name","B.name")]),]
 
+      ### The column 2 of Links_df "Sampling" is arbitrary information: Kind of interaction (Edge style)
   Links_df <- as.data.frame(cbind(as.numeric(tbl$A.name),as.numeric(tbl$B.name),
                                   sample(1:20,length(tbl[,"A.name"]) , replace = TRUE)))
   names(Links_df) <- c("source", "target", "value")
+
+      ### the second and third columns of Modes_df are arbitrary: group: Processu biologic, size: Regulation
 
   Nodes_df <- data.frame(tbl[,"A.name"], sample(1:4, length(tbl[,"A.name"]), replace = TRUE),
                                          sample(1:100,length(tbl[,"A.name"]) , replace = TRUE))
