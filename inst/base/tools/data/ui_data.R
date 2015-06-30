@@ -47,6 +47,7 @@ output$ui_data <- renderUI({
         conditionalPanel("input.tabs_data == 'Clinical'", uiOutput("ui_ClinicalData")),
         conditionalPanel("input.tabs_data == 'ProfData'", uiOutput("ui_ProfData")),
         conditionalPanel("input.tabs_data == 'MutData'", uiOutput("ui_MutData")),
+                                                         #uiOutput("ui_Mut_vars")),
         conditionalPanel("input.tabs_data == 'Circomics'", uiOutput("ui_Circomics")),
        conditionalPanel("input.tabs_data=='Network'",
                         wellPanel(

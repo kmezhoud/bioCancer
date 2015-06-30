@@ -12,9 +12,23 @@ output$ui_clipboard_load_MutData <- renderUI({
 })
 
 
-output$ui_MutData <- renderUI({
-  list(
+output$ui_Mut_vars <- renderUI({
 
+  GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+
+   dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
+  ## change rownames in the first column
+  dat <- as.data.frame(dat %>% add_rownames("Patients"))
+
+  Mut_vars <- names(dat)
+  selectInput("ui_Mut_vars", "Select variables to show:", choices  = Mut_vars,
+              selected = state_multiple("Mut_vars",Mut_vars, Mut_vars), multiple = TRUE,
+              selectize = FALSE, size = min(6, length(Mut_vars)))
+})
+
+output$ui_MutData <- renderUI({
+
+  list(
     wellPanel(
 
       radioButtons(inputId = "loadGeneListID", label = "Load Gene List:",
@@ -33,6 +47,11 @@ output$ui_MutData <- renderUI({
       #                        uiOutput("refreshOnUpload")
       #       )
 
+    ),
+    wellPanel(
+      if (length(grep("mutation", input$GenProfID))!=0){
+        uiOutput("ui_Mut_vars")
+      }
     ),
 
     wellPanel(

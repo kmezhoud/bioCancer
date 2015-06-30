@@ -16,6 +16,7 @@ output$MutDataTable <- DT::renderDataTable({
   dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
   ## change rownames in the first column
   dat <- as.data.frame(dat %>% add_rownames("Patients"))
+  dat <- dat[input$ui_Mut_vars]
   }
 #   if(is.numeric(dat[1,1])){
 #     dat <- round(dat, digits = 3)

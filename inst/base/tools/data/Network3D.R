@@ -32,7 +32,7 @@
       GeneList <- unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep="")))
     }
     #GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
-    withProgress(message = 'Loading Interactions. Waiting...', value = 0.1, {
+    withProgress(message = paste('Loading Interactions from',input$ProviderID[1],'... Waiting...'), value = 0.2, {
       Sys.sleep(0.25)
 
     psicquic <- PSICQUIC()
@@ -41,7 +41,7 @@
         src <- c("N","O","_" ,"I", "n", "T", "E", "R", "A", "C", "t","i","o")
          target <- c("O","_","I" ,"n", "T", "E", "R", "A", "C", "t", "i","o","n!")
          networkData <- data.frame(src, target )
-         simpleNetwork(networkData, opacity = input$opacity,linkDistance = 30,fontSize = 17,textColour = "#ff0000",nodeClickColour = "#E34A33",linkColour = "white",nodeColour = "white",charge = -500)
+         simpleNetwork(networkData, opacity = input$opacity,linkDistance = 30,fontSize = 17,textColour = "#ff0000",nodeClickColour = "#E34A33",linkColour = "white",nodeColour = "white",charge = -150)
 
     } else{
     tbl <- addGeneInfo(IDMapper("9606"), tbl)

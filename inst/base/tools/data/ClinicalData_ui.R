@@ -15,10 +15,10 @@ output$ui_Clinical_vars <- renderUI({
   ## change rownames in the first column
   dat <- dat %>% add_rownames("Patients")
 
-  vars <- names(dat)
-  selectInput("ui_Clinical_vars", "Select variables to show:", choices  = vars,
-              selected = state_multiple("Clinical_vars",vars, vars), multiple = TRUE,
-              selectize = FALSE, size = min(10, length(vars)))
+  Clinical_vars <- names(dat)
+  selectInput("ui_Clinical_vars", "Select variables to show:", choices  = Clinical_vars,
+              selected = state_multiple("Clinical_vars",Clinical_vars, Clinical_vars), multiple = TRUE,
+              selectize = FALSE, size = min(8, length(Clinical_vars)))
 })
 
 
