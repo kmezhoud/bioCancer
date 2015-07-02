@@ -51,11 +51,13 @@
   }
 
   attriColorGene <- function(df){
+    ## check Mutation df
     if(any(df[1,]%%1==0, na.rm = TRUE)&& any(df[1,]>0, na.rm = TRUE)){
       dfMeansOrCNA <- df
+
     } else
 
-      ## if df is for CNA levels(-2,-1,0,1,2)
+      ## check df is for CNA levels(-2,-1,0,1,2)
    if(any(df[1,]=="-2", na.rm=TRUE)||
        any(df[1,]=="-1", na.rm=TRUE)
        #any(df[1,]=="0", rn.rm=TRUE)||
@@ -84,6 +86,7 @@
      }else{
      colorls <- lapply(dfMeansOrCNA, function(x) attriColorValue(x, dfMeansOrCNA, colors=c("blue3","cyan3","white","yellow","red")))
      }
+    ## extract disease name
     disease_name <- unlist(lapply(strsplit(capture.output(substitute(df)), "\\$"),tail, 1))
     Children <- list(name=disease_name,unname(mapply(function(genes, color){list(list(name=genes, colour= color))},names(colorls), colorls)))
     names(Children)[2] <- "children"
@@ -157,10 +160,48 @@
   output$getCoffeeWheel_Mut <- renderCoffeewheel({
     withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
       Sys.sleep(0.25)
-      ## Open graph in Browser and not in Viewer
-      #options(viewer = NULL)
+
+      ## get Gene Mutation Frequency
+      UnifyRowNames <- function(x){
+        df_MutData <-as.data.frame(table(x$gene_symbol))
+        rownames(df_MutData) <- df_MutData$Var1
+        ## ordering genes in MutData as in GeneList
+
+        df_GeneList <- as.data.frame(t(GeneList))
+        #df_GeneList <- as.data.frame(GeneList)
+        rownames(df_GeneList) <- df_GeneList[,1]
+        df_merge <- merge(df_GeneList, df_MutData, by="row.names",all.x=TRUE)
+        Freq_Mut <- df_merge[,c(-2,-3)]
+        return(Freq_Mut)
+      }
+
+      print("Start getting Frequency of Mutation ...")
+
+      if(input$GeneListID != "Genes"){
+        GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+      }
+
+      Freq_ListMutData <- lapply(r_data$ListMutData,function(x) UnifyRowNames(x))
+      #output1 <- adply(Freq_ListMutData,1)
+
+      ## convert the list of correlation matrices to Array
+      Freq_ArrayMutData <- array(unlist( Freq_ListMutData), dim = c(nrow(Freq_ListMutData[[1]]), ncol( Freq_ListMutData[[1]]), length(Freq_ListMutData)))
+      dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1], colnames(Freq_ListMutData[[1]]), names(Freq_ListMutData))
+
+
+      Freq_DfMutData <- apply(Freq_ArrayMutData[,2,],2,as.numeric)
+      rownames(Freq_DfMutData) <- rownames(Freq_ArrayMutData[,2,])
+      ## ordering gene list as in GeneList from MSigDB: grouping genes with the same biological process or gene Sets
+
+      Freq_DfMutData <- Freq_DfMutData[GeneList,,drop=FALSE]
+
+      #r_data[['Freq_DfMutData']] <- Freq_DfMutData
+
+      print("End getting Mutation Frequency...")
 
       listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
+
+
       TreeMutData <- reStrDisease(listMut_df)
       coffeewheel(TreeMutData, width=600, height=600) # main=title
     })

@@ -239,6 +239,8 @@ getListProfData <- function(){
 
     ListProfData$CNA[[checked_Studies[s]]] <- ProfData_CNA
     ListProfData$Expression[[checked_Studies[s]]] <- ProfData_Exp
+    ListProfData$Met_HM450[[checked_Studies[s]]] <- ProfData_Met_HM450
+    ListProfData$Met_HM27[[checked_Studies[s]]] <- ProfData_Met_HM27
     ListMetData$HM450[[checked_Studies[s]]] <- ProfData_Met_HM450
     ListMetData$HM27[[checked_Studies[s]]] <- ProfData_Met_HM27
     ListProfData$RPPA[[checked_Studies[s]]] <- ProfData_RPPA
@@ -261,38 +263,4 @@ getListProfData <- function(){
   #     myGlobalEnv$ListMutData <- myGlobalEnv$ListMutData[order(names(myGlobalEnv$ListMutData))]
 
   #    print("End Ordering ...")
-
-    ## get Gene Mutation Frequency
-    UnifyRowNames <- function(x){
-      df_MutData <-as.data.frame(table(x$gene_symbol))
-      rownames(df_MutData) <- df_MutData$Var1
-      ## ordering genes in MutData as in GeneList
-
-      df_GeneList <- as.data.frame(t(GeneList))
-      #df_GeneList <- as.data.frame(GeneList)
-      rownames(df_GeneList) <- df_GeneList[,1]
-      df_merge <- merge(df_GeneList, df_MutData, by="row.names",all.x=TRUE)
-      Freq_Mut <- df_merge[,c(-2,-3)]
-      return(Freq_Mut)
-    }
-
-    print("Start getting Frequency of Mutation ...")
-    Freq_ListMutData <- lapply(r_data$ListMutData,function(x) UnifyRowNames(x))
-    #output1 <- adply(Freq_ListMutData,1)
-
-    ## convert the list of correlation matrices to Array
-    Freq_ArrayMutData <- array(unlist( Freq_ListMutData), dim = c(nrow(Freq_ListMutData[[1]]), ncol( Freq_ListMutData[[1]]), length(Freq_ListMutData)))
-    dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1], colnames(Freq_ListMutData[[1]]), names(Freq_ListMutData))
-
-
-    Freq_DfMutData <- apply(Freq_ArrayMutData[,2,],2,as.numeric)
-    rownames(Freq_DfMutData) <- rownames(Freq_ArrayMutData[,2,])
-    ## ordering gene list as in GeneList from MSigDB: grouping genes with the same biological process or gene Sets
-    Freq_DfMutData <<- Freq_DfMutData[GeneList,,drop=FALSE]
-
-    r_data[['Freq_DfMutData']] <- Freq_DfMutData
-
-     print("End getting Mutation Frequency...")
-
-  #return(ListProfData)
 }
