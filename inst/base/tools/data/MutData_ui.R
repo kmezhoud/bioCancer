@@ -14,7 +14,12 @@ output$ui_clipboard_load_MutData <- renderUI({
 
 output$ui_Mut_vars <- renderUI({
 
-  GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+  if(input$GeneListID != "Genes"){
+    GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+  } else{
+    GeneList <- r_data$Genes
+  }
+
 
    dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
   ## change rownames in the first column
@@ -113,7 +118,7 @@ observe({
                       choices = r_data$genelist,
                       selected = r_data$genelist[1])
   })
-  #  A <<- r_data$genelist
+
 })
 
 ## load genelist from clipBoard

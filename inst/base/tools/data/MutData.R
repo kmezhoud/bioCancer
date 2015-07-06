@@ -4,23 +4,26 @@ output$MutDataTable <- DT::renderDataTable({
   if (length(grep("mutation", input$GenProfID))==0){
 
     dat <- as.data.frame("Please select mutations from Genetic Profiles")
+ }else{
 
-  }else if(input$GeneListID != "Genes"){
+  dat <-
+
+  if(input$GeneListID != "Genes"){
 
     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
-
-  #GeneList <- (r_data[[input$GeneListID]])
-
+} else{
+   GeneList <- r_data$Genes
+}
   ##### Get Mutation Data for selected Case and Genetic Profile
   #dat <- getProfileData(cgds, GeneList, input$GenProfID,input$CasesID)
   dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
   ## change rownames in the first column
   dat <- as.data.frame(dat %>% add_rownames("Patients"))
   dat <- dat[input$ui_Mut_vars]
-  }
+
 #   if(is.numeric(dat[1,1])){
 #     dat <- round(dat, digits = 3)
-#   }
+   }
   ####
 
   # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)

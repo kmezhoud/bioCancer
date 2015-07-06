@@ -35,7 +35,7 @@ output$ui_ProfData <- renderUI({
                    selected = "Genes", inline = TRUE),
 
       conditionalPanel(condition = "input.loadGeneListID == 'clipboard_GeneList'",
-                       actionButton('loadClip_GeneList', 'Paste Gene List')
+                       actionButton('loadClipProf_GeneList', 'Paste Gene List')
                        #uiOutput("ui_clipboard_load_ProfData")
       ),
       conditionalPanel(condition = "input.loadGeneListID == 'ExampleGeneList'",
@@ -113,7 +113,7 @@ observe({
 ## load genelist from clipBoard
 observe({
   # 'reading' data from clipboard
-  if (not_pressed(input$loadClip_GeneList)) return()
+  if (not_pressed(input$loadClipProf_GeneList)) return()
   isolate({
     loadClipboard_GeneList()
     updateRadioButtons(session = session, inputId = "GeneListID",
