@@ -46,15 +46,19 @@ output$ui_data <- renderUI({
         ),
         conditionalPanel("input.tabs_data == 'Clinical'", uiOutput("ui_ClinicalData")),
         conditionalPanel("input.tabs_data == 'ProfData'", uiOutput("ui_ProfData")),
-        conditionalPanel("input.tabs_data == 'MutData'", uiOutput("ui_MutData")),
-                                                         #uiOutput("ui_Mut_vars")),
-        conditionalPanel("input.tabs_data == 'Circomics'", uiOutput("ui_Circomics")),
-       conditionalPanel("input.tabs_data=='Network'",
-                        wellPanel(
-                        uiOutput("ui_NetworkSlider"),
-                        uiOutput("ui_Provider")
-                          )),
+       conditionalPanel("input.tabs_data == 'MutData'", uiOutput("ui_MutData")),
+       conditionalPanel("input.tabs_data == 'Circomics'", uiOutput("ui_Circomics")),
+#         conditionalPanel("input.tabs_data=='Network'",
+#                          wellPanel(
+#                            uiOutput("ui_NetworkSlider"),
+#                            uiOutput("ui_Provider")
+#                          )),
+        conditionalPanel("input.tabs_data=='Classifier'",
 
+                         uiOutput("ui_Classifier")
+
+
+        ),
         conditionalPanel("input.tabs_data == 'Manage'", uiOutput("ui_Manage")),
         conditionalPanel("input.tabs_data == 'View'",uiOutput("ui_View")),
         # conditionalPanel("input.tabs_data == 'View_old'",uiOutput("ui_View_old")),
@@ -71,10 +75,10 @@ output$ui_data <- renderUI({
 
 
           ##########
-          tabPanel("Studies", DT::dataTableOutput(outputId = "StudiesTable")),
-          tabPanel("Clinical", DT::dataTableOutput(outputId="ClinicalDataTable")),
-          tabPanel("ProfData", DT::dataTableOutput(outputId ="ProfDataTable")),
-          tabPanel("MutData", DT::dataTableOutput(outputId ="MutDataTable")),
+         tabPanel("Studies", DT::dataTableOutput(outputId = "StudiesTable")),
+         tabPanel("Clinical", DT::dataTableOutput(outputId="ClinicalDataTable")),
+         tabPanel("ProfData", DT::dataTableOutput(outputId ="ProfDataTable")),
+         tabPanel("MutData", DT::dataTableOutput(outputId ="MutDataTable")),
           tabPanel(
             "Circomics",
             conditionalPanel("input.WheelID =='init'",
@@ -90,30 +94,66 @@ output$ui_data <- renderUI({
               coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600),
               h3("Mutation Frequency: (Min,Max)"),
               coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
-             # uiOutput("dataDescriptionHTML")
+              # uiOutput("dataDescriptionHTML")
             )
-           # conditionalPanel("input.WheelID == 'Zoom'", uiOutput("dataDescriptionHTML"))
+            # conditionalPanel("input.WheelID == 'Zoom'", uiOutput("dataDescriptionHTML"))
 
-#              conditionalPanel(
-#               "input.WheelID == 'Static'",
-#               metabologramOutput('metabologram')
-#             )
+            #              conditionalPanel(
+            #               "input.WheelID == 'Static'",
+            #               metabologramOutput('metabologram')
+            #             )
 
 
           ),
 
-tabPanel("Network",
-  h3("Simple Network"),
-  simpleNetworkOutput("simpleNetwork"),
-  h3("Forced Network"),
-  forceNetworkOutput("forceNetwork")
-),
+#           tabPanel("Network",
+#                    h3("Simple Network"),
+#                    simpleNetworkOutput("simpleNetwork"),
+#                    h3("Forced Network"),
+#                    forceNetworkOutput("forceNetwork")
+#           ),
+          tabPanel("Classifier",
+                   conditionalPanel("input.ClassID =='Samples'",
+                                    h5("Enter sampling size smaller than in Studies"),
+                                    tableOutput("viewTableCases"),
+                                    verbatimTextOutput("SampleSize"),
+                                    verbatimTextOutput("ClassifierThreshold"),
+                                    #selectizeInput('StudiesIDClassifier', 'Studies Classification', choices=NULL, multiple = TRUE),
+                                    h3("Filter only Studies that have mRNA data", align="center"),
+                                    fluidRow(
+                                    column(6,
+                                    uiOutput("list_Cases")),
+                                    column(6,
+                                    uiOutput("list_GenProfs")
+                                    )
+                                    ),
+                                    textOutput("PrintCases")
+
+
+                                    ),
+                   conditionalPanel("input.ClassID =='Classifier'",
+                      tableOutput("viewTablegetGenesClassifier")),
+
+                   conditionalPanel("input.ClassID=='Plot'",
+                      h4("Which Disease are involved your Genes list", align='center'),
+                      plotOutput("Plot_enricher"),
+                      h4("Diseases Studies Genes associations", align='center'),
+                      plotOutput("compareClusterDO"),
+                      h4("Pathway cluster Enrichment", align='center'),
+                      plotOutput("compareClusterPathway"),
+                      h4("Gene Ontholgy Studies associations", align='center'),
+                      plotOutput("compareClusterGO"),
+                      h4("KEGG Pathway Enrichment", align='center'),
+                      plotOutput("compareClusterKEGG")
+                                    )
+                   ),
+
           ##########
 
 
           tabPanel(
             "Manage", htmlOutput("htmlDataExample"),
-            #conditionalPanel("input.man_add_descr == false", uiOutput("dataDescriptionHTML")),
+            conditionalPanel("input.man_add_descr == false", uiOutput("dataDescriptionHTML")),
             conditionalPanel(
               "input.man_add_descr == true", uiOutput("dataDescriptionMD")
             )

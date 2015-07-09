@@ -1,0 +1,46 @@
+
+
+output$ui_Classifier <- renderUI({
+  withProgress(message = 'Loading Studies with mRNA Data. Waiting...', value = 0.2, {
+    Sys.sleep(0.25)
+#   ## remove Studies without mrna in genetic profiles
+#   listCases <- lapply(Studies[,1], function(x)getCaseLists(cgds,x)[,1])
+#   names(listCases) <- Studies[,1]
+#   listCases <- lapply(listCases, function(x) x[grep("mrna", x)])
+#   listCases <- listCases[lapply(listCases,length)>0]
+})
+  updateSelectizeInput(session, 'StudiesIDClassifier', choices = Studies[,1], selected = c("brca_tcga","gbm_tcga","lihc_tcga","lusc_tcga"))
+  #,"prad_tcga_pub","ucec_tcga_pub"
+
+#   checked_Studies <- input$StudiesIDClassifier
+#   listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,1])
+#   updateSelectizeInput(session, 'CasesIDClassifier', choices = listCases)
+
+  wellPanel(
+    conditionalPanel("input.tabs_data == 'Classifier'",
+
+                     selectizeInput('StudiesIDClassifier', 'Studies Classification', choices=NULL, multiple = TRUE),
+
+                     radioButtons(inputId = "ClassID", label = "Processing",
+                                  c("Samples"="Samples" ,"Classifier" = "Classifier", "Plot"="Plot"),
+                                  selected = "Samples", inline = TRUE),
+
+                     div(class="col-xs-6",
+                     numericInput("SampleSizeClassifierID",
+                               "Samples",
+                               "50",min = 0, max = 200 , step = 10)),
+                     div(class="col-xs-6",
+                     numericInput("ClassifierThresholdID",
+                                  "PostProb",
+                                  "0.95",min = 0.9, max = 1 , step = 0.01))
+
+                     #selectizeInput('CasesIDClassifier', 'Cases', choices=NULL, multiple = TRUE),
+                     #uiOutput("list_Cases")
+
+
+
+    )
+  )
+})
+
+

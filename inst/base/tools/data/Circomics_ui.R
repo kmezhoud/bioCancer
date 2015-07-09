@@ -5,8 +5,8 @@ output$LegendCircos <- renderPlot({
   y=seq(3,2345,len=100) # supposing 3 and 2345 are the range of your data
   image(x,y,z,col=my.colors(100),axes=FALSE,xlab="",ylab="")
   #axis(2)
-  mtext(text=c("Min","Law","middle","High","Max","NA"), line=1.8, las=2, side=4, at=c(50,500,900, 1400,1900,2300),adj = 1)
-  mtext(text=c("Down","Law","0","High","Up","NA"), line=0.5, las=2, side=2, outer = FALSE, at=c(50,500,900, 1400,1900,2300),adj = 1)
+  mtext(text=c("Min","Low","middle","High","Max","NA"), line=1.8, las=2, side=4, at=c(50,500,900, 1400,1900,2300),adj = 1)
+  mtext(text=c("Down","Low","0","High","Up","NA"), line=0.5, las=2, side=2, outer = FALSE, at=c(50,500,900, 1400,1900,2300),adj = 1)
 })
 
 

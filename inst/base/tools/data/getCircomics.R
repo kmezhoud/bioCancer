@@ -1,36 +1,4 @@
-
-  #GeneList <- c("ATM","ATR","BRCA1","BRCA2","CHEK1","CHEK2")
-
-
-
-  #image(matrix(Freq_DfMutData[,1]), col=colorRampPalette(colors=c("#FF0000", "#FFFF00"))(length(Freq_DfMutData[,1])))
-
-  #my.colors<-colorRampPalette(c("blue", "white","orange" ,"red")) #creates a function my.colors which interpolates n colors between blue, white and red
-  #color.df<-data.frame(COLOR_VALUE=seq(-1,1,0.1), color.name=my.colors(length(seq(-1,1,0.1)))) #generates 2001 colors from the color ramp
-  #reg1.with.color<-merge(reg1, color.df, by="COLOR_VALUE")
-
-
-  #colnames <- colnames(df)
-  #df <- as.data.frame(df)
-  #df <- as.data.frame(df %>% add_rownames("Genes")) # change rownames in the first column
-
-  # for(i in 2:length(colnames(df)) ){
-  #   colname <- colnames[i]
-  #   attriColorGene(df,colname, color=c(x,y,z))
-  # }
-
-  # attriColorGene <- function(df,colname, color=c(x,y,z)){
-  # Max <- max(df, na.rm=TRUE)
-  # Min <- min(df, na.rm=TRUE)
-  # #"white","yellow", "darkgoldenrod3"
-  # my.colors <- colorRampPalette(c(x,y,z)) #creates a function my.colors which interpolates n colors between blue, white and red
-  # color.df <- data.frame(colname=seq(Min,Max,0.1), paste("col_", colname, sep="")=my.colors(Max- Min)) #generates 2001 colors from the color ramp
-  # #df.with.color <- merge(df, color.df, by=colname)
-  # #return(df.with.color)
-  # }
-
-
-
+####### Functions to get tree for coffeeWheel
   attriColorValue <- function(Value, df, colors=c(a,b,c, d,e)){
 
     #df <- df *100
@@ -120,15 +88,10 @@
   }
 
 
-
-  #Parent <- reStrDimension(r_data$ListProfData)
-
  ## get Wheel for Profiles Data
   output$getCoffeeWheel <- renderCoffeewheel({
     withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
       Sys.sleep(0.25)
-  ## Open graph in Browser and not in Viewer
-  #options(viewer = NULL)
 
   getListProfData()
   #Shiny.unbindAll()
@@ -144,8 +107,6 @@
   output$getCoffeeWheel_Met <- renderCoffeewheel({
     withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
       Sys.sleep(0.25)
-      ## Open graph in Browser and not in Viewer
-      #options(viewer = NULL)
 
       #getListProfData()
       CoffeewheelTreeMetData <- reStrDimension(r_data$ListMetData)
@@ -400,72 +361,3 @@
 
     })
 })
-
-
-
-# expBefore <- list(HM450=list(brac_tcga=list("ATM"=0.19,"ATR"=0.02,"BRCA1"=0.02,"BRCA2"=0.89,"CHEK1"=0.71,"CHEK2"=0.03),
-#                 gbm_tcga=list("ATM"=0.19,"ATR"=0.02,"BRCA1"=0.02,"BRCA2"=0.89,"CHEK1"=0.71,"CHEK2"=0.03)
-#                 ),
-#      HM27=list(brac_tcga=list("ATM"=0.19,"ATR"=0.02,"BRCA1"=0.02,"BRCA2"=0.89,"CHEK1"=0.71,"CHEK2"=0.03),
-#                gbm_tcga=list("ATM"=0.19,"ATR"=0.02,"BRCA1"=0.02,"BRCA2"=0.89,"CHEK1"=0.71,"CHEK2"=0.03)
-#      )
-#      )
-#
-# expAfter <-list(
-#   list(
-#     name="HM450",
-#     children=list(
-#       list(name="brca_tcga",
-#            children=list(
-#              list(name="ATM", colour="110000"),
-#              list(name="ATR", colour="330000"),
-#              list(name="BRCA1", colour="550000"),
-#              list(name="BRCA2", colour="770000"),
-#              list(name="CHEK1", colour="990000"),
-#              list(name="CHEK2", colour="bb0000")
-#
-#            ), colour="aa0000" # brca_tcga
-#            ),
-#         list(name="gbm_tcga",
-#             children=list(
-#               list(name="ATM", colour="001100"),
-#               list(name="ATR", colour="003300"),
-#               list(name="BRCA1", colour="005500"),
-#               list(name="BRCA2", colour="007700"),
-#               list(name="CHEK1", colour="009900"),
-#               list(name="CHEK2", colour="00bb00")
-#             ), colour="345345" # gbm_tcga
-#             )
-#
-#            ), colour="ffa500" # HM450
-#   ),
-#   list(
-#     name="HM27",
-#     children=list(
-#       list(name="brca_tcga",
-#            children=list(
-#              list(name="ATM", colour="110000"),
-#              list(name="ATR", colour="330000"),
-#              list(name="BRCA1", colour="550000"),
-#              list(name="BRCA2", colour="770000"),
-#              list(name="CHEK1", colour="990000"),
-#              list(name="CHEK2", colour="bb0000")
-#
-#            ), colour="aa0000" ##brca_tcga
-#            ),
-#       list(name="gbm_tcga",
-#            children=list(
-#              list(name="ATM", colour="001100"),
-#              list(name="ATR", colour="003300"),
-#              list(name="BRCA1", colour="005500"),
-#              list(name="BRCA2", colour="007700"),
-#              list(name="CHEK1", colour="009900"),
-#              list(name="CHEK2", colour="00bb00")
-#            ), colour="345345") #gbm_tcga
-#
-#     ), colour="ff00ff"  #HM27
-#   )
-#
-# );
-# library("coffeewheel")
-# coffeewheel(expAfter, width=500, height=500, main="Sample Wheel Title", partitionAttribute="value")

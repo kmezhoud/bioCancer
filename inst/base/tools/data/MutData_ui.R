@@ -1,15 +1,15 @@
 
 
-output$ui_clipboard_load_MutData <- renderUI({
-  if (r_local) {
-    actionButton('loadClipMutData', 'Paste data')
-  } else {
-    tagList(tags$textarea(class="form-control",
-                          id="load_cdata", rows="5"
-    ),
-    actionButton('loadClipMutData', 'Paste data'))
-  }
-})
+# output$ui_clipboard_load_MutData <- renderUI({
+#   if (r_local) {
+#     actionButton('loadClipMutData', 'Paste data')
+#   } else {
+#     tagList(tags$textarea(class="form-control",
+#                           id="load_cdata", rows="5"
+#     ),
+#     actionButton('loadClipMutData', 'Paste data'))
+#   }
+# })
 
 
 output$ui_Mut_vars <- renderUI({

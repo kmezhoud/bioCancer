@@ -61,8 +61,8 @@ saveClipboardData <- function() {
 factorizer <- function(dat) {
   isChar <- sapply(dat,is.character)
   if (length(isChar) == 0) return(dat)
-  toFct <- select(dat, which(isChar)) %>% summarise_each(funs(n_distinct)) %>%
-   select(which(. < 100 & ((. / nrow(dat)) < .1))) %>% names
+  toFct <- dplyr::select(dat, which(isChar)) %>% summarise_each(funs(n_distinct)) %>%
+   dplyr::select(which(. < 100 & ((. / nrow(dat)) < .1))) %>% names
   if (length(toFct) == 0) return(dat)
   mutate_each_(dat, funs(as.factor), vars = toFct)
 }
@@ -89,34 +89,56 @@ loadInDatasets <- function(fname, header= TRUE){
   r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
   r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
 }
+######
+loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = TRUE, sep = "\t") {
 
-
-## Load Gene Lists example from package to r_data$genelist
-loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, sep = "\n") {
-
-  if (Sys.info()["sysname"] == "Windows") {
-    GeneList <- try(read.table("clipboard", header = header, sep = sep), silent = TRUE)
-    GeneList <- t(GeneList)
-  } else if (Sys.info()["sysname"] == "Darwin") {
-    GeneList <- try(read.table(pipe("pbpaste"), header = header, sep = sep), silent = TRUE)
-   GeneList <- t(GeneList)
-  } else {
-    GeneList <- try(read.table(text = input$load_cdata, header = header, sep = sep), silent = TRUE)
-    GeneList <- t(GeneList)
-  }
-
-  if (is(GeneList, 'try-error')) {
+  dat <- sshhr(try(
+    {if (Sys.info()["sysname"] == "Windows") {
+      read.table("clipboard", header = header, sep = sep, as.is = TRUE)
+    } else if (Sys.info()["sysname"] == "Darwin") {
+      read.table(pipe("pbpaste"), header = header, sep = sep, as.is = TRUE)
+    } else {
+      if (!is_empty(input$load_cdata))
+        read.table(text = input$load_cdata, header = header, sep = sep, as.is = TRUE)
+    }} %>% as.data.frame(check.names = FALSE), silent = TRUE))
+  dat <- t(dat)
+  if (is(dat, 'try-error') || nrow(dat) == 0) {
     if (ret == "") ret <- c("### Data in clipboard was not well formatted. Try exporting the data to csv format.")
     upload_error_handler(objname,ret)
   } else {
     ret <- paste0("### Clipboard data\nData copied from clipboard on", lubridate::now())
-    r_data[[objname]] <- data.frame(GeneList, check.names = FALSE)
-    #r_data[[paste0(objname,"description")]] <- ret
+    r_data[[objname]] <- dat
+    r_data[[paste0(objname,"_descr")]] <- ret
   }
   r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
-
-
 }
+
+## Load Gene Lists example from package to r_data$genelist
+# loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, sep = "\n") {
+#
+#   if (Sys.info()["sysname"] == "Windows") {
+#     GeneList <- try(read.table("clipboard", header = header, sep = sep), silent = TRUE)
+#     GeneList <- t(GeneList)
+#   } else if (Sys.info()["sysname"] == "Darwin") {
+#     GeneList <- try(read.table(pipe("pbpaste"), header = header, sep = sep), silent = TRUE)
+#    GeneList <- t(GeneList)
+#   } else {
+#     GeneList <- try(read.table(text = input$load_cdata, header = header, sep = sep), silent = TRUE)
+#     GeneList <- t(GeneList)
+#   }
+#
+#   if (is(GeneList, 'try-error')) {
+#     if (ret == "") ret <- c("### Data in clipboard was not well formatted. Try exporting the data to csv format.")
+#     upload_error_handler(objname,ret)
+#   } else {
+#     ret <- paste0("### Clipboard data\nData copied from clipboard on", lubridate::now())
+#     r_data[[objname]] <- data.frame(GeneList, check.names = FALSE)
+#     #r_data[[paste0(objname,"description")]] <- ret
+#   }
+#   r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
+#
+#
+# }
 
 ###################
 

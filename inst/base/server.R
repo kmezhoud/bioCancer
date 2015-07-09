@@ -1,12 +1,19 @@
 shinyServer(function(input, output, session) {
   library(cgdsr)
+  library(plyr)
   library(coffeewheel)
   library(metabologram)
   library(tcltk)
   library(coffeewheel)
-  library(PSICQUIC)
+  #library(PSICQUIC)
   library(networkD3)
-  #library("Metabologram")
+  library(Biobase)
+  library(geNetClassifier)
+  #library("metabologram")
+  #library(AnnotationFuncs)
+  library("org.Hs.eg.db")
+  require(DOSE)
+  require(clusterProfiler)
 
   ##################
   # for cgdsr
@@ -49,8 +56,7 @@ shinyServer(function(input, output, session) {
   ##################
 
  #for(i in 1:length(GeneLists)){
-  r_data[["DNA_damage_Response"]] <- c("CHEK1", "CHEK2", "RAD51", "BRCA1", "BRCA2", "MLH1", "MSH2","ATM", "ATR", "MDC1", "PARP1", "FANCF")
-  r_data$genelist <- c("DNA_damage_Response")
+
   #r_data[[names(GeneLists)[i]]] <- c(r_data$genelists ,r_data$genelist)
 #}
 

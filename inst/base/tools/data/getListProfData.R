@@ -1,6 +1,6 @@
 getListProfData <- function(){
 
-  library(plyr)
+
 
   if(input$GeneListID != "Genes"){
     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))

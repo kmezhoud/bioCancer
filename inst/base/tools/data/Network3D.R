@@ -1,29 +1,3 @@
-#### Load necessary packages and data ####
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# forceNetwork(Links = Links_df, Nodes = Nodes_df, Source = "source",
-#              Target = "target", Value = "value", NodeID = "name",
-#              Group = "group", opacity = 0.8, zoom = TRUE)
-
-
-#data(MisLinks)
-#data(MisNodes)
-
-
-
-
 #### Server ####
 
   output$simpleNetwork <- renderSimpleNetwork({

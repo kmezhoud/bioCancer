@@ -139,7 +139,7 @@ show_data_snippet <- function(dat = input$dataset, nshow = 7, title = "") {
   n <- 0
   {if (is.character(dat) && length(dat) == 1) r_data[[dat]] else dat} %>%
     { n <<- nrow(.); . } %>%
-    slice(1:min(nshow,n)) %>%
+    dplyr::slice(1:min(nshow,n)) %>%
     mutate_each(funs(d2c)) %>%
     mutate_each(funs(trunc_char)) %>%
     xtable::xtable(.) %>%

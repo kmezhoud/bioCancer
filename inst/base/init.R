@@ -22,6 +22,8 @@ init_state <- function(r_data) {
   r_data[["diamonds_descr"]] <- attr(df,'description')
   r_data$datasetlist <- c("diamonds")
   r_data$url <- NULL
+  r_data[["DNA_damage_Response"]] <- c("CHEK1", "CHEK2", "RAD51", "BRCA1", "BRCA2", "MLH1", "MSH2","ATM", "ATR", "MDC1", "PARP1", "FANCF")
+  r_data$genelist <- c("DNA_damage_Response")
   r_data
 
 }
@@ -64,16 +66,20 @@ if (!r_local) {
 
 ## from Joe Cheng's https://github.com/jcheng5/shiny-resume/blob/master/session.R
 isolate({
-  prevSSUID <- parseQueryString(session$clientData$url_search)[["SSUID"]]
+  params <- parseQueryString(session$clientData$url_search)
+  prevSSUID <- params[["SSUID"]]
 })
 
 ## set the session id
-r_ssuid <-
-  if (r_local) {
-    "local"
+if (r_local) {
+  r_ssuid <- "local"
+} else {
+  if (is.null(prevSSUID)) {
+    r_ssuid <- shiny:::createUniqueId(16)
   } else {
-    ifelse(is.null(prevSSUID), shiny:::createUniqueId(5), prevSSUID)
+    r_ssuid <- prevSSUID
   }
+}
 
 ## (re)start the session and push the id into the url
 session$sendCustomMessage("session_start", r_ssuid)
@@ -86,12 +92,12 @@ if (exists("r_state") && exists("r_data")) {
 } else if (!is.null(r_sessions[[r_ssuid]]$r_data)) {
   r_data  <- do.call(reactiveValues, r_sessions[[r_ssuid]]$r_data)
   r_state <- r_sessions[[r_ssuid]]$r_state
-} else if (file.exists(paste0("~/r_sessions/r_", r_ssuid, ".rds"))) {
-  ## read from file if not in global
-  rs <- readRDS(paste0("~/r_sessions/r_", r_ssuid, ".rds"))
-  r_data  <- do.call(reactiveValues, rs$r_data)
-  r_state <- rs$r_state
-  rm(rs)
+# } else if (file.exists(paste0("~/r_sessions/r_", r_ssuid, ".rds"))) {
+#   ## read from file if not in global
+#   rs <- readRDS(paste0("~/r_sessions/r_", r_ssuid, ".rds"))
+#   r_data  <- do.call(reactiveValues, rs$r_data)
+#   r_state <- rs$r_state
+#   rm(rs)
 } else {
   r_data  <- init_state(reactiveValues())
   r_state <- list()
