@@ -42,7 +42,14 @@ output$ProfDataTable <- DT::renderDataTable({
   #x <<- GeneList
 
   ##### Get Profile Data for selected Case and Genetic Profile
-  dat <- getProfileData(cgds, GeneList, input$GenProfID,input$CasesID)
+  if(length(GeneList)>500){
+    dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="ProfData")
+  } else{
+    dat <- getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
+  }
+
+
+  #dat <- getProfileData(cgds, GeneList, input$GenProfID,input$CasesID)
 
 
   if(is.numeric(dat[2,2])){

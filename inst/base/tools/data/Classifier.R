@@ -71,7 +71,7 @@ output$Plot_enricher <- renderPlot({
   }
 
  ## clusterProfile package
-  ##GeneID = bitr(GeneList, fromType="SYMBOL", toType="ENTREZID", annoDb="org.Hs.eg.db")
+  #GeneID = bitr(GeneList, fromType="SYMBOL", toType="ENTREZID", annoDb="org.Hs.eg.db")[,2]
   ## Symbol2GeneID
   GeneID<- unname(unlist(translate(GeneList, org.Hs.egSYMBOL2EG)))
 

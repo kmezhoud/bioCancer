@@ -10,7 +10,7 @@ shinyServer(function(input, output, session) {
   library(Biobase)
   library(geNetClassifier)
   #library("metabologram")
-  #library(AnnotationFuncs)
+  library(AnnotationFuncs)
   library("org.Hs.eg.db")
   require(DOSE)
   require(clusterProfiler)

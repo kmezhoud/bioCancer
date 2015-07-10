@@ -29,10 +29,17 @@ getGenesClassifier <- reactive({
 
      #GenProf <- paste(checked_Studies[s],"_rna_seq_v2_mrna", sep = "")
      #Case    <- paste(checked_Studies[s],"_rna_seq_v2_mrna", sep = "")
+
      GenProf <- input$GenProfsIDClassifier[s]
      Case <- input$CasesIDClassifier[s]
 
-    ProfData<- getProfileData(cgds,GeneList, GenProf,Case)
+
+     if(length(GeneList)>500){
+       ProfData <- getMegaProfData(GeneList,GenProf,Case, Class="ProfData" )
+     } else{
+       ProfData<- getProfileData(cgds,GeneList, GenProf,Case)
+     }
+
     ProfData <- t(ProfData)
     #profdata <<- ProfData
     ##remove all NAs rows
