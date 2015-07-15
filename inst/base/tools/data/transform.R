@@ -292,7 +292,7 @@ transform_main <- reactive({
 
 	if (input$tr_change_type == "none") {
 	  if (not_available(input$tr_vars)) return(dat)
- 		dat <- select_(dat, .dots = input$tr_vars)
+ 		dat <- dplyr::select_(dat, .dots = input$tr_vars)
 	}
 
 	if (input$tr_change_type == "reorg_vars")
@@ -312,7 +312,7 @@ transform_main <- reactive({
 
 	if (!is.null(input$tr_vars)) {
 		if (!all(input$tr_vars %in% colnames(dat))) return()
-		dat <- select_(dat, .dots = input$tr_vars)
+		dat <- dplyr::select_(dat, .dots = input$tr_vars)
     vars <- colnames(dat)
 
 		if (input$tr_transfunction != 'none') {
@@ -459,7 +459,7 @@ observe({
   			rename_(.dots = setNames(input$tr_vars, colnames(dat)))
 		} else if (input$tr_change_type == 'reorg_vars') {
 	  	# r_data[[dataset]] %<>% .[,input$tr_reorg_vars]
-	  	r_data[[dataset]] %<>% select_(.dots = input$tr_reorg_vars)
+	  	r_data[[dataset]] %<>% dplyr::select_(.dots = input$tr_reorg_vars)
 	  } else {
 			.changedata(dat, colnames(dat), dataset = dataset)
 		}

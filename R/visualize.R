@@ -75,7 +75,7 @@ visualize <- function(dataset, xvar,
       if ("factor" %in% class(dat[,i])) {
         plots[[i]] <- plots[[i]] + geom_histogram()
       } else {
-        bw <- select_(dat,i) %>% range %>% diff(.)/bins
+        bw <- dplyr::select_(dat,i) %>% range %>% diff(.)/bins
         plots[[i]] <- plots[[i]] + geom_histogram(binwidth = bw)
       }
     }

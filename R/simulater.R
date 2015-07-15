@@ -195,7 +195,7 @@ plot.simulater <- function(x, shiny = FALSE, ...) {
 
   plot_list <- list()
   for (i in colnames(object)) {
-    dat <- select_(object, .dots = i)
+    dat <- dplyr::select_(object, .dots = i)
     if (sd(object[[i]]) == 0) {
       ## plot constants - keep??
       dat$sim <- 1:nrow(dat)
@@ -345,7 +345,7 @@ plot.repeater <- function(x,
   for (l in names(object$res)) {
     for (i in colnames(object$res[[l]]) %>% .[!. %in% byvar]) {
 
-      dat <- select_(object$res[[l]], .dots = i)
+      dat <- dplyr::select_(object$res[[l]], .dots = i)
       bw <- diff(range(dat[[1]], na.rm = TRUE)) / 20
 
       ## plot results

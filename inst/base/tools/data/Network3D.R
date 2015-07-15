@@ -1,6 +1,6 @@
 #### Server ####
 
-  output$simpleNetwork <- renderSimpleNetwork({
+  output$simpleNetwork <- networkD3::renderSimpleNetwork({
 
     if(input$GeneListID != "Genes"){
       GeneList <- unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep="")))
@@ -9,16 +9,16 @@
     withProgress(message = paste('Loading Interactions from',input$ProviderID[1],'... Waiting...'), value = 0.2, {
       Sys.sleep(0.25)
 
-    psicquic <- PSICQUIC()
-    tbl <- interactions(psicquic, id=GeneList, species="9606", provider = input$ProviderID ,quiet=TRUE)
+    psicquic <- PSICQUIC::PSICQUIC()
+    tbl <- PSICQUIC::interactions(psicquic, id=GeneList, species="9606", provider = input$ProviderID ,quiet=TRUE)
     if(nrow(tbl)==0){
         src <- c("N","O","_" ,"I", "n", "T", "E", "R", "A", "C", "t","i","o")
          target <- c("O","_","I" ,"n", "T", "E", "R", "A", "C", "t", "i","o","n!")
          networkData <- data.frame(src, target )
-         simpleNetwork(networkData, opacity = input$opacity,linkDistance = 30,fontSize = 17,textColour = "#ff0000",nodeClickColour = "#E34A33",linkColour = "white",nodeColour = "white",charge = -150)
+         networkD3::simpleNetwork(networkData, opacity = input$opacity,linkDistance = 30,fontSize = 17,textColour = "#ff0000",nodeClickColour = "#E34A33",linkColour = "white",nodeColour = "white",charge = -150)
 
     } else{
-    tbl <- addGeneInfo(IDMapper("9606"), tbl)
+    tbl <- PSICQUIC::addGeneInfo(PSICQUIC::IDMapper("9606"), tbl)
     tbl <- with(tbl, as.data.frame(table(detectionMethod, type, A.name, B.name, provider)))
     tbl <- subset(tbl, Freq > 0)
     tbl <- tbl[!duplicated(tbl[,c("A.name","B.name")]),]
@@ -27,12 +27,12 @@
     tbl <- tbl[apply(tbl[c(3,4)], 1, function(row) all(row !="-" )),]
     networkData <- data.frame(tbl$A.name, tbl$B.name)
 
-    simpleNetwork(networkData, opacity = input$opacity)
+    networkD3::simpleNetwork(networkData, opacity = input$opacity)
     }
     })
   })
 
-   output$forceNetwork <- renderForceNetwork({
+   output$forceNetwork <- networkD3::renderForceNetwork({
 
   if(input$GeneListID != "Genes"){
     GeneList <- unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep="")))
@@ -43,14 +43,14 @@
   withProgress(message = 'Loading Interactions. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
-    psicquic <- PSICQUIC()
-    tbl <- interactions(psicquic, id=GeneList,species="9606", provider = input$ProviderID,quiet=TRUE)
+    psicquic <- PSICQUIC::PSICQUIC()
+    tbl <- PSICQUIC::interactions(psicquic, id=GeneList,species="9606", provider = input$ProviderID,quiet=TRUE)
 
     if(nrow(tbl)==0){
 
 
     } else{
-      tbl <- addGeneInfo(IDMapper("9606"), tbl)
+      tbl <- PSICQUIC::addGeneInfo(PSICQUIC::IDMapper("9606"), tbl)
       tbl <- with(tbl, as.data.frame(table(detectionMethod, type, A.name, B.name, provider)))
       tbl <- subset(tbl, Freq > 0)
       tbl <- tbl[!duplicated(tbl[,c("A.name","B.name")]),]
@@ -71,7 +71,7 @@
   #nodes_df <<- Nodes_df
   #links_df <<- Links_df
 
-    forceNetwork(Links = Links_df, Nodes = Nodes_df, Source = "source",
+    networkD3::forceNetwork(Links = Links_df, Nodes = Nodes_df, Source = "source",
                  Target = "target", Value = "value", NodeID = "name",
                  Group = "group", opacity = input$opacity, zoom = TRUE, legend = TRUE)
 

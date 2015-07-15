@@ -47,7 +47,7 @@ explore <- function(dataset,
   if (!is_string(dataset)) dataset <- "-----"
 
   ## in case : was used
-  vars <- colnames(head(dat) %>% select_(.dots = vars))
+  vars <- colnames(head(dat) %>% dplyr::select_(.dots = vars))
 
   if (is_empty(byvar)) {
     res <- capture.output(getsummary(dat))
@@ -67,7 +67,7 @@ explore <- function(dataset,
     ##################################################
     ##################################################
     ##################################################
-    dat %<>% group_by_(.dots = byvar) %>% select(which(isNum)) %>% mutate_each("as.numeric")
+    dat %<>% group_by_(.dots = byvar) %>% dplyr::select(which(isNum)) %>% mutate_each("as.numeric")
     ##################################################
     ##################################################
     ##################################################
@@ -202,7 +202,7 @@ getsummary <- function(dat, dc = getclass(dat)) {
     cn <- names(dc)[isNum]
 
     cat("Summarize numeric variables:\n")
-    select(dat, which(isNum)) %>%
+    dplyr::select(dat, which(isNum)) %>%
       tidyr::gather_("variable", "values", cn) %>%
       group_by_("variable") %>%
       summarise_each(funs(n = length, missing = nmissing, mean = mean_rm,
@@ -216,24 +216,24 @@ getsummary <- function(dat, dc = getclass(dat)) {
   }
   if (sum(isFct) > 0) {
     cat("Summarize factors:\n")
-    select(dat, which(isFct)) %>% summary %>% print
+    dplyr::select(dat, which(isFct)) %>% summary %>% print
     cat("\n")
   }
   if (sum(isDate) > 0) {
     cat("Earliest dates:\n")
-    select(dat, which(isDate)) %>% summarise_each(funs(min)) %>% print
+    dplyr::select(dat, which(isDate)) %>% summarise_each(funs(min)) %>% print
     cat("\nFinal dates:\n")
-    select(dat, which(isDate)) %>% summarise_each(funs(max)) %>% print
+    dplyr::select(dat, which(isDate)) %>% summarise_each(funs(max)) %>% print
     cat("\n")
   }
   if (sum(isChar) > 0) {
     cat("Summarize character variables:\n")
-    select(dat, which(isChar)) %>% table %>% print
+    dplyr::select(dat, which(isChar)) %>% table %>% print
     cat("\n")
   }
   if (sum(isLogic) > 0) {
     cat("Summarize logical variables:\n")
-    select(dat, which(isLogic)) %>% tally %>% print
+    dplyr::select(dat, which(isLogic)) %>% tally %>% print
     cat("\n")
   }
 }

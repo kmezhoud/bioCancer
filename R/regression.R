@@ -53,9 +53,9 @@ regression <- function(dataset, dep_var, indep_var,
   reg_coeff$p.value[reg_coeff$p.value < .001] <- "< .001"
   colnames(reg_coeff) <- c("  ","coefficient","std.error","t.value","p.value"," ")
 
-  isFct <- sapply(select(dat,-1), is.factor)
+  isFct <- sapply(dplyr::select(dat,-1), is.factor)
   if (sum(isFct) > 0) {
-    for (i in names(select(dat,-1)[isFct]))
+    for (i in names(dplyr::select(dat,-1)[isFct]))
       reg_coeff$`  ` %<>% gsub(i, paste0(i," > "), .)
 
     rm(i, isFct)
@@ -181,7 +181,7 @@ summary.regression <- function(object,
       confint(object$model, level = conf_lev) %>%
         as.data.frame %>%
         set_colnames(c("Low","High")) %>%
-        cbind(select(object$reg_coeff,2),.) %>%
+        cbind(dplyr::select(object$reg_coeff,2),.) %>%
         round(3) %>%
         set_rownames(object$reg_coeff$`  `) %T>%
         { .$`+/-` <- (.$High - .$coefficient) } %>%
@@ -359,7 +359,7 @@ plot.regression <- function(x,
       confint(object$model, level = conf_lev) %>%
         data.frame %>%
         set_colnames(c("Low","High")) %>%
-        cbind(select(object$reg_coeff,2),.) %>%
+        cbind(dplyr::select(object$reg_coeff,2),.) %>%
         round(3) %>%
         set_rownames(object$reg_coeff$`  `) %>%
         { if (!intercept) .[-1,] else . } %>%
@@ -439,7 +439,7 @@ predict.regression <- function(object,
     dat_classes <- attr(object$model$term, "dataClasses")[-1]
     isFct <- dat_classes == "factor"
     isNum <- dat_classes == "numeric"
-    dat <- select_(object$model$model, .dots = vars)
+    dat <- dplyr::select_(object$model$model, .dots = vars)
 
     # based on http://stackoverflow.com/questions/19982938/how-to-find-the-most-frequent-values-across-several-columns-containing-factors
     max_freq <- function(x) names(which.max(table(x)))
@@ -465,7 +465,7 @@ predict.regression <- function(object,
   } else {
     pred <- getdata(pred_data)
     pred_names <- names(pred)
-    pred <- try(select_(pred, .dots = vars), silent = TRUE)
+    pred <- try(dplyr::select_(pred, .dots = vars), silent = TRUE)
     if (is(pred, 'try-error')) {
       cat("Model variables: ")
       cat(vars,"\n")

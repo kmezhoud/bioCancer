@@ -188,7 +188,7 @@ plot.conjoint <- function(x,
 the_table <- function(model, dat, indep_var) {
 	if (is.character(model)) return(list("PW" = "No attributes selected."))
 
-	attr <- select_(dat, .dots = indep_var)
+	attr <- dplyr::select_(dat, .dots = indep_var)
 	isFct <- sapply(attr, is.factor)
 	if (sum(isFct) < ncol(attr)) return(list("PW" = "Only factors can be used.", "IW" = "Only factors can be used."))
 	levs <- lapply(attr[,isFct, drop = FALSE],levels)

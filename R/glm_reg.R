@@ -66,9 +66,9 @@ glm_reg <- function(dataset, dep_var, indep_var,
   glm_coeff$p.value[glm_coeff$p.value < .001] <- "< .001"
   colnames(glm_coeff) <- c("  ","coefficient","std.error","z.value","p.value"," ")
 
-  isFct <- sapply(select(dat,-1), is.factor)
+  isFct <- sapply(dplyr::select(dat,-1), is.factor)
   if (sum(isFct) > 0) {
-    for (i in names(select(dat,-1)[isFct]))
+    for (i in names(dplyr::select(dat,-1)[isFct]))
       glm_coeff$`  ` %<>% gsub(i, paste0(i," > "), .)
 
     rm(i, isFct)
@@ -171,7 +171,7 @@ summary.glm_reg <- function(object,
       confint(object$model, level = conf_lev) %>%
         as.data.frame %>%
         set_colnames(c("Low","High")) %>%
-        cbind(select(object$glm_coeff,2),.) %>%
+        cbind(dplyr::select(object$glm_coeff,2),.) %>%
         set_rownames(object$glm_coeff$`  `) -> ci_tab
 
       if ("confint" %in% sum_check) {
@@ -293,7 +293,7 @@ plot.glm_reg <- function(x,
     plot_list[["coef"]] <- confint(object$model, level = conf_lev) %>%
           data.frame %>%
           set_colnames(c("Low","High")) %>%
-          cbind(select(object$glm_coeff,2),.) %>%
+          cbind(dplyr::select(object$glm_coeff,2),.) %>%
           set_rownames(object$glm_coeff$`  `) %>%
           { if (!intercept) .[-1,] else . } %>%
           mutate(variable = rownames(.)) %>%
@@ -392,7 +392,7 @@ predict.glm_reg <- function(object,
     dat_classes <- attr(object$model$term, "dataClasses")[-1]
     isFct <- dat_classes == "factor"
     isNum <- dat_classes == "numeric"
-    dat <- select_(object$model$model, .dots = vars)
+    dat <- dplyr::select_(object$model$model, .dots = vars)
 
     # based on http://stackoverflow.com/questions/19982938/how-to-find-the-most-frequent-values-across-several-columns-containing-factors
     max_freq <- function(x) names(which.max(table(x)))
@@ -418,7 +418,7 @@ predict.glm_reg <- function(object,
   } else {
     pred <- getdata(pred_data)
     pred_names <- names(pred)
-    pred <- try(select_(pred, .dots = vars), silent = TRUE)
+    pred <- try(dplyr::select_(pred, .dots = vars), silent = TRUE)
     if (is(pred, 'try-error')) {
       cat("Model variables: ")
       cat(vars,"\n")
@@ -431,7 +431,7 @@ predict.glm_reg <- function(object,
 
   pred_val <- try(predict(object$model, pred, type = 'response', se.fit = TRUE), silent = TRUE)
   if (!is(pred_val, 'try-error')) {
-    pred_val %<>% data.frame %>% select(1:2)
+    pred_val %<>% data.frame %>% dplyr::select(1:2)
     colnames(pred_val) <- c("Prediction","std.error")
     pred <- data.frame(pred, pred_val, check.names = FALSE)
 

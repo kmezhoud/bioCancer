@@ -93,7 +93,7 @@ getdata <- function(dataset,
 
   filt %<>% gsub("\\s","", .)
 
-  { if (!is_string(dataset)) {
+   if (!is_string(dataset)) {
       dataset
     } else if (exists("r_env")) {
       r_env$r_data[[dataset]]
@@ -111,14 +111,14 @@ getdata <- function(dataset,
   } %>% { if ("grouped_df" %in% class(.)) ungroup(.) else . } %>%     # ungroup data if needed
         { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
         { if (slice == "") . else slice_(., slice) } %>%
-        { if (vars[1] == "") . else select_(., .dots = vars) } %>%
+        { if (vars[1] == "") . else dplyr::select_(., .dots = vars) } %>%
         { if (na.rm) na.omit(.) else . }
         ## line below may cause an error https://github.com/hadley/dplyr/issues/219
         # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
 
   # use the below when all data is setup as tbl_df
   # } %>% { if (is.na(groups(.))) . else ungroup(.) } %>%     # ungroup data if needed
-}
+
 
 #' Change data
 #'

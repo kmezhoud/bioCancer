@@ -22,11 +22,11 @@ output$ui_NetworkSlider <- renderUI({
 
 ### Example 2 Provider
 output$ui_Provider <- renderUI({
-psicquic <- PSICQUIC()
-providers <- providers(psicquic)
+psicquic <- PSICQUIC::PSICQUIC()
+providers <- PSICQUIC::providers(psicquic)
 updateSelectizeInput(session, 'ProviderID', choices = providers, selected = NULL)
 
-  conditionalPanel("input.tabs_data == 'Network'",
+                    conditionalPanel("input.tabs_data == 'Network'",
 
                    selectizeInput('ProviderID', 'Select Data Bases', choices=NULL, multiple = TRUE)
                   )
@@ -43,10 +43,10 @@ observe({
   isolate({
     ## simple plot
     networkData <- data.frame(tbl[,"A.name"], tbl[,"B.name"] )
-    simpleNetwork(networkData)
+    networkD3::simpleNetwork(networkData)
     # save network
     library(magrittr)
-    simpleNetwork(networkData) %>%   saveNetwork(file = 'Net1.html')
+    networkD3::simpleNetwork(networkData) %>%   saveNetwork(file = 'Net1.html')
     #
     #       updateRadioButtons(session = session, inputId = "saveAs",
     #                          label = "Save data:",
