@@ -112,7 +112,9 @@ getdata <- function(dataset,
         { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
         { if (slice == "") . else slice_(., slice) } %>%
         { if (vars[1] == "") . else select_(., .dots = vars) } %>%
-        { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
+        { if (na.rm) na.omit(.) else . }
+        ## line below may cause an error https://github.com/hadley/dplyr/issues/219
+        # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
 
   # use the below when all data is setup as tbl_df
   # } %>% { if (is.na(groups(.))) . else ungroup(.) } %>%     # ungroup data if needed
@@ -196,9 +198,11 @@ viewdata <- function(dataset, vars = "", filt = "") {
                   onclick = "window.close();", "Stop")
     ),
     server = function(input, output, session) {
-      widget <- DT::datatable(dat, rownames = FALSE, style = "bootstrap",
+      widget <- DT::datatable(dat,
+        rownames = FALSE, style = "bootstrap",
         filter = list(position = "top", clear = FALSE, plain = FALSE),
         escape = FALSE,
+        # extensions = 'KeyTable'# ,
         options = list(
           search = list(regex = TRUE),
           columnDefs = list(list(className = 'dt-center', targets = "_all")),
@@ -208,7 +212,6 @@ viewdata <- function(dataset, vars = "", filt = "") {
           lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
         )
       )
-
       output$tbl <- DT::renderDataTable(widget)
       observeEvent(input$stop, {stopApp()})
     }

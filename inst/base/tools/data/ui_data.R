@@ -108,9 +108,9 @@ output$ui_data <- renderUI({
 
           tabPanel("Network",
                    h3("Simple Network"),
-                   simpleNetworkOutput("simpleNetwork"),
+                   networkD3::simpleNetworkOutput("simpleNetwork"),
                    h3("Forced Network"),
-                   forceNetworkOutput("forceNetwork")
+                   networkD3::forceNetworkOutput("forceNetwork")
           ),
           tabPanel("Classifier",
                    conditionalPanel("input.ClassID =='Samples'",
@@ -166,16 +166,25 @@ output$ui_data <- renderUI({
           ),
 
           tabPanel("Pivot", rpivotTable::rpivotTableOutput("pivotData")),
-          tabPanel(
-            "Explore", verbatimTextOutput("expl_summary"), plotOutput("expl_plots", width = "100%", height = "100%")
-          ),
-          tabPanel(
-            "Transform", htmlOutput("transform_data"), verbatimTextOutput("transform_summary")
-          ),
-          tabPanel(
-            "Combine", htmlOutput("cmb_possible"), htmlOutput("cmb_data1")
-          )
-          #        htmlOutput("cmb_data2"), htmlOutput("cmb_data"))
+# <<<<<<< HEAD
+#           tabPanel(
+#             "Explore", verbatimTextOutput("expl_summary"), plotOutput("expl_plots", width = "100%", height = "100%")
+#           ),
+#           tabPanel(
+#             "Transform", htmlOutput("transform_data"), verbatimTextOutput("transform_summary")
+#           ),
+#           tabPanel(
+#             "Combine", htmlOutput("cmb_possible"), htmlOutput("cmb_data1")
+#           )
+#           #        htmlOutput("cmb_data2"), htmlOutput("cmb_data"))
+# =======
+          tabPanel("Explore", verbatimTextOutput("expl_summary"), plotOutput("expl_plots", width = "100%", height = "100%")),
+          tabPanel("Transform", htmlOutput("transform_data"), verbatimTextOutput("transform_summary")),
+          tabPanel("Combine", htmlOutput("cmb_data1"), htmlOutput("cmb_data2"),
+                   htmlOutput("cmb_possible"), htmlOutput("cmb_data"))
+          # tabPanel("Simulate", verbatimTextOutput("sim_summary"),
+          #          plotOutput("sim_plots", width = "100%", height = "100%"))
+#>>>>>>> upstream/master
           # tabPanel("Generate", HTML("<h3>Generate input data for simulation and prediction</h3>")),
           # , selected = ifelse(is_empty(r_url$tab), "Manage", r_url$tab)
         )

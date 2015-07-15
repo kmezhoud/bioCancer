@@ -21,47 +21,22 @@ pkgs <- c(pkgs_cran, pkgs_gh)
 rm(pkgs_cran,pkgs_gh)
 
 ## list of function arguments
-expl_functions <- list("n" = "length", "mean" = "mean_rm", "median" = "median_rm",
-                       "min" = "min_rm", "max" = "max_rm", "25%" = "p25",
-                       "75%" = "p75", "sd" = "sd_rm", "se" = "serr",
-                       "cv" = "cv", "skew" = "skew", "kurtosis" = "kurtosi",
-                       "# missing" = "nmissing")
+expl_functions <-
+  list("n" = "length", "mean" = "mean_rm", "median" = "median_rm",
+       "sum" = "sum_rm", "min" = "min_rm", "max" = "max_rm", "25%" = "p25",
+       "75%" = "p75", "sd" = "sd_rm", "se" = "serr", "cv" = "cv",
+       "skew" = "skew", "kurtosis" = "kurtosi", "# missing" = "nmissing")
 
-#<<<<<<< HEAD
-# from: http://stackoverflow.com/questions/5076593/how-to-determine-if-you-have-an-internet-connection-in-r
-# hasIP <- function() {
-#   if (.Platform$OS.type == "windows") {
-#     ip <- system("ipconfig", intern = TRUE)
-#   } else {
-#     ip <- system("ifconfig", intern = TRUE)
-#   }
-#
-#   validIP <- "((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)[.]){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
-#   any(grep(validIP, ip))
-# }
-#
-# withMathJaxIP <- function(...) {
-#   if(hasIP()) {
-#     withMathJax(...)
-#   } else {
-#     tagList(...)
-#   }
-# }
 
-# withMathJaxIP <- withMathJax
-# withMathJaxIP <- function(...)  tagList(...)
-
-# if(havingIP()) {
-#   withMathJaxIP <- withMathJax
-# } else {
-#   withMathJaxIP <- function(...) tagList(...)
-# }
-# if(havingIP()) withMathJaxIP(.) else . }
 
 ## for report and code in menu R
 knitr::opts_knit$set(progress = TRUE)
 knitr::opts_chunk$set(echo=FALSE, comment=NA, cache=FALSE, message=FALSE,
-                      warning=FALSE, fig.path = "~/radiant_figures/")
+#<<<<<<< HEAD
+#                      warning=FALSE, fig.path = "~/radiant_figures/")
+#>>>>>>> upstream/master
+#=======
+                      warning=FALSE, fig.path = "~/r_figures/")
 #>>>>>>> upstream/master
 
 ## using DT rather than Shiny versions of datatable
@@ -73,11 +48,8 @@ datatable       <- DT::datatable
 if (Sys.getenv('SHINY_PORT') == "") {
 
   r_local <- TRUE
-#<<<<<<< HEAD
-#  options(shiny.maxRequestSize=-1) # no limit to filesize locally
-#=======
   options(shiny.maxRequestSize = -1) ## no limit to filesize locally
-#>>>>>>> upstream/master
+
 
   ## if radiant package was not loaded load dependencies
   if (!"package:radiant" %in% search())
@@ -85,13 +57,10 @@ if (Sys.getenv('SHINY_PORT') == "") {
 
 } else {
   r_local <- FALSE
-#<<<<<<< HEAD
-  #options(shiny.maxRequestSize=5*1024^2) # limit upload filesize on server (5MB)
-  #sapply(pkgs, require, character.only=TRUE)
-#=======
+
   options(shiny.maxRequestSize = 5 * 1024^2)   ## limit upload filesize on server (5MB)
   sapply(pkgs, require, character.only = TRUE)
-#>>>>>>> upstream/master
+
 }
 
 ## environment to hold session information
@@ -106,35 +75,59 @@ addResourcePath("figures", file.path(r_path,"base/tools/help/figures/"))
 addResourcePath("imgs", file.path(r_path,"base/www/imgs/"))
 addResourcePath("js", file.path(r_path,"base/www/js/"))
 
-#<<<<<<< HEAD
-### options used for debugging
-# options(shiny.trace = TRUE)
-# options(shiny.error=recover)
 
-### options used for debugging when warnings are given
-# options(warn=0)
-#=======
-## using local mathjax if available
-if ("MathJaxR" %in% installed.packages()[,"Package"]) {
+if (!r_local && "MathJaxR" %in% installed.packages()[,"Package"]) {
+
   addResourcePath("MathJax", file.path(system.file(package = "MathJaxR"), "MathJax/"))
   withMathJax <- MathJaxR::withMathJaxR
 }
 
-# if (r_local) {
-#   addResourcePath("MathJax", file.path(system.file(package = "MathJaxR"), "MathJax/"))
-#   withMathJax <- MathJaxR::withMathJaxR
-# }
+nav_ui <-
+  list(windowTitle = "Radiant", id = "nav_radiant", inverse = TRUE,
+       collapsible = TRUE, tabPanel("Data", withMathJax(), uiOutput("ui_data")))
 
-## options used for debugging
-# options(shiny.trace = TRUE)
-# options(shiny.error=recover)
-#>>>>>>> upstream/master
-# options(warn=2)
-# options(warn=0)
+shared_ui <-
+  tagList(
+    navbarMenu("R",
+               tabPanel("Report", uiOutput("report"), icon = icon("edit")),
+               tabPanel("Code", uiOutput("rcode"), icon = icon("code"))
+    ),
 
-# Windows or Mac
-# if (.Platform$OS.type == 'windows') {
-#   Sys.setlocale(category = 'LC_ALL','English_United States.1252')
-# } else {
-#   Sys.setlocale(category = 'LC_ALL','en_US.UTF-8')
-# }
+    navbarMenu(title = "", id = "State", icon = icon("save"),
+               tabPanel(downloadLink("saveStateNav", " Save state", class = "fa fa-download")),
+               # tabPanel(downloadLink("loadState", "Load state"), icon = icon("folder-open")),
+               tabPanel(actionLink("shareState", "Share state", icon = icon("share"))),
+               tabPanel("View state", uiOutput("view_state"), icon = icon("user"))
+    ),
+
+    ## works but badly aligned in navbar
+    # tabPanel(tags$a(id = "quitApp", href = "#", class = "action-button",
+    #          list(icon("power-off"), ""), onclick = "window.close();")),
+
+    ## stop app *and* close browser window
+    navbarMenu(title = "", id = "Stop", icon = icon("power-off"),
+               tabPanel(tags$a(id = "stop_radiant", href = "#", class = "action-button",
+                               list(icon("stop"), "Stop"), onclick = "window.close();")),
+               tabPanel(tags$a(id = "refresh_radiant", href = "#", class = "action-button",
+                               list(icon("refresh"), "Refresh"), onclick = "window.location.reload();")),
+               ## had to remove class = "action-button" to make this work
+               tabPanel(tags$a(id = "new_session", href = "./", target = "_blank",
+                               list(icon("plus"), "New session")))
+    ),
+
+    navbarMenu(title = "", id = "Help", icon = icon("question-circle"),
+               tabPanel("Help", uiOutput("help_quant"), icon = icon("question")),
+               tabPanel("Videos", uiOutput("help_videos"), icon = icon("film")),
+               tabPanel("About", uiOutput("help_about"), icon = icon("info")),
+               tabPanel(tags$a("", href = "http://vnijs.github.io/radiant/", target = "_blank",
+                               list(icon("globe"), "Radiant docs")))
+    ),
+
+    tags$head(
+      tags$script(src = "js/session.js"),
+      tags$script(src = "js/video_reset.js"),
+      tags$link(rel = "shortcut icon", href = "imgs/icon.png")
+    )
+  )
+
+

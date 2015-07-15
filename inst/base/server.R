@@ -1,18 +1,18 @@
 shinyServer(function(input, output, session) {
   library(PSICQUIC)
-  library(networkD3)
+  #library(networkD3)
   library(cgdsr)
   library(coffeewheel)
   library(metabologram)
   library(tcltk)
   library(coffeewheel)
-  library(Biobase)
+  #library(Biobase)
  library(geNetClassifier)
-  library(AnnotationFuncs)
-  library("org.Hs.eg.db")
-  require(DOSE)
+  #library(AnnotationFuncs)
+  #library("org.Hs.eg.db")
+  #require(DOSE)
   require(clusterProfiler)
- library(plyr)
+ #library(plyr)
 ####masked package
   #library(lubridate)
   #remove(list = conflicts(detail = TRUE)$.GlobalEnv)
@@ -54,6 +54,7 @@ shinyServer(function(input, output, session) {
 	source("radiant.R", local = TRUE)
 
 
+
   ##################
 
  #for(i in 1:length(GeneLists)){
@@ -69,6 +70,10 @@ shinyServer(function(input, output, session) {
   })
 
   ##################
+
+#   url_current <- function(session = session) {
+#     with(session$clientdata, paste0(url_protocol, url_hostname, ifelse(url_port == "", "", paste0(":", url_port)), url_pathname))
+#   }
 
 	# for shiny-server
  	if (!"package:radiant" %in% search()) {

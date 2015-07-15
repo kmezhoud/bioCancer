@@ -20,10 +20,10 @@ output$ui_clipboard_load <- renderUI({
   if (r_local) {
     actionButton('loadClipData', 'Paste data')
   } else {
-    tagList(tags$textarea(class="form-control",
-      id="load_cdata", rows="5"
-    ),
-    actionButton('loadClipData', 'Paste data'))
+    tagList(
+      tags$textarea(class="form-control", id="load_cdata", rows="5"),
+      actionButton('loadClipData', 'Paste data')
+    )
   }
 })
 
@@ -87,7 +87,7 @@ output$ui_Manage <- renderUI({
       ),
       conditionalPanel(condition = "input.saveAs == 'state'",
         HTML("<label>Save current app state:</label><br/>"),
-        downloadButton('downloadState', 'Save')
+        downloadButton('saveState', 'Save')
       )
     ),
     wellPanel(
@@ -298,8 +298,8 @@ saveState <- function(filename) {
   })
 }
 
-output$downloadState <- downloadHandler(
-  filename = function() { paste0("RadiantState-",Sys.Date(),".rda") },
+output$saveState <- downloadHandler(
+  filename = function() { paste0("radiant-state-",Sys.Date(),".rda") },
   content = function(file) {
     saveState(file)
   }

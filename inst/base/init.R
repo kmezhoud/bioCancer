@@ -10,6 +10,7 @@ init_state <- function(r_data) {
   r_data$plot_width <- 600
 
   r_data$manual <- FALSE
+  r_data$vim_keys <- FALSE
 
   ## Joe Cheng: "Datasets can change over time (i.e. the changedata function).
   ## Therefore, the data need to be a reactive value so the other reactive
@@ -60,8 +61,25 @@ if (!r_local) {
       state_email(c("Session size (MB):",session_size,"\nSession ages in days:",ages))
   }
 
+  fl <- list.files(normalizePath("~/r_sessions/"),
+                 pattern = "*.rds", full.names = TRUE)
+
+
+
+  remove_session_files <- function(st = Sys.time()) {
+    fl <- list.files(normalizePath("~/r_sessions/"), pattern = "*.rds",
+                     full.names = TRUE)
+
+    for (f in fl) {
+      if (difftime(st, file.mtime(f), units = "days") > 7)
+        unlink(f, force = TRUE)
+    }
+  }
+
+  remove_session_files()
+
   ## are there any state files dumped more than 1 minute ago?
-  check_age_and_size()
+  # check_age_and_size()
 }
 
 ## from Joe Cheng's https://github.com/jcheng5/shiny-resume/blob/master/session.R
@@ -71,15 +89,22 @@ isolate({
 })
 
 ## set the session id
-if (r_local) {
-  r_ssuid <- "local"
-} else {
-  if (is.null(prevSSUID)) {
-    r_ssuid <- shiny:::createUniqueId(16)
+# <<<<<<< HEAD
+# if (r_local) {
+#   r_ssuid <- "local"
+# } else {
+#   if (is.null(prevSSUID)) {
+#     r_ssuid <- shiny:::createUniqueId(16)
+# =======
+r_ssuid <-
+  if (r_local) {
+    # "local"
+    ifelse(is.null(prevSSUID), paste0("local-",shiny:::createUniqueId(3)), prevSSUID)
+#>>>>>>> upstream/master
   } else {
     r_ssuid <- prevSSUID
   }
-}
+#}
 
 ## (re)start the session and push the id into the url
 session$sendCustomMessage("session_start", r_ssuid)
@@ -92,12 +117,26 @@ if (exists("r_state") && exists("r_data")) {
 } else if (!is.null(r_sessions[[r_ssuid]]$r_data)) {
   r_data  <- do.call(reactiveValues, r_sessions[[r_ssuid]]$r_data)
   r_state <- r_sessions[[r_ssuid]]$r_state
+#<<<<<<< HEAD
 # } else if (file.exists(paste0("~/r_sessions/r_", r_ssuid, ".rds"))) {
 #   ## read from file if not in global
 #   rs <- readRDS(paste0("~/r_sessions/r_", r_ssuid, ".rds"))
 #   r_data  <- do.call(reactiveValues, rs$r_data)
 #   r_state <- rs$r_state
 #   rm(rs)
+#=======
+} else if (file.exists(paste0("~/r_sessions/r_", r_ssuid, ".rds"))) {
+  ## read from file if not in global
+  rs <- readRDS(paste0("~/r_sessions/r_", r_ssuid, ".rds"))
+
+  if (length(rs$r_data) == 0)
+    r_data  <- init_state(reactiveValues())
+  else
+    r_data  <- do.call(reactiveValues, rs$r_data)
+
+  r_state <- rs$r_state
+  rm(rs)
+#>>>>>>> upstream/master
 } else {
   r_data  <- init_state(reactiveValues())
   r_state <- list()
@@ -126,106 +165,92 @@ if (r_local) {
   }
 }
 
+#####################################
+## url processing to share results
+#####################################
+
 ## relevant links
 # http://stackoverflow.com/questions/25306519/shiny-saving-url-state-subpages-and-tabs/25385474#25385474
 # https://groups.google.com/forum/#!topic/shiny-discuss/Xgxq08N8HBE
 # https://gist.github.com/jcheng5/5427d6f264408abf3049
 
-#####################################
-## url stuff
-#####################################
+## try http://127.0.0.1:3174/?url=decide/simulate/&SSUID=local
 
-url_patterns <- list(
-  "data/"         = list("nav_radiant" = "Data", "tabs_data" = "Manage"),
-  "data/view/"    = list("nav_radiant" = "Data", "tabs_data" = "View"),
-  "data/combine/" = list("nav_radiant" = "Data", "tabs_data" = "Combine"),
-  "sample/sampling/"    = list("nav_radiant" = "Sampling"),
-  "sample/sample-size/" = list("nav_radiant" = "Sample size"),
+url_list <-
+  list("Data" = list("tabs_data" = list("Manage"    = "data/",
+                                        "View"      = "data/view/",
+                                        "Visualize" = "data/visualize/",
+                                        "Pivot"     = "data/pivot/",
+                                        "Explore"   = "data/explore/",
+                                        "Transform" = "data/transform/",
+                                        "Combine"   = "data/combine/")),
 
-  "base/single-mean/"        = list("nav_radiant" = "Single mean", "tabs_single_mean" = "Summary"),
-  "base/single-mean/plot/"   = list("nav_radiant" = "Single mean", "tabs_single_mean" = "Plot"),
-  "base/compare-means/"      = list("nav_radiant" = "Compare means", "tabs_compare_means" = "Summary"),
-  "base/compare-means/plot/" = list("nav_radiant" = "Compare means", "tabs_compare_means" = "Plot"),
+       "Sampling"    = "sample/sampling/",
+       "Sample size" = "sample/sample-size/",
 
-  "regression/correlation/"      = list("nav_radiant" = "Correlation"),
-  "regression/correlation/plot/" = list("nav_radiant" = "Correlation", "tabs_correlation" = "Plot"),
-  "regression/linear/"           = list("nav_radiant" = "Linear (OLS)"),
-  "regression/linear/predict/"   = list("nav_radiant" = "Linear (OLS)", "tabs_regression" = "Predict"),
-  "regression/linear/plot/"      = list("nav_radiant" = "Linear (OLS)", "tabs_regression" = "Plot"),
-  "regression/glm/"              = list("nav_radiant" = "GLM"),
-  "regression/glm/predict/"      = list("nav_radiant" = "GLM", "tabs_glm_reg" = "Predict"),
-  "regression/glm/plot/"         = list("nav_radiant" = "GLM", "tabs_glm_reg" = "Plot")
-)
+       "Single mean" = list("tabs_single_mean" = list("Summary" = "base/single-mean/",
+                                                      "Plot"    = "base/single-mean/plot/")),
 
-# url_patterns <- list(
-#   "base/single-mean/" = list("nav_radiant" = "Single mean", "tabs_single_mean" = "Summary"),
-#   "base/single-mean/plot/" = list("nav_radiant" = "Single mean", "tabs_single_mean" = "Plot"),
-#   "regression/correlation/" = list("nav_radiant" = "Correlation", "tabs_correlation" = "Summary"),
-#   "regression/correlation/plot/" = list("nav_radiant" = "Correlation", "tabs_correlation" = "Plot"),
-#   "sample/sampling/"    = list("nav_radiant" = "Sampling"),
-#   "sample/sample-size/" = list("nav_radiant" = "Sample size")
-# )
+       "Compare means" = list("tabs_compare_means" = list("Summary" = "base/compare-means/",
+                                                          "Plot"    = "base/compare-means/plot/")),
 
-# library(data.table);
-# url_patterns
-# urlDT <- rbindlist(url_patterns,fill=TRUE); urlDT[,patt:=names(url_patterns)]
-# urlDT
+       "Single proportion" = list("tabs_single_prop" = list("Summary" = "base/single-prop/",
+                                                            "Plot"    = "base/single-prop/plot/")),
 
-# url_list <-
-#   list("Data" = list("tabs_data" =
-#                      list("Manage" = "data/",
-#                           "View" = "data/view/",
-#                           "Combine" = "data/combine/")),
-#        "Single mean" = list("tabs_single_mean" =
-#                             list("Summary" = "base/single-mean/",
-#                                  "Plot" = "base/single-mean/plot/")),
-#        "Correlation" = list("tabs_correlation" =
-#                             list("Summary" = "regression/correlation/",
-#                                  "Plot" = "regression/correlation/plot/")),
-#        "Sampling" = "sample/sampling/",
-#        "Sample size"= "sample/sample-size/")
+       "Compare proportions" = list("tabs_compare_props" = list("Summary" = "base/compare-props/",
+                                                                "Plot"    = "base/compare-props/plot/")),
 
-# names(url_list)
-# length(url_list[["Single mean"]])
-# is.list(url_list[["Single mean"]])
-# length(url_list[["Sampling"]])
+       "Cross-tabs" = list("tabs_cross_tabs" = list("Summary" = "base/cross-tabs/",
+                                                     "Plot"    = "base/cross-tabs/plot/")),
 
-# url_patterns_re <- list()
-# for (i in names(url_list)) {
-#   res <- url_list[[i]]
-#   if(!is.list(res)) {
-#     url_patterns_re[[res]] <- list("nav_radiant" = i)
-#   } else {
-#     tabs <- names(res)
-#     for (j in names(res[[tabs]])) {
-#       url <- res[[tabs]][[j]]
-#       url_patterns_re[[url]] <- setNames(list(i,j), c("nav_radiant",tabs))
-#     }
-#   }
+       "Correlation" = list("tabs_correlation" = list("Summary" = "regression/correlation/",
+                                                      "Plot"    = "regression/correlation/plot/")),
+
+       "Linear (OLS)" = list("tabs_regression" = list("Summary" = "regression/linear/",
+                                                      "Predict" = "regression/linear/predict/",
+                                                      "Plot"    = "regression/linear/plot/")),
+
+       "GLM" = list("tabs_glm_reg" = list("Summary" = "regression/glm/",
+                                          "Predict" = "regression/glm/predict/",
+                                          "Plot"    = "regression/glm/plot/")),
+
+       "Simulate"    = list("tabs_simulate"    = list("Model"   = "decide/simulate/",
+                                                      "Repeat"  = "decide/simulate/repeat/"))
+  )
+
+## generate url patterns for navigation
+url_patterns <- list()
+for (i in names(url_list)) {
+  res <- url_list[[i]]
+  if(!is.list(res)) {
+    url_patterns[[res]] <- list("nav_radiant" = i)
+  } else {
+    tabs <- names(res)
+    for (j in names(res[[tabs]])) {
+      url <- res[[tabs]][[j]]
+      url_patterns[[url]] <- setNames(list(i,j), c("nav_radiant",tabs))
+    }
+  }
+}
+
+## try http://127.0.0.1:3174/?url=decide/simulate/&SSUID=local
+# unlink("~/gh/radiant/tests/urls/urls.Rmd")
+# urls <- grep("/", url_list %>% unlist, value = TRUE)
+# for(u in urls) {
+#   cat(paste0("http://127.0.0.1:6452/?url=", u, "&SSUID=local<br>\n"),
+#       file = "~/gh/radiant/tests/urls/urls.Rmd", append = TRUE)
 # }
+# knitr::knit2html("~/gh/radiant/tests/urls/urls.Rmd", output = "~/gh/radiant/tests/urls/urls.html")
 
-# all(unlist(url_patterns) == unlist(url_patterns_re))
+## environment to results from code run through knitr
+# r_knitr <- new.env(parent = emptyenv())
+if (is.null(isolate(r_data$r_knitr))) {
+  isolate({
+    r_data$r_knitr <- if (exists("r_env")) new.env(parent = r_env) else new.env()
+  })
+}
 
-# observe({
-#   url_query <- parseQueryString(session$clientData$url_search)
-#   if (!"url" %in% names(url_query)) return()
-#   isolate(r_data$url <- url_query$url)
-# })
-
-# observe({
-  # reactlist <- reactiveValuesToList(input)
-  # reactvals <- grep("^ss-|^shiny-", names(reactlist), value=TRUE, invert=TRUE) # strip shiny related URL parameters
-  # reactstr <- lapply(reactlist[reactvals], as.character) # handle conversion of special data types
-  # input$nav_radiant
-  # session$sendCustomMessage(type='setURL', reactstr)
-# })
-
-# session <- list()
-# session$clientData <- list()
-# session$clientData$url_search <- "?url=data/combine/&SSUID=local"
-# session$clientData$url_search <- "?data/combine/&SSUID=local"
-# parseQueryString(session$clientData$url_search) %>% {.[which(names(.) %in% names(url_patterns))] %>% names}
-
+## parse the url and use updateTabsetPanel to navigate to the desired tab
 observe({
   url_query <- parseQueryString(session$clientData$url_search)
   if ("url" %in% names(url_query)) {
@@ -236,18 +261,52 @@ observe({
 
   ## create an observer and suspend when done
   url_observe <- observe({
-    if(is.null(input$dataset)) return()
+    if (is.null(input$dataset)) return()
     url <- url_patterns[[r_data$url]]
     if (is.null(url)) {
       ## if pattern not found suspend observer
       url_observe$suspend()
       return()
     }
-    for(u in names(url)) {
-      if(is.null(input[[u]])) return()
-      if(input[[u]] != url[[u]])
+    ## move through the url
+    for (u in names(url)) {
+      if (is.null(input[[u]])) return()
+      if (input[[u]] != url[[u]])
         updateTabsetPanel(session, u, selected = url[[u]])
-      if(names(tail(url,1)) == u) url_observe$suspend()
+      if (names(tail(url,1)) == u) url_observe$suspend()
     }
   })
 })
+
+## keeping track of the main tab we are on
+observe({
+  if (is_empty(input$nav_radiant)) return()
+  if (input$nav_radiant != "Stop" && input$nav_radiant != "Refresh")
+    r_data$nav_radiant <- input$nav_radiant
+})
+
+## Jump to the page you were on
+## only goes two layers deep at this point
+if (!is.null(r_state$nav_radiant)) {
+
+  ## don't return-to-the-spot if that was quit or stop
+  if (r_state$nav_radiant %in% c("Refresh","Stop")) return()
+
+  ## naming the observer so we can suspend it when done
+  nav_observe <- observe({
+    ## needed to avoid errors when no data is available yet
+    if(is.null(input$dataset)) return()
+    updateTabsetPanel(session, "nav_radiant", selected = r_state$nav_radiant)
+
+    ## check if shiny set the main tab to the desired value
+    if (is.null(input$nav_radiant)) return()
+    if (input$nav_radiant != r_state$nav_radiant) return()
+    nav_radiant_tab <- url_list[[r_state$nav_radiant]] %>% names
+
+    if (!is.null(nav_radiant_tab) && !is.null(r_state[[nav_radiant_tab]]))
+      updateTabsetPanel(session, nav_radiant_tab, selected = r_state[[nav_radiant_tab]])
+
+    ## once you arrive at the desired tab suspend the observer
+    nav_observe$suspend()
+  })
+}
