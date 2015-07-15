@@ -22,6 +22,9 @@
     tbl <- with(tbl, as.data.frame(table(detectionMethod, type, A.name, B.name, provider)))
     tbl <- subset(tbl, Freq > 0)
     tbl <- tbl[!duplicated(tbl[,c("A.name","B.name")]),]
+    tbL <<- tbl
+    ## remove "-"
+    tbl <- tbl[apply(tbl[c(3,4)], 1, function(row) all(row !="-" )),]
     networkData <- data.frame(tbl$A.name, tbl$B.name)
 
     simpleNetwork(networkData, opacity = input$opacity)
@@ -51,6 +54,9 @@
       tbl <- with(tbl, as.data.frame(table(detectionMethod, type, A.name, B.name, provider)))
       tbl <- subset(tbl, Freq > 0)
       tbl <- tbl[!duplicated(tbl[,c("A.name","B.name")]),]
+      tBl <<- tbl
+      tbl <- tbl[apply(tbl[c(3,4)], 1, function(row) all(row !="-" )),]
+
 
       ### The column 2 of Links_df "Sampling" is arbitrary information: Kind of interaction (Edge style)
   Links_df <- as.data.frame(cbind(as.numeric(tbl$A.name),as.numeric(tbl$B.name),
@@ -62,11 +68,15 @@
   Nodes_df <- data.frame(tbl[,"A.name"], sample(1:4, length(tbl[,"A.name"]), replace = TRUE),
                                          sample(1:100,length(tbl[,"A.name"]) , replace = TRUE))
   names(Nodes_df) <- c("name", "group", "size")
+  #nodes_df <<- Nodes_df
+  #links_df <<- Links_df
 
     forceNetwork(Links = Links_df, Nodes = Nodes_df, Source = "source",
                  Target = "target", Value = "value", NodeID = "name",
                  Group = "group", opacity = input$opacity, zoom = TRUE, legend = TRUE)
-   }
+
+
+  }
 
   })
   })

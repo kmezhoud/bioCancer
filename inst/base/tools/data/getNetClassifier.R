@@ -133,7 +133,7 @@ getGenesClassifier <- reactive({
 
  GenesClassDetails <- geNetClassifier::genesDetails(signGenesRank_DiseaseType)
  r_data[['GenesClassDetails']] <- GenesClassDetails
-
+ GenesClassDetails <<- GenesClassDetails
   print("getting Genes Details...")
 
   GenesClassTab <- do.call(rbind.data.frame, GenesClassDetails)

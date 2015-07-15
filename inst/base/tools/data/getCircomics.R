@@ -1,5 +1,5 @@
 ####### Functions to get tree for coffeeWheel
-  attriColorValue <- function(Value, df, colors=c(a,b,c, d,e)){
+  attriColorValue <- function(Value, df, colors=c(a,b,c, d,e),feet){
 
     #df <- df *100
     df[is.na(df)] <- 0
@@ -13,7 +13,7 @@
     Min <- min(df, na.rm=TRUE)
     }
     my.colors <- colorRampPalette(colors)
-    color.df<-data.frame(COLOR_VALUE=seq(Min,Max,0.1), color.name=my.colors(length(seq(Min,Max,0.1)))) #generates Max-Min colors from the color ramp
+    color.df<-data.frame(COLOR_VALUE=seq(Min,Max,feet), color.name=my.colors(length(seq(Min,Max,feet)))) #generates Max-Min colors from the color ramp
     colorRef <- color.df[which(color.df[,1]==Value),2]
     return(colorRef)
   }
@@ -49,10 +49,10 @@
 
     ## Set colors if all value are 0 set only black
      if(all(dfMeansOrCNA=="0")||all(dfMeansOrCNA=="NaN")){
-       colorls <- lapply(dfMeansOrCNA, function(x) attriColorValue(x, dfMeansOrCNA, colors=c("white")))
+       colorls <- lapply(dfMeansOrCNA, function(x) attriColorValue(x, dfMeansOrCNA, colors=c("white"), feet=0.1))
        print("setting black color for empty data...")
      }else{
-     colorls <- lapply(dfMeansOrCNA, function(x) attriColorValue(x, dfMeansOrCNA, colors=c("blue3","cyan3","white","yellow","red")))
+     colorls <- lapply(dfMeansOrCNA, function(x) attriColorValue(x, dfMeansOrCNA, colors=c("blue3","cyan3","white","yellow","red"), feet=0.1))
      }
     ## extract disease name
     disease_name <- unlist(lapply(strsplit(capture.output(substitute(df)), "\\$"),tail, 1))

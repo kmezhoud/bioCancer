@@ -23,6 +23,8 @@ output$list_GenProfs <- renderUI({
 })
 
 TableCases <- reactive({
+  withProgress(message = 'loading Sample size...', value = 0.1, {
+  Sys.sleep(0.25)
   dat <- data.frame(Studies=NA,Case=NA, GenProf=NA)
   checked_Studies <- input$StudiesIDClassifier
   listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,3])
@@ -37,6 +39,7 @@ TableCases <- reactive({
         dat[s,] <- c(checked_Studies[s], matchedCases[s], matchedGenProf[s])
   }
   return(dat)
+  })
 })
 
 output$viewTableCases <- renderTable({

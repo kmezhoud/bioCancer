@@ -48,11 +48,11 @@ output$ui_data <- renderUI({
         conditionalPanel("input.tabs_data == 'ProfData'", uiOutput("ui_ProfData")),
        conditionalPanel("input.tabs_data == 'MutData'", uiOutput("ui_MutData")),
        conditionalPanel("input.tabs_data == 'Circomics'", uiOutput("ui_Circomics")),
-#         conditionalPanel("input.tabs_data=='Network'",
-#                          wellPanel(
-#                            uiOutput("ui_NetworkSlider"),
-#                            uiOutput("ui_Provider")
-#                          )),
+        conditionalPanel("input.tabs_data=='Network'",
+                         wellPanel(
+                           uiOutput("ui_NetworkSlider"),
+                           uiOutput("ui_Provider")
+                         )),
         conditionalPanel("input.tabs_data=='Classifier'",
 
                          uiOutput("ui_Classifier")
@@ -106,12 +106,12 @@ output$ui_data <- renderUI({
 
           ),
 
-#           tabPanel("Network",
-#                    h3("Simple Network"),
-#                    simpleNetworkOutput("simpleNetwork"),
-#                    h3("Forced Network"),
-#                    forceNetworkOutput("forceNetwork")
-#           ),
+          tabPanel("Network",
+                   h3("Simple Network"),
+                   simpleNetworkOutput("simpleNetwork"),
+                   h3("Forced Network"),
+                   forceNetworkOutput("forceNetwork")
+          ),
           tabPanel("Classifier",
                    conditionalPanel("input.ClassID =='Samples'",
                                     h5("Enter sampling size smaller than in Studies"),
