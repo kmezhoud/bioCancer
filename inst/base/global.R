@@ -27,17 +27,11 @@ expl_functions <-
        "75%" = "p75", "sd" = "sd_rm", "se" = "serr", "cv" = "cv",
        "skew" = "skew", "kurtosis" = "kurtosi", "# missing" = "nmissing")
 
-
-
 ## for report and code in menu R
 knitr::opts_knit$set(progress = TRUE)
 knitr::opts_chunk$set(echo=FALSE, comment=NA, cache=FALSE, message=FALSE,
-#<<<<<<< HEAD
-#                      warning=FALSE, fig.path = "~/radiant_figures/")
-#>>>>>>> upstream/master
-#=======
                       warning=FALSE, fig.path = "~/r_figures/")
-#>>>>>>> upstream/master
+
 
 ## using DT rather than Shiny versions of datatable
 renderDataTable <- DT::renderDataTable
@@ -75,9 +69,7 @@ addResourcePath("figures", file.path(r_path,"base/tools/help/figures/"))
 addResourcePath("imgs", file.path(r_path,"base/www/imgs/"))
 addResourcePath("js", file.path(r_path,"base/www/js/"))
 
-
 if (!r_local && "MathJaxR" %in% installed.packages()[,"Package"]) {
-
   addResourcePath("MathJax", file.path(system.file(package = "MathJaxR"), "MathJax/"))
   withMathJax <- MathJaxR::withMathJaxR
 }

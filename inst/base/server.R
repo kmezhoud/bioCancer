@@ -54,22 +54,13 @@ shinyServer(function(input, output, session) {
 	source("radiant.R", local = TRUE)
 
 
-
-  ##################
-
- #for(i in 1:length(GeneLists)){
-
-  #r_data[[names(GeneLists)[i]]] <- c(r_data$genelists ,r_data$genelist)
-#}
-
-
   ## get Gene List in side bar panel
 
   output$ui_GeneList <- renderUI({
     selectInput("GeneListID", "Gene List:", r_data$genelist)
   })
 
-  ##################
+
 
 #   url_current <- function(session = session) {
 #     with(session$clientdata, paste0(url_protocol, url_hostname, ifelse(url_port == "", "", paste0(":", url_port)), url_pathname))

@@ -1,27 +1,3 @@
-#
-# shinyUI(navbarPage("CancerPortal", windowTitle = "CancerPortal", id = "nav_radiant",
-#         inverse = TRUE, collapsible = TRUE,
-#
-#   tabPanel("Data", withMathJax(), uiOutput('ui_data')),
-#
-#   navbarMenu("R",
-#     tabPanel("Report", uiOutput("report")),
-#     tabPanel("Code", uiOutput("rcode"))
-#   ),
-#
-#   tabPanel("Quit", uiOutput("savequit")),
-#
-#   navbarMenu("Help",
-#     tabPanel("Cancer Portal help", uiOutput("help_base")),
-#     #tabPanel("Radiant videos", uiOutput("help_videos")),
-#     tabPanel("About", uiOutput("help_about"))
-#   ),
-#
-#
-#   tags$head(tags$script(src="js/session.js"),
-#             tags$link(rel="shortcut icon", href="imgs/icon.png"))
-# ))
-
 ## ui for base radiant
 shinyUI(
   do.call(navbarPage, c("Radiant", nav_ui, shared_ui))

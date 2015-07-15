@@ -89,18 +89,10 @@ isolate({
 })
 
 ## set the session id
-# <<<<<<< HEAD
-# if (r_local) {
-#   r_ssuid <- "local"
-# } else {
-#   if (is.null(prevSSUID)) {
-#     r_ssuid <- shiny:::createUniqueId(16)
-# =======
 r_ssuid <-
   if (r_local) {
     # "local"
     ifelse(is.null(prevSSUID), paste0("local-",shiny:::createUniqueId(3)), prevSSUID)
-#>>>>>>> upstream/master
   } else {
     r_ssuid <- prevSSUID
   }
@@ -117,14 +109,6 @@ if (exists("r_state") && exists("r_data")) {
 } else if (!is.null(r_sessions[[r_ssuid]]$r_data)) {
   r_data  <- do.call(reactiveValues, r_sessions[[r_ssuid]]$r_data)
   r_state <- r_sessions[[r_ssuid]]$r_state
-#<<<<<<< HEAD
-# } else if (file.exists(paste0("~/r_sessions/r_", r_ssuid, ".rds"))) {
-#   ## read from file if not in global
-#   rs <- readRDS(paste0("~/r_sessions/r_", r_ssuid, ".rds"))
-#   r_data  <- do.call(reactiveValues, rs$r_data)
-#   r_state <- rs$r_state
-#   rm(rs)
-#=======
 } else if (file.exists(paste0("~/r_sessions/r_", r_ssuid, ".rds"))) {
   ## read from file if not in global
   rs <- readRDS(paste0("~/r_sessions/r_", r_ssuid, ".rds"))
@@ -136,7 +120,6 @@ if (exists("r_state") && exists("r_data")) {
 
   r_state <- rs$r_state
   rm(rs)
-#>>>>>>> upstream/master
 } else {
   r_data  <- init_state(reactiveValues())
   r_state <- list()
