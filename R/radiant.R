@@ -213,7 +213,7 @@ viewdata <- function(dataset, vars = "", filt = "") {
         )
       )
       output$tbl <- DT::renderDataTable(widget)
-      observeEvent(input$stop, {stopApp()})
+      observeEvent(input$stop, {stopApp("Stopped viewdata")})
     }
   )
 }
@@ -617,9 +617,24 @@ state_multiple <- function(inputvar, vals, init = character(0)) {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
   r_state %>%
     { if (is.null(.[[inputvar]]))
-        # "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
+        ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
         vals[vals %in% init]
       else
         vals[vals %in% .[[inputvar]]]
     }
+}
+
+#' Print/draw method for grobs produced by gridExtra
+#'
+#' @details See \url{https://github.com/baptiste/gridextra/blob/master/inst/testing/shiny.R}
+#'
+#' @param x a gtable object
+#' @param ... further arguments passed to or from other methods
+#'
+#' @return A plot
+#'
+#' @export
+print.gtable <- function(x, ...) {
+  if (is.ggplot(x)) x <- ggplotGrob(x)
+  grid::grid.draw(x)
 }

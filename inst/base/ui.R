@@ -1,5 +1,5 @@
 ## ui for base radiant
 shinyUI(
-  do.call(navbarPage, c("Radiant", nav_ui, shared_ui))
+  do.call(navbarPage, c("CancerPortal", nav_ui, shared_ui))
 )
 
