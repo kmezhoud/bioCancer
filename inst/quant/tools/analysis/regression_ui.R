@@ -91,8 +91,16 @@ output$ui_reg_indep_var <- renderUI({
   vars <- varnames()[notChar]
   if (not_available(input$reg_dep_var)) vars <- character(0)
   if (length(vars) > 0 ) vars <- vars[-which(vars == input$reg_dep_var)]
+
+  ## if possible, keep current indep value when depvar changes
+  isolate({
+    init <-
+      input$reg_indep_var %>%
+      {if(!is_empty(.) && . %in% vars) . else character(0)}
+  })
+
   selectInput(inputId = "reg_indep_var", label = "Independent variables:", choices = vars,
-  	selected = state_multiple("reg_indep_var", vars),
+  	selected = state_multiple("reg_indep_var", vars, init),
   	multiple = TRUE, size = min(10, length(vars)), selectize = FALSE)
 })
 
@@ -244,6 +252,8 @@ output$ui_regression <- renderUI({
 
 reg_plot <- reactive({
 
+  if(is_empty(input$reg_plots)) return()
+
   # specifying plot heights
   plot_height <- 500
   plot_width <- 650
@@ -283,9 +293,12 @@ output$regression <- renderUI({
 		reg_output_panels <- tabsetPanel(
 	    id = "tabs_regression",
 	    tabPanel("Summary", verbatimTextOutput("summary_regression")),
-      tabPanel("Predict", plotOutput("predict_plot_regression", width = "100%", height = "100%"),
+      tabPanel("Predict",
+               plot_downloader("regression", height = reg_pred_plot_height(), po = "dlp_", pre = ".predict_plot_"),
+               plotOutput("predict_plot_regression", width = "100%", height = "100%"),
                verbatimTextOutput("predict_regression")),
-	    tabPanel("Plot", plotOutput("plot_regression", width = "100%", height = "100%"))
+	    tabPanel("Plot", plot_downloader("regression", height = reg_plot_height()),
+               plotOutput("plot_regression", width = "100%", height = "100%"))
 	  )
 
 		stat_tab_panel(menu = "Regression",
@@ -304,6 +317,10 @@ output$regression <- renderUI({
 
   if (not_available(input$reg_indep_var))
     return("Please select one or more independent variables.\n\n" %>% suggest_data("diamonds"))
+
+  isolate({
+    if (input$reg_dep_var %in% input$reg_indep_var) return()
+  })
 
   do.call(summary, c(list(object = .regression()), reg_sum_inputs()))
 })

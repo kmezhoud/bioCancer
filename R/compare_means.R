@@ -9,6 +9,7 @@
 #' @param alternative The alternative hypothesis ("two.sided", "greater" or "less")
 #' @param conf_lev Span of the confidence interval
 #' @param adjust Adjustment for multiple comparisons ("none" or "bonf" for Bonferroni)
+#' @param test T-test ("t") or Wilcox ("wilcox")
 #' @param data_filter Expression entered in, e.g., Data > View to filter the dataset in Radiant. The expression should be a string (e.g., "price > 10000")
 #'
 #' @return A list of all variables defined in the function as an object of class compare_means
@@ -26,6 +27,7 @@ compare_means <- function(dataset, var1, var2,
                           alternative = "two.sided",
                           conf_lev = .95,
                           adjust = "none",
+                          test = "t",
                           data_filter = "") {
 
 	vars <- c(var1, var2)
@@ -60,7 +62,12 @@ compare_means <- function(dataset, var1, var2,
 	##############################################
 
 	# pairwise.t.test(dat[,"values"], dat[,"variable"], pool.sd = FALSE,
-	res <- pairwise.t.test(dat[["values"]], dat[["variable"]], pool.sd = FALSE,
+	# res <- pairwise.t.test(dat[["values"]], dat[["variable"]], pool.sd = FALSE,
+	# res <- pairwise.t.test(dat[["values"]], dat[["variable"]],
+	#          p.adjust.method = adjust, paired = samples == "paired",
+	#          alternative = flip_alt[alternative]) %>% tidy
+
+	res <- get(paste0("pairwise.", test, ".test"))(dat[["values"]], dat[["variable"]],
 	         p.adjust.method = adjust, paired = samples == "paired",
 	         alternative = flip_alt[alternative]) %>% tidy
 
@@ -107,7 +114,7 @@ compare_means <- function(dataset, var1, var2,
 summary.compare_means <- function(object, ...) {
 
 	# result <- object
-  cat("Pairwise mean comparisons\n")
+  cat(paste0("Pairwise mean comparisons (", object$test, "-test)\n"))
 	cat("Data      :", object$dataset, "\n")
 	if (object$data_filter %>% gsub("\\s","",.) != "")
 		cat("Filter    :", gsub("\\n","", object$data_filter), "\n")

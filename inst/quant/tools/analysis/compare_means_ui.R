@@ -80,6 +80,10 @@ output$ui_compare_means <- renderUI({
           inline = TRUE),
         radioButtons(inputId = "cm_adjust", label = "Multiple comp. adjustment:", cm_adjust,
           selected = state_init("cm_adjust", cm_args$adjust),
+          inline = TRUE),
+        radioButtons(inputId = "cm_test", label = "Test type:",
+          c("t-test" = "t", "Wilcox" = "wilcox"),
+          selected = state_init("cm_test", cm_args$test),
           inline = TRUE)
       )
     ),
@@ -110,7 +114,9 @@ output$compare_means <- renderUI({
     cm_output_panels <- tabsetPanel(
       id = "tabs_compare_means",
       tabPanel("Summary", verbatimTextOutput("summary_compare_means")),
-      tabPanel("Plot", plotOutput("plot_compare_means", height = "100%"))
+      tabPanel("Plot",
+               # plot_downloader("compare_means", height = cm_plot_height()),
+               plotOutput("plot_compare_means", height = "100%"))
     )
 
     stat_tab_panel(menu = "Base",

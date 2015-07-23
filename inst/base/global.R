@@ -1,22 +1,42 @@
-# path to use for local and server use
-r_path <- ifelse(file.exists("../base") && file.exists("../quant"), "..",
-                 system.file(package = "radiant"))
+## turn off warnings globally
+#options(warn=-1)
+
+## encoding
+options(encoding = "native.enc") ## default
+# options(encoding = "UTF-8")      ## for chines
+## use getOption("encoding") to see if things were changed
+
+loc <- function(os, language = "english") {
+  switch(language,
+         english = ifelse(os == "Windows", "English_United States.1252", "en_US.UTF-8"),
+         chinese = ifelse(os == "Windows", "Chinese", "zh_CN.utf-8"))
+}
+
+## setting local
+Sys.setlocale(category = "LC_ALL", loc(Sys.info()[["sysname"]]))
+# Sys.setlocale(category = "LC_ALL", loc(Sys.info()[["sysname"]], "chinese"))
+## use Sys.setlocale() to see if things were changed
+# Sys.setlocale()
+
+## path to use for local and server use
+r_path <- ifelse((file.exists("../base") && file.exists("../quant")), "..",
+                  system.file(package = "radiant"))
+
 if (r_path == "") r_path <- ".."  # if radiant is not installed revert to local inst
 
 # reactive programming in Shiny requires (some) use of global variables
 # currently these are r_env, r_data, r_state, r_local, r_path, r_sessions, r_ssuid
 
 ## print options
-options("width"=200)
-options("scipen"=100)
+options("width" = 200)
+options("scipen" = 100)
 
 ## pkgs used
 pkgs_cran <- c("car", "gridExtra", "GPArotation", "psych", "wordcloud",
                "AlgDesign", "knitr", "lubridate", "ggplot2", "ggdendro",
                "pryr", "shiny", "magrittr", "tidyr", "dplyr", "broom",
-               "htmlwidgets")
-pkgs_gh <- c("shinyAce","rpivotTable","DT")
-# pkgs_gh <- c("shinyAce","rpivotTable")
+                "htmlwidgets", "readr", "rmarkdown")
+pkgs_gh <- c("shinyAce")
 pkgs <- c(pkgs_cran, pkgs_gh)
 rm(pkgs_cran,pkgs_gh)
 
@@ -72,10 +92,10 @@ addResourcePath("js", file.path(r_path,"base/www/js/"))
 ## using local mathjax if available to avoid shiny bug
 ## https://github.com/rstudio/shiny/issues/692
 ## however, only use for local due to problems with mathjax rendering in IE
-# if (!r_local && "MathJaxR" %in% installed.packages()[,"Package"]) {
-#   addResourcePath("MathJax", file.path(system.file(package = "MathJaxR"), "MathJax/"))
-#   withMathJax <- MathJaxR::withMathJaxR
-# }
+if (r_local && "MathJaxR" %in% installed.packages()[,"Package"]) {
+  addResourcePath("MathJax", file.path(system.file(package = "MathJaxR"), "MathJax/"))
+  withMathJax <- MathJaxR::withMathJaxR
+}
 
 nav_ui <-
   list(windowTitle = "Radiant", id = "nav_radiant", inverse = TRUE,
@@ -120,6 +140,7 @@ shared_ui <-
 
     tags$head(
       tags$script(src = "js/session.js"),
+      tags$script(src = "js/jquery-ui.custom.min.js"),
       tags$script(src = "js/video_reset.js"),
       tags$link(rel = "shortcut icon", href = "imgs/icon.png")
     )

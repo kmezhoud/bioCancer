@@ -8,6 +8,7 @@ output$ui_filter_error <- renderUI({
   helpText(r_data$filter_error)
 })
 
+
 # data ui and tabs
 output$ui_data <- renderUI({
   tagList(#includeCSS(file.path(r_path,"base/www/style.css")),
@@ -60,14 +61,13 @@ output$ui_data <- renderUI({
 
         ),
         conditionalPanel("input.tabs_data == 'Manage'", uiOutput("ui_Manage")),
-        conditionalPanel("input.tabs_data == 'View'",uiOutput("ui_View")),
-        # conditionalPanel("input.tabs_data == 'View_old'",uiOutput("ui_View_old")),
+        conditionalPanel("input.tabs_data == 'View'", uiOutput("ui_View")),
         conditionalPanel("input.tabs_data == 'Visualize'", uiOutput("ui_Visualize")),
-        conditionalPanel("input.tabs_data == 'Pivot'",uiOutput("ui_Pivot")),
-        conditionalPanel("input.tabs_data == 'Explore'", uiOutput("ui_Explore")),
+        conditionalPanel("input.tabs_data == 'Pivot'",uiOutput("ui_Pivotr")),
+        conditionalPanel("input.tabs_data == 'Explore'",
+                         uiOutput("ui_Explore")),
         conditionalPanel("input.tabs_data == 'Transform'", uiOutput("ui_Transform")),
         conditionalPanel("input.tabs_data == 'Combine'", uiOutput("ui_Combine"))),
-      # conditionalPanel("input.tabs_data == 'Simulate'", uiOutput("ui_Simulater"))),
       mainPanel(
         tabsetPanel(
           id = "tabs_data",
@@ -155,14 +155,17 @@ output$ui_data <- renderUI({
           ),
 
           tabPanel("View", DT::dataTableOutput("dataviewer")),
-          tabPanel("Visualize",plotOutput("visualize", width = "100%", height = "100%")),
-          tabPanel("Pivot", rpivotTable::rpivotTableOutput("pivotData")),
-          tabPanel("Explore", verbatimTextOutput("expl_summary"), plotOutput("expl_plots", width = "100%", height = "100%")),
+          # tabPanel("View", DT::dataTableOutput("dataviewer"), verbatimTextOutput("tbl_state")),
+          tabPanel("Visualize", plot_downloader(".visualize", width = viz_plot_width(), height = viz_plot_height(), pre = ""),
+                   plotOutput("visualize", width = "100%", height = "100%")),
+          tabPanel("Pivot", DT::dataTableOutput("pivotr")),
+          tabPanel("Explore", verbatimTextOutput("expl_summary"),
+                   plot_downloader("explore", height = expl_plot_height()),
+                   # plot_downloader("compare_means"),
+                   plotOutput("expl_plots", width = "100%", height = "100%")),
           tabPanel("Transform", htmlOutput("transform_data"), verbatimTextOutput("transform_summary")),
           tabPanel("Combine", htmlOutput("cmb_data1"), htmlOutput("cmb_data2"),
                    htmlOutput("cmb_possible"), htmlOutput("cmb_data"))
-          # tabPanel("Simulate", verbatimTextOutput("sim_summary"),
-          #          plotOutput("sim_plots", width = "100%", height = "100%"))
           # tabPanel("Generate", HTML("<h3>Generate input data for simulation and prediction</h3>")),
           # , selected = ifelse(is_empty(r_url$tab), "Manage", r_url$tab)
         )

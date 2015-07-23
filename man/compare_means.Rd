@@ -6,7 +6,7 @@
 \usage{
 compare_means(dataset, var1, var2, samples = "independent",
   alternative = "two.sided", conf_lev = 0.95, adjust = "none",
-  data_filter = "")
+  test = "t", data_filter = "")
 }
 \arguments{
 \item{dataset}{Dataset name (string). This can be a dataframe in the global environment or an element in an r_data list from Radiant}
@@ -22,6 +22,8 @@ compare_means(dataset, var1, var2, samples = "independent",
 \item{conf_lev}{Span of the confidence interval}
 
 \item{adjust}{Adjustment for multiple comparisons ("none" or "bonf" for Bonferroni)}
+
+\item{test}{T-test ("t") or Wilcox ("wilcox")}
 
 \item{data_filter}{Expression entered in, e.g., Data > View to filter the dataset in Radiant. The expression should be a string (e.g., "price > 10000")}
 }

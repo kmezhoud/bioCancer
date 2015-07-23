@@ -1,13 +1,14 @@
 # to avoid 'no visible binding for global variable' NOTE
 globalVariables(c("r_env", "r_data", "r_state", "r_local", "r_path", ".",
                   "se", "ci", "height", "bump", "y", "col1", "nr_clus",
-                  ".resid", "rnd_number", "null.deviance", "..density.."))
+                  ".resid", "rnd_number", "null.deviance", "..density..",
+                  "..y..", "Total", "thead", "tfoot", "th", "tr"))
 
 #' radiant
 #'
 #' @name radiant
 #' @docType package
-#' @import ggplot2 shiny dplyr yaml htmlwidgets
+#' @import ggplot2 shiny dplyr
 #' @importFrom knitr knit2html
 #' @importFrom pryr where
 #' @importFrom magrittr %<>% %T>% %$% set_rownames set_colnames set_names divide_by add extract2
@@ -17,10 +18,12 @@ globalVariables(c("r_env", "r_data", "r_state", "r_local", "r_path", ".",
 #' @importFrom gridExtra arrangeGrob
 #' @importFrom markdown markdownToHTML
 #' @importFrom shinyAce aceEditor updateAceEditor
-#' @importFrom rpivotTable rpivotTable rpivotTableOutput renderRpivotTable
 #' @importFrom DT dataTableAjax datatable
 #' @importFrom MathJaxR withMathJaxR
+#' @importFrom readr read_delim write_csv
+#' @importFrom rmarkdown render
 NULL
+
 
 #' Exporting the kurtosi function from the psych package
 #' @importFrom psych kurtosi

@@ -62,7 +62,6 @@ explore <- function(dataset,
     # dat %<>% group_by_(.dots = byvar) %>% select(which(isNum)) %>% mutate_each("as.numeric")
     dat %<>% group_by_(.dots = byvar) %>% dplyr::select(which(isNum))
 
-
     for (f in fun)
       res[[f]] <- dat %>% summarise_each(as.formula(paste0("~",f))) %>% as.data.frame
   }
@@ -168,7 +167,7 @@ plot.explore <- function(x, shiny = FALSE, ...) {
     }
   }
 
-  sshhr( do.call(gridExtra::arrangeGrob, c(plots, list(ncol = 1))) ) %>%
+  sshhr( do.call(arrangeGrob, c(plots, list(ncol = 1))) ) %>%
     { if (shiny) . else print(.) }
 }
 
