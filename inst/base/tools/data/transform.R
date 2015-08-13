@@ -481,15 +481,13 @@ observeEvent(input$tr_store, {
   		r_data[[dataset]] %<>%
   			rename_(.dots = setNames(input$tr_vars, colnames(dat)))
 		} else if (input$tr_change_type == 'reorg_vars') {
-<<<<<<< HEAD
-	  	# r_data[[dataset]] %<>% .[,input$tr_reorg_vars]
+
 	  	r_data[[dataset]] %<>% dplyr::select_(.dots = input$tr_reorg_vars)
-=======
-	  	r_data[[dataset]] %<>% select_(.dots = input$tr_reorg_vars)
 		} else if (input$tr_change_type == 'replace') {
 	  	r_data[[dataset]][,colnames(dat)] <- dat
 	  	r_data[[dataset]][, input$tr_replace] <- list(NULL)
->>>>>>> upstream/master
+
+
 	  } else {
 			.changedata(dat, colnames(dat), dataset = dataset)
 		}
