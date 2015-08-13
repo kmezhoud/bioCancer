@@ -9,9 +9,14 @@ output$ui_view_vars <- renderUI({
 })
 
 output$ui_View <- renderUI({
-  list(
+  tagList(
     wellPanel(
-      uiOutput("ui_view_vars")
+      uiOutput("ui_view_vars"),
+      tags$table(
+        tags$td(textInput("view_dat", "Store filtered data as:",
+                          state_init("view_dat", paste0(input$dataset,"_view")))),
+        tags$td(actionButton("view_store", "Store"), style="padding-top:30px;")
+      )
     ),
     help_modal('View','view_help',inclMD(file.path(r_path,"base/tools/help/view.md")))
   )
@@ -42,5 +47,44 @@ output$dataviewer <- DT::renderDataTable({
   )
 })
 
+observeEvent(input$view_store, {
+  isolate({
+    view_store(input$dataset, input$view_vars, input$view_dat, input$data_filter, input$dataviewer_rows_all)
+    updateTextInput(session, "data_filter", value = "")
+    updateCheckboxInput(session = session, inputId = "show_filter", value = FALSE)
+
+  })
+})
+
+view_store <- function(dataset,
+                       vars = "",
+                       view_dat = dataset,
+                       data_filter = "",
+                       rows = NULL) {
+
+  mess <-
+    if (data_filter != "" && !is.null(rows))
+      paste0("\nSaved filtered data: ", data_filter, " and view-filter (", lubridate::now(), ")")
+    else if (is.null(rows))
+      paste0("\nSaved filtered data: ", data_filter, " (", lubridate::now(), ")")
+    else if (data_filter == "")
+      paste0("\nSaved data with view-filter (", lubridate::now(), ")")
+    else
+      ""
+
+  getdata(dataset, vars = vars, filt = data_filter, rows = rows, na.rm = FALSE) %>%
+    save2env(dataset, view_dat, mess)
+}
+
+output$dl_view_tab <- downloadHandler(
+  filename = function() { paste0("view_tab.csv") },
+  content = function(file) {
+    getdata(input$dataset, vars = input$view_vars, filt = input$data_filter,
+            rows = input$dataviewer_rows_all, na.rm = FALSE) %>%
+      write.csv(file, row.names = FALSE)
+  }
+)
+
+## cannot (re)set state ... yet
 # search = list(search = 'Ma'), order = list(list(2, 'asc'), list(1, 'desc'))
 # output$tbl_state <- renderPrint(str(input$dataviewer_state))

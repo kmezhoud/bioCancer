@@ -1,56 +1,59 @@
+if (packageVersion("Rcpp") < "0.12.0") stop(
+  "Radiant requires Rcpp >= 0.12.0. ",
+  "Please install the latest version of Rcpp from CRAN: ",
+  "install.packages('Rcpp', repo = 'http://cran.rstudio.com')"
+)
+
 ## turn off warnings globally
-#options(warn=-1)
+# options(warn=-1)
+
+## options to setfor debugging
+# options(shiny.trace = TRUE)
+# options(shiny.error = recover)
+# options(warn = 2)
+# options(warn = 0)
 
 ## encoding
-options(encoding = "native.enc") ## default
-# options(encoding = "UTF-8")      ## for chines
-## use getOption("encoding") to see if things were changed
-
-loc <- function(os, language = "english") {
-  switch(language,
-         english = ifelse(os == "Windows", "English_United States.1252", "en_US.UTF-8"),
-         chinese = ifelse(os == "Windows", "Chinese", "zh_CN.utf-8"))
-}
-
-## setting local
-Sys.setlocale(category = "LC_ALL", loc(Sys.info()[["sysname"]]))
-# Sys.setlocale(category = "LC_ALL", loc(Sys.info()[["sysname"]], "chinese"))
-## use Sys.setlocale() to see if things were changed
-# Sys.setlocale()
+# options(r_encoding = getOption("encoding"))
+# r_encoding = getOption("encoding")
+r_encoding = "UTF-8"
 
 ## path to use for local and server use
+# r_path <- ifelse((file.exists("../base") && file.exists("../quant")), "..",
+#                   system.file(package = "radiant"))
+# if (r_path == "") r_path <- ".."  # if radiant is not installed revert to local inst
+
 r_path <- ifelse((file.exists("../base") && file.exists("../quant")), "..",
                   system.file(package = "radiant"))
 
 if (r_path == "") r_path <- ".."  # if radiant is not installed revert to local inst
 
-# reactive programming in Shiny requires (some) use of global variables
-# currently these are r_env, r_data, r_state, r_local, r_path, r_sessions, r_ssuid
 
 ## print options
-options("width" = 200)
+options("width"  = 200)
 options("scipen" = 100)
 
 ## pkgs used
-pkgs_cran <- c("car", "gridExtra", "GPArotation", "psych", "wordcloud",
-               "AlgDesign", "knitr", "lubridate", "ggplot2", "ggdendro",
-               "pryr", "shiny", "magrittr", "tidyr", "dplyr", "broom",
-                "htmlwidgets", "readr", "rmarkdown")
-pkgs_gh <- c("shinyAce")
-pkgs <- c(pkgs_cran, pkgs_gh)
-rm(pkgs_cran,pkgs_gh)
+
+r_pkgs <- c("DiagrammeR", "car", "gridExtra", "GPArotation", "psych", "wordcloud",
+            "AlgDesign", "knitr", "lubridate", "ggplot2", "ggdendro",
+            "pryr", "shiny", "magrittr", "tidyr", "dplyr", "broom",
+            "htmlwidgets", "readr", "rmarkdown", "shinyAce", "data.tree",
+            "yaml")
+# options(r_pkgs = r_pkgs); rm(r_pkgs)
+
 
 ## list of function arguments
-expl_functions <-
-  list("n" = "length", "mean" = "mean_rm", "median" = "median_rm",
-       "sum" = "sum_rm", "min" = "min_rm", "max" = "max_rm", "25%" = "p25",
-       "75%" = "p75", "sd" = "sd_rm", "se" = "serr", "cv" = "cv",
-       "skew" = "skew", "kurtosis" = "kurtosi", "# missing" = "nmissing")
+r_functions <-
+  list("n" = "length", "# missing" = "nmissing", "mean" = "mean_rm", "median" = "median_rm",
+       "sum" = "sum_rm", "sd" = "sd_rm", "se" = "serr", "cv" = "cv", "min" = "min_rm",
+       "max" = "max_rm", "25%" = "p25", "75%" = "p75", "skew" = "skew", "kurtosis" = "kurtosi")
+# options(r_functions = r_functions); rm(r_functions)
 
 ## for report and code in menu R
 knitr::opts_knit$set(progress = TRUE)
-knitr::opts_chunk$set(echo=FALSE, comment=NA, cache=FALSE, message=FALSE,
-                      warning=FALSE, fig.path = "~/r_figures/")
+knitr::opts_chunk$set(echo = FALSE, comment = NA, cache = FALSE, message = FALSE,
+                      warning = FALSE, fig.path = "~/r_figures/")
 
 
 ## using DT rather than Shiny versions of datatable
@@ -67,13 +70,16 @@ if (Sys.getenv('SHINY_PORT') == "") {
 
   ## if radiant package was not loaded load dependencies
   if (!"package:radiant" %in% search())
-    sapply(pkgs, require, character.only=TRUE)
+
+    sapply(r_pkgs, require, character.only = TRUE)
+
 
 } else {
   r_local <- FALSE
 
   options(shiny.maxRequestSize = 5 * 1024^2)   ## limit upload filesize on server (5MB)
-  sapply(pkgs, require, character.only = TRUE)
+
+  sapply(r_pkgs, require, character.only = TRUE)
 
 }
 
@@ -97,6 +103,7 @@ if (r_local && "MathJaxR" %in% installed.packages()[,"Package"]) {
   withMathJax <- MathJaxR::withMathJaxR
 }
 
+
 nav_ui <-
   list(windowTitle = "Radiant", id = "nav_radiant", inverse = TRUE,
        collapsible = TRUE, tabPanel("Data", withMathJax(), uiOutput("ui_data")))
@@ -110,7 +117,10 @@ shared_ui <-
 
     navbarMenu(title = "", id = "State", icon = icon("save"),
                tabPanel(downloadLink("saveStateNav", " Save state", class = "fa fa-download")),
-               # tabPanel(downloadLink("loadState", "Load state"), icon = icon("folder-open")),
+               ## waiting for this feature in Shiny
+               # tabPanel(tags$a(id = "loadStateNav", href = "", class = "shiny-input-container",
+               #                 type='file', accept='.rmd,.Rmd,.md', list(icon("refresh"), "Refresh"))),
+               # tabPanel(uploadLink("loadState", "Load state"), icon = icon("folder-open")),
                tabPanel(actionLink("shareState", "Share state", icon = icon("share"))),
                tabPanel("View state", uiOutput("view_state"), icon = icon("user"))
     ),
@@ -135,7 +145,9 @@ shared_ui <-
                tabPanel("Videos", uiOutput("help_videos"), icon = icon("film")),
                tabPanel("About", uiOutput("help_about"), icon = icon("info")),
                tabPanel(tags$a("", href = "http://vnijs.github.io/radiant/", target = "_blank",
-                               list(icon("globe"), "Radiant docs")))
+                               list(icon("globe"), "Radiant docs"))),
+               tabPanel(tags$a("", href = "https://github.com/vnijs/radiant/issues", target = "_blank",
+                               list(icon("github"), "Report issue")))
     ),
 
     tags$head(

@@ -3,6 +3,15 @@
 ## when available
 ################################################################################
 
+# Shipping.Country == "US" & Shipping.Province == "CA" | "NY"
+
+## options to setfor debugging
+# options(shiny.trace = TRUE)
+# options(shiny.error = recover)
+# options(warn = 2)
+# options(warn = 0)
+
+
 init_state <- function(r_data) {
 
   ## initial plot height and width
@@ -12,7 +21,7 @@ init_state <- function(r_data) {
   r_data$manual <- FALSE
   r_data$vim_keys <- FALSE
 
-  ## Joe Cheng: "Datasets can change over time (i.e. the changedata function).
+  ## Joe Cheng: "Datasets can change over time (i.e., the .changedata function).
   ## Therefore, the data need to be a reactive value so the other reactive
   ## functions and outputs that depend on these datasets will know when they
   ## are changed."
@@ -196,6 +205,9 @@ url_list <-
        "GLM" = list("tabs_glm_reg" = list("Summary" = "regression/glm/",
                                           "Predict" = "regression/glm/predict/",
                                           "Plot"    = "regression/glm/plot/")),
+
+       "Decision tree"    = list("tabs_dtree"    = list("Model" = "decide/dtree/",
+                                                        "Plot"  = "decide/dtree/plot/")),
 
        "Simulate"    = list("tabs_simulate"    = list("Model"   = "decide/simulate/",
                                                       "Repeat"  = "decide/simulate/repeat/"))

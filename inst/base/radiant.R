@@ -2,8 +2,13 @@ observe({
   ## reset r_state on dataset change ... when you are not on the
   ## Manage > Data tab
   if (is.null(r_state$dataset) || is.null(input$dataset)) return()
-  if (input$tabs_data != "Manage" || input$nav_radiant != "Data")
-    if (r_state$dataset != input$dataset) r_state <<- list()
+  if (input$tabs_data != "Manage" || input$nav_radiant != "Data") {
+    if (r_state$dataset != input$dataset) {
+      r_state <<- list()
+      updateTextInput(session = session, inputId = "data_filter", value = "")
+      updateCheckboxInput(session = session, inputId = "show_filter", value = FALSE)
+    }
+  }
 })
 
 ################################################################################
@@ -22,14 +27,11 @@ saveSession <- function(session = session) {
 }
 
 observeEvent(input$refresh_radiant, {
+  if(r_local) return()
+  ## use sshhr to aviod warnings if needed
   fn <- paste0(normalizePath("~/r_sessions"),"/r_", r_ssuid, ".rds")
   if (file.exists(fn)) unlink(fn, force = TRUE)
 })
-
-## Not working as intended
-# observeEvent(input$new_session, {
-#   session$sendCustomMessage("new_session","")
-# })
 
 saveStateOnRefresh <- function(session = session) {
   session$onSessionEnded(function() {
@@ -56,7 +58,7 @@ saveStateOnRefresh <- function(session = session) {
 ## add variables to the data
 .changedata <- function(new_col, new_col_name = "", dataset = input$dataset) {
 	if (nrow(r_data[[dataset]]) == new_col %>% nrow &&
-     new_col_name[1] != "")
+    new_col_name[1] != "")
     r_data[[dataset]][,new_col_name] <- new_col
 }
 
@@ -65,21 +67,19 @@ saveStateOnRefresh <- function(session = session) {
 
   if (is.null(input$dataset)) return()
 
-  if (is_empty(input$data_filter) || input$show_filter == FALSE)
-    if (is.null(input$dataset)) return() else return(r_data[[input$dataset]])
-
-  selcom <- gsub("\\s","", input$data_filter)
-  if (selcom != "") {
+  selcom <- input$data_filter %>% gsub("\\s","", .) %>% gsub("\"","\'",.)
+  if (is_empty(selcom) || input$show_filter == FALSE) {
+    isolate(r_data$filter_error <- "")
+  } else if (grepl("([^=!<>])=([^=])",selcom)) {
+    isolate(r_data$filter_error <- "Invalid filter: never use = in a filter but == (e.g., year == 2014). Update or remove the expression")
+  } else {
     seldat <- try(filter_(r_data[[input$dataset]], selcom), silent = TRUE)
-
     if (is(seldat, 'try-error')) {
-      isolate(r_data$filter_error <- attr(seldat,"condition")$message)
+      isolate(r_data$filter_error <- paste0("Invalid filter: \"", attr(seldat,"condition")$message,"\". Update or remove the expression"))
     } else {
       isolate(r_data$filter_error <- "")
       return(seldat)
     }
-  } else {
-    isolate(r_data$filter_error <- "")
   }
 
   r_data[[input$dataset]]
@@ -109,7 +109,7 @@ two_level_vars <- reactive({
 ## used in visualize - don't plot variables that have zero sd
 varying_vars <- reactive({
   .getdata() %>%
-    summarise_each(funs(sd_rm)) %>%
+    {sshhr(summarise_each(., funs(sd_rm)))} %>%
     { . > 0 } %>%
     which(.) %>%
     varnames()[.]
@@ -142,20 +142,24 @@ clean_args <- function(rep_args, rep_default = list()) {
 not_available <- function(x)
   if (any(is.null(x)) || (sum(x %in% varnames()) < length(x))) TRUE else FALSE
 
+## check if a variable is null or not in the selected data.frame
+available <- function(x) not_available(x) == FALSE
+
 ## check if a button was NOT pressed
 not_pressed <- function(x) if (is.null(x) || x == 0) TRUE else FALSE
 
 ## check if a button WAS pressed
-was_pressed <- function(x) if (is.null(x) || x == 0) FALSE else TRUE
+# was_pressed <- function(x) if (is.null(x) || x == 0) FALSE else TRUE
+# was_pressed <- function(x) not_pressed == FALSE
 
 ## check for duplicate entries
 has_duplicates <- function(x)
   if (length(unique(x)) < length(x)) TRUE else FALSE
 
 ## is x some type of date variable
-is_date <- function(x) lubridate::is.Date(x) | lubridate::is.POSIXt(x)
+is_date <- function(x) inherits(x, c('Date', 'POSIXlt', 'POSIXct'))
 
-## drop elements from .._args variables
+## drop elements from .._args variables obtained using formals
 r_drop <- function(x, drop = c("dataset","data_filter")) x[-which(x %in% drop)]
 
 ## convert a date variable to character for printing
@@ -177,8 +181,6 @@ show_data_snippet <- function(dat = input$dataset, nshow = 7, title = "") {
     print(type = 'html',  print.results = FALSE, include.rownames = FALSE,
           sanitize.text.function = identity,
           html.table.attributes = "class='table table-condensed table-hover'") %>%
-    # sub("<table border=*.1*.>","<table class='table table-condensed table-hover'>", .,
-    #     perl = TRUE) %>%
     paste0(title, .) %>%
     {if (n <= nshow) . else paste0(.,'\n<label>',nshow,' of ', n, ' rows shown. See View-tab for details.</label>')} %>%
     enc2utf8
@@ -208,8 +210,10 @@ print.capture_plot <- function(x, ...) {
 returnTextAreaInput <- function(inputId, label = NULL, value = "") {
   tagList(
     tags$label(label, `for` = inputId),br(),
-    tags$textarea(id=inputId, type = "text", rows="2",
-                  class="returnTextArea form-control", value)
+    tags$textarea(value, id=inputId, type = "text", rows="2",
+                  class="returnTextArea form-control")
+    # tags$textarea(id=inputId, type = "text", rows="2",
+                  # class="returnTextArea form-control", value)
   )
 }
 

@@ -24,16 +24,16 @@ upload_error_handler <- function(objname, ret) {
   r_data[[objname]] <- data.frame(matrix(rep("",12), nrow = 2))
 }
 
-loadClipboardData <- function(objname = "xls_data", ret = "", header = TRUE, sep = "\t") {
+loadClipboardData <- function(objname = "copy_and_paste", ret = "", header = TRUE, sep = "\t") {
 
   dat <- sshhr(try(
          {if (Sys.info()["sysname"] == "Windows") {
-            read.table("clipboard", header = header, sep = sep, as.is = TRUE)
+            read.table("clipboard", header = header, sep = sep, comment.char = "", fill = TRUE,  as.is = TRUE)
           } else if (Sys.info()["sysname"] == "Darwin") {
-            read.table(pipe("pbpaste"), header = header, sep = sep, as.is = TRUE)
+            read.table(pipe("pbpaste"), header = header, sep = sep, comment.char = "", fill = TRUE,  as.is = TRUE)
           } else {
             if (!is_empty(input$load_cdata))
-              read.table(text = input$load_cdata, header = header, sep = sep, as.is = TRUE)
+              read.table(text = input$load_cdata, header = header, sep = sep, comment.char = "", fill = TRUE,  as.is = TRUE)
           }} %>% as.data.frame(check.names = FALSE), silent = TRUE))
 
   if (is(dat, 'try-error') || nrow(dat) == 0) {
@@ -58,18 +58,19 @@ saveClipboardData <- function() {
   }
 }
 
-factorizer <- function(dat) {
-  isChar <- sapply(dat,is.character)
-  if (sum(isChar) == 0) return(dat)
-    toFct <-
-      dplyr::select(dat, which(isChar)) %>%
-      summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < .1)) %>%
-      dplyr::select(which(. == TRUE)) %>% names
-    # summarise_each(funs(n_distinct)) %>%
-    # dplyr::select(which(. < 100 & ((. / nrow(dat)) < .1))) %>% names
-  if (length(toFct) == 0) return(dat)
-  mutate_each_(dat, funs(as.factor), vars = toFct)
-}
+# <<<<<<< HEAD
+# factorizer <- function(dat) {
+#   isChar <- sapply(dat,is.character)
+#   if (sum(isChar) == 0) return(dat)
+#     toFct <-
+#       dplyr::select(dat, which(isChar)) %>%
+#       summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < .1)) %>%
+#       dplyr::select(which(. == TRUE)) %>% names
+#     # summarise_each(funs(n_distinct)) %>%
+#     # dplyr::select(which(. < 100 & ((. / nrow(dat)) < .1))) %>% names
+#   if (length(toFct) == 0) return(dat)
+#   mutate_each_(dat, funs(as.factor), vars = toFct)
+# }
 
 ################# Load dataframe (Clinical data, Profile Data, ...) in Datasets
 loadInDatasets <- function(fname, header= TRUE){
@@ -147,6 +148,10 @@ loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = TRUE, s
 ###################
 
 
+#
+# =======
+# >>>>>>> upstream/master
+
 
 loadUserData <- function(fname, uFile, ext,
                          header = TRUE,
@@ -193,14 +198,13 @@ loadUserData <- function(fname, uFile, ext,
   }
 
   if (ext == 'csv') {
+
     # r_data[[objname]] <- read.csv(uFile, header=header, sep=sep, dec=dec,
     # r_data[[objname]] <- readr::read_csv(uFile, col_names=header)
     # stringsAsFactors=man_str_as_factor), silent = TRUE) %>%
-    r_data[[objname]] <- try(read.table(uFile, header=header, sep=sep, dec=dec,
-                                        stringsAsFactors=FALSE), silent = TRUE) %>%
-                                        { if (is(., 'try-error')) upload_error_handler(objname, "### There was an error loading the data. Please make sure the data are in either rda or csv format.")
-                                          else . } %>%
-                                          { if (man_str_as_factor) factorizer(.) else . } # %>% tbl_df
+    r_data[[objname]] <- loadcsv(uFile, header = header, sep = sep, saf = man_str_as_factor) %>%
+    {if (is.character(.)) upload_error_handler(objname, mess) else .}
+
     ##########
     r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
     ##########
@@ -216,8 +220,8 @@ loadUserData <- function(fname, uFile, ext,
                                           else . } %>%
                                           { if (man_str_as_factor) factorizer(.) else . } # %>% tbl_df
     r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
-  }
+
 
   #r_data[['datasetlist']] <- c(objname, r_data[['datasetlist']]) %>% unique
 }
-
+}

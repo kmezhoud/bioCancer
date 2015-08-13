@@ -2,7 +2,7 @@ viz_type <- c("Histogram" = "hist", "Density" = "density", "Scatter" = "scatter"
               "Line" = "line", "Bar" = "bar", "Box-plot" = "box")
 viz_check <- c("Line" = "line", "Loess" = "loess", "Jitter" = "jitter")
 viz_axes <-  c("Flip" = "flip", "Log X" = "log_x", "Log Y" = "log_y",
-               "Scale-y" = "scale_y", "Density" = "density")
+               "Scale-y" = "scale_y", "Density" = "density", "Sort" = "sort")
 
 ## list of function arguments
 viz_args <- as.list(formals(visualize))
@@ -31,11 +31,21 @@ output$ui_viz_type <- renderUI({
 output$ui_viz_yvar <- renderUI({
   if (is.null(input$viz_type)) return()
   vars <- varying_vars()
-  if (input$viz_type == "line") vars <- vars["factor" != .getclass()[vars]]
-  selectizeInput(inputId = "viz_yvar", label = "Y-variable:",
-    choices = c("None" = "none", vars),
-    selected = state_single("viz_yvar", vars, "none"),
-    multiple = FALSE)
+  if (input$viz_type %in% c("line","bar","scatter")) vars <- vars["factor" != .getclass()[vars]]
+
+  isolate({
+    ## keep the same y-variable 'active' if possible
+    sel <-
+      if(!not_available(input$viz_yvar) && input$viz_yvar %in% vars)
+        input$viz_yvar
+      else
+         state_multiple("viz_yvar", vars)
+  })
+
+  selectInput(inputId = "viz_yvar", label = "Y-variable:",
+    choices = vars,
+    selected = sel,
+    multiple = TRUE, size = min(3, length(vars)), selectize = FALSE)
 })
 
 ## X - variable
@@ -45,9 +55,19 @@ output$ui_viz_xvar <- renderUI({
   if (input$viz_type == "hist") vars <- vars["date" != .getclass()[vars]]
   if (input$viz_type == "density") vars <- vars["factor" != .getclass()[vars]]
   if (input$viz_type %in% c("box", "bar")) vars <- groupable_vars()
+
+  isolate({
+    ## keep the same x-variable 'active' if possible
+    sel <-
+      if(!not_available(input$viz_xvar) && all(input$viz_xvar %in% vars))
+        input$viz_xvar
+      else
+        state_multiple("viz_xvar", vars)
+  })
+
   selectInput(inputId = "viz_xvar", label = "X-variable:", choices = vars,
-    selected = state_multiple("viz_xvar",vars),
-    multiple = TRUE, size = min(5, length(vars)), selectize = FALSE)
+    selected = sel,
+    multiple = TRUE, size = min(3, length(vars)), selectize = FALSE)
 })
 
 output$ui_viz_facet_row <- renderUI({
@@ -63,10 +83,15 @@ output$ui_viz_facet_col <- renderUI({
 })
 
 output$ui_viz_color <- renderUI({
-  if (not_available(input$viz_yvar)) return()  ## can't have an XY plot without an X
   vars <- c("None" = "none", varnames())
   sel <- state_single("viz_color", vars, "none")
   selectizeInput("viz_color", "Color", vars, selected = sel, multiple = FALSE)
+})
+
+output$ui_viz_fill <- renderUI({
+  vars <- c("None" = "none", groupable_vars())
+  sel <- state_single("viz_fill", vars, "none")
+  selectizeInput("viz_fill", "Fill", vars, selected = sel, multiple = FALSE)
 })
 
 output$ui_viz_axes <- renderUI({
@@ -75,10 +100,21 @@ output$ui_viz_axes <- renderUI({
   if (input$viz_type %in% c("line","scatter")) ind <- 1:3
   if (input$viz_type == "hist") ind <- c(ind, 5)
   if (!is_empty(input$viz_facet_row, ".")) ind <- c(ind, 4)
+  if (input$viz_type == "bar" && input$viz_facet_row == "." && input$viz_facet_col == ".") ind <- c(ind, 6)
   checkboxGroupInput("viz_axes", NULL, viz_axes[ind],
     selected = state_init("viz_axes"),
     inline = TRUE)
 })
+
+output$ui_viz_check <- renderUI({
+  if (is.null(input$viz_type)) return()
+  # ind <- if (input$viz_type == "scatter") 1:3 else 1
+  ind <- 1:3
+  checkboxGroupInput("viz_check", NULL, viz_check[ind],
+    selected = state_init("viz_check"),
+    inline = TRUE)
+})
+
 
 output$ui_Visualize <- renderUI({
   tagList(
@@ -90,13 +126,16 @@ output$ui_Visualize <- renderUI({
       uiOutput("ui_viz_xvar"),
       uiOutput("ui_viz_facet_row"),
       uiOutput("ui_viz_facet_col"),
+      conditionalPanel(condition = "input.viz_type == 'bar' |
+                                    input.viz_type == 'hist' |
+                                    input.viz_type == 'density'",
+        uiOutput("ui_viz_fill")
+      ),
       conditionalPanel(condition = "input.viz_type == 'scatter' |
                                     input.viz_type == 'line' |
                                     input.viz_type == 'box'",
         uiOutput("ui_viz_color"),
-        checkboxGroupInput("viz_check", NULL, viz_check,
-          selected = state_init("viz_check"),
-          inline = TRUE)
+        uiOutput("ui_viz_check")
       ),
       conditionalPanel(condition = "input.viz_type == 'hist'",
         sliderInput("viz_bins", label = "Number of bins:",
@@ -131,7 +170,10 @@ viz_plot_height <- reactive({
   if (is.null(input$viz_plot_height)) {
     r_data$plot_height
   } else {
-    length(input$viz_xvar) %>%
+    lx <- if (not_available(input$viz_xvar)) 1 else length(input$viz_xvar)
+    ly <- ifelse (not_available(input$viz_yvar) || input$viz_type %in% c("hist","density"),
+                  1, length(input$viz_yvar))
+    (lx * ly) %>%
     { if (. > 1)
         (input$viz_plot_height/2) * ceiling(. / 2)
       else
@@ -141,7 +183,7 @@ viz_plot_height <- reactive({
 })
 
 output$visualize <- renderPlot({
-  if (is_empty(input$viz_xvar, "none"))
+  if (not_available(input$viz_xvar))
     return(
       plot(x = 1, type = 'n',
            main="\nPlease select variables from the dropdown menus to create a plot",
@@ -158,9 +200,7 @@ output$visualize <- renderPlot({
   input$viz_plot_height; input$viz_plot_width
 
   if (not_available(input$viz_xvar)) return()
-  if (input$viz_type %in% c("scatter","line", "box", "bar")
-     && is_empty(input$viz_yvar, "none")) return()
-
+  if (input$viz_type %in% c("scatter","line", "box", "bar") && not_available(input$viz_yvar)) return()
   if (input$viz_type == "box" && !all(input$viz_xvar %in% groupable_vars()))
     return()
 

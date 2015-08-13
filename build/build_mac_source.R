@@ -10,13 +10,13 @@ build('../radiant', binary = TRUE)
 build('../DT')
 build('../DT', binary = TRUE)
 
+# devtools::install('~/gh/data.tree')
+build('../data.tree')
+build('../data.tree', binary = TRUE)
+
 # install('../shinyAce')
 # build('../shinyAce')
 # build('../shinyAce', binary = TRUE)
-
-# devtools::install('../rpivotTable')
-# build('../rpivotTable')
-# build('../rpivotTable', binary = TRUE)
 
 # devtools::install('../MathJaxR')
 # build('../MathJaxR')

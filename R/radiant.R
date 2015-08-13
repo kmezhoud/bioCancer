@@ -67,13 +67,36 @@ sshh <- function(...) {
 #' @export
 sshhr <- function(...) suppressWarnings( suppressMessages( ... ) )
 
+
+#' Filter data with user-specified expression
+#'
+#' @param dat Data.frame to filter
+#' @param filt Filter expression to apply to the specified dataset (e.g., "price > 10000" if dataset is "diamonds")
+#'
+#' @return Filtered data.frame
+#'
+#' @export
+filterdata <- function(dat, filt = "") {
+  if (grepl("([^=!<>])=([^=])", filt)) {
+    message("Invalid filter: never use = in a filter but == (e.g., year == 2014). Update or remove the expression")
+  } else {
+    seldat <- try(filter_(dat, filt), silent = TRUE)
+    if (is(seldat, 'try-error')) {
+      message(paste0("Invalid filter: \"", attr(seldat,"condition")$message,"\". Update or remove the expression"))
+    } else {
+      return(seldat)
+    }
+  }
+  dat
+}
+
 #' Get data for analysis functions
 #'
 #' @param dataset Name of the dataframe
 #' @param vars Variables to extract from the dataframe
-#' @param na.rm Remove rows with missing values (default is TRUE)
 #' @param filt Filter to apply to the specified dataset. For example "price > 10000" if dataset is "diamonds" (default is "")
-#' @param slice Select a slice of the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is ""). Not in Radiant GUI
+#' @param rows Select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
+#' @param na.rm Remove rows with missing values (default is TRUE)
 #'
 #' @return Data.frame with specified columns and rows
 #'
@@ -81,19 +104,22 @@ sshhr <- function(...) suppressWarnings( suppressMessages( ... ) )
 #' \donttest{
 #' r_data <<- list()
 #' r_data$dat <<- mtcars
-#' getdata("dat","mpg:vs", filt = "mpg > 20", slice = "1:5")
+#' getdata("dat","mpg:vs", filt = "mpg > 20", rows = 1:5)
 #' rm(r_data, envir = .GlobalEnv)
 #' }
 #' @export
 getdata <- function(dataset,
                     vars = "",
-                    na.rm = TRUE,
                     filt = "",
-                    slice = "") {
+                    rows = NULL,
+                    na.rm = TRUE) {
 
-  filt %<>% gsub("\\s","", .)
-
+# <<<<<<< HEAD
+#    if (!is_string(dataset)) {
+# =======
+  filt %<>% gsub("\\s","", .) %>% gsub("\"","\'",.)
    if (!is_string(dataset)) {
+#>>>>>>> upstream/master
       dataset
     } else if (exists("r_env")) {
       r_env$r_data[[dataset]]
@@ -109,9 +135,16 @@ getdata <- function(dataset,
         stop %>% return
     }
   } %>% { if ("grouped_df" %in% class(.)) ungroup(.) else . } %>%     # ungroup data if needed
-        { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
-        { if (slice == "") . else slice_(., slice) } %>%
-        { if (vars[1] == "") . else dplyr::select_(., .dots = vars) } %>%
+# <<<<<<< HEAD
+#         { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
+#         { if (slice == "") . else slice_(., slice) } %>%
+#         { if (vars[1] == "") . else dplyr::select_(., .dots = vars) } %>%
+# =======
+        # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
+        { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
+        { if (is.null(rows)) . else slice(., rows) } %>%
+        { if (vars[1] == "") . else select_(., .dots = vars) } %>%
+#>>>>>>> upstream/master
         { if (na.rm) na.omit(.) else . }
         ## line below may cause an error https://github.com/hadley/dplyr/issues/219
         # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
@@ -119,6 +152,67 @@ getdata <- function(dataset,
   # use the below when all data is setup as tbl_df
   # } %>% { if (is.na(groups(.))) . else ungroup(.) } %>%     # ungroup data if needed
 
+
+#' Convert character to factors as needed
+#'
+#' @param dat Data.frame
+#' @param safx Values to levels ratio
+#'
+#' @return Data.frame with factors
+#'
+#' @export
+factorizer <- function(dat, safx = 10) {
+  isChar <- sapply(dat, is.character)
+  if (sum(isChar) == 0) return(dat)
+    toFct <-
+      select(dat, which(isChar)) %>%
+      summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
+      select(which(. == TRUE)) %>% names
+  if (length(toFct) == 0) return(dat)
+
+
+  ## workaround for https://github.com/hadley/dplyr/issues/1238
+  for (i in toFct)
+    dat[[i]] %<>% ifelse(is.na(.), "[Empty]", .) %>% ifelse(. == "", "[Empty]", .) %>% as.factor
+
+  return(dat)
+
+  ## not using due to https://github.com/hadley/dplyr/issues/1238
+  ## Seems fixed in dev version of dplyr
+  # rmiss <- . %>% ifelse(is.na(.), "[Empty]", .) %>% ifelse(. == "", "[Empty]", .)
+  # mutate_each_(dat, funs(rmiss), vars = toFct)  %>%  # replace missing levels
+  # m ckautate_each_(funs(as.factor), vars = toFct)
+}
+
+#' Load a csv files with read.csv and read_csv
+#'
+#' @param fn File name string
+#' @param header Header in file (TRUE, FALSE)
+#' @param sep Use , or ; or \\t
+#' @param saf Convert character variables to factors if (1) there are less than 100 distinct values (2) there are X (see safx) more values than levels
+#' @param safx Values to levels ratio
+#'
+#' @return Data.frame with (some) variables converted to factors
+#'
+#' @export
+loadcsv <- function(fn, header = TRUE, sep = ",", saf = TRUE, safx = 10) {
+
+  cn <- try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE, nrows = 1), silent = TRUE)
+  dat <- try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
+    {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
+        try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
+     else . } %>%
+    {if (is(., 'try-error')) return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
+     else .} %>%
+    {if (saf) factorizer(., safx) else . } %>% as.data.frame
+
+  ## workaround for https://github.com/rstudio/DT/issues/161
+  # isDate <- sapply(dat, is.Date)
+  # if (sum(isDate) == 0) return(dat)
+  # for (i in colnames(dat)[isDate]) dat[[i]] %<>% as.POSIXct %>% as.Date
+
+  dat
+}
 
 #' Change data
 #'
@@ -174,6 +268,8 @@ changedata <- function(dataset,
 #' @param dataset Name of the dataframe to change
 #' @param vars Variables to so (default is all)
 #' @param filt Filter to apply to the specified dataset. For example "price > 10000" if dataset is "diamonds" (default is "")
+#' @param rows Select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
+#' @param na.rm Remove rows with missing values (default is FALSE)
 #'
 #' @examples
 #' if (interactive()) {
@@ -183,10 +279,10 @@ changedata <- function(dataset,
 #' }
 #'
 #' @export
-viewdata <- function(dataset, vars = "", filt = "") {
+viewdata <- function(dataset, vars = "", filt = "", rows = NULL, na.rm = FALSE) {
 
   ## based on http://rstudio.github.io/DT/server.html
-  dat <- getdata(dataset, vars, filt = filt)
+  dat <- getdata(dataset, vars, filt = filt, rows = rows, na.rm = FALSE)
   title <- if (is_string(dataset)) paste0("DT:", dataset) else "DT"
 
   shinyApp(
@@ -235,7 +331,8 @@ getclass <- function(dat) {
     sub("ordered","factor", .) %>%
     sub("POSIXct","date", .) %>%
     sub("POSIXlt","date", .) %>%
-    sub("Date","date", .)
+    sub("Date","date", .) %>%
+    sub("Period","period", .)
 }
 
 #' Is a character variable defined
@@ -640,7 +737,7 @@ state_multiple <- function(inputvar, vals, init = character(0)) {
 
 #' Print/draw method for grobs produced by gridExtra
 #'
-#' @details See \url{https://github.com/baptiste/gridextra/blob/master/inst/testing/shiny.R}
+#' @details Print method for ggplot grobs created using arrangeGrob. Code is based on \url{https://github.com/baptiste/gridextra/blob/master/inst/testing/shiny.R}
 #'
 #' @param x a gtable object
 #' @param ... further arguments passed to or from other methods

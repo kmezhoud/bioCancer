@@ -6,6 +6,13 @@ output$ui_tr_vars <- renderUI({
     multiple = TRUE, size = min(8, length(vars)), selectize = FALSE)
 })
 
+output$ui_tr_replace <- renderUI({
+  vars <- varnames()
+  selectInput("tr_replace", "Select replacement variables:", choices  = vars,
+    selected = state_multiple("tr_replace", vars),
+    multiple = TRUE, size = min(2, length(vars)), selectize = FALSE)
+})
+
 output$ui_tr_reorg_vars <- renderUI({
   vars <- varnames()
   selectizeInput("tr_reorg_vars", "Reorder/remove variables:", choices  = vars,
@@ -91,6 +98,10 @@ d_ymd <- . %>% { if (is.factor(.)) as.character(.) else . } %>%
 d_ymd_hms <- . %>% { if (is.factor(.)) as.character(.) else . } %>%
                lubridate::ymd_hms(.)
 
+## time in hours:minutes and seconds
+# t_hms <- . %>% { if (is.factor(.)) as.character(.) else . } %>% lubridate::hms(.)
+# t_hm <- . %>% { if (is.factor(.)) as.character(.) else . } %>% lubridate::hm(.)
+
 as_int <- function(x) {
 	if (is.factor(x)) {
 		levels(x) %>% .[x] %>% as.integer
@@ -123,64 +134,72 @@ trans_options <- list("None" = "none", "Log" = "log", "Exp" = "exp",
                       "Median split" = "msp", "Deciles" = "dec")
 
 type_options <- list("None" = "none", "As factor" = "as.factor",
-                     "As number" = "as_num", "As integer" = "as_int",
+                     "As numeric" = "as_num", "As integer" = "as_int",
                      "As character" = "as.character", "As date (mdy)" = "d_mdy",
                      "As date (dmy)" = "d_dmy", "As date (ymd)" = "d_ymd",
                      "As date/time (ymd_hms)" = "d_ymd_hms")
+                     # "As time (hm)" = "t_hm", "As time (hms)" = "t_hms",
 
-trans_types <- list("None" = "none", "Type" = "type", "Change" = "change",
+# trans_types <- list("None" = "none", "Type" = "type", "Change" = "change",
+trans_types <- list("None" = "none", "Type" = "type", "Transform" = "transform",
                     "Normalize" = "normalize", "Create" = "create",
                     "Clipboard" = "clip", "Recode" = "recode",
-                    "Rename" = "rename", "Reorder/remove variables" = "reorg_vars",
+                    "Rename" = "rename", "Replace" = "replace",
+                    "Reorder/remove variables" = "reorg_vars",
                     "Reorder/remove levels" = "reorg_levs",
-                    "Remove missing" = "remove_na",
-                    "Save filtered data" = "save_filtered")
+                    "Remove missing" = "remove_na")
+                    # "Store filtered data" = "store_filtered")
 
 output$ui_Transform <- renderUI({
-	# Inspired by Ian Fellow's transform ui in JGR/Deducer
-  list(wellPanel(
+	## Inspired by Ian Fellow's transform ui in JGR/Deducer
+  tagList(wellPanel(
     uiOutput("ui_tr_vars"),
     selectInput("tr_change_type", "Transformation type:", trans_types, selected = "none"),
     conditionalPanel(condition = "input.tr_change_type == 'type'",
 	    selectInput("tr_typefunction", "Change variable type:", type_options, selected = "none")
     ),
-    conditionalPanel(condition = "input.tr_change_type == 'change'",
+    conditionalPanel(condition = "input.tr_change_type == 'transform'",
 	    selectInput("tr_transfunction", "Apply function:", trans_options)
     ),
     conditionalPanel(condition = "input.tr_change_type == 'normalize'",
       uiOutput("ui_tr_normalizer")
     ),
     conditionalPanel(condition = "input.tr_change_type == 'create'",
-	    returnTextAreaInput("tr_transform", "Create (e.g., x = y - z):", '')
+	    returnTextAreaInput("tr_create", "Create (e.g., x = y - z):", "")
     ),
     conditionalPanel(condition = "input.tr_change_type == 'clip'",
-    	HTML("<label>Paste from Excel:</label>"),
+    	HTML("<label>Paste from spreadsheet:</label>"),
     	tags$textarea(class="form-control", id="tr_paste", rows=3, "")
     ),
     conditionalPanel(condition = "input.tr_change_type == 'recode'",
-	    returnTextAreaInput("tr_recode", "Recode (e.g., lo:20 = 1):", '')
+	    returnTextAreaInput("tr_recode", "Recode (e.g., lo:20 = 1):", "")
     ),
     conditionalPanel(condition = "input.tr_change_type == 'rename'",
-      returnTextAreaInput("tr_rename", "Rename (separate by , ):", '')
+      returnTextAreaInput("tr_rename", "Rename (separate by , ):", "")
     ),
-    conditionalPanel(condition = "input.tr_change_type != ''",
-      actionButton("tr_save_changes", "Save changes")
-	  ),
+    conditionalPanel(condition = "input.tr_change_type == 'replace'",
+      uiOutput("ui_tr_replace")
+    ),
     conditionalPanel(condition = "input.tr_change_type == 'reorg_vars'",
-      br(), uiOutput("ui_tr_reorg_vars")
+      uiOutput("ui_tr_reorg_vars")
     ),
     conditionalPanel(condition = "input.tr_change_type == 'reorg_levs'",
-      br(), uiOutput("ui_tr_reorg_levs")
+      uiOutput("ui_tr_reorg_levs")
     ),
-	  textInput("tr_dataset", "Save changes to:", input$dataset)),
-
+    conditionalPanel(condition = "input.tr_change_type != 'none'",
+	    tags$table(
+	      tags$td(textInput("tr_dataset", "Store changes in:",
+	                        state_init("tr_dataset",input$dataset))),
+	      tags$td(actionButton("tr_store", "Store"), style="padding-top:30px;")
+	    )
+	  ),
     # help_and_report(modal_title = "Transform",
     #                 fun_name = "transform",
     #                 help_file = inclMD(file.path(r_path, "base/tools/help/transform.md")))
 		help_modal("Transform", "transform_help",
 		  inclMD(file.path(r_path,"base/tools/help/transform.md")))
 
-	)
+	))
 })
 
 find_env <- function(dataset) {
@@ -194,20 +213,23 @@ find_env <- function(dataset) {
 }
 
 save2env <- function(dat, dataset,
-                     tr_dataset = dataset,
-                     tr_message = "") {
+                     dat_name = dataset,
+                     mess = "") {
 
 	env <- find_env(dataset)
-	env$r_data[[tr_dataset]] <- dat
-  if(dataset != tr_dataset) {
-  	cat(paste0("Dataset r_data$", tr_dataset, " created in ", environmentName(env), " environment\n"))
-  	env$r_data[['datasetlist']] <- c(tr_dataset, env$r_data[['datasetlist']]) %>% unique
+	env$r_data[[dat_name]] <- dat
+  if(dataset != dat_name) {
+  	cat(paste0("Dataset r_data$", dat_name, " created in ", environmentName(env), " environment\n"))
+  	env$r_data[['datasetlist']] <- c(dat_name, env$r_data[['datasetlist']]) %>% unique
  	} else {
-  	cat(paste0("Dataset r_data$", dataset, " change in ", environmentName(env), " environment\n"))
+  	cat(paste0("Dataset r_data$", dataset, " changed in ", environmentName(env), " environment\n"))
  	}
 
-  if(tr_message != "")
-  	env$r_data[[paste0(tr_dataset,"_descr")]] %<>% paste0("\n",tr_message)
+ 	## set to previous description
+  env$r_data[[paste0(dat_name,"_descr")]] <- env$r_data[[paste0(dataset,"_descr")]]
+
+  if(mess != "")
+    env$r_data[[paste0(dat_name,"_descr")]] %<>% paste0("\n\n",mess)
 }
 
 reorg_vars <- function(dataset,
@@ -250,20 +272,20 @@ remove_na <- function(dataset,
 	  {if (!tr_save) . else save2env(., dataset, tr_dataset, tr_message)}
 }
 
-save_filtered <- function(dataset,
-                          tr_dataset = dataset,
-                          data_filter = "",
-                          tr_save = TRUE) {
+# store_filtered <- function(dataset,
+#                           tr_dataset = dataset,
+#                           data_filter = "",
+#                           tr_save = TRUE) {
 
-	if (!tr_save)
-		return(getdata(dataset, filt = data_filter, na.rm = FALSE))
+# 	if (!tr_save)
+# 		return(getdata(dataset, filt = data_filter, na.rm = FALSE))
 
-	tr_message <- if (data_filter == "") ""
-								else paste0("\nSaved filtered data: ", data_filter, " (", lubridate::now(), ")")
+# 	tr_message <- if (data_filter == "") ""
+# 								else paste0("\nSaved filtered data: ", data_filter, " (", lubridate::now(), ")")
 
-	getdata(dataset, filt = data_filter, na.rm = FALSE) %>%
-	  save2env(dataset, tr_dataset, tr_message)
-}
+# 	getdata(dataset, filt = data_filter, na.rm = FALSE) %>%
+# 	  save2env(dataset, tr_dataset, tr_message)
+# }
 
 # list of function arguments
 tr_args_fun <- function(fun) as.list(formals(fun))
@@ -288,6 +310,12 @@ inp_vars <- function(inp, rval = "")
 transform_main <- reactive({
 
 	if (is.null(input$tr_change_type)) return()
+
+	## don't transform when a filter is active
+  selcom <- input$data_filter %>% gsub("\\s","", .) %>% gsub("\"","\'",.)
+  if (!is_empty(selcom) && input$show_filter == TRUE)
+  	return("A filter is active. Either uncheck the filter checkbox, remove the filter statement,\nor store the filtered data through the Data > View tab")
+
 	dat <- .getdata()
 
 	if (input$tr_change_type == "none") {
@@ -301,13 +329,6 @@ transform_main <- reactive({
 	if (input$tr_change_type == "remove_na")
 		return(remove_na(dat, inp_vars("tr_vars"), tr_save = FALSE))
 
-	if (input$tr_change_type == 'save_filtered') {
-		if (input$show_filter == FALSE)
-			updateCheckboxInput(session = session, inputId = "show_filter", value = TRUE)
-
-		return(save_filtered(dat, tr_save = FALSE))
-	}
-
 	# stopped here
 
 	if (!is.null(input$tr_vars)) {
@@ -317,12 +338,20 @@ transform_main <- reactive({
 
 		if (input$tr_transfunction != 'none') {
       fun <- get(input$tr_transfunction)
-      dat_tr <- dat %>% mutate_each_(funs(fun), vars)
-  		cn <- c(vars,paste(input$tr_transfunction,vars, sep="_"))
-			dat <- cbind(dat,dat_tr)
-			colnames(dat) <- cn
+      dat <- dat %>% mutate_each_(funs(fun), vars) %>%
+        bind_cols(dat, .) %>%
+        set_colnames(c(vars, paste(vars, input$tr_transfunction, sep="_")))
+
+      # dat <- cbind(dat,dat_tr)
+      # cn <- c(vars,paste(vars, input$tr_transfunction, sep="_"))
+   #    dat_tr <- dat %>% mutate_each_(funs(fun), vars)
+  	# 	cn <- c(vars,paste(vars, input$tr_transfunction, sep="_"))
+			# dat <- cbind(dat,dat_tr)
+			# dat <- bind_cols(dat,dat_tr)
+			# colnames(dat) <- cn
 		}
 		if (input$tr_typefunction != 'none') {
+      ## change in type is always done in-place
       fun <- get(input$tr_typefunction)
       dat <- mutate_each_(dat,funs(fun), vars)
 		}
@@ -332,15 +361,12 @@ transform_main <- reactive({
       isNum <- "numeric" == dc | "integer" == dc
       if (sum(isNum) == 0) return("Please select numerical variables to normalize")
       dat_tr <- dplyr::select(dat,which(isNum)) / .getdata()[,input$tr_normalizer]
-      # dat_tr <- try(dplyr::select(dat,which(isNum)) / .getdata()[,input$tr_normalizer], silent = TRUE)
-      # if (is(dat_tr, 'try-error'))
-      # 	return(paste0("The normalization failed. The error message was:\n\n", attr(dat_tr,"condition")$message, "\n\nPlease try again. Examples are shown in the help file."))
      	cn <- c(vars,paste(vars[isNum],input$tr_normalizer, sep="_"))
 			dat <- cbind(dat,dat_tr)
 			colnames(dat) <- cn
  		}
 	} else {
-		if (!input$tr_change_type %in% c("", "save_filtered", "create", "clip")) return()
+		if (!input$tr_change_type %in% c("", "store_filtered", "create", "clip")) return()
 	}
 
 	if (!is.null(input$tr_vars) & input$tr_change_type == 'reorg_levs') {
@@ -352,63 +378,68 @@ transform_main <- reactive({
   }
 
 	if (input$tr_change_type ==  'recode') {
-		if (input$tr_recode != '') {
-
-			recom <- input$tr_recode
-			recom <- gsub("\"","\'", recom)
-
-			newvar <- try(do.call(car::recode, list(dat[,input$tr_vars[1]],recom)), silent = TRUE)
-			if (!is(newvar, 'try-error')) {
-				cn <- c(colnames(dat),paste("rc",input$tr_vars[1], sep="_"))
-				dat <- cbind(dat,newvar)
-				colnames(dat) <- cn
-				return(dat)
+    recom <- input$tr_recode %>% gsub("\\s","", .) %>% gsub("\"","\'",.)
+		if (recom != "") {
+			nvar <- try(do.call(car::recode, list(dat[[input$tr_vars[1]]],recom)), silent = TRUE)
+			if (!is(nvar, 'try-error')) {
+        return(data.frame(nvar) %>% setNames(paste(input$tr_vars[1],"rc", sep="_")))
 			} else {
-      	return(paste0("The recode command was not valid. The error message was:\n", attr(newvar,"condition")$message, "\nPlease try again. Examples are shown in the help file."))
+      	return(paste0("The recode command was not valid. The error message was:\n", attr(nvar,"condition")$message, "\nPlease try again. Examples are shown in the help file (click the ? icon)."))
 			}
 		}
 	}
 
 	if (input$tr_change_type == 'clip') {
-		if (input$tr_paste != '') {
-			cpdat <- read.table(header=T, text=input$tr_paste)
+		if (input$tr_paste != "") {
+
+      cpdat <- try(read.table(header = TRUE, comment.char = "", fill = TRUE, sep = "\t", as.is = TRUE, text = input$tr_paste), silent = TRUE)
+      if (is(cpdat, 'try-error')) {
+        return("The copy-and-pasted data was not well formated. Please make\nsure the number of rows in the data in Radiant and in the\nspreadsheet are the same and try again.")
+      }
+
+      if (is.null(input$tr_vars)) {
+        if (nrow(.getdata()) == nrow(cpdat)) return(cpdat)
+        else return("The copy-and-pasted data does not have the correct number of rows. Please make\nsure the number of rows in the data in Radiant and in the spreadsheet are the\nsame and try again.")
+      }
+
 			cpname <- names(cpdat)
-			if (sum(cpname %in% colnames(dat)) > 0) names(cpdat) <- paste('cp',cpname,sep = '_')
-			if (is.null(input$tr_vars)) return(cpdat)
-			if (nrow(cpdat) == nrow(dat)) dat <- cbind(dat,cpdat)
+			if (sum(cpname %in% colnames(dat)) > 0) names(cpdat) <- paste(cpname, "cp", sep = '_')
+      if (nrow(cpdat) == nrow(dat)) dat <- bind_cols(dat,cpdat)
+      else return("The copy-and-pasted data does not have the correct number of rows. Please make\nsure the number of rows in the data in Radiant and in the spreadsheet are the\nsame and try again.")
 		}
 	}
 
 	if (input$tr_change_type == 'rename') {
-		if (!is.null(input$tr_vars) && input$tr_rename != '') {
-			rcom <- unlist(strsplit(gsub(" ","",input$tr_rename), ","))
-			rcom <- rcom[1:min(length(rcom),length(input$tr_vars))]
+    tr_rename <- input$tr_rename %>% gsub("\\s","", .)
+		if (!is.null(input$tr_vars) && tr_rename != "") {
+			rcom <- unlist(strsplit(tr_rename, ",")) %>%
+        .[1:min(length(.),length(input$tr_vars))]
 			names(dat)[1:length(rcom)] <- rcom
-      # rename_(dat, .dots = setNames(l2,l1))   # dplyr alternative has the same dplyr::changes result
+      ## dplyr alternative has the same dplyr::changes result
+      # rename_(dat, .dots = setNames(l2,l1))
+		}
+	}
+
+	if (input$tr_change_type == 'replace') {
+		vars <- input$tr_vars
+		replace <- input$tr_replace
+		if (available(input$tr_vars) && available(input$tr_replace)) {
+		  if (length(vars) != length(replace))
+        return(paste0("The number of replacement variables (", length(replace), ") is not equal to the number of variables to replace (", length(vars),")"))
+			dat[,vars] <- .getdata()[,replace]
 		}
 	}
 
 	if (input$tr_change_type == 'create') {
-		if (input$tr_transform != '') {
-			recom <- input$tr_transform
-			recom <- gsub("\"","\'", recom)
-
-			fullDat <- .getdata()
-			newvar <- try(do.call(within, list(fullDat,parse(text = recom))), silent = TRUE)
-			if (!is(newvar, 'try-error')) {
-				nfull <- ncol(fullDat)
-				nnew <- ncol(newvar)
-
-				# this won't work properly if the transform command creates a new variable
-				# and also overwrites an existing one
-				if (nfull < nnew) newvar <- newvar[,(nfull+1):nnew, drop = FALSE]
-				if (is.null(input$tr_vars)) return(newvar)
-				cn <- c(colnames(dat),colnames(newvar))
-				dat <- cbind(dat,newvar)
-				colnames(dat) <- cn
-				head(dat)
-			} else {
-      	return(paste0("The create command was not valid. The command entered was:\n\n", recom, "\n\nThe error message was:\n\n", attr(newvar,"condition")$message, "\n\nPlease try again. Examples are shown in the help file."))
+    ccom <- input$tr_create %>% gsub("\\s","", .) %>% gsub("\"","\'",.)
+		if (ccom != "") {
+			fdat <- .getdata()
+			ndat <- try(do.call(within, list(fdat, parse(text = ccom))), silent = TRUE)
+			if (is(ndat, 'try-error')) {
+      	return(paste0("The create command was not valid. The command entered was:\n\n", ccom, "\n\nThe error message was:\n\n", attr(ndat,"condition")$message, "\n\nPlease try again. Examples are shown in the help file."))
+      } else {
+			  nvars <- strsplit(ccom, ";")[[1]] %>% strsplit(.,"=") %>% sapply("[", 1)
+				dat <- select_(ndat, .dots = nvars)
 			}
 		}
 	}
@@ -418,7 +449,7 @@ transform_main <- reactive({
 
 output$transform_data <- reactive({
   dat <- transform_main()
-  if (is.null(dat) || is.character(dat)) return(invisible())
+  if (is.null(dat) || is.character(dat) || ncol(dat) == 0) return(invisible())
   show_data_snippet(dat)
 })
 
@@ -428,43 +459,42 @@ output$transform_summary <- renderPrint({
 	if (is.character(dat)) cat(dat) else getsummary(dat)
 })
 
-observe({
-	if (is.null(input$tr_save_changes) || input$tr_save_changes == 0) return()
+observeEvent(input$tr_store, {
 	isolate({
 		dat <- transform_main()
-		if (dat %>% is.null) return()
-		if (dat %>% is.character) return(dat)
+		if (is.null(dat)) return()
+		if (is.character(dat)) return(dat)
 
-		# saving to a new dataset if specified
+		## saving to a new dataset if specified
 		dataset <- input$tr_dataset
 		if (r_data[[dataset]] %>% is.null) {
 			r_data[[dataset]] <- .getdata()
 			r_data[[paste0(dataset,"_descr")]] <- r_data[[paste0(input$dataset,"_descr")]]
-			r_data[['datasetlist']] %<>%
-				c(dataset,.) %>%
-				unique
+			r_data[['datasetlist']] %<>% c(dataset,.) %>% unique
 		}
 
 	  if (input$tr_change_type == 'type') {
 	  	r_data[[dataset]][,colnames(dat)] <- dat
 		} else if (input$tr_change_type == 'remove_na') {
 	  	r_data[[dataset]] <- dat
-		} else if (input$tr_change_type == 'save_filtered') {
-	  	r_data[[dataset]] <- dat
-	    r_data[[paste0(dataset,"_descr")]] %<>%
-	    	paste0(., "\n\n### Subset\n\nCommand used: `", input$data_filter,
-	    	       		"` to filter from dataset: ", input$dataset)
 		} else if (input$tr_change_type == 'rename') {
   		r_data[[dataset]] %<>%
   			rename_(.dots = setNames(input$tr_vars, colnames(dat)))
 		} else if (input$tr_change_type == 'reorg_vars') {
+<<<<<<< HEAD
 	  	# r_data[[dataset]] %<>% .[,input$tr_reorg_vars]
 	  	r_data[[dataset]] %<>% dplyr::select_(.dots = input$tr_reorg_vars)
+=======
+	  	r_data[[dataset]] %<>% select_(.dots = input$tr_reorg_vars)
+		} else if (input$tr_change_type == 'replace') {
+	  	r_data[[dataset]][,colnames(dat)] <- dat
+	  	r_data[[dataset]][, input$tr_replace] <- list(NULL)
+>>>>>>> upstream/master
 	  } else {
 			.changedata(dat, colnames(dat), dataset = dataset)
 		}
 
-		# reset input values once the changes have been applied
+		## reset input values once the changes have been applied
 		updateSelectInput(session = session, inputId = "tr_change_type", selected = "none")
 
     if (dataset != input$dataset)
@@ -473,23 +503,21 @@ observe({
   })
 })
 
-observe({
-	# reset all settings when tr_change_type is changed
-	input$tr_change_type
+observeEvent(input$tr_change_type, {
+	## reset all values when tr_change_type is changed
 	isolate({
-		updateTextInput(session = session, inputId = "tr_transform", value = "")
+		updateTextInput(session = session, inputId = "tr_create", value = "")
 	 	updateTextInput(session = session, inputId = "tr_recode", value = "")
 	 	updateTextInput(session = session, inputId = "tr_rename", value = "")
 	 	updateTextInput(session = session, inputId = "tr_paste", value = "")
 		updateSelectInput(session = session, inputId = "tr_typefunction", selected = "none")
 		updateSelectInput(session = session, inputId = "tr_transfunction", selected = "none")
+	  updateSelectInput(session = session, inputId = "tr_replace", selected = "None")
 	  updateSelectInput(session = session, inputId = "tr_normalizer", selected = "none")
-	 	# updateTextInput(session = session, inputId = "tr_create", value = "")
-	 	# updateTextInput(session = session, inputId = "tr_subset", value =  "")
 	})
 })
 
-
+## not doing anything yet ...
 observe({
   if (not_pressed(input$transform_report)) return()
   fun <- isolate(input$tr_change_type)

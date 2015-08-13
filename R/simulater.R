@@ -1,10 +1,11 @@
+
 ### Make another tab where you can run multiple sims (e.g., grid-search) and
 ### aggregate the results
 ### This would also be useful for Conjoint I think
 
 #' Simulate data for decision analysis
 #'
-#' @details See \url{http://vnijs.github.io/radiant/base/simulater.html} for an example in Radiant
+#' @details See \url{http://vnijs.github.io/radiant/quant/simulater.html} for an example in Radiant
 #'
 #' @param const A string listing the constants to include in the analysis (e.g., "cost = 3; size = 4")
 #' @param norm A string listing the normally distributed random variables to include in the analysis (e.g., "demand 2000 1000" where the first number is the mean and the second is the standard deviation)
@@ -151,7 +152,7 @@ simulater <- function(const = "",
 
 #' Summary method for the simulater function
 #'
-#' @details See \url{http://vnijs.github.io/radiant/base/simulater.html} for an example in Radiant
+#' @details See \url{http://vnijs.github.io/radiant/quant/simulater.html} for an example in Radiant
 #'
 #' @param object Return value from \code{\link{simulater}}
 #' @param ... further arguments passed to or from other methods
@@ -173,7 +174,7 @@ summary.simulater <- function(object, ...) {
 
 #' Plot method for the simulater function
 #'
-#' @details See \url{http://vnijs.github.io/radiant/base/simulater} for an example in Radiant
+#' @details See \url{http://vnijs.github.io/radiant/quant/simulater} for an example in Radiant
 #'
 #' @param x Return value from \code{\link{simulater}}
 #' @param shiny Did the function call originate inside a shiny app
@@ -195,7 +196,7 @@ plot.simulater <- function(x, shiny = FALSE, ...) {
 
   plot_list <- list()
   for (i in colnames(object)) {
-    dat <- dplyr::select_(object, .dots = i)
+    dat <- select_(object, .dots = i)
     if (sd(object[[i]]) == 0) {
       ## plot constants - keep??
       dat$sim <- 1:nrow(dat)
@@ -345,7 +346,7 @@ plot.repeater <- function(x,
   for (l in names(object$res)) {
     for (i in colnames(object$res[[l]]) %>% .[!. %in% byvar]) {
 
-      dat <- dplyr::select_(object$res[[l]], .dots = i)
+      dat <- select_(object$res[[l]], .dots = i)
       bw <- diff(range(dat[[1]], na.rm = TRUE)) / 20
 
       ## plot results
@@ -386,3 +387,4 @@ plot.repeater <- function(x,
 # demand <- rnorm(10, 1000,100)
 # dyn <- demand + lag(demand, default = 0)
 # dyn
+

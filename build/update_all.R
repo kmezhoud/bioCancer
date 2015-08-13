@@ -27,7 +27,9 @@ system("git push")
 # devtools::install_github("vnijs/MathJaxR")
 # devtools::install_github(c("vnijs/radiant","rstudio/DT"))
 # devtools::install_github("vnijs/radiant")
-devtools::install_github(c("vnijs/radiant","rstudio/DT"))
+# remove.packages('dplyr')
+devtools::install_github(c("vnijs/radiant","rstudio/DT", "gluc/data.tree"))
+# devtools::install_github(c("hadley/dplyr"))
 # devtools::install_github("trestletech/shinyAce")
 # library(radiant)
 # radiant()
@@ -60,10 +62,10 @@ Sys.sleep(5)
 # system("git commit -m 'Undo css change for shinyapps.io [ci skip]'")
 # system("git push")
 
-answ <- readline("Did you create binary packages for Windows? (y/n) ")
-if (substr(answ, 1, 1) %in% c("y","Y")) {
+# answ <- readline("Did you create binary packages for Windows? (y/n) ")
+# if (substr(answ, 1, 1) %in% c("y","Y")) {
   system("sh build/build_mac_win.sh")
-}
+# }
 
 ## in case of problems
 # shinyapps::showLogs(entries=1000)

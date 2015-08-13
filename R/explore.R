@@ -7,6 +7,7 @@
 #' @param byvar Variable(s) to group data by before summarizing
 #' @param fun Functions to use for summarizing
 #' @param data_filter Expression entered in, e.g., Data > View to filter the dataset in Radiant. The expression should be a string (e.g., "price > 10000")
+#' @param shiny Logical (TRUE, FALSE) to indicate if the function call originate inside a shiny app
 #'
 #' @return A list of all variables defined in the function as an object of class explore
 #'
@@ -18,27 +19,14 @@
 #' diamonds %>% explore("price", byvar = "cut", fun = c("length", "skew"))
 #'
 #' @seealso \code{\link{summary.explore}} to show summaries
-#' @seealso \code{\link{plot.explore}} to plot summaries
 #'
 #' @export
 explore <- function(dataset,
                     vars = "",
                     byvar = "",
-                    fun = c("length", "mean_rm"),
-                    data_filter = "") {
-
-# https://github.com/hadley/dplyr/issues/893
-# structure(list(price = c(580L, 650L, 630L, 706L, 1080L, 3082L,
-# 3328L, 4229L, 1895L, 3546L, 752L, 13003L, 814L, 6115L, 645L,
-# 3749L, 2926L, 765L, 1140L, 1158L), cut = structure(c(2L, 4L,
-# 4L, 2L, 3L, 2L, 2L, 3L, 4L, 1L, 1L, 3L, 2L, 4L, 3L, 3L, 1L, 2L,
-# 2L, 2L), .Label = c("Good", "Ideal", "Premium", "Very Good"), class = "factor")), row.names = c(NA,
-# -20L), .Names = c("price", "cut"), class = "data.frame") %>%
-  # diamonds %>%
-  # group_by(cut) %>%
-  # select(price) %>%
-  # # mutate_each("as.numeric") %>%
-  # summarise(price = median(price))
+                    fun = "mean_rm",
+                    data_filter = "",
+                    shiny = FALSE) {
 
   tvars <- vars
   if (!is_empty(byvar)) tvars %<>% c(byvar)
@@ -49,21 +37,49 @@ explore <- function(dataset,
   ## in case : was used
   vars <- colnames(head(dat) %>% dplyr::select_(.dots = vars))
 
+  ## summaries only for numeric variables
+  isNum <- getclass(dat) %>% {which("numeric" == . | "integer" == .)}
+
+  ## avoid using .._rm as function name
+  pfun <- make_funs(fun)
+
   if (is_empty(byvar)) {
-    res <- capture.output(getsummary(dat))
+    tab <- dat %>% select(isNum) %>%
+      gather("variable", "value") %>%
+      group_by_("variable")  %>% summarise_each(pfun)
+    if (ncol(tab) == 2) colnames(tab) <- c("variable", names(pfun))
   } else {
-    res <- list()
-    for(bv in byvar)
-      if (!is.factor(dat[[bv]])) dat[[bv]] %<>% as.factor
-    dc <- getclass(dat)
-    isNum <- "numeric" == dc | "integer" == dc
+    for(bv in byvar) if (!is.factor(dat[[bv]])) dat[[bv]] %<>% as.factor
 
     ## for median issue in dplyr < .5
-    # dat %<>% group_by_(.dots = byvar) %>% select(which(isNum)) %>% mutate_each("as.numeric")
-    dat %<>% group_by_(.dots = byvar) %>% dplyr::select(which(isNum))
+# <<<<<<< HEAD
+#     # dat %<>% group_by_(.dots = byvar) %>% select(which(isNum)) %>% mutate_each("as.numeric")
+#     dat %<>% group_by_(.dots = byvar) %>% dplyr::select(which(isNum))
+#
+#     for (f in fun)
+#       res[[f]] <- dat %>% summarise_each(as.formula(paste0("~",f))) %>% as.data.frame
+# =======
+    ## https://github.com/hadley/dplyr/issues/893
+    tab <-
+      dat %>% group_by_(.dots = byvar) %>%
+      dplyr::select(isNum) %>% mutate_each("as.numeric") %>%
+      summarise_each(pfun)
 
-    for (f in fun)
-      res[[f]] <- dat %>% summarise_each(as.formula(paste0("~",f))) %>% as.data.frame
+    if (length(vars) > 1 && length(fun) > 1) {
+      ## useful answer and comments: http://stackoverflow.com/a/27880388/1974918
+      tab %<>% gather("variable", "value", -(1:length(byvar))) %>%
+        separate(variable, into = c("variable", "fun"), sep = "_(?=[^_]*$)") %>%
+        mutate(fun = factor(fun, levels = names(pfun)), variable = factor(variable, levels = vars)) %>%
+        spread_("fun","value")
+    } else if (length(fun) == 1) {
+      tab %<>% gather("variable", "value", -(1:length(byvar))) %>%
+        mutate(variable = factor(variable, levels = vars)) %>%
+        rename_(.dots = setNames("value", names(pfun)))
+    } else if (length(vars) == 1){
+      tab %<>% mutate(variable = factor(vars, levels = vars)) %>%
+        select_(.dots = c(byvar, "variable", names(pfun)))
+    }
+#>>>>>>> upstream/master
   }
 
   ## dat no longer needed
@@ -77,6 +93,7 @@ explore <- function(dataset,
 #' @details See \url{http://vnijs.github.io/radiant/base/explore.html} for an example in Radiant
 #'
 #' @param object Return value from \code{\link{explore}}
+#' @param top The variable (type) to display at the top of the table
 #' @param ... further arguments passed to or from other methods
 #'
 #' @examples
@@ -88,92 +105,133 @@ explore <- function(dataset,
 #' diamonds %>% explore("price", byvar = "cut", fun = c("length", "skew")) %>% summary
 #'
 #' @seealso \code{\link{explore}} to generate summaries
-#' @seealso \code{\link{plot.explore}} to plot summaries
 #'
 #' @export
-summary.explore <- function(object, ...) {
+summary.explore <- function(object, top = "fun", ...) {
 
-  cat("Data     :", object$dataset, "\n")
+  cat("Data      :", object$dataset, "\n")
   if (object$data_filter %>% gsub("\\s","",.) != "")
-    cat("Filter   :", gsub("\\n","", object$data_filter), "\n")
-
+    cat("Filter    :", gsub("\\n","", object$data_filter), "\n")
+  if (object$byvar != "")
+    cat("Grouped by: ", object$byvar, "\n")
+  cat("Functions : ", names(object$pfun), "\n")
+  cat("Top       : ", c("fun" = "Function", "var" = "Variables", "byvar" = "Group by")[top], "\n")
   cat("\n")
-  if (class(object$res) == "character") {
-    cat(paste0(object$res[-length(object$res)],sep="\n"))
-  } else {
 
-    if (!exists("expl_functions"))
-      funcs <- object$fun %>% set_names(.,.)
-    else
-      funcs <- get("expl_functions")
+  tab <- object %>% flip(top) %>% as.data.frame
+  cn_all <- colnames(tab)
+  cn_num <- cn_all[sapply(tab, is.numeric)]
+  tab[,cn_num] %<>% round(3)
 
-    for (f in object$fun) {
-      cat("Results grouped by: ", object$byvar, "\n")
-      cat("Function used: ", names(which(funcs == f)), "\n")
-      object$res[[f]] %>%
-        { .[,-c(1:length(object$byvar))] %<>% round(3); . } %>%
-        print
-      cat("\n")
-    }
-  }
+  print(tab, row.names = FALSE)
 
   invisible()
 }
 
-#' Plot method for the explore function
+#' Flip the DT table to put Function, Variable, or Group by on top
 #'
-#' @details See \url{http://vnijs.github.io/radiant/base/explore.html} for an example in Radiant. A plot will only be generated when a 'by' variable has been specified
+#' @details See \url{http://vnijs.github.io/radiant/base/explore.html} for an example in Radiant
 #'
-#' @param x Return value from \code{\link{explore}}
-#' @param shiny Did the function call originate inside a shiny app
-#' @param ... further arguments passed to or from other methods
+#' @param expl Return value from \code{\link{explore}}
+#' @param top The variable (type) to display at the top of the table ("fun" for Function, "var" for Variable, and "byvar" for Group by
 #'
 #' @examples
-#' result <- explore("diamonds", "price", byvar = "cut", fun = c("length", "skew"))
-#' plot(result)
+#' result <- explore("diamonds", "price:x") %>% flip("var")
+#' result <- explore("diamonds", "price", byvar = "cut", fun = c("length", "skew")) %>%
+#'   flip("byvar")
 #'
 #' @seealso \code{\link{explore}} to generate summaries
-#' @seealso \code{\link{summary.explore}} to show summaries
+#' @seealso \code{\link{make_expl}} to create the DT table
 #'
 #' @export
-plot.explore <- function(x, shiny = FALSE, ...) {
+flip <- function(expl, top) {
+  flip
+  cvars <- expl$byvar %>% {if (.[1] == "") character(0) else .}
+  if (top[1] == "var")
+    expl$tab %>% gather("function", "value", -(1:(length(cvars)+1))) %>% spread_("variable", "value")
+  else if (top[1] == "byvar" && length(cvars) > 0)
+    expl$tab %>% gather("function", "value", -(1:(length(cvars)+1))) %>% spread_(cvars[1], "value")
+  else
+    expl$tab
+}
 
-  object <- x; rm(x)
+#' Make a tabel of summary statistics in DT
+#'
+#' @details See \url{http://vnijs.github.io/radiant/base/explore.html} for an example in Radiant
+#'
+#' @param expl Return value from \code{\link{explore}}
+#' @param top The variable (type) to display at the top of the table ("fun" for Function, "var" for Variable, and "byvar" for Group by
+#' @param dec Number of decimals to show
+#'
+#' @examples
+#' tab <- explore("diamonds", "price:x") %>% make_expl
+#' tab <- explore("diamonds", "price", byvar = "cut", fun = c("length", "skew")) %>%
+#'   make_expl(top = "byvar")
+#'
+#' @seealso \code{\link{pivotr}} to create the pivot-table using dplyr
+#' @seealso \code{\link{summary.pivotr}} to print a plain text table
+#'
+#' @export
+make_expl <- function(expl, top = "fun", dec = 3) {
 
-  if (class(object$res)[1] == "character")
-    return(invisible())
+  tab <- expl %>% flip(top)
+  cn_all <- colnames(tab)
+  cn_num <- cn_all[sapply(tab, is.numeric)]
+  cn_cat <- cn_all[-which(cn_all %in% cn_num)]
 
-  by_var <- fill_var <- object$byvar[1]
-  if (length(object$byvar) > 1) fill_var <- object$byvar[2]
+  top <- c("fun" = "Function", "var" = "Variables", "byvar" = paste0("Group by: ", expl$byvar[1]))[top]
 
-  if (!exists("expl_functions")) {
-    funcs <- object$fun %>% set_names(.,.)
-  } else {
-    funcs <- get("expl_functions")
-  }
+  sketch = shiny::withTags(table(
+    thead(
+      tr(
+        th(" ", colspan = length(cn_cat)),
+        lapply(top, th, colspan = length(cn_num), class = "text-center")
+      ),
+      tr(lapply(cn_all, th))
+    )
+  ))
 
-  plots <- list()
-  for (f in object$fun) {
-    for (var in object$vars) {
-      plots[[paste0(var,"_",f)]] <-
-        ggplot(data = object$res[[f]], aes_string(x = by_var, y = var, fill = fill_var)) +
-          geom_bar(stat="identity", position = "dodge", alpha=.7) +
-          ggtitle(paste("Function used:", names(which(funcs == f))))
+  dt_tab <- tab %>% {.[,cn_num] <- round(.[,cn_num], dec); .} %>%
+    DT::datatable(container = sketch, rownames = FALSE,
+                  filter = list(position = "top", clear = FALSE, plain = TRUE),
+                  style = ifelse(expl$shiny, "bootstrap", "default"),
+                  options = list(
+                    # stateSave = TRUE,
+                    search = list(regex = TRUE),
+                    processing = FALSE,
+                    pageLength = 10,
+                    lengthMenu = list(c(10, 25, 50, -1), c("10","25","50","All"))
+                  )
+    ) %>% DT::formatStyle(., cn_cat,  color = "white", backgroundColor = "grey")
 
-      if (length(object$byvar) == 1) {
-        plots[[paste0(var,"_",f)]] <- plots[[paste0(var,"_",f)]] +
-          theme(legend.position = "none")
-      }
-    }
-  }
+  ## heat map with red or color_bar
+  # if (format == "color_bar") {
+  #   for (i in cn_num) {
+  #     dt_tab %<>% DT::formatStyle(i,
+  #                                 background = DT::styleColorBar(range(tab[, i], na.rm = TRUE), "lightblue"),
+  #                                 backgroundSize = "98% 88%",
+  #                                 backgroundRepeat = "no-repeat",
+  #                                 backgroundPosition = "center")
+  #   }
+  # } else if (format == "heat") {
+  #   for (i in cn_num) {
+  #     brks <- quantile(tab[[i]], probs = seq(.05, .95, .05), na.rm = TRUE)
+  #     clrs <- seq(255, 40, length.out = length(brks) + 1) %>%
+  #       round(0) %>%
+  #       {paste0("rgb(255,", ., ",", .,")")}
+  #     dt_tab %<>% DT::formatStyle(i, backgroundColor = DT::styleInterval(brks, clrs))
+  #   }
+  # }
 
-  sshhr( do.call(arrangeGrob, c(plots, list(ncol = 1))) ) %>%
-    { if (shiny) . else print(.) }
+  dt_tab
+
+  ## can use this in R > Report inside Radiant but doesn't export
+  # renderDataTable({make_dt(result)})
 }
 
 #' Create data.frame summary
 #'
-#' @details Used by Explore and Transform
+#' @details Used by Transform
 #'
 #' @param dat Data.frame
 #' @param dc Class for each variable
@@ -186,6 +244,7 @@ getsummary <- function(dat, dc = getclass(dat)) {
   isDate <- "date" == dc
   isChar <- "character" == dc
   isLogic <- "logical" == dc
+  isPeriod <- "period" == dc
 
   if (sum(isNum) > 0) {
 
@@ -216,14 +275,32 @@ getsummary <- function(dat, dc = getclass(dat)) {
     dplyr::select(dat, which(isDate)) %>% summarise_each(funs(max)) %>% print
     cat("\n")
   }
+  if (sum(isPeriod) > 0) {
+    cat("Earliest time:\n")
+    select(dat, which(isPeriod)) %>% summarise_each(funs(min)) %>% print
+    cat("\nFinal time:\n")
+    select(dat, which(isPeriod)) %>% summarise_each(funs(max)) %>% print
+    cat("\n")
+  }
   if (sum(isChar) > 0) {
-    cat("Summarize character variables:\n")
-    dplyr::select(dat, which(isChar)) %>% table %>% print
+# <<<<<<< HEAD
+#     cat("Summarize character variables:\n")
+#     dplyr::select(dat, which(isChar)) %>% table %>% print
+# =======
+    cat("Summarize character variables (< 20 unique values shown):\n")
+    dplyr::select(dat, which(isChar)) %>% distinct %>% lapply(unique) %>%
+      {for(i in names(.)) cat(i, ":", .[[i]][1:min(20,length(.[[i]]))], "\n")}
+#>>>>>>> upstream/master
     cat("\n")
   }
   if (sum(isLogic) > 0) {
     cat("Summarize logical variables:\n")
-    dplyr::select(dat, which(isLogic)) %>% tally %>% print
+# <<<<<<< HEAD
+#     dplyr::select(dat, which(isLogic)) %>% tally %>% print
+# =======
+    dplyr::select(dat, which(isLogic)) %>% summarise_each(funs(sum)) %>%
+      as.data.frame %>% set_rownames("# True") %>% print
+#>>>>>>> upstream/master
     cat("\n")
   }
 }
@@ -334,3 +411,16 @@ sd_rm <- function(x) sd(x, na.rm = TRUE)
 #'
 #' @export
 sum_rm <- function(x) sum(x, na.rm = TRUE)
+
+#' Make a list of functions-as-formulas to pass to dplyr
+#' @param x List of functions as strings
+#' @return List of functions to pass to dplyr in formula form
+#' @examples
+#' make_funs(c("mean", "sum_rm"))
+#'
+#' @export
+make_funs <- function(x) {
+  xclean <- gsub("_rm$","",x) %>% sub("length","n",.) %>%  sub("nmissing","missing",.)
+  env <- if (exists("radiant")) environment(radiant::radiant) else parent.frame()
+  dplyr::funs_(lapply(paste0(xclean, " = ~", x), as.formula, env = env) %>% setNames(xclean))
+}
