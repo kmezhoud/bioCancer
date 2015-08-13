@@ -62,11 +62,11 @@ factorizer <- function(dat) {
   isChar <- sapply(dat,is.character)
   if (sum(isChar) == 0) return(dat)
     toFct <-
-      select(dat, which(isChar)) %>%
+      dplyr::select(dat, which(isChar)) %>%
       summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < .1)) %>%
-      select(which(. == TRUE)) %>% names
+      dplyr::select(which(. == TRUE)) %>% names
     # summarise_each(funs(n_distinct)) %>%
-    # select(which(. < 100 & ((. / nrow(dat)) < .1))) %>% names
+    # dplyr::select(which(. < 100 & ((. / nrow(dat)) < .1))) %>% names
   if (length(toFct) == 0) return(dat)
   mutate_each_(dat, funs(as.factor), vars = toFct)
 }
@@ -193,23 +193,31 @@ loadUserData <- function(fname, uFile, ext,
   }
 
   if (ext == 'csv') {
-    r_data[[objname]] <- try(read_delim(uFile, sep, col_names=header), silent = TRUE) %>%
-      {if (is(., 'try-error'))
-          try(read.table(uFile, header = header, sep = sep, dec = dec, stringsAsFactors = FALSE), silent = TRUE)
-        else . } %>%
-
-      {if (is(., 'try-error'))
-          upload_error_handler(objname, "### There was an error loading the data. Please make sure the data are in either rda or csv format.")
-        else . } %>%
-      {if (man_str_as_factor) factorizer(.) else . } %>% as.data.frame
-
-    # r_data[[objname]] <- try(read.table(uFile, header=header, sep=sep, dec=dec,
-    #   stringsAsFactors=FALSE), silent = TRUE) %>%
-    #   { if (is(., 'try-error')) upload_error_handler(objname, "### There was an error loading the data. Please make sure the data are in either rda or csv format.")
-    #     else . } %>%
-    #   { if (man_str_as_factor) factorizer(.) else . } # %>% tbl_df
+    # r_data[[objname]] <- read.csv(uFile, header=header, sep=sep, dec=dec,
+    # r_data[[objname]] <- readr::read_csv(uFile, col_names=header)
+    # stringsAsFactors=man_str_as_factor), silent = TRUE) %>%
+    r_data[[objname]] <- try(read.table(uFile, header=header, sep=sep, dec=dec,
+                                        stringsAsFactors=FALSE), silent = TRUE) %>%
+                                        { if (is(., 'try-error')) upload_error_handler(objname, "### There was an error loading the data. Please make sure the data are in either rda or csv format.")
+                                          else . } %>%
+                                          { if (man_str_as_factor) factorizer(.) else . } # %>% tbl_df
+    ##########
+    r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
+    ##########
+  }
+  ############################
+  if (ext == 'txt') {
+    # r_data[[objname]] <- read.csv(uFile, header=header, sep=sep, dec=dec,
+    # r_data[[objname]] <- readr::read_csv(uFile, col_names=header)
+    # stringsAsFactors=man_str_as_factor), silent = TRUE) %>%
+    r_data[[objname]] <- try(read.table(uFile, header=header, sep=sep, dec=dec,
+                                        stringsAsFactors=FALSE), silent = TRUE) %>%
+                                        { if (is(., 'try-error')) upload_error_handler(objname, "### There was an error loading the data. Please make sure the data are in either txt format, one gene by row.")
+                                          else . } %>%
+                                          { if (man_str_as_factor) factorizer(.) else . } # %>% tbl_df
+    r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
   }
 
-  r_data[['datasetlist']] <- c(objname, r_data[['datasetlist']]) %>% unique
+  #r_data[['datasetlist']] <- c(objname, r_data[['datasetlist']]) %>% unique
 }
 

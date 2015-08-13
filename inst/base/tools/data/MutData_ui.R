@@ -45,7 +45,7 @@ output$ui_MutData <- renderUI({
                        #uiOutput("ui_clipboard_load_MutData")
       ),
       conditionalPanel(condition = "input.loadGeneListID == 'ExampleGeneList'",
-                       actionButton('loadExampleGeneList', 'Load examples')
+                       actionButton('loadExampleGeneList_MutData', 'Load examples')
       )
       #       conditionalPanel(condition = "input.loadGeneListID == 'state_Prof'",
       #                        fileInput('uploadstate_Prof', 'Load previous app state_Prof:',  accept = ".rda"),
@@ -102,7 +102,7 @@ output$ui_MutData <- renderUI({
 
 # loading all examples files (linked to helpfiles)
 observe({
-  if (not_pressed(input$loadExampleGeneList)) return()
+  if (not_pressed(input$loadExampleGeneList_MutData)) return()
   isolate({
 
     # loading data bundled with Radiant

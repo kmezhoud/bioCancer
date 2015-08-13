@@ -39,7 +39,7 @@ output$ui_ProfData <- renderUI({
                        #uiOutput("ui_clipboard_load_ProfData")
       ),
       conditionalPanel(condition = "input.loadGeneListID == 'ExampleGeneList'",
-                       actionButton('loadExampleGeneList', 'Load examples')
+                       actionButton('loadExampleGeneList_ProfData', 'Load examples')
       )
 #       conditionalPanel(condition = "input.loadGeneListID == 'state_Prof'",
 #                        fileInput('uploadstate_Prof', 'Load previous app state_Prof:',  accept = ".rda"),
@@ -91,7 +91,7 @@ fileInput('file1', 'Choose txt File',
 
 # loading all examples files (linked to helpfiles)
 observe({
-  if (not_pressed(input$loadExampleGeneList)) return()
+  if (not_pressed(input$loadExampleGeneList_ProfData)) return()
   isolate({
 
     # loading data bundled with Radiant
