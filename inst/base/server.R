@@ -5,14 +5,17 @@ shinyServer(function(input, output, session) {
   library(coffeewheel)
   library(metabologram)
   library(tcltk)
+  library(DT)
   library(coffeewheel)
   #library(Biobase)
  library(geNetClassifier)
   library(AnnotationFuncs)
   library("org.Hs.eg.db")
   #require(DOSE)
-  require(clusterProfiler)
- #library(plyr)
+  library(clusterProfiler)
+  library(RCurl)
+  library(XML)
+ library(dplyr)
 ####masked package
   #library(lubridate)
   #remove(list = conflicts(detail = TRUE)$.GlobalEnv)
@@ -35,7 +38,7 @@ shinyServer(function(input, output, session) {
 
 
 #GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID, sep=""))))
-#GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/73.txt", sep=""))))
+#GeneList <- t(unique(read.table(paste0(getwd(),"/inst/base/data/GeneList/102.txt", sep=""))))
 
   ## get Cases in side bar panel
   output$ui_Cases <- renderUI({

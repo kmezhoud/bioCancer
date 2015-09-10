@@ -22,10 +22,8 @@
     ## check Mutation df
     if(any(df[1,]%%1==0, na.rm = TRUE)&& any(df[1,]>0, na.rm = TRUE)){
       dfMeansOrCNA <- df
-
-    } else
-
-      ## check df is for CNA levels(-2,-1,0,1,2)
+    }else
+    ## check df is for CNA levels(-2,-1,0,1,2)
    if(any(df[1,]=="-2", na.rm=TRUE)||
        any(df[1,]=="-1", na.rm=TRUE)
        #any(df[1,]=="0", rn.rm=TRUE)||

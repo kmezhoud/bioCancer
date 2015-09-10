@@ -54,11 +54,13 @@ output$ui_data <- renderUI({
                            uiOutput("ui_NetworkSlider"),
                            uiOutput("ui_Provider")
                          )),
+
         conditionalPanel("input.tabs_data=='Classifier'",
-
                          uiOutput("ui_Classifier")
+                         ),
 
-
+        conditionalPanel("input.tabs_data=='Reactome'",
+                         uiOutput("ui_Reactome")
         ),
         conditionalPanel("input.tabs_data == 'Manage'", uiOutput("ui_Manage")),
         conditionalPanel("input.tabs_data == 'View'", uiOutput("ui_View")),
@@ -142,7 +144,14 @@ output$ui_data <- renderUI({
                                     plotOutput("compareClusterKEGG")
                    )
           ),
+          tabPanel("Reactome",
 
+                   conditionalPanel( condition = "input.ReacRunId== true",
+                       grVizOutput('diagrammeR')
+                  )
+
+
+          ),
           ##########
 
 

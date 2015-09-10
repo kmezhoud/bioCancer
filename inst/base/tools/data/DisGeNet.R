@@ -11,12 +11,12 @@
 # main
 ###############################################################################
 # load packages
-require(RCurl)
+
 
 ###############################################################################
 # subs
 ###############################################################################
-
+#require(RCurl)
 doQuery = function(inputFile, entity, identifier){
   print(inputFile)
   #print(outFile)
@@ -111,13 +111,13 @@ doQuery = function(inputFile, entity, identifier){
 #myargs = commandArgs()
 
 
-inputFile = paste("inst/base/data/GeneList/102.txt", sep="")
-outputFile = paste("GDA/output.txt", sep="")
-entity = "gene"
-identifier = "entrez"
+#  inputFile = paste("inst/base/data/GeneList/102.txt", sep="")
+#  outputFile = paste("GDA/output.txt", sep="")
+#  entity = "gene"
+#  identifier = "entrez"
 #
 #
 # print("Querying the database ")
-# DGA <- doQuery(inputFile, outputFile, entity, identifier)
+ #DGA <- doQuery(inputFile, entity, identifier)
 # print("Finished")
 
