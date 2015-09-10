@@ -29,22 +29,12 @@ output$ui_ReacLayout <- renderUI({
 })
 
 # if(!exists('input.ClassID', envir = .GlobalEnv)){
-#   output$ui_ClassEnrich <- renderUI({
-#     ClassEnrich <- c("Freq. Interaction")
-#     selectizeInput("ClassEnrichID", label= "Classifier:", choices= ClassEnrich,
-#                    selected= "Freq. Interaction", multiple=FALSE)
-#
-#
-#   })
-# }else if(exists('input.ClassID', envir = .GlobalEnv)) {
-output$ui_ClassEnrich <- renderUI({
-  ClassEnrich <- c("Freq. Interaction", "Cancer/mRNA")
-  selectizeInput("ClassEnrichID", label= "Classifier:", choices= ClassEnrich,
-                 selected= "Freq. Interaction", multiple=FALSE)
-
-
+output$ui_NodeAttri <- renderUI({
+  ClassEnrich <- c("None","Freq. Interaction", "Cancer/mRNA")
+  selectizeInput("NodeAttriID", label= "VizMapper:", choices= ClassEnrich,
+                 selected= "Simple", multiple=FALSE)
 })
-#}
+
 
 
 output$ui_Reactome <- renderUI({
@@ -60,13 +50,18 @@ output$ui_Reactome <- renderUI({
 
     ),
     ## Attributes Nodes from geNetClassifier (Only if Class is pressed)
-    conditionalPanel(condition = "input.ClassID == 'Classifier'",
+   # conditionalPanel(condition = "input.ClassID == 'Samples'",
                      h4("Node Attributes:"),
                      wellPanel(
-                       uiOutput("ui_ClassEnrich")
-                     )
+                       uiOutput("ui_NodeAttri")
+    #                 )
 
     ),
+
+#     radioButtons(inputId = "ClassID2", label = "Processing",
+#                  c("Samples"="Samples" ,"Classifier" = "Classifier", "Plot"="Plot"),
+#                  selected = "Samples", inline = TRUE),
+
     checkboxInput("ReacRunId", "Run", value = FALSE)
   )
 })

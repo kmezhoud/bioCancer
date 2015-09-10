@@ -103,31 +103,44 @@ graph_obj <- function(){
 
 
     ## Verify radiobutton and Use Node attributes from geNetClassifier
-    if(!exists("input.ClassID", envir = .GlobalEnv)){
+    if(input$NodeAttriID == 'Freq. Interaction'){
       ## Nodes Attributes
-      GenesClassDetails_df <- Node_obj(GeneList, r_data$GenesClassDetails)
+      GeneAttri_df <- Node_obj_FreqIn(GeneList)
       #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
-      subset<- rbind(subset, GenesClassDetails_df)
-    }else if(input$ClassID == 'Classifier') {
+      subset<- rbind(subset, GeneAttri_df)
+    }else if(input$NodeAttriID == 'Cancer/mRNA'){
+
+      if (inherits(try(GeneAttri_df <- Node_obj_Classifier(GeneList, r_data$GenesClassDetails) , silent=FALSE),"try-error"))
+      {
+      msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
+      #tkmessageBox(message=msgNoClassifier , icon="warning")
+      stop(msgNoClassifier)
+    } else{
       ## Nodes Attributes
-      GenesClassDetails_df <- Node_obj(GeneList, r_data$GenesClassDetails)
+      GeneAttri_df1 <- Node_obj_Classifier(GeneList, r_data$GenesClassDetails)
+      GeneAttri_df2 <- Node_obj_FreqIn(GeneList)
       #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
-      subset<- rbind(subset, GenesClassDetails_df)
-
-
+      GeneAttri_df <- rbind(GeneAttri_df1, GeneAttri_df2)
+      GeneAttri_bkp <<- GeneAttri_df
+      subset <- rbind(subset, GeneAttri_df)
+      subset_bkp <<- subset
     }
 
-
-    ## convert Dataframe to graph object
-    cap <- capture.output(print(subset, row.names = FALSE))[-1]
-    ca <- paste(cap,"", collapse=";")
-    obj <- paste0("\n","digraph{","\n", ca, "\n","}", sep="")
-    return(obj)
-  })
 }
 
-### Attributes for Nodes
+  ## convert Dataframe to graph object
+  #cap <- capture.output(print(subset, row.names = FALSE)[-1])
+  cap <- apply(subset, 1, function(x) paste(x, sep="\t", collapse=" "))
+  ca <- paste(cap,"", collapse=";")
+  obj <- paste0("\n","digraph{","\n", ca, "\n","}", sep="")
+  return(obj)
+})
+  }
 
+
+
+
+### Attributes for Nodes
 attriShape2Gene <- function(gene, genelist){
 
   if(gene %in% genelist){
@@ -139,26 +152,28 @@ attriShape2Gene <- function(gene, genelist){
 }
 
 
-Node_obj <- function(GeneList,GenesClassDetails= r_data$GenesClassDetails){
+Node_obj_FreqIn <- function(GeneList){
 
-  if(input$ClassEnrichID == 'Freq. Interaction' ){
-    FreqIn <- r_data$FreqIn
-    FreqIn$Genes<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Gene(x, GeneList)))
-    FreqIn$FreqSum  <- FreqIn$FreqSum / 10
-    FreqIn$FreqSum <- paste0("fixedsize = TRUE, width =",FreqIn$FreqSum,", alpha_fillcolor =",FreqIn$FreqSum,",")
-    FreqIn <- cbind(FreqIn, Direction="peripheries=1,")
-    FreqIn <- cbind(FreqIn, Annotation="style = filled,")
-    FreqIn <- cbind(FreqIn, Arrowsize="alpha_fillcolor = 1,")
-    FreqIn <- cbind(FreqIn, Score="fontsize=10]")
-    names(FreqIn) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
+  FreqIn <- r_data$FreqIn
+  FreqIn$Genes<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Gene(x, GeneList)))
+  FreqIn$FreqSum  <- FreqIn$FreqSum / 10
+  FreqIn$FreqSum <- paste0("fixedsize = TRUE, width =",FreqIn$FreqSum,", alpha_fillcolor =",FreqIn$FreqSum,",")
+  FreqIn <- cbind(FreqIn, Direction="peripheries=1,")
+  FreqIn <- cbind(FreqIn, Annotation="style = filled,")
+  FreqIn <- cbind(FreqIn, Arrowsize="alpha_fillcolor = 1,")
+  FreqIn <- cbind(FreqIn, Score="fontsize=10]")
+  names(FreqIn) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
 
-    GenesClassDetails <- FreqIn
-    return(GenesClassDetails)
+  GeneAttri <- FreqIn
+  return(GeneAttri)
 
-  } else if(input$ClassEnrichID == 'Cancer/mRNA'){
-    GenesClassDetails <- merge(GenesClassDetails, r_data$FreqIn, by="Genes")
-    GenesClassDetails <- GenesClassDetails[,!(names(GenesClassDetails) %in% "exprsUpDw")]
-    GenesClassDetails$FreqSum  <- GenesClassDetails$FreqSum / 10
+}
+
+Node_obj_Classifier <- function(GeneList,GenesClassDetails= r_data$GenesClassDetails){
+
+  GenesClassDetails <- merge(GenesClassDetails, r_data$FreqIn, by="Genes")
+  GenesClassDetails <- GenesClassDetails[,!(names(GenesClassDetails) %in% "exprsUpDw")]
+  GenesClassDetails$FreqSum  <- GenesClassDetails$FreqSum / 10
 
   ## geneDiseaseClass_obj
   # GenesClassDetails_ls <- lapply(r_data$GenesClassDetails, function(x) x %>% add_rownames("Genes")
@@ -166,14 +181,14 @@ Node_obj <- function(GeneList,GenesClassDetails= r_data$GenesClassDetails){
   #GenesClassDetails_df <- GenesClassDetails_df[,-1]
   #GenesClassDetails <- r_data$GenesClassDetails
   ## identify Gene List
-#   if(input$GeneListID == "Genes"){
-#     GeneList <- r_data$Genes
-#   }else if(input$GeneListID =="Reactome_GeneList"){
-#     GeneList <- r_data$Reactome_GeneList
-#     print(GeneList)
-#   }else{
-#     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
-#   }
+  #   if(input$GeneListID == "Genes"){
+  #     GeneList <- r_data$Genes
+  #   }else if(input$GeneListID =="Reactome_GeneList"){
+  #     GeneList <- r_data$Reactome_GeneList
+  #     print(GeneList)
+  #   }else{
+  #     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+  #   }
 
   GenesClassDetails$Genes <- unname(sapply(GenesClassDetails$Genes,  function(x) attriShape2Gene(x, GeneList)))
 
@@ -192,12 +207,14 @@ Node_obj <- function(GeneList,GenesClassDetails= r_data$GenesClassDetails){
   # rename column to rbind with edge dataframe
   names(GenesClassDetails) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
   GenesClassDetails_bkp <<- GenesClassDetails
-  return(GenesClassDetails)
+  GeneAttri <- GenesClassDetails
+  return(GeneAttri)
 }
-}
+
+
+
 
 output$diagrammeR <- renderGrViz({
-
   grViz(
     #   digraph{
     # ## Edge Atrributes
@@ -218,7 +235,6 @@ output$diagrammeR <- renderGrViz({
     engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
     width = 1200
   )
-
 })
 
 
