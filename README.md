@@ -41,7 +41,9 @@ Although CancerPortal's web-interface can handle quite a few data and analysis t
 CancerPortal focuses on Cancer Genomics data visualisation and Genes Classifications.
 
 
+
 ## How to install CancerPortal
+
 
 - Required: [R](http://cran.rstudio.com/) version 3.2 or later
 - Required: A modern browser (e.g., [Chrome](https://www.google.com/intl/en/chrome/browser/desktop/) or Safari). Internet Explorer (version 11 or higher) should work as well
@@ -50,6 +52,7 @@ CancerPortal focuses on Cancer Genomics data visualisation and Genes Classificat
 
 CancerPortal is under development:
 ```r
+
  devtools::install_github("kmezhoud/CancerPortal")
  library("CancerPortal")
 ```
@@ -57,26 +60,17 @@ CancerPortal is under development:
 
 When CancerPortal starts you will see a table of available Cancer Studies.  To close the application click on `Quit` in the Navigation bar and then click the `Quit` button on the left of the screen. The CancerPortal process will stop and the browser window will close (or gray-out).
 
+
 ## Documentation
 
 Documentation and tutorials are available in the CancerPortal web interface (the `?` icons and the `Help` menu).
 
 Want some help getting started? Watch the tutorials on the [documentation site of radiant](http://vnijs.github.io/radiant/tutorials.html)
 
-## Reporting issues
-
-Please use the GitHub issue tracker at <a href="https://github.com/vnijs/radiant/issues" target="_blank">github.com/vnijs/radiant/issues</a> if you have any problems with Radiant.
-
-## Online
-
-Not ready to install Radiant on your computer? Try it online at the links below:
-
-
-<a href="https://vnijs.shinyapps.io/base" target="_blank">vnijs.shinyapps.io/base</a>
-
 
 ## Saving and loading state from Radiant
 To save your analyses save the state of the app to a file by clicking on the <i title='Save' class='fa fa-save'></i> icon in the navbar and then on `Save state` (see also the `Data > Manage` tab). You can open this state file at a later time or on another computer to continue where you left off. You can also share the file with others that may want to replicate your analyses. As an example, load the state_file [`RadiantState.rda`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.rda?raw=true) through the Data > Manage tab. Go to `Data > View`, `Data > Visualize` to see some of the settings. There is also a report in `R > Report` that was created using the Radiant interface. The html file [`RadiantState.html`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.html?raw=true) contains the output.
+
 
 A related feature in Radiant is that state is maintained if you accidentally navigate to another page, close (and reopen) the browser, and/or hit refresh. Use `Reset` in the <i title='Power off' class='fa fa-power-off'></i> menu in the navigation bar to return to a clean/new state.
 

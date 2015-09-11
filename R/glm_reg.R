@@ -33,12 +33,16 @@ glm_reg <- function(dataset, dep_var, indep_var,
   dat <- getdata(dataset, c(dep_var, indep_var), filt = data_filter)
   if (!is_string(dataset)) dataset <- "-----"
 
-  if (lev == "")
-    lev <- dat[,dep_var] %>% as.character %>% as.factor %>% levels %>% .[1]
+  glm_dv <- dat[[dep_var]]
+  if (lev == "") {
+    if (is.factor(glm_dv))
+      lev <- levels(glm_dv)[1]
+    else
+      lev <- glm_dv %>% as.character %>% as.factor %>% levels %>% .[1]
+  }
 
-  # transformation
-  glm_dv <- dat[,dep_var]
-  dat[,dep_var] <- dat[,dep_var] == lev
+  ## transformation to TRUE/FALSE depending on the selected level (lev)
+  dat[[dep_var]] <- dat[[dep_var]] == lev
 
   vars <- ""
   var_check(indep_var, colnames(dat)[-1], int_var) %>%
@@ -76,7 +80,7 @@ glm_reg <- function(dataset, dep_var, indep_var,
     rm(i, isFct)
   }
 
-  # dat not needed elsewhere
+  ## dat not needed elsewhere
   rm(dat)
 
   environment() %>% as.list %>% set_class(c("glm_reg",class(.)))
@@ -130,10 +134,12 @@ summary.glm_reg <- function(object,
 
   glm_fit <- glance(object$model)
 
-  # pseudo R2 (likelihood ratio) - http://en.wikipedia.org/wiki/Logistic_regression
+  cat("\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n")
+
+  ## pseudo R2 (likelihood ratio) - http://en.wikipedia.org/wiki/Logistic_regression
   glm_fit %<>% mutate(r2 = (null.deviance - deviance) / null.deviance) %>% round(3)
 
-  # chi-squared test of overall model fit (p-value) - http://www.ats.ucla.edu/stat/r/dae/logit.htm
+  ## chi-squared test of overall model fit (p-value) - http://www.ats.ucla.edu/stat/r/dae/logit.htm
   chi_pval <- with(object$model, pchisq(null.deviance - deviance, df.null - df.residual, lower.tail = FALSE))
   chi_pval %<>% { if (. < .001) "< .001" else round(.,3) }
 
@@ -150,7 +156,7 @@ summary.glm_reg <- function(object,
       if (length(object$indep_var) > 1) {
         cat("Variance Inflation Factors\n")
         vif (object$model) %>%
-          { if (!dim(.) %>% is.null) .[,"GVIF"] else . } %>% # needed when factors are included
+          { if (!dim(.) %>% is.null) .[,"GVIF"] else . } %>% ## needed when factors are included
           data.frame("VIF" = ., "Rsq" = 1 - 1/.) %>%
           round(3) %>%
           .[order(.$VIF, decreasing=T),] %>%
@@ -170,7 +176,7 @@ summary.glm_reg <- function(object,
       cl_split(conf_lev) %>% round(1) %>% as.character %>% paste0(.,"%") -> cl_low
       (100 - cl_split(conf_lev)) %>% round(1) %>% as.character %>% paste0(.,"%") -> cl_high
 
-      confint(object$model, level = conf_lev) %>%
+      confint.default(object$model, level = conf_lev) %>%
         as.data.frame %>%
         set_colnames(c("Low","High")) %>%
         cbind(dplyr::select(object$glm_coeff,2),.) %>%
@@ -191,17 +197,20 @@ summary.glm_reg <- function(object,
     if (object$model$coeff %>% is.na %>% any) {
       cat("There is perfect multi-collinearity in the set of selected independent variables.\nOne or more variables were dropped from the estimation.\nMulti-collinearity diagnostics were not calculated.\n")
     } else {
-      if(object$link == "logit") {
-        odds_tab <- exp(ci_tab) %>% round(3)
-        odds_tab$`+/-` <- (odds_tab$High - odds_tab$Low)
-        odds_tab %>%
-          set_colnames(c("odds", cl_low, cl_high, "+/-")) %>%
-          print
+      if (object$link == "logit") {
+        exp(ci_tab[-1,]) %>% round(3) %>%
+          set_colnames(c("odds ratio", cl_low, cl_high)) %>% print
+          # .[-1, ] %>% print
+
+        # odds_tab <- exp(ci_tab) %>% round(3)
+        # odds_tab$`+/-` <- (odds_tab$High - odds_tab$Low)
+          # odds_tab %>%
+          # set_colnames(c("odds ratio", cl_low, cl_high, "+/-")) %>%
+          # .[-1, ] %>% print
         cat("\n")
-      } else if(object$link == "probit") {
+      } else if (object$link == "probit") {
         cat("Odds ratios are not calculated for Probit models\n\n")
       }
-
     }
   }
 
@@ -214,7 +223,7 @@ summary.glm_reg <- function(object,
 
       vars <- object$indep_var
       if (object$int_var != "" && length(vars) > 1) {
-        # updating test_var if needed
+        ## updating test_var if needed
         test_var <- test_specs(test_var, object$int_var)
         vars <- c(vars,object$int_var)
       }
@@ -222,7 +231,7 @@ summary.glm_reg <- function(object,
       # test_var <- "pclass"
       not_selected <- setdiff(vars, test_var)
       if (length(not_selected) > 0) sub_formula <- paste(object$dep_var, "~", paste(not_selected, collapse = " + "))
-      #### update with glm_sub NOT working when called from radiant - strange
+      ## update with glm_sub NOT working when called from radiant - strange
       # glm_sub <- update(object$model, sub_formula, data = object$model$model)
       glm_sub <- glm(sub_formula, family = binomial(link = object$link), data = object$model$model)
       glm_sub_fit <- glance(glm_sub)
@@ -292,7 +301,7 @@ plot.glm_reg <- function(x,
 
   if ("coef" %in% plots) {
     nrCol <- 1
-    plot_list[["coef"]] <- confint(object$model, level = conf_lev) %>%
+    plot_list[["coef"]] <- confint.default(object$model, level = conf_lev) %>%
           data.frame %>%
           set_colnames(c("Low","High")) %>%
           cbind(dplyr::select(object$glm_coeff,2),.) %>%
@@ -348,16 +357,19 @@ plot.glm_reg <- function(x,
 #' @details See \url{http://vnijs.github.io/radiant/quant/glm_reg.html} for an example in Radiant
 #'
 #' @param object Return value from \code{\link{glm_reg}}
-#' @param pred_cmd Generate predictions using a command. For example, `pclass = levels(pclass)` would produce predictions for the different levels of factor `pclass`. To add another variable use a `,` (e.g., `pclass = levels(pclass), age = seq(0,100,20)`)
+#' @param pred_vars Variables selected to generate predictions
 #' @param pred_data Provide the name of a dataframe to generate predictions (e.g., "titanic"). The dataset must contain all columns used in the estimation
+#' @param pred_cmd Generate predictions using a command. For example, `pclass = levels(pclass)` would produce predictions for the different levels of factor `pclass`. To add another variable use a `,` (e.g., `pclass = levels(pclass), age = seq(0,100,20)`)
 #' @param prn Print prediction results (default is TRUE)
 #' @param ... further arguments passed to or from other methods
 #'
 #' @examples
 #' result <- glm_reg("titanic", "survived", c("pclass","sex"), lev = "Yes")
-#' predict(result, pred_cmd = "pclass = levels(pclass)")
+#'  predict(result, pred_cmd = "pclass = levels(pclass)")
 #' glm_reg("titanic", "survived", c("pclass","sex"), lev = "Yes") %>%
 #'   predict(pred_cmd = "sex = c('male','female')")
+#' glm_reg("titanic", "survived", c("pclass","sex"), lev = "Yes") %>%
+#'  predict(pred_data = "titanic")
 #'
 #' @seealso \code{\link{glm_reg}} to generate the result
 #' @seealso \code{\link{summary.glm_reg}} to summarize results
@@ -366,24 +378,30 @@ plot.glm_reg <- function(x,
 #'
 #' @export
 predict.glm_reg <- function(object,
-                            pred_cmd = "",
+                            pred_vars = "",
                             pred_data = "",
+                            pred_cmd = "",
                             prn = TRUE,
                             ...) {
 
-  # used http://www.r-tutor.com/elementary-statistics/simple-linear-regression/prediction-interval-linear-regression as starting point
+  pred_count <- sum(c(pred_vars == "", pred_cmd == "", pred_data == ""))
+
+  ## used http://www.r-tutor.com/elementary-statistics/simple-linear-regression/prediction-interval-linear-regression as starting point
   if ("standardize" %in% object$check) {
     return(cat("Currently you cannot use standardized coefficients for prediction.\nPlease uncheck the standardized coefficients box and try again"))
-  } else if (pred_cmd == "" && pred_data == "") {
+  } else if (pred_count == 3) {
     return(cat("Please specify a command to generate predictions. For example,\n pclass = levels(pclass) would produce predictions for the different\n levels of factor pclass. To add another variable use a ,\n(e.g., pclass = levels(pclass), age = seq(0,100,20))\n\nMake sure to press return after you finish entering the command. If no\nresults are shown the command was invalid. Alternatively specify a dataset\nto generate predictions. You could create this in Excel and use the\npaste feature in Data > Manage to bring it into Radiant"))
   }
 
-  if (pred_cmd != "" && pred_data != "")
-    cat("Both a command and a dataset where specified for prediciton. The command will be used.\nTo use the dataset remove the command.")
+  if (pred_count < 2) {
+    if (pred_cmd != "")
+      cat("Multiple inputs where specified for prediciton. The command will be used.\nTo use variables or a dataset remove the command.")
+    if (pred_vars != "")
+      cat("Multiple inputs where specified for prediciton. The variables selected will be used.\nTo use a command or dataset unselect variables.")
+  }
 
   pred_type <- "cmd"
   vars <- object$indep_var
-  # pred_cmd <- "pclass = levels(pclass)"
   if (pred_cmd != "") {
     pred_cmd %<>% gsub("\"","\'", .) %>% gsub(";",",", .)
     pred <- try(eval(parse(text = paste0("with(object$model$model, expand.grid(", pred_cmd ,"))"))), silent = TRUE)
@@ -392,13 +410,13 @@ predict.glm_reg <- function(object,
       return()
     }
 
-    # adding information to the prediction data.frame
+    ## adding information to the prediction data.frame
     dat_classes <- attr(object$model$term, "dataClasses")[-1]
     isFct <- dat_classes == "factor"
     isNum <- dat_classes == "numeric"
     dat <- dplyr::select_(object$model$model, .dots = vars)
 
-    # based on http://stackoverflow.com/questions/19982938/how-to-find-the-most-frequent-values-across-several-columns-containing-factors
+    ## based on http://stackoverflow.com/questions/19982938/how-to-find-the-most-frequent-values-across-several-columns-containing-factors
     max_freq <- function(x) names(which.max(table(x)))
 
     plug_data <- data.frame(init___ = 1)
@@ -420,7 +438,8 @@ predict.glm_reg <- function(object,
       }
     }
   } else {
-    pred <- getdata(pred_data)
+    ## generate predictions for all observations in the dataset
+    pred <- getdata(pred_data, filt = "", na.rm = FALSE)
     pred_names <- names(pred)
     pred <- try(dplyr::select_(pred, .dots = vars), silent = TRUE)
     if (is(pred, 'try-error')) {
@@ -430,6 +449,7 @@ predict.glm_reg <- function(object,
       cat(vars[!vars %in% pred_names])
       return()
     }
+    pred %<>% na.omit()
     pred_type <- "data"
   }
 
@@ -452,21 +472,13 @@ predict.glm_reg <- function(object,
       if (pred_type == "cmd") {
         cat("Predicted values for:\n")
       } else {
-        cat(paste0("Predicted values for profiles from dataset: ",object$pred_data,"\n"))
+        cat(paste0("Predicted values for profiles from dataset: ",pred_data,"\n"))
       }
 
-      pred %>% print(., row.names = FALSE)
+      isNum <- c("Prediction", "std.error")
+      pred %>% {.[, isNum] <- round(.[, isNum],4); .} %>%
+        print(row.names = FALSE)
     }
-
-    # pushing predictions into the clipboard
-    # os_type <- Sys.info()["sysname"]
-    # if (os_type == 'Windows') {
-    #   write.table(pred, "clipboard", sep="\t", row.names=FALSE)
-    # } else if (os_type == "Darwin") {
-    #   write.table(pred, file = pipe("pbcopy"), row.names = FALSE, sep = '\t')
-    # }
-    # if (os_type != "Linux")
-    #   cat("\nPredictions were pushed to the clipboard. You can paste them in Excel or\nuse Manage > Data to paste the predictions as a new dataset.\n\n")
 
     return(pred %>% set_class(c("glm_predict",class(.))))
   } else {
@@ -520,8 +532,6 @@ plot.glm_predict <- function(x,
                              conf_lev = .95,
                              ...) {
 
-  color
-
   if (is.null(xvar) || xvar == "") return(invisible())
 
   object <- x; rm(x)
@@ -548,22 +558,30 @@ plot.glm_predict <- function(x,
   sshhr( p )
 }
 
-#' Store residuals generated in the glm_reg function
+#' Store residuals or predicted values generated in the glm_reg function
 #'
 #' @details See \url{http://vnijs.github.io/radiant/quant/glm_reg.html} for an example in Radiant
 #'
-#' @param object Return value from \code{\link{glm_reg}}
+#' @param object Return value from \code{\link{glm_reg}} or \code{\link{predict.glm_reg}}
+#' @param data Dataset name
+#' @param type Residuals ("residuals") or predictions ("predictions"). For predictions the dataset name must be provided
+#' @param name Variable name assigned to the residuals or predicted values
 #'
 #' @examples
 #' \donttest{
 #' result <- glm_reg("titanic", "survived", "pclass", lev = "Yes")
-#' store_glm_resid(result)
-#' head(titanic)
+#' store_glm(result)
 #' }
 #' @export
-store_glm_resid <- function(object) {
-  if (object$data_filter != "")
-    return("Please deactivate data filters before trying to store residuals")
-  object$model$residuals %>%
-    changedata(object$dataset, vars = ., var_names = "glm_residuals")
+store_glm <- function(object,
+                      data = object$dataset,
+                      type = "residuals",
+                      name = paste0(type, "_glm")) {
+
+  if (!is.null(object$data_filter) && object$data_filter != "")
+    return(message("Please deactivate data filters before trying to store predictions or residuals"))
+
+  store <- if (type == "residuals") object$model$residuals else object$Prediction
+
+  changedata(data, vars = store, var_names = name)
 }

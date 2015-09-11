@@ -61,7 +61,7 @@ visualize <- function(dataset, xvar,
   byvar <- NULL
 
   if (identical(yvar,"")) {
-    if(!type %in% c("hist","density")) {
+    if (!type %in% c("hist","density")) {
       message("No yvar provided for a plot that requires a yvar")
       return(invisible())
     }
@@ -118,8 +118,9 @@ visualize <- function(dataset, xvar,
         plot_list[[i]] <- plot_list[[i]] + geom_density(color = "blue", size = .5)
 
       }
-      if (!"factor" %in% class(dat[[i]]))
-        hist_par[["binwidth"]] <- select_(dat,i) %>% range %>% diff(.)/bins
+      if (!"factor" %in% class(dat[[i]])) {
+        hist_par[["binwidth"]] <- select_(dat,i) %>% range %>% {diff(.)/bins}
+      }
 
       plot_list[[i]] <- plot_list[[i]] + do.call(geom_histogram, hist_par)
     }
@@ -142,6 +143,12 @@ visualize <- function(dataset, xvar,
         if ("log_y" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + ylab(paste("log", j))
 
         if ("factor" %in% class(dat[[i]])) {
+
+          ## make range comparable to bar plot
+          ymax <- max(dat[[j]]) %>% {if (. < 0) 0 else .}
+          ymin <- min(dat[[j]]) %>% {if (. > 0) 0 else .}
+          plot_list[[itt]] <- plot_list[[itt]] + ylim(ymin,ymax)
+
           plot_list[[itt]] <- plot_list[[itt]] +
             geom_errorbar(stat = "hline", yintercept = "mean", width = .8, size = 1, color = "blue", aes(ymax = ..y.., ymin = ..y..))
             # geom_errorbar(stat = "hline", yintercept = "median", width = .8, size = 1, color = "red", aes(ymax = ..y.., ymin = ..y..))
@@ -155,12 +162,21 @@ visualize <- function(dataset, xvar,
     for (i in xvar) {
       for (j in yvar) {
         if (color == 'none') {
-          if (is.factor(dat[,i]))
-            plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j)) + geom_line(aes(group = 1))
-          else
+          if (is.factor(dat[[i]])) {
+            tbv <- if (is.null(byvar)) i else c(i, byvar)
+            tmp <- dat %>% group_by_(.dots = tbv) %>% select_(j) %>% summarise_each(funs(mean))
+            plot_list[[itt]] <- ggplot(tmp, aes_string(x=i, y=j)) + geom_point() + geom_line(aes(group = 1))
+          } else {
             plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j)) + geom_line()
+          }
         } else {
-          plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j, color = color)) + geom_line()
+          if (is.factor(dat[[i]])) {
+            tbv <- if (is.null(byvar)) i else c(i, byvar)
+            tmp <- dat %>% group_by_(.dots = tbv) %>% select_(j, color) %>% summarise_each(funs(mean))
+            plot_list[[itt]] <- ggplot(tmp, aes_string(x=i, y=j, color = color)) + geom_point() + geom_line(aes(group = 1))
+          } else {
+            plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j, color = color)) + geom_line()
+          }
         }
         if ("log_x" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + xlab(paste("log", i))
         if ("log_y" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + ylab(paste("log", j))
@@ -171,19 +187,13 @@ visualize <- function(dataset, xvar,
     itt <- 1
     for (i in xvar) {
       for (j in yvar) {
-        # dat <- mtcars
-        # library(dplyr)
-        # i <- "vs"
-        # j <- "mpg"
-        # byvar <- c("am","gear")
+
         tbv <- if (is.null(byvar)) i else c(i, byvar)
         tmp <- dat %>% group_by_(.dots = tbv) %>% select_(j) %>% summarise_each(funs(mean))
 
         if ("sort" %in% axes && facet_row == "." && facet_col == ".") {
           tmp <- arrange_(ungroup(tmp), j)
-          # for (fct in tbv)
-            # tmp[[fct]] %<>% factor(., levels = unique(.))
-            tmp[[i]] %<>% factor(., levels = unique(.))
+          tmp[[i]] %<>% factor(., levels = unique(.))
         }
 
         plot_list[[itt]] <- ggplot(tmp, aes_string(x=i, y=j)) +
@@ -204,11 +214,14 @@ visualize <- function(dataset, xvar,
     }
   }
 
-  facets <- paste(facet_row, '~', facet_col)
-  if (facets != '. ~ .') {
+  if (facet_row != "." || facet_col != ".") {
+    facets <- if (facet_row == ".")  paste("~", facet_col)
+              else paste(facet_row, '~', facet_col)
     scales <- if ("scale_y" %in% axes) "free_y" else "fixed"
+    facet_fun <- if (facet_row == ".") facet_wrap else facet_grid
     for (i in 1:length(plot_list))
-      plot_list[[i]] <- plot_list[[i]] + facet_grid(facets, scales = scales)
+      plot_list[[i]] <- plot_list[[i]] + facet_fun(as.formula(facets), scales = scales)
+
   }
 
   if (color != 'none') {
@@ -223,8 +236,9 @@ visualize <- function(dataset, xvar,
   }
 
   if ("jitter" %in% check) {
-    for (i in 1:length(plot_list)) plot_list[[i]] <- plot_list[[1]] +
-      geom_jitter(alpha = alpha)
+    for (i in 1:length(plot_list))
+      plot_list[[i]] <- plot_list[[i]] +
+        geom_jitter(alpha = alpha, position = position_jitter(width = 0.4, height = 0.1))
   }
 
   if ("line" %in% check) {

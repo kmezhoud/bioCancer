@@ -2,16 +2,19 @@
 % Please edit documentation in R/radiant.R
 \name{loadcsv}
 \alias{loadcsv}
-\title{Load a csv files with read.csv and read_csv}
+\title{Load a csv file with read.csv and read_csv}
 \usage{
-loadcsv(fn, header = TRUE, sep = ",", saf = TRUE, safx = 10)
+loadcsv(fn, header = TRUE, sep = ",", dec = ".", saf = TRUE,
+  safx = 20)
 }
 \arguments{
 \item{fn}{File name string}
 
 \item{header}{Header in file (TRUE, FALSE)}
 
-\item{sep}{Use , or ; or \\t}
+\item{sep}{Use , (default) or ; or \\t}
+
+\item{dec}{Decimal symbol. Use . (default) or ,}
 
 \item{saf}{Convert character variables to factors if (1) there are less than 100 distinct values (2) there are X (see safx) more values than levels}
 
@@ -21,6 +24,6 @@ loadcsv(fn, header = TRUE, sep = ",", saf = TRUE, safx = 10)
 Data.frame with (some) variables converted to factors
 }
 \description{
-Load a csv files with read.csv and read_csv
+Load a csv file with read.csv and read_csv
 }
 

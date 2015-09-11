@@ -120,7 +120,7 @@ getGenesClassifier <- reactive({
 
     if (inherits(try(signGenesRank_DiseaseType<- geNetClassifier::calculateGenesRanking(eSetClassifier[,1:(input$SampleSizeClassifierID*length(checked_Studies))], sampleLabels="DiseasesType", lpThreshold= input$ClassifierThresholdID, returnRanking="significant", plotLp = FALSE), silent=TRUE),"try-error"))
     {
-      msgNoSignificantDiff <- paste("The current genes don't differentiate the classes..")
+      msgNoSignificantDiff <- paste("The current genes don't differentiate the classes (Cancers)..")
       tkmessageBox(message=msgNoSignificantDiff , icon="warning")
 
       stop(msgNoSignificantDiff )
@@ -139,7 +139,7 @@ getGenesClassifier <- reactive({
 
     print("getting Genes Details...")
     GenesClassDetails_ls <- lapply(GenesClassDetails, function(x) x %>% add_rownames("Genes"))
-    GenesClassDetails_df <- ldply(GenesClassDetails_ls)
+    GenesClassDetails_df <- plyr::ldply(GenesClassDetails_ls)
     r_data[['GenesClassDetails']] <- GenesClassDetails_df[,-1]
     GenesClassDetails_bkp <<- GenesClassDetails_df[,-1]
 

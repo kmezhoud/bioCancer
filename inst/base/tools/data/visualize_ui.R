@@ -31,12 +31,17 @@ output$ui_viz_type <- renderUI({
 output$ui_viz_yvar <- renderUI({
   if (is.null(input$viz_type)) return()
   vars <- varying_vars()
-  if (input$viz_type %in% c("line","bar","scatter")) vars <- vars["factor" != .getclass()[vars]]
+  if (not_available(vars)) return()
+  vars <- vars["date" != .getclass()[vars]]
+  if (input$viz_type %in% c("line","bar","scatter")) {
+    vars <- vars["factor" != .getclass()[vars]]
+    vars <- vars["character" != .getclass()[vars]]
+  }
 
   isolate({
     ## keep the same y-variable 'active' if possible
     sel <-
-      if(available(input$viz_yvar) && all(input$viz_yvar %in% vars))
+      if (available(input$viz_yvar) && all(input$viz_yvar %in% vars))
         input$viz_yvar
       else
         state_multiple("viz_yvar", vars)
@@ -51,7 +56,9 @@ output$ui_viz_yvar <- renderUI({
 ## X - variable
 output$ui_viz_xvar <- renderUI({
   if (is.null(input$viz_type)) return()
-  vars <- varying_vars()
+  # vars <- varying_vars()
+  vars <- varnames()
+  if (not_available(vars)) return()
   if (input$viz_type == "hist") vars <- vars["date" != .getclass()[vars]]
   if (input$viz_type == "density") vars <- vars["factor" != .getclass()[vars]]
   if (input$viz_type %in% c("box", "bar")) vars <- groupable_vars()
@@ -59,7 +66,7 @@ output$ui_viz_xvar <- renderUI({
   isolate({
     ## keep the same x-variable 'active' if possible
     sel <-
-      if(available(input$viz_xvar) && all(input$viz_xvar %in% vars))
+      if (available(input$viz_xvar) && all(input$viz_xvar %in% vars))
         input$viz_xvar
       else
         state_multiple("viz_xvar", vars)
@@ -99,7 +106,7 @@ output$ui_viz_axes <- renderUI({
   ind <- 1
   if (input$viz_type %in% c("line","scatter")) ind <- 1:3
   if (input$viz_type == "hist") ind <- c(ind, 5)
-  if (!is_empty(input$viz_facet_row, ".")) ind <- c(ind, 4)
+  if (!is_empty(input$viz_facet_row, ".") || !is_empty(input$viz_facet_col, "."))  ind <- c(ind, 4)
   if (input$viz_type == "bar" && input$viz_facet_row == "." && input$viz_facet_col == ".") ind <- c(ind, 6)
   checkboxGroupInput("viz_axes", NULL, viz_axes[ind],
     selected = state_init("viz_axes", ""),
@@ -115,6 +122,12 @@ output$ui_viz_check <- renderUI({
     inline = TRUE)
 })
 
+observeEvent(input$viz_type, {
+  isolate({
+    if (input$viz_type != "hist")
+      updateSliderInput(session, "viz_bins", value = 10)
+  })
+})
 
 output$ui_Visualize <- renderUI({
   tagList(
@@ -212,7 +225,7 @@ observeEvent(input$visualize_report, {
     update_report(inp_main = clean_args(viz_inputs(), viz_args),
                   fun_name = "visualize", outputs = character(0),
                   pre_cmd = "", figs = TRUE,
-                  fig.width = round(7 * viz_plot_width()/650,2),
-                  fig.height = round(7 * viz_plot_height()/500,2))
+                  fig.width = round(7 * viz_plot_width()/600,2),
+                  fig.height = round(7 * viz_plot_height()/600,2))
   })
 })

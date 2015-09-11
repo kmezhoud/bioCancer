@@ -63,9 +63,9 @@ simulater <- function(const = "",
   # nr = 1000
 
   ## remove any non-numbers from seed, including spaces
-  seed %>% gsub("[^0-9]","",.) %>% { if(. != "") set.seed(seed) }
+  seed %>% gsub("[^0-9]","",.) %>% { if (. != "") set.seed(seed) }
 
-  if(is.null(dat)) dat <- list()
+  if (is.null(dat)) dat <- list()
 
   cleaner <- function(x) x %>% gsub("[ ]{2,}"," ",.) %>%
     gsub("[ ]*[\n;]+[ ]*",";",.) %>%
@@ -121,7 +121,7 @@ simulater <- function(const = "",
     for (i in 1:length(s)) {
       obj <- s[[i]][1]
       fobj <- s[[i]][-1]
-      if(length(fobj) > 1) fobj <- paste0(fobj, collapse = "=")
+      if (length(fobj) > 1) fobj <- paste0(fobj, collapse = "=")
       out <- try(do.call(with, list(dat, parse(text = fobj))), silent = TRUE)
       if (!is(out, 'try-error')) {
         dat[[obj]] <- out
@@ -199,7 +199,7 @@ plot.simulater <- function(x, shiny = FALSE, ...) {
 
   plot_list <- list()
   for (i in colnames(object)) {
-    dat <- select_(object, .dots = i)
+    dat <- dplyr::select_(object, .dots = i)
     if (sd(object[[i]]) == 0) {
       ## plot constants - keep??
       dat$sim <- 1:nrow(dat)
@@ -250,7 +250,7 @@ repeater <- function(nr = 12,
   # nr <- 12
   # sim <- result
   # sim$sim_call
-  seed %>% gsub("[^0-9]","",.) %>% { if(. != "") set.seed(seed) }
+  seed %>% gsub("[^0-9]","",.) %>% { if (. != "") set.seed(seed) }
   if (identical(vars, "")) return()
 
   ## from http://stackoverflow.com/a/7664655/1974918
@@ -359,7 +359,7 @@ plot.repeater <- function(x,
   for (l in levels(expl$tab$variable)) {
     for (i in names(expl$pfun)) {
 
-      dat <- expl$tab %>% filter_(paste0("variable == \"", l,"\"")) %>% select_(i)
+      dat <- expl$tab %>% filter_(paste0("variable == \"", l,"\"")) %>% dplyr::select_(i)
       bw <- diff(range(dat[[1]], na.rm = TRUE)) / 20
 
       ## plot results
@@ -431,3 +431,4 @@ plot.repeater <- function(x,
 # demand <- rnorm(10, 1000,100)
 # dyn <- demand + lag(demand, default = 0)
 # dyn
+

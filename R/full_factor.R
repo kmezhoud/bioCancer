@@ -132,7 +132,7 @@ summary.full_factor <- function(object,
 	cat("\nFactor scores (max 10 shown):\n")
 	as.data.frame(object$fres$scores) %>%
   	round(2) %>%
-  	slice(1:min(nrow(.), 10)) %>%
+  	dplyr::slice(1:min(nrow(.), 10)) %>%
   	print(row.names = FALSE)
 }
 

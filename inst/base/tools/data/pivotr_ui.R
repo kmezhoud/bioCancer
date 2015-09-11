@@ -4,15 +4,22 @@
 
 pvt_normalize <- c("None" = "None", "Row" = "row", "Column" = "column",
                    "Total" = "total")
-# pvt_perc <- c("Percentage" = "perc")
 pvt_format <- c("None" = "none", "Color bar" = "color_bar", "Heat map" = "heat")
 pvt_type <- c("Dodge" = "dodge","Fill" = "fill")
 
 ## UI-elements for pivotr
 output$ui_pvt_cvars <- renderUI({
   vars <- groupable_vars()
+  if (not_available(vars)) return()
+
+  isolate({
+    if (available(r_state$pvt_cvars) && all(r_state$pvt_cvars %in% vars))
+      vars <- unique(c(r_state$pvt_cvars, vars))
+  })
+
   selectizeInput("pvt_cvars", label = "Categorical variables:", choices = vars,
-    selected = state_multiple("pvt_cvars",vars, ""), multiple = TRUE,
+    selected = state_multiple("pvt_cvars",vars, ""),
+    multiple = TRUE,
     options = list(placeholder = 'Select categorical variables',
                    plugins = list('remove_button', 'drag_drop'))
   )
@@ -34,10 +41,10 @@ output$ui_pvt_fun <- renderUI({
 })
 
 output$ui_pvt_normalize  <- renderUI({
-  if(!is.null(input$pvt_cvars) && length(input$pvt_cvars) == 1) pvt_normalize <- pvt_normalize[-(2:3)]
+  if (!is.null(input$pvt_cvars) && length(input$pvt_cvars) == 1) pvt_normalize <- pvt_normalize[-(2:3)]
 
   isolate({
-    sel <- if(is_empty(input$pvt_normalize)) state_single("pvt_normalize", pvt_normalize, "None") else input$pvt_normalize
+    sel <- if (is_empty(input$pvt_normalize)) state_single("pvt_normalize", pvt_normalize, "None") else input$pvt_normalize
   })
 
   selectizeInput("pvt_normalize", label = "Normalize by:",
@@ -121,8 +128,29 @@ pvt_plot_inputs <- reactive({
 
 .pivotr <- reactive({
   if (not_available(input$pvt_cvars)) return()
+  if (is_empty(input$pvt_fun)) {
+    updateSelectInput(session, "pvt_fun", selected = "length")
+    return()
+  }
+  if (is_empty(input$pvt_nvar)) {
+    updateSelectInput(session, "pvt_nvar", selected = "None")
+    return()
+  }
   withProgress(message = "Calculating", value = 0, {
     sshhr( do.call(pivotr, pvt_inputs()) )
+  })
+})
+
+observeEvent(input$pivotr_search_columns, {
+  isolate({
+    r_state$pivotr_search_columns <<- input$pivotr_search_columns
+  })
+})
+
+observeEvent(input$pivotr_state, {
+  isolate({
+    r_state$pivotr_state <<-
+      if (is.null(input$pivotr_state)) list() else input$pivotr_state
   })
 })
 
@@ -130,11 +158,25 @@ output$pivotr <- DT::renderDataTable({
   pvt <- .pivotr()
   if (is.null(pvt)) return()
   pvt$shiny <- TRUE
-  make_dt(pvt, format = input$pvt_format, perc = input$pvt_perc)
+
+  if (!identical(r_state$pvt_cvars, input$pvt_cvars)) {
+    r_state$pvt_cvars <<- input$pvt_cvars
+    r_state$pivotr_state <<- list()
+    r_state$pivotr_search_columns <<- rep("", ncol(pvt$tab))
+  }
+
+  search <- r_state$pivotr_state$search$search
+  if (is.null(search)) search <- ""
+  searchCols <- lapply(r_state$pivotr_search_columns, function(x) list(search = x))
+  order <- r_state$pivotr_state$order
+
+  make_dt(pvt, format = input$pvt_format, perc = input$pvt_perc,
+          search = search, searchCols = searchCols, order = order)
+
 })
 
 output$pivotr_chi2 <- renderPrint({
-  if(!input$pvt_chi2) return(invisible())
+  if (!input$pvt_chi2) return(invisible())
   .pivotr() %>% {if (is.null(.)) return(invisible())
                  else summary(., chi2 = TRUE, shiny = TRUE)}
 })
@@ -147,7 +189,7 @@ output$dl_pivot_tab <- downloadHandler(
       write.csv(data_frame("Data" = "[Empty]"),file, row.names = FALSE)
     } else {
       rows <- isolate(r_data$pvt_rows)
-      dat$tab %>% {if (is.null(rows)) . else slice(., c(rows,nrow(.)))} %>%
+      dat$tab %>% {if (is.null(rows)) . else dplyr::slice(., c(rows,nrow(.)))} %>%
         write.csv(file, row.names = FALSE)
     }
   }
@@ -157,9 +199,9 @@ pvt_plot_width <- function() 750
 pvt_plot_height <- function() {
    pvt <- .pivotr()
    if (is.null(pvt)) return(400)
+   pvt %<>% pvt_sorter(rows = r_data$pvt_rows)
    if (length(input$pvt_cvars) > 2) {
-       pvt %>% pvt_sorter(rows = isolate(r_data$pvt_rows)) %>%
-       .$tab %>% .[[input$pvt_cvars[3]]] %>%
+       pvt$tab %>% .[[input$pvt_cvars[3]]] %>%
          levels %>%
          length %>% {. * 200}
    } else if (input$pvt_flip) {
@@ -180,7 +222,7 @@ pvt_sorter <- function(pvt, rows = NULL) {
   if (length(cvars) > 1)
     tab %<>% select(-which(colnames(.) == "Total"))
 
-  tab %<>% slice(rows)
+  tab %<>% dplyr::slice(rows)
   cvars <- if (length(cvars) == 1) cvars else cvars[-1]
 
   for (i in cvars)
@@ -193,7 +235,6 @@ pvt_sorter <- function(pvt, rows = NULL) {
 observeEvent(input$pivotr_rows_all, {
   isolate({
     dt_rows <- input$pivotr_rows_all
-    # print(cat("dt ", dt_rows,"\n"))
     if (identical(r_data$pvt_rows, dt_rows)) return()
     r_data$pvt_rows <- dt_rows
   })
@@ -201,12 +242,10 @@ observeEvent(input$pivotr_rows_all, {
 
 .plot_pivot <- reactive({
   pvt <- .pivotr()
+
   if (is.null(pvt)) return(invisible())
   if (!is_empty(input$pvt_tab, FALSE))
     pvt <- pvt_sorter(pvt, rows = r_data$pvt_rows)
-  # plot(pvt, type = input$pvt_type, flip = input$pvt_flip, shiny = TRUE)
-
-    # sshhr( do.call(pivotr, pvt_inputs()) )
     pvt_plot_inputs() %>% { .$shiny <- TRUE; . } %>%
       { do.call(plot, c(list(x = pvt), .)) }
 })
@@ -214,12 +253,18 @@ observeEvent(input$pivotr_rows_all, {
 output$plot_pivot <- renderPlot({
   if (is_empty(input$pvt_plot, FALSE)) return(invisible())
   withProgress(message = 'Making plot', value = 0, {
-    sshhr( .plot_pivot() %>% print )
+    sshhr(.plot_pivot()) %>% print
   })
+  return(invisible())
 }, width = pvt_plot_width, height = pvt_plot_height)
 
 observeEvent(input$pivotr_report, {
   isolate({
+
+    # print("====")
+    # print(input$pivotr_search_columns)
+    # print(sc %>% {set_names(.,colnames(pvt$tab))})
+
     inp_out <- list(list(chi2 = input$pvt_chi2),"")
     if (input$pvt_plot == TRUE) {
       inp_out[[2]] <- clean_args(pvt_plot_inputs(), pvt_plot_args[-1])
@@ -229,7 +274,7 @@ observeEvent(input$pivotr_report, {
       outputs <- c("summary")
       figs <- FALSE
     }
-    update_report(inp_main = clean_args(pvt_inputs(), pvt_args),
+    update_report(inp_main = c(clean_args(pvt_inputs(), pvt_args), tabsort = "", tabfilt = ""),
                   fun_name = "pivotr",
                   outputs = outputs,
                   inp_out = inp_out,

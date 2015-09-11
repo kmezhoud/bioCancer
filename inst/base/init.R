@@ -11,7 +11,6 @@
 # options(warn = 2)
 # options(warn = 0)
 
-
 init_state <- function(r_data) {
 
   ## initial plot height and width
@@ -101,9 +100,11 @@ isolate({
 r_ssuid <-
   if (r_local) {
     # "local"
-    ifelse(is.null(prevSSUID), paste0("local-",shiny:::createUniqueId(3)), prevSSUID)
+    ifelse (is.null(prevSSUID), paste0("local-",shiny:::createUniqueId(3)), prevSSUID)
   } else {
-    r_ssuid <- prevSSUID
+
+    ifelse (is.null(prevSSUID), shiny:::createUniqueId(5), prevSSUID)
+
   }
 #}
 
@@ -139,10 +140,10 @@ if (r_local) {
   ## does *not* make a copy of the data - nice
   r_env <<- pryr::where("r_data")
 
-
-  # adding any data.frame in the global environment to r_data should not affect
-  # memory usage ... at least until the entry in r_data is changed
-  df_list <- sapply(mget(ls(envir = .GlobalEnv), envir = .GlobalEnv), is.data.frame) %>% { names(.[.]) }
+  ## adding any data.frame from the global environment to r_data should not affect
+  ## memory usage ... at least until the entry in r_data is changed
+  df_list <- sapply(mget(ls(envir = .GlobalEnv), envir = .GlobalEnv), is.data.frame) %>%
+    { names(.[.]) }
 
 
   for (df in df_list) {
@@ -217,7 +218,7 @@ url_list <-
 url_patterns <- list()
 for (i in names(url_list)) {
   res <- url_list[[i]]
-  if(!is.list(res)) {
+  if (!is.list(res)) {
     url_patterns[[res]] <- list("nav_radiant" = i)
   } else {
     tabs <- names(res)
@@ -239,10 +240,14 @@ for (i in names(url_list)) {
 
 ## environment to results from code run through knitr
 # r_knitr <- new.env(parent = emptyenv())
-if (is.null(isolate(r_data$r_knitr))) {
-  isolate({
-    r_data$r_knitr <- if (exists("r_env")) new.env(parent = r_env) else new.env()
-  })
+# if (is.null(isolate(r_data$r_knitr))) {
+  # isolate({
+    # r_data$r_knitr <- if (exists("r_env")) new.env(parent = r_env) else new.env()
+  # })
+# }
+
+if (!exists("r_knitr")) {
+  r_knitr <- if (exists("r_env")) new.env(parent = r_env) else new.env()
 }
 
 ## parse the url and use updateTabsetPanel to navigate to the desired tab
@@ -290,7 +295,7 @@ if (!is.null(r_state$nav_radiant)) {
   ## naming the observer so we can suspend it when done
   nav_observe <- observe({
     ## needed to avoid errors when no data is available yet
-    if(is.null(input$dataset)) return()
+    if (is.null(input$dataset)) return()
     updateTabsetPanel(session, "nav_radiant", selected = r_state$nav_radiant)
 
     ## check if shiny set the main tab to the desired value

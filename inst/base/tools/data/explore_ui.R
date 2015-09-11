@@ -1,10 +1,8 @@
 #######################################
-# Explore datasets
+## Explore datasets
 #######################################
 
-default_funs <- c("length", "nmissing", "mean_rm", "sd_rm", "min_rm", "max_rm")
-# expl_format <- c("None" = "none", "Color bar" = "color_bar", "Heat map" = "heat")
-
+default_funs <- c("length", "n_distinct", "mean_rm", "sd_rm", "min_rm", "max_rm")
 expl_args <- as.list(formals(explore))
 
 ## list of function inputs selected by user
@@ -18,10 +16,11 @@ expl_inputs <- reactive({
   expl_args
 })
 
-# UI-elements for explore
+## UI-elements for explore
 output$ui_expl_vars <- renderUI({
   isNum <- "numeric" == .getclass() | "integer" == .getclass()
   vars <- varnames()[isNum]
+  if (not_available(vars)) return()
   selectInput("expl_vars", label = "Select variable(s):", choices = vars,
     selected = state_multiple("expl_vars",vars), multiple = TRUE,
     size = min(8, length(vars)), selectize = FALSE)
@@ -29,6 +28,13 @@ output$ui_expl_vars <- renderUI({
 
 output$ui_expl_byvar <- renderUI({
   vars <- groupable_vars()
+  if (not_available(vars)) return()
+
+  isolate({
+    if (available(r_state$expl_byvar) && all(r_state$expl_byvar %in% vars))
+      vars <- unique(c(r_state$expl_byvar, vars))
+  })
+
   selectizeInput("expl_byvar", label = "Group by:", choices = vars,
     selected = state_multiple("expl_byvar", vars, ""), multiple = TRUE,
     options = list(placeholder = 'Select group-by variable',
@@ -38,7 +44,7 @@ output$ui_expl_byvar <- renderUI({
 
 output$ui_expl_fun <- renderUI({
   isolate({
-    sel <- if(is_empty(input$expl_fun))  state_multiple("expl_fun", r_functions, default_funs)
+    sel <- if (is_empty(input$expl_fun))  state_multiple("expl_fun", r_functions, default_funs)
            else input$expl_fun
   })
   selectizeInput("expl_fun", label = "Apply function(s):",
@@ -49,6 +55,7 @@ output$ui_expl_fun <- renderUI({
 })
 
 output$ui_expl_top  <- renderUI({
+  if (is_empty(input$expl_vars)) return()
   top_var = c("Function" = "fun", "Variables" = "var", "Group by" = "byvar")
   if (is_empty(input$expl_byvar)) top_var <- top_var[1:2]
   selectizeInput("expl_top", label = "Column variable:",
@@ -56,13 +63,6 @@ output$ui_expl_top  <- renderUI({
                  selected = state_single("expl_top", top_var, top_var[1]),
                  multiple = FALSE)
 })
-
-# output$ui_expl_format  <- renderUI({
-#   selectizeInput("expl_format", label = "Conditional formatting:",
-#                  choices = expl_format,
-#                  selected = state_single("expl_format", expl_format, "none"),
-#                  multiple = FALSE)
-# })
 
 output$ui_expl_viz <- renderUI({
   checkboxInput('expl_viz', 'Show plot', value = state_init("expl_viz", FALSE))
@@ -81,7 +81,6 @@ output$ui_Explore <- renderUI({
           td(actionButton("expl_store", "Store"), style="padding-top:30px;")
         )
       ))
-      # uiOutput("ui_expl_format")
     ),
     help_and_report(modal_title = "Explore",
                     fun_name = "explore",
@@ -90,18 +89,59 @@ output$ui_Explore <- renderUI({
 })
 
 .explore <- reactive({
-  if (not_available(input$expl_vars)) return()
+  if (not_available(input$expl_vars) || is.null(input$expl_top)) return()
   withProgress(message = 'Calculating', value = 0, {
     sshhr( do.call(explore, expl_inputs()) )
   })
 })
 
+observeEvent(input$explorer_search_columns, {
+  isolate({
+    r_state$explorer_search_columns <<- input$explorer_search_columns
+  })
+})
+
+observeEvent(input$explorer_state, {
+  isolate({
+    r_state$explorer_state <<- input$explorer_state
+  })
+})
+
+expl_reset <- function(var, ncol) {
+  if (!identical(r_state[[var]], input[[var]])) {
+    r_state[[var]] <<- input[[var]]
+    r_state$explorer_state <<- list()
+    r_state$explorer_search_columns <<- rep("", ncol)
+  }
+}
+
 output$explorer <- DT::renderDataTable({
   expl <- .explore()
   if (is.null(expl)) return()
   expl$shiny <- TRUE
-  # make_expl(expl, top = input$expl_top, format = input$expl_format)
-  make_expl(expl, top = input$expl_top)
+
+  ## resetting DT when changes occur
+  nc <- ncol(expl$tab)
+  expl_reset("expl_vars", nc)
+  expl_reset("expl_byvar", nc)
+  expl_reset("expl_fun", nc)
+  if (!is.null(r_state$expl_top) && !is.null(input$expl_top) &&
+      !identical(r_state$expl_top, input$expl_top)) {
+    r_state$expl_top <<- input$expl_top
+    r_state$explorer_state <<- list()
+    r_state$explorer_search_columns <<- rep("", nc)
+  }
+
+  isolate({
+    search <- r_state$explorer_state$search$search
+    if (is.null(search)) search <- ""
+    searchCols <- lapply(r_state$explorer_search_columns, function(x) list(search = x))
+    order <- r_state$explorer_state$order
+  })
+
+  top <- ifelse (input$expl_top == "", "fun", input$expl_top)
+  make_expl(expl, top = top, search = search,
+            searchCols = searchCols, order = order)
 })
 
 output$dl_explore_tab <- downloadHandler(
@@ -113,7 +153,7 @@ output$dl_explore_tab <- downloadHandler(
     } else {
       rows <- input$explorer_rows_all
       flip(dat, input$expl_top) %>%
-        {if (is.null(rows)) . else slice(., rows)} %>%
+        {if (is.null(rows)) . else dplyr::slice(., rows)} %>%
         write.csv(file, row.names = FALSE)
     }
   }
@@ -127,7 +167,7 @@ observeEvent(input$expl_store, {
     name <- input$expl_dat
     tab <- dat$tab
     if (!is.null(rows) && !all(rows == 1:nrow(tab))) {
-      tab <- tab %>% slice(., rows)
+      tab <- tab %>% dplyr::slice(., rows)
       for (i in c(dat$byvar,"variable"))
         tab[[i]] %<>% factor(., levels = unique(.))
     }
@@ -137,7 +177,6 @@ observeEvent(input$expl_store, {
     cat(paste0("Dataset r_data$", name, " created in ", environmentName(env), " environment\n"))
     env$r_data[['datasetlist']] <- c(name, env$r_data[['datasetlist']]) %>% unique
 
-    # updateTabsetPanel(session, "tabs_data", selected = "Visualize")
     updateSelectInput(session, "dataset", selected = name)
   })
 })
@@ -151,7 +190,7 @@ output$expl_summary <- renderPrint({
 
 observeEvent(input$explore_report, {
   isolate({
-    update_report(inp_main = clean_args(expl_inputs(), expl_args),
+    update_report(inp_main = c(clean_args(expl_inputs(), expl_args), tabsort = "", tabfilt = ""),
                   fun_name = "explore",
                   inp_out = list(list(top = input$expl_top)),
                   outputs = c("summary"),

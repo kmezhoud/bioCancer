@@ -1,5 +1,5 @@
 shinyServer(function(input, output, session) {
-  library(PSICQUIC)
+  #library(PSICQUIC)
   #library(networkD3)
   library(cgdsr)
   library(coffeewheel)
@@ -15,7 +15,8 @@ shinyServer(function(input, output, session) {
   library(clusterProfiler)
   library(RCurl)
   library(XML)
- library(dplyr)
+ #library(dplyr)
+  #library(S4Vectors)
 ####masked package
   #library(lubridate)
   #remove(list = conflicts(detail = TRUE)$.GlobalEnv)

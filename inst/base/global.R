@@ -1,8 +1,19 @@
-if (packageVersion("Rcpp") < "0.12.0") stop(
+## No longer need when dplyr 0.5 comes out
+if (packageVersion("Rcpp") < "0.12.0") {
+  stop(
   "Radiant requires Rcpp >= 0.12.0. ",
   "Please install the latest version of Rcpp from CRAN: ",
   "install.packages('Rcpp', repo = 'http://cran.rstudio.com')"
-)
+  )
+}
+
+if (packageVersion("dplyr") < "0.4.3") {
+  stop(
+  "Radiant requires dplyr >= 0.4.3. ",
+  "Please install the latest version of dplyr from CRAN: ",
+  "install.packages('dplyr', repo = 'http://cran.rstudio.com')"
+  )
+}
 
 ## turn off warnings globally
 # options(warn=-1)
@@ -18,12 +29,13 @@ if (packageVersion("Rcpp") < "0.12.0") stop(
 # r_encoding = getOption("encoding")
 r_encoding = "UTF-8"
 
+
 ## path to use for local and server use
-# r_path <- ifelse((file.exists("../base") && file.exists("../quant")), "..",
+# r_path <- ifelse ((file.exists("../base") && file.exists("../quant")), "..",
 #                   system.file(package = "radiant"))
 # if (r_path == "") r_path <- ".."  # if radiant is not installed revert to local inst
 
-r_path <- ifelse((file.exists("../base") && file.exists("../quant")), "..",
+r_path <- ifelse ((file.exists("../base") && file.exists("../quant")), "..",
                   system.file(package = "radiant"))
 
 if (r_path == "") r_path <- ".."  # if radiant is not installed revert to local inst
@@ -39,14 +51,15 @@ r_pkgs <- c("DiagrammeR", "car", "gridExtra", "GPArotation", "psych", "wordcloud
             "AlgDesign", "knitr", "lubridate", "ggplot2", "ggdendro",
             "pryr", "shiny", "magrittr", "tidyr", "dplyr", "broom",
             "htmlwidgets", "readr", "rmarkdown", "shinyAce", "data.tree",
-            "yaml")
+            "yaml", "scales")
 # options(r_pkgs = r_pkgs); rm(r_pkgs)
 
 
 ## list of function arguments
 r_functions <-
-  list("n" = "length", "# missing" = "nmissing", "mean" = "mean_rm", "median" = "median_rm",
-       "sum" = "sum_rm", "sd" = "sd_rm", "se" = "serr", "cv" = "cv", "min" = "min_rm",
+  list("n" = "length", "n_missing" = "n_missing", "n_distinct" = "n_distinct",
+       "mean" = "mean_rm", "median" = "median_rm", "mode" = "mode_rm", "sum" = "sum_rm",
+       "sd" = "sd_rm", "se" = "serr", "cv" = "cv", "min" = "min_rm",
        "max" = "max_rm", "5%" = "p05", "25%" = "p25", "75%" = "p75", "95%" = "p95",
        "skew" = "skew", "kurtosis" = "kurtosi")
 # options(r_functions = r_functions); rm(r_functions)
@@ -109,6 +122,8 @@ nav_ui <-
   list(windowTitle = "Radiant", id = "nav_radiant", inverse = TRUE,
        collapsible = TRUE, tabPanel("Data", withMathJax(), uiOutput("ui_data")))
 
+r_help <- "help_base"
+
 shared_ui <-
   tagList(
     navbarMenu("R",
@@ -139,24 +154,18 @@ shared_ui <-
                ## had to remove class = "action-button" to make this work
                tabPanel(tags$a(id = "new_session", href = "./", target = "_blank",
                                list(icon("plus"), "New session")))
-    ),
-
-    navbarMenu(title = "", id = "Help", icon = icon("question-circle"),
-               tabPanel("Help", uiOutput("help_quant"), icon = icon("question")),
-               tabPanel("Videos", uiOutput("help_videos"), icon = icon("film")),
-               tabPanel("About", uiOutput("help_about"), icon = icon("info")),
-               tabPanel(tags$a("", href = "http://vnijs.github.io/radiant/", target = "_blank",
-                               list(icon("globe"), "Radiant docs"))),
-               tabPanel(tags$a("", href = "https://github.com/vnijs/radiant/issues", target = "_blank",
-                               list(icon("github"), "Report issue")))
-    ),
-
-    tags$head(
-      tags$script(src = "js/session.js"),
-      tags$script(src = "js/jquery-ui.custom.min.js"),
-      tags$script(src = "js/video_reset.js"),
-      tags$link(rel = "shortcut icon", href = "imgs/icon.png")
     )
+  )
+
+js_head <-
+  tags$head(
+    tags$script(src = "js/session.js"),
+    tags$script(src = "js/jquery-ui.custom.min.js"),
+    tags$script(src = "js/returnTextAreaBinding.js"),
+    tags$script(src = "js/returnTextInputBinding.js"),
+    # tags$script(src = "js/draggable_modal.js"),
+    tags$script(src = "js/video_reset.js"),
+    tags$link(rel = "shortcut icon", href = "imgs/icon.png")
   )
 
 

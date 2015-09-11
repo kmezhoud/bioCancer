@@ -392,8 +392,9 @@ plot.regression <- function(x,
 #' @details See \url{http://vnijs.github.io/radiant/quant/regression.html} for an example in Radiant
 #'
 #' @param object Return value from \code{\link{regression}}
-#' @param pred_cmd Command used to generate data for prediction
+#' @param pred_vars Variables to use for prediction
 #' @param pred_data Name of the dataset to use for prediction
+#' @param pred_cmd Command used to generate data for prediction
 #' @param conf_lev Confidence level used to estimate confidence intervals (.95 is the default)
 #' @param prn Print prediction results (default is TRUE)
 #' @param ... further arguments passed to or from other methods
@@ -413,21 +414,27 @@ plot.regression <- function(x,
 #'
 #' @export
 predict.regression <- function(object,
-                               pred_cmd = "",
+                               pred_vars = "",
                                pred_data = "",
+                               pred_cmd = "",
                                conf_lev = 0.95,
                                prn = TRUE,
                                ...) {
 
   # used http://www.r-tutor.com/elementary-statistics/simple-linear-regression/prediction-interval-linear-regression as starting point
+  pred_count <- sum(c(pred_vars == "", pred_cmd == "", pred_data == ""))
   if ("standardize" %in% object$check) {
     return(cat("Currently you cannot use standardized coefficients for prediction.\nPlease uncheck the standardized coefficients box and try again"))
-  } else if (pred_cmd == "" && pred_data == "") {
-    return(cat("Please specify a command to generate predictions. For example,\ncarat = seq(.5, 1.5, .1) would produce predictions for values of\ncarat starting at .5, increasing to 1.5 in increments of .1. Make\nsure to press return after you finish entering the command.\nIf no results are shown the command was likely invalid. Alternatively,\nspecify a dataset to generate predictions. You could create this in\nExcel and use the paste feature in Data > Manage to bring it into\nRadiant"))
+  } else if (pred_count == 3) {
+    return(cat("Please select variables, data, or specify a command to generate predictions. For example,\ncarat = seq(.5, 1.5, .1) would produce predictions for values of\ncarat starting at .5, increasing to 1.5 in increments of .1. Make\nsure to press return after you finish entering the command.\nIf no results are shown the command was likely invalid. Alternatively,\nspecify a dataset to generate predictions. You could create this in\nExcel and use the paste feature in Data > Manage to bring it into\nRadiant"))
   }
 
-  if (pred_cmd != "" && pred_data != "")
-    cat("Both a command and a dataset where specified for prediciton. The command will be used.\nTo use the dataset remove the command.")
+  if (pred_count < 2) {
+    if (pred_cmd != "")
+      cat("Multiple inputs where specified for prediciton. The command will be used.\nTo use variables or a dataset remove the command.")
+    if (pred_vars != "")
+      cat("Multiple inputs where specified for prediciton. The variables selected will be used.\nTo use a command or dataset unselect variables.")
+  }
 
   pred_type <- "cmd"
   vars <- object$indep_var
@@ -463,11 +470,12 @@ predict.regression <- function(object,
         return(cat("The expression entered contains variable names that are not in the model.\nPlease try again.\n\n"))
       } else {
         plug_data[names(pred)] <- list(NULL)
-        pred <- data.frame(plug_data[-1],pred)
+        pred <- data.frame(plug_data[,-1],pred)
       }
     }
   } else {
-    pred <- getdata(pred_data)
+    ## generate predictions for all observations in the dataset
+    pred <- getdata(pred_data, filt = "", na.rm = FALSE)
     pred_names <- names(pred)
     pred <- try(dplyr::select_(pred, .dots = vars), silent = TRUE)
     if (is(pred, 'try-error')) {
@@ -477,6 +485,7 @@ predict.regression <- function(object,
       cat(vars[!vars %in% pred_names])
       return()
     }
+    pred %<>% na.omit()
     pred_type <- "data"
   }
 
@@ -569,6 +578,23 @@ plot.reg_predict <- function(x,
   cn[which(cn == "Prediction") + 2] <- "ymax"
   colnames(object) <- cn
 
+  # if (facet_row != ".") {
+  #   byvar <- facet_row
+  # }
+  # if (facet_col != ".") {
+  #   byvar <- if (is.null(byvar)) facet_col else c(byvar, facet_col)
+  # }
+  # if (fill != "none") {
+  #   vars %<>% c(., fill)
+  #   if (type == "bar")
+  #     byvar <- if (is.null(byvar)) fill else c(byvar, fill)
+  # }
+
+  # tbv <- if (is.null(byvar)) i else c(i, byvar)
+  # tmp <- dat %>% group_by_(.dots = tbv) %>% select_(j) %>% summarise_each(funs(mean))
+  # print(getclass(object))
+
+
   if (color == 'none') {
     p <- ggplot(object, aes_string(x=xvar, y="Prediction")) +
            geom_line(aes(group=1))
@@ -588,24 +614,27 @@ plot.reg_predict <- function(x,
   sshhr( p )
 }
 
-#' Store regression residuals
+#' Store residuals or predicted values generated in the regression function
 #'
 #' @details See \url{http://vnijs.github.io/radiant/quant/regression.html} for an example in Radiant
 #'
-#' @param object Return value from \code{\link{regression}}
+#' @param object Return value from \code{\link{regression}} or \code{\link{predict.regression}}
+#' @param data Dataset name
+#' @param type Residuals ("residuals") or predictions ("predictions"). For predictions the dataset name must be provided
+#' @param name Variable name assigned to the residuals or predicted values
 #'
 #' @examples
 #' \donttest{
 #' result <- regression("diamonds", "price", c("carat","clarity"))
-#' store_reg_resid(result)
-#' head(diamonds)
+#' store_reg(result)
 #' }
 #' @export
-store_reg_resid <- function(object) {
-  if (object$data_filter != "")
-    return("Please deactivate data filters before trying to save residuals")
-  object$model$residuals %>%
-    changedata(object$dataset, vars = ., var_names = "reg_residuals")
+store_reg <- function(object, data = object$dataset,
+                      type = "residuals", name = paste0(type, "_reg")) {
+  if (!is.null(object$data_filter) && object$data_filter != "")
+    return(message("Please deactivate data filters before trying to store predictions or residuals"))
+  store <- if (type == "residuals") object$model$residuals else object$Prediction
+    changedata(data, vars = store, var_names = name)
 }
 
 #' Check if main effects for all interaction effects are included in the model
@@ -625,7 +654,7 @@ store_reg_resid <- function(object) {
 #' @export
 var_check <- function(iv, cn, intv = "") {
 
-  # if : is used to select a range of variables indep_var is updated
+  ## if : is used to select a range of variables indep_var is updated
   vars <- iv
   if (length(vars) < length(cn)) vars <- iv <- cn
 

@@ -6,7 +6,7 @@ document(roclets = c('rd', 'collate', 'namespace'))
 # devtools::install('../DT')
 # build('../DT', binary = TRUE)
 # devtools::install('../data.tree')
-build('../data.tree', binary = TRUE)
+# build('../data.tree', binary = TRUE)
 build('../radiant', binary = TRUE)
 
 setwd('../')

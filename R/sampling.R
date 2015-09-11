@@ -24,7 +24,7 @@ sampling <- function(dataset, var, sample_size,
   dat$rnd_number <- runif(nrow(dat), min = 0, max = 1) %>% round(3)
   dat %>%
     arrange(desc(rnd_number)) %>%
-    slice(1:sample_size) -> seldat
+    dplyr::slice(1:sample_size) -> seldat
 
   environment() %>% as.list %>% set_class(c("sampling",class(.)))
 }

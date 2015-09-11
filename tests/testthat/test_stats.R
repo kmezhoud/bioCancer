@@ -1,4 +1,6 @@
 # library(png)
+# library(radiant)
+# library(testthat)
 
 trim_trailing <- function(x) sub("\\s+$", "", x)
 trim_leading <- function(x) sub("^\\s+", "", x)
@@ -14,14 +16,12 @@ compare_output <- function(res1, res2) {
   }
 }
 
-library(radiant)
 
 ######### tests ########
 
 context("Compare means")
 
 test_that("compare_means 1", {
-  library(radiant)
   result <- compare_means("diamonds","cut","price")
   res1 <- capture.output(summary(result))[17] %>% trim
   # cat(paste0(res1, "\n"))
@@ -35,7 +35,7 @@ test_that("compare_props 2", {
   result <- compare_props("titanic", "pclass", "survived")
   res1 <- capture.output(summary(result))[9] %>% trim
   # cat(paste0(res1, "\n"))
-  res2 <- "200 123 323 0.619 0.027 0.053"
+  res2 <- "1st 179 103 282 0.635 0.029 0.056"
   expect_equal(res1,res2)
 })
 
@@ -43,7 +43,6 @@ context("Single proportion")
 
 test_that("single_prop 1", {
   result <- single_prop("diamonds", "color")
-  # expect_equal(result$sp_levels,"D")
   expect_equal(result$lev, "D")
   res1 <- capture.output(summary(result))[9] %>% trim
   # cat(paste0(res1, "\n"))

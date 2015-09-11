@@ -61,7 +61,7 @@ graph_obj <- function(){
     FreqIn <- rbind(t(t(table(as.character(subset$Gene2)))), t(t(table(as.character(subset$Gene1)))))
     colnames(FreqIn) <- "Freq"
     FreqIn <- as.data.frame(FreqIn) %>% add_rownames("Genes")
-    r_data[['FreqIn']] <- ddply(FreqIn,~Genes,summarise,FreqSum=sum(Freq))
+    r_data[['FreqIn']] <- plyr::ddply(FreqIn,~Genes,summarise,FreqSum=sum(Freq))
 
     rownames(subset) <- NULL
 

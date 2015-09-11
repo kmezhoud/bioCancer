@@ -16,6 +16,7 @@
 ################################################################################
 
 saveSession <- function(session = session) {
+  if (!exists("r_sessions")) return()
   r_sessions[[r_ssuid]] <- list(
     r_data    = reactiveValuesToList(r_data),
     r_state   = reactiveValuesToList(input),
@@ -27,8 +28,8 @@ saveSession <- function(session = session) {
 }
 
 observeEvent(input$refresh_radiant, {
-  if(r_local) return()
-  ## use sshhr to aviod warnings if needed
+  if (r_local) return()
+  ## use sshhr to avoid warnings if needed
   fn <- paste0(normalizePath("~/r_sessions"),"/r_", r_ssuid, ".rds")
   if (file.exists(fn)) unlink(fn, force = TRUE)
 })
@@ -89,29 +90,33 @@ saveStateOnRefresh <- function(session = session) {
   head(r_data[[input$dataset]]) %>% getclass
 })
 
+# n_distinct_no_miss <- function(x) n_distinct( x[!is.na(x) & x != "" & x != "[EMPTY]"])
+
 ## used for group_by and facet row/column
 groupable_vars <- reactive({
   .getdata() %>%
-    summarise_each(funs(is.factor(.) | (n_distinct(.)/n()) < .1)) %>%
+    summarise_each(funs(is.factor(.) || lubridate::is.Date(.) || (n_distinct(., na_rm = TRUE)/n()) < .05)) %>%
     {which(. == TRUE)} %>%
     varnames()[.]
 })
 
+
 ## used in compare proportions
 two_level_vars <- reactive({
   .getdata() %>%
-    summarise_each(funs(n_distinct)) %>%
+    # summarise_each(funs(n_distinct_no_miss(.))) %>%
+    summarise_each(funs(n_distinct(., na_rm = TRUE))) %>%
     { . == 2 } %>%
     which(.) %>%
     varnames()[.]
 })
 
-## used in visualize - don't plot variables that have zero sd
+## used in visualize - don't plot Y-variables that don't vary
 varying_vars <- reactive({
   .getdata() %>%
-    {sshhr(summarise_each(., funs(sd_rm)))} %>%
-    { . > 0 } %>%
-    which(.) %>%
+    summarise_each(funs(does_vary(.))) %>%
+    as.logical %>%
+    which %>%
     varnames()[.]
 })
 
@@ -166,10 +171,12 @@ r_drop <- function(x, drop = c("dataset","data_filter")) x[-which(x %in% drop)]
 d2c <- function(x) if (is_date(x)) as.character(x) else x
 
 ## truncate character fields for show_data_snippet
-trunc_char <- function(x) if (is.character(x)) strtrim(x,17) else x
+trunc_char <- function(x) if (is.character(x)) strtrim(x,40) else x
 
 ## show a few rows of a dataframe
 show_data_snippet <- function(dat = input$dataset, nshow = 7, title = "") {
+
+  # cf(head(dat))
 
   n <- 0
   {if (is.character(dat) && length(dat) == 1) r_data[[dat]] else dat} %>%
@@ -214,6 +221,15 @@ returnTextAreaInput <- function(inputId, label = NULL, value = "") {
                   class="returnTextArea form-control")
     # tags$textarea(id=inputId, type = "text", rows="2",
                   # class="returnTextArea form-control", value)
+  )
+}
+
+returnTextInput <- function(inputId, label = NULL, value = "") {
+  tagList(
+    # singleton(tags$head(tags$script(src = "js/returnTextInputBinding.js"))),
+    tags$label(label, `for` = inputId),
+    tags$input(id = inputId, type = "text", value = value,
+               class = "returnTextInput form-control")
   )
 }
 
@@ -278,8 +294,8 @@ plot_downloader <- function(plot_name, width = plot_width(),
   output[[lnm]] <- downloadHandler(
     filename = function() { paste0(plot_name, ".png") },
     content = function(file) {
-        # if(fext(file) == "svg") svg(file=file, width = psize(width), height = psize(height))
-        # if(fext(file) == "pdf") pdf(file=file, width = psize(width), height = psize(height))
+        # if (fext(file) == "svg") svg(file=file, width = psize(width), height = psize(height))
+        # if (fext(file) == "pdf") pdf(file=file, width = psize(width), height = psize(height))
 
         ## needed to get the image quality at the same level as shiny
         pr <- session$clientData$pixelratio
@@ -345,8 +361,8 @@ help_and_report <- function(modal_title, fun_name, help_file) {
               </div>
             </div>
            </div>
-           <i title='Help' class='glyphicon glyphicon-question-sign alignleft' data-toggle='modal' data-target='#%s_help'></i>
-           <i title='Report results' class='glyphicon glyphicon-book action-button shiny-bound-input alignright' href='#%s_report' id='%s_report'></i>
+           <i title='Help' class='fa fa-question alignleft' data-toggle='modal' data-target='#%s_help'></i>
+           <i title='Report results' class='fa fa-edit action-button shiny-bound-input alignright' href='#%s_report' id='%s_report'></i>
            <div style='clear: both;'></div>",
           fun_name, fun_name, fun_name, modal_title, help_file, fun_name, fun_name, fun_name) %>%
   enc2utf8 %>% HTML %>% withMathJax
@@ -366,4 +382,47 @@ inclRmd <- function(path, r_env = parent.frame()) {
     # gsub("&lt;!--html_preserve--&gt;","",.) %>%   ## knitr adds this
     HTML %>%
     withMathJax
+}
+
+## used by View - remove or use more broadly
+find_env <- function(dataset) {
+  if (exists("r_env")) {
+    r_env
+  } else if (exists("r_data") && !is.null(r_data[[dataset]])) {
+    pryr::where("r_data")
+  } else if (exists(dataset)) {
+    pryr::where(dataset)
+  }
+}
+
+## used by View - remove or use more broadly
+save2env <- function(dat, dataset,
+                     dat_name = dataset,
+                     mess = "") {
+
+  env <- find_env(dataset)
+  env$r_data[[dat_name]] <- dat
+  if (dataset != dat_name) {
+    cat(paste0("Dataset r_data$", dat_name, " created in ", environmentName(env), " environment\n"))
+    env$r_data[['datasetlist']] <- c(dat_name, env$r_data[['datasetlist']]) %>% unique
+  } else {
+    cat(paste0("Dataset r_data$", dataset, " changed in ", environmentName(env), " environment\n"))
+  }
+
+  ## set to previous description
+  env$r_data[[paste0(dat_name,"_descr")]] <- env$r_data[[paste0(dataset,"_descr")]]
+
+  if (mess != "")
+    env$r_data[[paste0(dat_name,"_descr")]] %<>% paste0("\n\n",mess)
+}
+
+## cat to file
+## use with tail -f ~/r_cat.txt in a terminal
+cf <- function(...) {
+  cat(paste0("\n--- called from: ", environmentName(parent.frame()), " (", lubridate::now(), ")\n"), file = "~/r_cat.txt", append = TRUE)
+  # cf_call <- try(sys.call(which = 2), silent = TRUE)
+  # if (is(cf_call, 'try-error')) cf_call <- sys.call(which = 1)
+  # cat(paste0("\n--- called from: ", cf_call, " (", lubridate::now(), ")\n"), file = "~/r_cat.txt", append = TRUE)
+  # catsys.call(which = 2)
+  cat(..., sep = "\n", file = "~/r_cat.txt", append = TRUE)
 }

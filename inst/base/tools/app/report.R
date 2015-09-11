@@ -38,6 +38,7 @@ plot(result, plots = 'hist')
 visualize(dataset = 'diamonds', xvar = 'carat', yvar = 'price',
           type = 'scatter', color = 'clarity')
 ```
+> **Put your own code here or delete this sample report and create your own**
 "
 
 observeEvent(input$manual_paste, {
@@ -46,20 +47,25 @@ observeEvent(input$manual_paste, {
 
 output$ui_manual <- renderUI({
   ## initialize manual cmd paste to false
-  if(is.null(r_data$manual)) r_data$manual <- FALSE
+  if (is.null(r_data$manual)) r_data$manual <- FALSE
   actionButton("manual_paste",
-    if(r_data$manual) "Manual paste (on)" else "Manual paste (off)")
+    if (r_data$manual) "Manual paste (on)" else "Manual paste (off)")
 })
 
 observeEvent(input$vim_keys, {
-  isolate(r_data$vim_keys %<>% {. == FALSE})
+  isolate({
+    if (!is_empty(input$rmd_report))
+      r_state$rmd_report <<- input$rmd_report
+
+    r_data$vim_keys %<>% {. == FALSE}
+  })
 })
 
 output$ui_vim <- renderUI({
   ## initialize vim_keys to false
-  if(is.null(r_data$vim_keys)) r_data$vim_keys <- FALSE
+  if (is.null(r_data$vim_keys)) r_data$vim_keys <- FALSE
   actionButton("vim_keys",
-    if(r_data$vim_keys) "Vim keys (on)" else "Vim keys (off)")
+    if (r_data$vim_keys) "Vim keys (on)" else "Vim keys (off)")
 })
 
 output$report <- renderUI({
@@ -69,7 +75,7 @@ output$report <- renderUI({
             td(help_modal('Report','report_help',
                        inclMD(file.path(r_path,"base/tools/help/report.md")))),
             td(HTML("&nbsp;&nbsp;")),
-            td(actionButton("evalRmd", "Update")),
+            td(actionButton("evalRmd", "Knit report")),
             td(uiOutput("ui_manual")),
             td(uiOutput("ui_vim")),
             td(downloadButton("saveHTML", "Save HTML")),
@@ -81,7 +87,7 @@ output$report <- renderUI({
     ),
 
     shinyAce::aceEditor("rmd_report", mode = "markdown",
-              vimKeyBinding = ifelse(is.null(r_data$vim_keys), FALSE, r_data$vim_keys),
+              vimKeyBinding = ifelse (is.null(r_data$vim_keys), FALSE, r_data$vim_keys),
               wordWrap = TRUE,
               height = "auto",
               selectionId = "rmd_selection",
@@ -107,7 +113,8 @@ scrub <-
 
 ## Knit to save html
 knitIt <- function(text) {
-  knitr::knit2html(text = text, quiet = TRUE, envir = r_data$r_knitr,
+  # knitr::knit2html(text = text, quiet = TRUE, envir = r_data$r_knitr,
+  knitr::knit2html(text = text, quiet = TRUE, envir = r_knitr,
                    options=c("mathjax", "base64_images"),
                    stylesheet = file.path(r_path,"base/www/rmarkdown.css")) %>%
   scrub %>% HTML
@@ -117,7 +124,8 @@ knitIt <- function(text) {
 knitIt2 <- function(text) {
   # paste(knitr::knit2html(text = text, fragment.only = TRUE, quiet = TRUE, envir = r_env),
   paste(knitr::knit2html(text = text, fragment.only = TRUE, quiet = TRUE,
-        envir = r_data$r_knitr), stylesheet = "",
+        # envir = r_data$r_knitr), stylesheet = "",
+        envir = r_knitr), stylesheet = "",
         "<script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>",
         "<script>MathJax.Hub.Typeset();</script>", sep = '\n') %>% scrub %>% HTML
 }
@@ -131,7 +139,7 @@ output$rmd_knitted <- renderUI({
     }
     if (input$rmd_report != "") {
       withProgress(message = 'Knitting report', value = 0, {
-        ifelse(is.null(input$rmd_selection) || input$rmd_selection == "",
+        ifelse (is.null(input$rmd_selection) || input$rmd_selection == "",
                return(knitIt2(input$rmd_report)),
                return(knitIt2(input$rmd_selection)))
       })
@@ -144,7 +152,7 @@ output$saveHTML <- downloadHandler(
   content = function(file) {
     if (r_local) {
       isolate({
-        ifelse(is.null(input$rmd_selection) || input$rmd_selection == "",
+        ifelse (is.null(input$rmd_selection) || input$rmd_selection == "",
                text <- input$rmd_report, text <- input$rmd_selection)
         knitIt(text) %>% cat(.,file=file,sep="\n")
       })
@@ -153,13 +161,31 @@ output$saveHTML <- downloadHandler(
 )
 
 output$saveRmd <- downloadHandler(
-  filename = function() {"report.Rmd"},
-  content = function(file) {
+  filename = function() {"report.zip"},
+  content = function(fname) {
     isolate({
-      "```{r echo = FALSE}\n# knitr::opts_chunk$set(comment=NA, cache=FALSE, message=FALSE, warning=FALSE)\n# suppressMessages(library(radiant))\n# uncomment the lines above to 'knit' the Rmd file in Rstudio\n# you will also need to load the data using load()\n```\n\n" %>%
-        paste0(.,input$rmd_report) %>% cat(.,file=file,sep="\n")
+
+      cdir <- getwd()
+      setwd(tempdir())
+      fbase <- "report"
+      fnames <- c("report.Rmd", "r_data.rda")
+
+      ## doesn't work - creates a temp filename
+      # fbase <- basename(filename)
+      # fbase <- sub(paste0(".",tools::file_ext(fbase)),"", fbase)
+
+      paste0("```{r echo = FALSE}\nknitr::opts_chunk$set(comment=NA, echo = FALSE, cache=FALSE, message=FALSE, warning=FALSE)\nsuppressMessages(library(radiant))\nload(\"", fnames[2], "\")\n```\n\n") %>%
+        paste0(., input$rmd_report) %>% cat(., file = fnames[1],sep="\n")
+
+      r_data <- reactiveValuesToList(r_data)
+      save(r_data, file = fnames[2])
+
+      zip(fname, fnames[1:2])
+
+      setwd(cdir)
     })
-  }
+  },
+  contentType = "application/zip"
 )
 
 observe({
@@ -227,9 +253,10 @@ update_report_fun <- function(cmd) {
   }
 
   if (cmd != "") {
-    if (is.null(input$rmd_report)) {
+    if (is_empty(input$rmd_report)) {
       if (is.null(r_state$rmd_report)) {
-        r_state$rmd_report <<- cmd
+      # if (is_empty(is.null(r_state$rmd_report))) {
+        r_state$rmd_report <<- paste0("## Your report title\n", cmd)
       } else {
         r_state$rmd_report <<- paste0(r_state$rmd_report,"\n",cmd)
       }

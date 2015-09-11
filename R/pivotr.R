@@ -7,6 +7,8 @@
 #' @param nvar Numerical variable
 #' @param fun Function to apply to numerical variable
 #' @param normalize Normalize the table by "row" total,"colum" totals, or overall "total"
+#' @param tabfilt Expression used to filter the table. This should be a string (e.g., "Total > 10000")
+#' @param tabsort Expression used to sort the table (e.g., "-Total")
 #' @param data_filter Expression used to filter the dataset. This should be a string (e.g., "price > 10000")
 #' @param shiny Logical (TRUE, FALSE) to indicate if the function call originate inside a shiny app
 #'
@@ -21,8 +23,11 @@ pivotr <- function(dataset,
                    nvar = "None",
                    fun = "mean",
                    normalize = "None",
+                   tabfilt = "",
+                   tabsort = "",
                    data_filter = "",
                    shiny = FALSE) {
+
 
   vars <- if (nvar == "None") cvars else c(cvars, nvar)
   dat <- getdata(dataset, vars, filt = data_filter)
@@ -34,23 +39,18 @@ pivotr <- function(dataset,
 
   if (nvar == "None") nvar <- "n"
 
+  ## convert categorical variables to factors if needed
   ## use loop or mutate_each?
-  for (cv in cvars)
+  for (cv in cvars) {
     if (!is.factor(dat[[cv]])) dat[[cv]] %<>% as.factor
 
-  ## convert categorical variables to factors if needed
-  ## using [] seems weird but drop = FALSE doesn't wor
-  # dat[cvars] %<>% mutate_each(funs({if(is.factor(.)) . else as.factor(.)}))
-
-  # ind <- ifelse(length(cvars) > 1, -1, 1)
-  # levs <- lapply(select_(dat, .dots = cvars[ind]), levels)
-
-  # for (l in names(levs)) {
-  #   if ("" %in% levs[[l]]) {
-  #       dat[[l]] <- mutate_(dat, l = ifelse(l,"","MISSING"))[[l]]
-  #       dat[[l]] <- factor(dat[[l]], levels = sub("^$","MISSING",levs[[l]]))
-  #   }
-  # }
+    levs <- levels(dat[[cv]])
+    if ("" %in% levs) {
+      levs[levs == ""] <- "[EMPTY]"
+      dat[[cv]] <- factor(dat[[cv]], levels = levs)
+      dat[[cv]][is.na(dat[[cv]])] <- "[EMPTY]"
+    }
+  }
 
   sel <- function(x, nvar) if (nvar == "n") x else select_(x, .dots = nvar)
   sfun <- function(x, nvar, cvars = "", fun = fun) {
@@ -60,7 +60,6 @@ pivotr <- function(dataset,
       mutate_each_(x, "as.numeric", vars = nvar) %>%
       summarise_each_(make_funs(fun), vars = nvar)
   }
-  # levs <- lapply(select_(dat, .dots = cvars[ind]), levels)
 
   ## main tab
   tab <-
@@ -79,6 +78,7 @@ pivotr <- function(dataset,
         tab,
         bind_cols(data.frame("Total") %>% setNames(cvars), total %>% set_colnames(nvar))
       )
+
   } else {
 
     col_total <-
@@ -109,11 +109,13 @@ pivotr <- function(dataset,
       rm(col_total, row_total)
   }
 
+  # tab %>% getclass
   ## resetting factor levels
-  ind <- ifelse(length(cvars) > 1, -1, 1)
+  ind <- ifelse (length(cvars) > 1, -1, 1)
   levs <- lapply(select_(dat, .dots = cvars[ind]), levels)
+
   for (i in cvars[ind])
-    tab[[i]] <- factor(tab[[i]], levels = c(levs[[i]],"Total"))
+    tab[[i]] %<>% factor(., levels = c(levs[[i]],"Total"))
 
   isNum <- -which(names(tab) %in% cvars)
   if (normalize == "total") {
@@ -125,6 +127,25 @@ pivotr <- function(dataset,
     tab[,isNum] %<>% apply(2, function(.) . / .[which(tab[,1] == "Total")]) %>% round(3)
     ## mutate_each has issues for spaces in variable names
     # tab[,isNum] %<>% mutate_each_(funs(h = . / .[which(tab[,1] == "Total")]), vars = colnames(.)) %>% round(3)
+  }
+
+  ## filtering the table if desired
+  if (tabfilt != "") {
+    tab <- filterdata(tab, tabfilt)
+  }
+
+  ## sorting the table if desired
+  if (tabsort != "") {
+    ## only one variable for now
+    tabsort <- tabsort[1]
+    if (substring(tabsort,1) == "-") {
+      tab %<>% arrange(., desc(.[[substring(tabsort,2)]]))
+    } else {
+      tab %<>% arrange_(tabsort)
+    }
+
+    for (i in cvars)
+      tab[[i]] %<>% factor(., levels = unique(.))
   }
 
   if (!shiny) tab <- as.data.frame(tab, as.is = TRUE)
@@ -151,7 +172,10 @@ pivotr <- function(dataset,
 #' @seealso \code{\link{pivotr}} to create the pivot-table using dplyr
 #'
 #' @export
-summary.pivotr <- function(object, chi2 = FALSE, shiny = FALSE,  ...) {
+summary.pivotr <- function(object,
+                           chi2 = FALSE,
+                           shiny = FALSE,
+                           ...) {
 
   if (!shiny) {
     cat("Pivot table\n")
@@ -172,7 +196,7 @@ summary.pivotr <- function(object, chi2 = FALSE, shiny = FALSE,  ...) {
   if (chi2) {
     cst <- object$tab %>% filter(.[[1]] != "Total") %>%
       select(-which(names(.) %in% c(object$cvars, "Total")))  %>%
-      mutate_each(funs(rep_na = ifelse(is.na(.),0,.))) %>%
+      mutate_each(funs(rep_na = ifelse (is.na(.),0,.))) %>%
       {sshhr(chisq.test(., correct = FALSE))}
 
     res <- cst %>% tidy %>% {if (.$p.value < .001) .$p.value <- 0; .} %>% round(3)
@@ -190,6 +214,9 @@ summary.pivotr <- function(object, chi2 = FALSE, shiny = FALSE,  ...) {
 #' @param pvt Return value from \code{\link{pivotr}}
 #' @param format Show Color bar ("color_bar"),  Heat map ("heat"), or None ("none")
 #' @param perc Display numbers as percentages (TRUE or FALSE)
+#' @param search Global search. Used to save and restore state
+#' @param searchCols Column search and filter. Used to save and restore state
+#' @param order Column sorting. Used to save and restore state
 #'
 #' @examples
 #' pivotr("diamonds", cvars = "cut") %>% make_dt
@@ -201,16 +228,21 @@ summary.pivotr <- function(object, chi2 = FALSE, shiny = FALSE,  ...) {
 #' @seealso \code{\link{summary.pivotr}} to print a plain text table
 #'
 #' @export
-make_dt <- function(pvt, format = "none", perc = FALSE) {
+make_dt <- function(pvt,
+                    format = "none",
+                    perc = FALSE,
+                    search = "",
+                    searchCols = NULL,
+                    order = NULL) {
 
   tab <- pvt$tab
   cvar <- pvt$cvars[1]
-  cvars <- pvt$cvars %>% {if(length(.) > 1) .[-1] else .}
+  cvars <- pvt$cvars %>% {if (length(.) > 1) .[-1] else .}
   cn <- colnames(tab) %>% {.[-which(cvars %in% .)]}
 
   #############################################################
-  ## work-around for https://github.com/rstudio/DT/issues/150
-  tab[,cn] <- tab[,cn] %>% round(3)
+  ## workaround for https://github.com/rstudio/DT/issues/150
+  # tab[,cn] <- tab[,cn] %>% round(3)
   #############################################################
 
   ## column names without total
@@ -256,16 +288,20 @@ make_dt <- function(pvt, format = "none", perc = FALSE) {
 
   dt_tab <- tab %>%
   DT::datatable(container = sketch, rownames = FALSE,
-    filter = list(position = "top", clear = FALSE, plain = TRUE),
-    style = ifelse(pvt$shiny, "bootstrap", "default"),
-    # style = "bootstrap",
+    filter = list(position = "top"),
+    # filter = list(position = "top", clear = FALSE, plain = TRUE),
+    style = ifelse (pvt$shiny, "bootstrap", "default"),
     options = list(
-      # stateSave = TRUE,
-      search = list(regex = TRUE),
+      # search = list(regex = TRUE),
+      stateSave = TRUE,
+      search = list(search = search, regex = TRUE),
+      searchCols = searchCols,
+      order = order,
       processing = FALSE,
       pageLength = 10,
       lengthMenu = list(c(10, 25, 50, -1), c("10","25","50","All"))
     )
+    , callback = DT::JS("$(window).unload(function() { table.state.clear(); })")
   ) %>% DT::formatStyle(., cvars,  color = "white", backgroundColor = "grey") %>%
         {if ("Total" %in% cn) DT::formatStyle(., "Total", fontWeight = "bold") else .}
 
@@ -304,6 +340,11 @@ make_dt <- function(pvt, format = "none", perc = FALSE) {
 #' @param shiny Did the function call originate inside a shiny app
 #' @param ... further arguments passed to or from other methods
 #'
+#' @examples
+#' pivotr("diamonds", cvars = "cut") %>% plot
+#' pivotr("diamonds", cvars = c("cut","clarity")) %>% plot
+#' pivotr("diamonds", cvars = c("cut","clarity","color")) %>% plot
+#'
 #' @seealso \code{\link{pivotr}} to generate summaries
 #' @seealso \code{\link{summary.pivotr}} to show summaries
 #'
@@ -313,13 +354,6 @@ make_dt <- function(pvt, format = "none", perc = FALSE) {
 plot.pivotr <- function(x, type = "dodge", perc = FALSE, flip = FALSE, shiny = FALSE, ...) {
 
   object <- x; rm(x)
-  # object <- pivotr("diamonds", cvars = "cut", nvar = "price")
-  # object <- pivotr("diamonds", cvars = c("cut","clarity"))
-  # object <- pivotr("diamonds", cvars = c("cut","clarity"), nvar = "price")
-  # object <- pivotr("diamonds", cvars = "cut", nvar = "price")
-  # object <- pivotr("diamonds", cvars = c("cut","clarity","color"))
-  # print(lubridate::now())
-
   cvars <- object$cvars
   nvar <- object$nvar
   tab <- object$tab %>% {filter(., .[[1]] != "Total")}
@@ -331,19 +365,46 @@ plot.pivotr <- function(x, type = "dodge", perc = FALSE, flip = FALSE, shiny = F
         geom_bar(stat="identity", position = "dodge", alpha=.7)
   } else if (length(cvars) == 2) {
     ctot <- which(colnames(tab) == "Total")
-    if(length(ctot) > 0) tab %<>% select(-matches("Total"))
+    if (length(ctot) > 0) tab %<>% select(-matches("Total"))
+
+# library(radiant)
+# remove.packages('tidyr')
+# devtools::install_github("hadley/tidyr")
+# install.packages("tidyr", repos = "http://vnijs.github.io/radiant_miniCRAN/")
+# packageVersion('tidyr')
+
+# object <- pivotr("diamonds", cvars = "cut")
+# object <- pivotr("diamonds", cvars = c("cut","clarity"))
+# object <- pivotr("diamonds", cvars = c("cut","clarity","color"))
+
+# cvars <- object$cvars
+# nvar <- object$nvar
+# tab <- object$tab %>% {filter(., .[[1]] != "Total")}
+# tab
+
+# tab %>% gather(cut, n, -clarity)
+# tab %>% gather_("cut", "n")
+# tab %>% gather_("cut", "n", setdiff(colnames(.),cvars[2]))
+# ## makes a nice long data set with 0.2
+# tab %>% gather_(cvars[1], nvar)
+# type = "dodge"
+# # ggplot(tab %>% gather_(cvars[1], nvar) %>% na.omit, aes_string(x = cvars[1], y = nvar, fill = cvars[2])) +
 
     plot_list[[1]] <-
-      ggplot(tab %>% gather_(cvars[1], nvar) %>% na.omit, aes_string(x = cvars[1], y = nvar, fill = cvars[2])) +
-        geom_bar(stat="identity", position = type, alpha=.7)
+      # tab %>% gather_(cvars[1], nvar) %>% na.omit %>% ## stopped working moving from tidyr 0.2 to 0.3
+      tab %>% gather_(cvars[1], nvar, setdiff(colnames(.),cvars[2])) %>% na.omit %>%
+        ggplot(aes_string(x = cvars[1], y = nvar, fill = cvars[2])) +
+          geom_bar(stat="identity", position = type, alpha=.7)
   } else if (length(cvars) == 3) {
     ctot <- which(colnames(tab) == "Total")
-    if(length(ctot) > 0) tab %<>% select(-matches("Total"))
+    if (length(ctot) > 0) tab %<>% select(-matches("Total"))
 
     plot_list[[1]] <-
-      ggplot(tab %>% gather_(cvars[1], nvar) %>% na.omit, aes_string(x = cvars[1], y = nvar, fill = cvars[2])) +
-        geom_bar(stat="identity", position = type, alpha=.7) +
-        facet_grid(paste(cvars[3], '~ .'))
+      # tab %>% gather_(cvars[1], nvar) %>% na.omit %>% ## stopped working moving from tidyr 0.2 to 0.3
+      tab %>% gather_(cvars[1], nvar, setdiff(colnames(.),cvars[2:3])) %>% na.omit %>%
+        ggplot(aes_string(x = cvars[1], y = nvar, fill = cvars[2])) +
+          geom_bar(stat="identity", position = type, alpha=.7) +
+          facet_grid(paste(cvars[3], '~ .'))
   } else {
     ## You are pushing this feature a bit too far dude
     return(invisible())
@@ -355,43 +416,3 @@ plot.pivotr <- function(x, type = "dodge", perc = FALSE, flip = FALSE, shiny = F
   sshhr( do.call(arrangeGrob, c(plot_list, list(ncol = 1))) ) %>%
     { if (shiny) . else print(.) }
 }
-
-## client-side with bootstrap not working yet https://github.com/rstudio/DT/issues/143
-# install.packages("radiant", repos = "http://vnijs.github.io/radiant_miniCRAN/")
-# library(radiant)
-
-# result <- pivotr("diamonds", cvars = "cut")
-# result$shiny <- TRUE
-# make_dt(result)
-
-# DT::datatable(iris, style = 'bootstrap')
-
-# library(DT)
-# iris2 = head(iris, 20)
-# options(DT.options = list(pageLength = 5))
-# # default Bootstrap style in DT
-# datatable(iris2, style = 'bootstrap')
-
-## create tab for issue https://github.com/rstudio/DT/issues/150
-# library(radiant)
-# dat <- pivotr("diamonds", cvars = c("clarity","cut"), normalize = "total")$tab %>% filter(cut != "Total")
-# dput(dat)
-# DT::datatable(dat, filter = list(position = "top", clear = FALSE))
-
-## if you need to recreate
-# library(radiant)
-# library(DT)
-# dat <- pivotr("diamonds", cvars = "clarity", nvar = "price")$tab %>% filter(clarity != "Total")
-# dput(dat)
-
-# ## demo
-# dat <- structure(list(clarity = structure(1:8, .Label = c("I1", "SI2",
-# "SI1", "VS2", "VS1", "VVS2", "VVS1", "IF", "Total"), class = "factor"),
-#     price = c(4194.775, 5100.18903591682, 3998.57697642164, 3822.96671709531,
-#     3789.18099547511, 3337.82042253521, 2608.45982142857, 2411.69696969697
-#     )), class = "data.frame", row.names = c(NA, -8L), .Names = c("clarity",
-# "price"))
-
-# dat[,-1] <- round(dat[,-1], 3)
-
-# datatable(dat, filter = list(position = "top", clear = FALSE))

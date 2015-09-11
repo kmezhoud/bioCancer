@@ -27,19 +27,19 @@ dtree <- function(yl) {
   jl <- as.Node(yl)
 
   ## if type not set and isLeaf set to terminal
-  pt <- . %>% {if(is.null(.$type)) .$Set(type = "terminal")}
+  pt <- . %>% {if (is.null(.$type)) .$Set(type = "terminal")}
   jl$Do(pt, filterFun = isLeaf)
 
   ## or use this approach if type not set?
   # set_terminal <- jl$Get("type")
-  # if(any(is.na(set_terminal))) {
+  # if (any(is.na(set_terminal))) {
   #   set_terminal[is.na(set_terminal)] <- "terminal"
   #   jl$Set(type = set_terminal)
   # }
 
   ## making a copy of the initial Node object
 #   jl_init <- as.Node(yl)
-#   pt <- . %>% {if(is.null(.$type)) .$Set(type = "terminal")}
+#   pt <- . %>% {if (is.null(.$type)) .$Set(type = "terminal")}
 #   jl_init$Do(pt, filterFun = isLeaf)
   ## see issue https://github.com/gluc/data.tree/issues/22
   # jl_init <- sshhr(Clone(jl))
@@ -79,12 +79,12 @@ dtree <- function(yl) {
 summary.dtree <- function(object, ...) {
 
   print_money <- function(x) {
-    x %>% {if(is.na(.)) "" else .} %>%
+    x %>% {if (is.na(.)) "" else .} %>%
       format(digits = 10, nsmall = 2, decimal.mark = ".", big.mark = ",", scientific = FALSE)
   }
 
   rm_terminal <- function(x)
-    x %>% {if(is.na(.)) "" else .} %>% {if(. == "terminal") "" else .}
+    x %>% {if (is.na(.)) "" else .} %>% {if (. == "terminal") "" else .}
 
   # format_percent <- . %>% as.character %>% sprintf("%.2f%%", . * 100)
 
@@ -193,8 +193,74 @@ plot.dtree <- function(x, final = FALSE, shiny = FALSE, ...) {
 }
 
 # library(data.tree); library(yaml); library(radiant)
+#
 # yl <- yaml::yaml.load_file("~/Dropbox/teaching/MGT403-2015/data.tree/jennylind.yaml")
 # object <- x <- dtree(yl)
+# print(object$jl)
+
+# df <- ToDataFrameTree(object$jl, "p", "payoff")
+# df <- ToDataFrameTable(object$jl, "p", "payoff")
+# df <- ToDataFrameTaxonomy(object$jl, "p", "payoff")
+# print(df)
+#
+# ps <- .4
+# object$jl$Set(ps, filterFun = function(x) x$name == "Small Box Office")
+#
+# pf <- function(self) 1 - self$parent$SmallBoxOffice$ps
+# object$jl$Set(pf, filterFun = function(x) x$name == "Medium Box Office")
+#
+# ps <- c(.5, .3, .2)
+# object$jl$Set(ps, filterFun = function(x) x$name %in% c("Small Box Office","Medium Box Office", "Large Box Office"))
+#
+# df <- ToDataFrameTaxonomy(object$jl, "p", "payoff", "ps")
+# print(df)
+#
+# ps <- 0
+# object$jl$Set(ps, filterFun = function(x) x$type == "chance")
+#
+# prob_prob <- c()
+# check_prob <- function(x) {
+#   if (x$type == 'chance') x$prob <- Aggregate(x, function(node) node$p, sum)
+#   if(!is.null(x$prob) && x$prob == 1) prob_prob <<- c(prob_prob, x$name)
+#   # if(!is.null(x$prob) && x$prob == 1) prob_prob <<- x$name
+# }
+#
+# object$jl$Do(check_prob, traversal = "post-order", filterFun = isNotLeaf)
+# prob_prob
+#
+# df <- ToDataFrameTaxonomy(object$jl, "p", "payoff", "ps","prob")
+# print(df)
+#
+#
+# decision <- function(x) {
+#   po <- sapply(x$children, function(child) child$payoff)
+#   x$decision <- names(po[po == x$payoff])
+# }
+#
+#   jl$Do(decision, filterFun = function(x) !is.null(x$type) && x$type == 'decision')
+
+
+#
+# print(df)
+#
+#
+# df <- ToDataFrameTaxonomy(object$jl, "p", "ps", "payoff")
+# print(df)
+
+
+
+# df[df$children == "Small Box Office","p"] <- .8
+# df[df$children == "Medium Box Office","p"] <-
+#   1 - df[df$children == "Small Box Office","p"]  - df[df$children == "Large Box Office","p"]
+
+# `Small Box Office` = c(.1, .2, .3)
+# `Median Box Office` = 1 - `Small Box Office`
+
+# expand.grid
+
+# as.Node(df)
+
+
 # x %>% summary
 # dtree(yl) %>% plot(shiny = TRUE)
 # dtree(yl) %>% plot(final = TRUE)
@@ -203,3 +269,5 @@ plot.dtree <- function(x, final = FALSE, shiny = FALSE, ...) {
 # dtree(yl) %>% summary
 # dtree(yl) %>% plot
 # dtree(yl) %>% plot(final = TRUE)
+
+# shiny::runApp("~/gh/radiant/inst/quant")

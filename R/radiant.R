@@ -1,18 +1,23 @@
+
 #' Launch Radiant in the default browser
 #'
 #' @details See \url{http://vnijs.github.io/radiant} for documentation and tutorials
 #'
-#' @param app Choose the app to run. Either "base", "quant", or "marketing". "marketing" is the default
+#' @param app Choose the app to run. One of "base", "quant", "analytics", "marketing". "analytics" is the default
 #'
 #' @examples
 #' if (interactive()) {
 #'   radiant("base")
 #'   radiant("quant")
 #'   radiant("marketing")
+#'   radiant("analytics")
 #' }
 #' @export
-radiant <- function(app = c("marketing", "quant", "base"))
-  runApp(system.file(app[1], package="radiant"), launch.browser = TRUE)
+radiant <- function(app = c("analytics", "marketing", "quant", "base")) {
+  if (!"package:radiant" %in% search())
+    if (!require(radiant)) stop("Calling radiant start function but radiant is not installed.")
+  runApp(system.file(app[1], package = "radiant"), launch.browser = TRUE)
+}
 
 #' Alias used to set the class for analysis function return
 #'
@@ -114,12 +119,8 @@ getdata <- function(dataset,
                     rows = NULL,
                     na.rm = TRUE) {
 
-# <<<<<<< HEAD
-#    if (!is_string(dataset)) {
-# =======
   filt %<>% gsub("\\s","", .) %>% gsub("\"","\'",.)
-   if (!is_string(dataset)) {
-#>>>>>>> upstream/master
+  { if (!is_string(dataset)) {
       dataset
     } else if (exists("r_env")) {
       r_env$r_data[[dataset]]
@@ -135,23 +136,17 @@ getdata <- function(dataset,
         stop %>% return
     }
   } %>% { if ("grouped_df" %in% class(.)) ungroup(.) else . } %>%     # ungroup data if needed
-# <<<<<<< HEAD
-#         { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
-#         { if (slice == "") . else slice_(., slice) } %>%
-#         { if (vars[1] == "") . else dplyr::select_(., .dots = vars) } %>%
-# =======
         # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
         { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
-        { if (is.null(rows)) . else slice(., rows) } %>%
-        { if (vars[1] == "" || is.null(vars)) . else select_(., .dots = vars) } %>%
-
+        { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
+        { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
         { if (na.rm) na.omit(.) else . }
         ## line below may cause an error https://github.com/hadley/dplyr/issues/219
         # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
 
   # use the below when all data is setup as tbl_df
   # } %>% { if (is.na(groups(.))) . else ungroup(.) } %>%     # ungroup data if needed
-
+}
 
 #' Convert character to factors as needed
 #'
@@ -161,48 +156,51 @@ getdata <- function(dataset,
 #' @return Data.frame with factors
 #'
 #' @export
-factorizer <- function(dat, safx = 10) {
+factorizer <- function(dat, safx = 20) {
   isChar <- sapply(dat, is.character)
   if (sum(isChar) == 0) return(dat)
     toFct <-
-      select(dat, which(isChar)) %>%
+      dplyr::select(dat, which(isChar)) %>%
       summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
-      select(which(. == TRUE)) %>% names
+      dplyr::select(which(. == TRUE)) %>% names
   if (length(toFct) == 0) return(dat)
 
 
   ## workaround for https://github.com/hadley/dplyr/issues/1238
-  for (i in toFct)
-    dat[[i]] %<>% ifelse(is.na(.), "[Empty]", .) %>% ifelse(. == "", "[Empty]", .) %>% as.factor
+  # for (i in toFct)
+  #   dat[[i]] %<>% ifelse (is.na(.), "[Empty]", .) %>% ifelse (. == "", "[Empty]", .) %>% as.factor
 
-  return(dat)
+  # return(dat)
 
   ## not using due to https://github.com/hadley/dplyr/issues/1238
   ## Seems fixed in dev version of dplyr
-  # rmiss <- . %>% ifelse(is.na(.), "[Empty]", .) %>% ifelse(. == "", "[Empty]", .)
+  # rmiss <- . %>% ifelse (is.na(.), "[Empty]", .) %>% ifelse (. == "", "[Empty]", .)
   # mutate_each_(dat, funs(rmiss), vars = toFct)  %>%  # replace missing levels
-  # m ckautate_each_(funs(as.factor), vars = toFct)
+  mutate_each_(dat, funs(as.factor), vars = toFct)
 }
 
-#' Load a csv files with read.csv and read_csv
+#' Load a csv file with read.csv and read_csv
 #'
 #' @param fn File name string
 #' @param header Header in file (TRUE, FALSE)
-#' @param sep Use , or ; or \\t
+#' @param sep Use , (default) or ; or \\t
+#' @param dec Decimal symbol. Use . (default) or ,
 #' @param saf Convert character variables to factors if (1) there are less than 100 distinct values (2) there are X (see safx) more values than levels
 #' @param safx Values to levels ratio
 #'
 #' @return Data.frame with (some) variables converted to factors
 #'
 #' @export
-loadcsv <- function(fn, header = TRUE, sep = ",", saf = TRUE, safx = 10) {
+loadcsv <- function(fn, header = TRUE, sep = ",", dec = ".", saf = TRUE, safx = 20) {
 
   cn <- try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE, nrows = 1), silent = TRUE)
-  dat <- try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
+  # dat <- try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
+  try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
     {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
-        try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
+       try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
      else . } %>%
-    {if (is(., 'try-error')) return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
+    {if (is(., 'try-error'))
+       return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
      else .} %>%
     {if (saf) factorizer(., safx) else . } %>% as.data.frame
 
@@ -211,7 +209,66 @@ loadcsv <- function(fn, header = TRUE, sep = ",", saf = TRUE, safx = 10) {
   # if (sum(isDate) == 0) return(dat)
   # for (i in colnames(dat)[isDate]) dat[[i]] %<>% as.POSIXct %>% as.Date
 
-  dat
+  # dat
+}
+
+#' Load a csv file with from a url
+#'
+#' @param csv_url URL for the csv file
+#' @param header Header in file (TRUE, FALSE)
+#' @param sep Use , (default) or ; or \\t
+#' @param dec Decimal symbol. Use . (default) or ,
+#' @param saf Convert character variables to factors if (1) there are less than 100 distinct values (2) there are X (see safx) more values than levels
+#' @param safx Values to levels ratio
+#'
+#' @return Data.frame with (some) variables converted to factors
+#'
+#' @importFrom curl curl
+#'
+#' @export
+loadcsv_url <- function(csv_url, header = TRUE, sep = ",", dec = ".", saf = TRUE, safx = 20) {
+
+  con <- curl(csv_url)
+  try(open(con), silent = TRUE)
+  if (is(con, 'try-error')) {
+    close(con)
+    return("### There was an error loading the csv file from the provided url.")
+  } else {
+    dat <- try(read.table(con, header = header, comment.char = "",
+               quote = "\"", fill = TRUE, stringsAsFactors = saf,
+               sep = sep, dec = dec), silent = TRUE)
+    close(con)
+
+    if (is(dat, 'try-error'))
+      return("### There was an error loading the data. Please make sure the data are in csv format.")
+
+    if (saf) dat <- factorizer(dat, safx)
+
+    dat
+  }
+}
+
+#' Load an rda file from a url
+#'
+#' @param rda_url URL for the csv file
+#'
+#' @return Data.frame
+#'
+#' @importFrom curl curl
+#'
+#' @export
+loadrda_url <- function(rda_url) {
+  con <- curl(rda_url)
+  try(open(con), silent = TRUE)
+  if (is(con, 'try-error')) {
+    close(con)
+    return("### There was an error loading the rda file from the provided url.")
+  } else {
+    robj <- load(con)
+    if (length(robj) > 1) message("The connection contains multiple R-objects. Only the first will be returned.")
+    close(con)
+    get(robj)
+  }
 }
 
 #' Change data
@@ -266,7 +323,7 @@ changedata <- function(dataset,
 #' @details View, search, sort, etc. your data
 #'
 #' @param dataset Name of the dataframe to change
-#' @param vars Variables to so (default is all)
+#' @param vars Variables to show (default is all)
 #' @param filt Filter to apply to the specified dataset. For example "price > 10000" if dataset is "diamonds" (default is "")
 #' @param rows Select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
 #' @param na.rm Remove rows with missing values (default is FALSE)
@@ -279,11 +336,18 @@ changedata <- function(dataset,
 #' }
 #'
 #' @export
-viewdata <- function(dataset, vars = "", filt = "", rows = NULL, na.rm = FALSE) {
+viewdata <- function(dataset,
+                     vars = "",
+                     filt = "",
+                     rows = NULL,
+                     na.rm = FALSE) {
 
   ## based on http://rstudio.github.io/DT/server.html
   dat <- getdata(dataset, vars, filt = filt, rows = rows, na.rm = FALSE)
   title <- if (is_string(dataset)) paste0("DT:", dataset) else "DT"
+
+  if (nrow(dat) > 100000)  filt <- 'none'
+  else filt <- list(position = "top", clear = FALSE, plain = FALSE)
 
   shinyApp(
     ui = fluidPage(title = title,
@@ -296,7 +360,8 @@ viewdata <- function(dataset, vars = "", filt = "", rows = NULL, na.rm = FALSE) 
     server = function(input, output, session) {
       widget <- DT::datatable(dat,
         rownames = FALSE, style = "bootstrap",
-        filter = list(position = "top", clear = FALSE, plain = FALSE),
+        filter = filt,
+        # filter = alist(position = "top", clear = FALSE, plain = FALSE),
         escape = FALSE,
         # extensions = 'KeyTable'# ,
         options = list(
@@ -395,7 +460,7 @@ iterms <- function(vars, nway, sep = ":") {
 #'
 #' @details On Windows a file named 'radiant.bat' and one named 'update_radiant.bat' will be put on the desktop. Double-click the file to launch the specified Radiant app or update Radiant to the latest version
 #'
-#' @param app App to run when the desktop icon is double-clicked ("marketing", "quant", or "base"). Default is "marketing"
+#' @param app App to run when the desktop icon is double-clicked ("analytics", "marketing", "quant", or "base"). Default is "analytics"
 #'
 #' @examples
 #' if (interactive()) {
@@ -410,7 +475,7 @@ iterms <- function(vars, nway, sep = ":") {
 #' }
 #'
 #' @export
-win_launcher <- function(app = c("marketing", "quant", "base")) {
+win_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 
   if (!interactive()) stop("This function can only be used in an interactive R session")
 
@@ -423,17 +488,29 @@ win_launcher <- function(app = c("marketing", "quant", "base")) {
     local_dir <- Sys.getenv("R_LIBS_USER")
     if (!file.exists(local_dir)) dir.create(local_dir, recursive = TRUE)
 
-    pt <- normalizePath(paste0(Sys.getenv("USERPROFILE") ,"/Desktop/"), winslash='/')
-    fn1 <- paste0(pt, "radiant.bat")
+    # pt <- normalizePath(paste0(Sys.getenv("USERPROFILE") ,"/Desktop/"), winslash='/')
+    pt <- file.path(Sys.getenv("HOME") ,"Desktop")
+    if (!file.exists(pt))
+      pt <- file.path(Sys.getenv("USERPROFILE") ,"Desktop", fsep = "\\")
+
+    if (!file.exists(pt)) {
+      pt <- Sys.getenv("HOME")
+      message(paste0("The launcher function was unable to find your Desktop. The launcher and update files/icons will be put in the directory: ", pt))
+    }
+
+    pt <- normalizePath(pt, winslash='/')
+
+    fn1 <- file.path(pt, "radiant.bat")
     launch_string <- paste0(Sys.which('R'), " -e \"if (!require(radiant)) { install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/') }; library(radiant); shiny::runApp(system.file(\'", app[1], "\', package='radiant'), port = 4444, launch.browser = TRUE)\"")
     cat(launch_string, file=fn1, sep="\n")
+    Sys.chmod(fn1, mode = "0755")
 
-    fn2 <- paste0(pt, "update_radiant.bat")
-    launch_string <- paste0(Sys.which('R'), " -e \"install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\"")
+    fn2 <- file.path(pt, "update_radiant.bat")
+    launch_string <- paste0(Sys.which('R'), " -e \"install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\"\npause(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
-    if (file.exists(fn1) & file.exists(fn2))
+    if (file.exists(fn1) && file.exists(fn2))
       message("Done! Look for a file named radiant.bat on your desktop. Double-click it to start Radiant in your default browser. There is also a file called update_radiant.bat you can double click to update the version of Radiant on your computer.\n")
     else
       message("Something went wrong. No shortcuts were created.")
@@ -446,7 +523,7 @@ win_launcher <- function(app = c("marketing", "quant", "base")) {
 #'
 #' @details On Mac a file named 'radiant.command' and one named 'update_radiant.command' will be put on the desktop. Double-click the file to launch the specified Radiant app or update Radiant to the latest version
 #'
-#' @param app App to run when the desktop icon is double-clicked ("marketing", "quant", or "base"). Default is "marketing"
+#' @param app App to run when the desktop icon is double-clicked ("analytics", "marketing", "quant", or "base"). Default is "analytics"
 #'
 #' @examples
 #' if (interactive()) {
@@ -461,7 +538,7 @@ win_launcher <- function(app = c("marketing", "quant", "base")) {
 #' }
 #'
 #' @export
-mac_launcher <- function(app = c("marketing", "quant", "base")) {
+mac_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 
   if (!interactive()) stop("This function can only be used in an interactive R session")
 
@@ -480,11 +557,11 @@ mac_launcher <- function(app = c("marketing", "quant", "base")) {
     Sys.chmod(fn1, mode = "0755")
 
     fn2 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/update_radiant.command")
-    launch_string <- paste0("#!/usr/bin/env Rscript\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')")
+    launch_string <- paste0("#!/usr/bin/env Rscript\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\nSys.sleep(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
-    if (file.exists(fn1) & file.exists(fn2))
+    if (file.exists(fn1) && file.exists(fn2))
       message("Done! Look for a file named radiant.command  on your desktop. Double-click it to start Radiant in your default browser. There is also a file called update_radiant.command you can double click to update the version of Radiant on your computer.\n")
     else
       message("Something went wrong. No shortcuts were created.")
@@ -498,7 +575,7 @@ mac_launcher <- function(app = c("marketing", "quant", "base")) {
 #'
 #' @details On Linux a file named 'radiant.sh' and one named 'update_radiant.sh' will be put on the desktop. Double-click the file to launch the specified Radiant app or update Radiant to the latest version
 #'
-#' @param app App to run when the desktop icon is double-clicked ("marketing", "quant", or "base"). Default is "marketing"
+#' @param app App to run when the desktop icon is double-clicked ("analytics", "marketing", "quant", or "base"). Default is "analytics"
 #'
 #' @examples
 #' if (interactive()) {
@@ -513,7 +590,7 @@ mac_launcher <- function(app = c("marketing", "quant", "base")) {
 #' }
 #'
 #' @export
-lin_launcher <- function(app = c("marketing", "quant", "base")) {
+lin_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 
   if (!interactive()) stop("This function can only be used in an interactive R session")
 
@@ -532,11 +609,11 @@ lin_launcher <- function(app = c("marketing", "quant", "base")) {
     Sys.chmod(fn1, mode = "0755")
 
     fn2 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/update_radiant.sh")
-    launch_string <- paste0("#!/usr/bin/env Rscript\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')")
+    launch_string <- paste0("#!/usr/bin/env Rscript\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\nsleep(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
-    if (file.exists(fn1) & file.exists(fn2))
+    if (file.exists(fn1) && file.exists(fn2))
       message("Done! Look for a file named radiant.sh on your desktop. Double-click it to start Radiant in your default browser. There is also a file called update_radiant.sh you can double click to update the version of Radiant on your computer.\n")
     else
       message("Something went wrong. No shortcuts were created.")
@@ -554,16 +631,18 @@ lin_launcher <- function(app = c("marketing", "quant", "base")) {
 #' @seealso \code{\link{mac_launcher}} to create a shortcut on Mac
 #' @seealso \code{\link{lin_launcher}} to create a shortcut on Linux
 #'
-#' @param app App to run when the desktop icon is double-clicked ("marketing", "quant", or "base"). Default is "marketing"
+#' @param app App to run when the desktop icon is double-clicked ("analytics", "marketing", "quant", or "base"). Default is "analytics"
 #'
 #' @export
-launcher <- function(app = c("marketing", "quant", "base")) {
+launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 
-  if (Sys.info()["sysname"] == "Darwin")
+  os <- Sys.info()["sysname"]
+
+  if (os == "Darwin")
     mac_launcher(app[1])
-  else if (Sys.info()["sysname"] == "Windows")
+  else if (os == "Windows")
     win_launcher(app[1])
-  else if (Sys.info()["sysname"] == "Linux")
+  else if (os == "Linux")
     lin_launcher(app[1])
   else
     return(message("This function is not available for your platform."))
@@ -749,3 +828,4 @@ print.gtable <- function(x, ...) {
   if (is.ggplot(x)) x <- ggplotGrob(x)
   grid::grid.draw(x)
 }
+
