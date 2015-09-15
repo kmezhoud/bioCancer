@@ -220,7 +220,7 @@ pvt_sorter <- function(pvt, rows = NULL) {
   tab <- pvt$tab %>% {filter(., .[[1]] != "Total")}
 
   if (length(cvars) > 1)
-    tab %<>% select(-which(colnames(.) == "Total"))
+    tab %<>% dplyr::select(-which(colnames(.) == "Total"))
 
   tab %<>% dplyr::slice(rows)
   cvars <- if (length(cvars) == 1) cvars else cvars[-1]

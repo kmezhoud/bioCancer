@@ -57,9 +57,9 @@ r_pkgs <- c("DiagrammeR", "car", "gridExtra", "GPArotation", "psych", "wordcloud
 
 ## list of function arguments
 r_functions <-
-  list("n" = "length", "n_missing" = "n_missing", "n_distinct" = "n_distinct",
+  list("n" = "length", "n_distinct" = "n_distinct",
        "mean" = "mean_rm", "median" = "median_rm", "mode" = "mode_rm", "sum" = "sum_rm",
-       "sd" = "sd_rm", "se" = "serr", "cv" = "cv", "min" = "min_rm",
+       "var" = "var_rm", "sd" = "sd_rm", "se" = "serr", "cv" = "cv", "min" = "min_rm",
        "max" = "max_rm", "5%" = "p05", "25%" = "p25", "75%" = "p75", "95%" = "p95",
        "skew" = "skew", "kurtosis" = "kurtosi")
 # options(r_functions = r_functions); rm(r_functions)
@@ -71,9 +71,9 @@ knitr::opts_chunk$set(echo = FALSE, comment = NA, cache = FALSE, message = FALSE
 
 
 ## using DT rather than Shiny versions of datatable
-renderDataTable <- DT::renderDataTable
-dataTableOutput <- DT::dataTableOutput
-datatable       <- DT::datatable
+# renderDataTable <- DT::renderDataTable
+# dataTableOutput <- DT::dataTableOutput
+# datatable       <- DT::datatable
 
 ## running local or on a server
 if (Sys.getenv('SHINY_PORT') == "") {
@@ -92,7 +92,6 @@ if (Sys.getenv('SHINY_PORT') == "") {
   r_local <- FALSE
 
   options(shiny.maxRequestSize = 5 * 1024^2)   ## limit upload filesize on server (5MB)
-
   sapply(r_pkgs, require, character.only = TRUE)
 
 }
@@ -101,8 +100,10 @@ if (Sys.getenv('SHINY_PORT') == "") {
 r_sessions <- new.env(parent = emptyenv())
 
 ## create directory to hold session files
-if (!r_local)
-  "~/r_sessions/" %>% { if (!file.exists(.)) dir.create(., recursive = TRUE) }
+# if (!r_local)
+  # "~/r_sessions/" %>% { if (!file.exists(.)) dir.create(., recursive = TRUE) }
+
+"~/r_sessions/" %>% {if (!file.exists(.)) sshhr( dir.create(., recursive = TRUE) )}
 
 ## adding the figures path to avoid making a copy of all figures in www/figures
 addResourcePath("figures", file.path(r_path,"base/tools/help/figures/"))

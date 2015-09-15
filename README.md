@@ -49,21 +49,28 @@ CancerPortal focuses on Cancer Genomics data visualisation and Genes Classificat
 - Required: A modern browser (e.g., [Chrome](https://www.google.com/intl/en/chrome/browser/desktop/) or Safari). Internet Explorer (version 11 or higher) should work as well
 - Recommended: [Rstudio](http://www.rstudio.com/products/rstudio/download/)
 
+<<<<<<< HEAD
+=======
+An older version of Radiant is available on [CRAN](http://cran.r-project.org/web/packages/radiant/index.html). To install the latest version for Windows of Mac with complete documentation for off-line access open R(studio) and copy-and-paste the command below:
+>>>>>>> upstream/master
 
 CancerPortal is under development:
 ```r
-
  devtools::install_github("kmezhoud/CancerPortal")
  library("CancerPortal")
 ```
 
 
+
 When CancerPortal starts you will see a table of available Cancer Studies.  To close the application click on `Quit` in the Navigation bar and then click the `Quit` button on the left of the screen. The CancerPortal process will stop and the browser window will close (or gray-out).
+
 
 
 ## Documentation
 
+
 Documentation and tutorials are available in the CancerPortal web interface (the `?` icons and the `Help` menu).
+
 
 Want some help getting started? Watch the tutorials on the [documentation site of radiant](http://vnijs.github.io/radiant/tutorials.html)
 

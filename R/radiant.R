@@ -1,4 +1,3 @@
-
 #' Launch Radiant in the default browser
 #'
 #' @details See \url{http://vnijs.github.io/radiant} for documentation and tutorials
@@ -119,30 +118,31 @@ getdata <- function(dataset,
                     rows = NULL,
                     na.rm = TRUE) {
 
-  filt %<>% gsub("\\s","", .) %>% gsub("\"","\'",.)
+  # filt %<>% gsub("\\s","", .) %>% gsub("\"","\'",.)
+  filt %<>% gsub("\\n","", .) %>% gsub("\"","\'",.)
   { if (!is_string(dataset)) {
-      dataset
-    } else if (exists("r_env")) {
-      r_env$r_data[[dataset]]
-    } else if (exists("r_data") && !is.null(r_data[[dataset]])) {
-      if (exists("r_local")) { if (r_local) message("Dataset ", dataset, " loaded from r_data list\n") }
-      r_data[[dataset]]
-    } else if (exists(dataset)) {
-      d_env <- pryr::where(dataset)
-      # message("Dataset ", dataset, " loaded from ", environmentName(d_env), " environment\n")
-      d_env[[dataset]]
-    } else {
-      message("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call") %>%
-        stop %>% return
-    }
+    dataset
+  } else if (exists("r_env")) {
+    r_env$r_data[[dataset]]
+  } else if (exists("r_data") && !is.null(r_data[[dataset]])) {
+    if (exists("r_local")) { if (r_local) message("Dataset ", dataset, " loaded from r_data list\n") }
+    r_data[[dataset]]
+  } else if (exists(dataset)) {
+    d_env <- pryr::where(dataset)
+    # message("Dataset ", dataset, " loaded from ", environmentName(d_env), " environment\n")
+    d_env[[dataset]]
+  } else {
+    message("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call") %>%
+      stop %>% return
+  }
   } %>% { if ("grouped_df" %in% class(.)) ungroup(.) else . } %>%     # ungroup data if needed
-        # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
-        { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
-        { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
-        { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
-        { if (na.rm) na.omit(.) else . }
-        ## line below may cause an error https://github.com/hadley/dplyr/issues/219
-        # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
+    # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
+  { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
+  { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
+  { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
+  { if (na.rm) na.omit(.) else . }
+  ## line below may cause an error https://github.com/hadley/dplyr/issues/219
+  # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
 
   # use the below when all data is setup as tbl_df
   # } %>% { if (is.na(groups(.))) . else ungroup(.) } %>%     # ungroup data if needed
@@ -159,10 +159,10 @@ getdata <- function(dataset,
 factorizer <- function(dat, safx = 20) {
   isChar <- sapply(dat, is.character)
   if (sum(isChar) == 0) return(dat)
-    toFct <-
-      dplyr::select(dat, which(isChar)) %>%
-      summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
-      dplyr::select(which(. == TRUE)) %>% names
+  toFct <-
+    dplyr::select(dat, which(isChar)) %>%
+    summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
+    dplyr::select(which(. == TRUE)) %>% names
   if (length(toFct) == 0) return(dat)
 
 
@@ -196,13 +196,13 @@ loadcsv <- function(fn, header = TRUE, sep = ",", dec = ".", saf = TRUE, safx = 
   cn <- try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE, nrows = 1), silent = TRUE)
   # dat <- try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
   try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
-    {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
-       try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
-     else . } %>%
+  {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
+    try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
+    else . } %>%
     {if (is(., 'try-error'))
-       return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
-     else .} %>%
-    {if (saf) factorizer(., safx) else . } %>% as.data.frame
+      return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
+      else .} %>%
+      {if (saf) factorizer(., safx) else . } %>% as.data.frame
 
   ## workaround for https://github.com/rstudio/DT/issues/161
   # isDate <- sapply(dat, is.Date)
@@ -235,8 +235,8 @@ loadcsv_url <- function(csv_url, header = TRUE, sep = ",", dec = ".", saf = TRUE
     return("### There was an error loading the csv file from the provided url.")
   } else {
     dat <- try(read.table(con, header = header, comment.char = "",
-               quote = "\"", fill = TRUE, stringsAsFactors = saf,
-               sep = sep, dec = dec), silent = TRUE)
+                          quote = "\"", fill = TRUE, stringsAsFactors = saf,
+                          sep = sep, dec = dec), silent = TRUE)
     close(con)
 
     if (is(dat, 'try-error'))
@@ -351,27 +351,27 @@ viewdata <- function(dataset,
 
   shinyApp(
     ui = fluidPage(title = title,
-      includeCSS(file.path(system.file(package = "radiant"),"base/www/style.css")),
-      fluidRow(DT::dataTableOutput("tbl")),
-      tags$button(id = "stop", type = "button",
-                  class = "btn btn-danger action-button shiny-bound-input",
-                  onclick = "window.close();", "Stop")
+                   includeCSS(file.path(system.file(package = "radiant"),"base/www/style.css")),
+                   fluidRow(DT::dataTableOutput("tbl")),
+                   tags$button(id = "stop", type = "button",
+                               class = "btn btn-danger action-button shiny-bound-input",
+                               onclick = "window.close();", "Stop")
     ),
     server = function(input, output, session) {
       widget <- DT::datatable(dat,
-        rownames = FALSE, style = "bootstrap",
-        filter = filt,
-        # filter = alist(position = "top", clear = FALSE, plain = FALSE),
-        escape = FALSE,
-        # extensions = 'KeyTable'# ,
-        options = list(
-          search = list(regex = TRUE),
-          columnDefs = list(list(className = 'dt-center', targets = "_all")),
-          autoWidth = TRUE,
-          processing = FALSE,
-          pageLength = 10,
-          lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-        )
+                              rownames = FALSE, style = "bootstrap",
+                              filter = filt,
+                              # filter = alist(position = "top", clear = FALSE, plain = FALSE),
+                              escape = FALSE,
+                              # extensions = 'KeyTable'# ,
+                              options = list(
+                                search = list(regex = TRUE),
+                                columnDefs = list(list(className = 'dt-center', targets = "_all")),
+                                autoWidth = TRUE,
+                                processing = FALSE,
+                                pageLength = 10,
+                                lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
+                              )
       )
       output$tbl <- DT::renderDataTable(widget)
       observeEvent(input$stop, {stopApp("Stopped viewdata")})
@@ -501,12 +501,12 @@ win_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
     pt <- normalizePath(pt, winslash='/')
 
     fn1 <- file.path(pt, "radiant.bat")
-    launch_string <- paste0(Sys.which('R'), " -e \"if (!require(radiant)) { install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/') }; library(radiant); shiny::runApp(system.file(\'", app[1], "\', package='radiant'), port = 4444, launch.browser = TRUE)\"")
+    launch_string <- paste0("\"",Sys.which('R'), "\" -e \"if (!require(radiant)) { install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary') }; library(radiant); shiny::runApp(system.file(\'", app[1], "\', package='radiant'), port = 4444, launch.browser = TRUE)\"")
     cat(launch_string, file=fn1, sep="\n")
     Sys.chmod(fn1, mode = "0755")
 
     fn2 <- file.path(pt, "update_radiant.bat")
-    launch_string <- paste0(Sys.which('R'), " -e \"install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\"\npause(1000)")
+    launch_string <- paste0("\"", Sys.which('R'), "\" -e \"install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary')\"\npause(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
@@ -552,12 +552,12 @@ mac_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
     if (!file.exists(local_dir)) dir.create(local_dir, recursive = TRUE)
 
     fn1 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/radiant.command")
-    launch_string <- paste0("#!/usr/bin/env Rscript\nif (!require(radiant)) {\n  install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\n}\n\nlibrary(radiant)\nshiny::runApp(system.file(\'", app[1], "\', package='radiant'), port = 4444, launch.browser = TRUE)\n")
+    launch_string <- paste0("#!/usr/bin/env Rscript\nif (!require(radiant)) {\n  install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary')\n}\n\nlibrary(radiant)\nshiny::runApp(system.file(\'", app[1], "\', package='radiant'), port = 4444, launch.browser = TRUE)\n")
     cat(launch_string,file=fn1,sep="\n")
     Sys.chmod(fn1, mode = "0755")
 
     fn2 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/update_radiant.command")
-    launch_string <- paste0("#!/usr/bin/env Rscript\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\nSys.sleep(1000)")
+    launch_string <- paste0("#!/usr/bin/env Rscript\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary')\nSys.sleep(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
@@ -666,7 +666,7 @@ copy_from <- function(.from, ...) {
   dots <- eval(substitute(alist(...)), parent.frame(), parent.frame())
   names <- names(dots)
   unnamed <- if (is.null(names)) 1:length(dots)
-             else which(names == "")
+  else which(names == "")
   dots <- vapply(dots, as.character, character(1))
   names(dots)[unnamed] <- dots[unnamed]
 
@@ -806,12 +806,12 @@ state_single <- function(inputvar, vals, init = character(0)) {
 state_multiple <- function(inputvar, vals, init = character(0)) {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
   r_state %>%
-    { if (is.null(.[[inputvar]]))
-        ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
-        vals[vals %in% init]
-      else
-        vals[vals %in% .[[inputvar]]]
-    }
+  { if (is.null(.[[inputvar]]))
+    ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
+    vals[vals %in% init]
+    else
+      vals[vals %in% .[[inputvar]]]
+  }
 }
 
 #' Print/draw method for grobs produced by gridExtra
@@ -828,4 +828,3 @@ print.gtable <- function(x, ...) {
   if (is.ggplot(x)) x <- ggplotGrob(x)
   grid::grid.draw(x)
 }
-
