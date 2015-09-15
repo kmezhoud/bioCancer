@@ -113,8 +113,8 @@ doQuery = function(inputFile, entity, identifier){
 
 #  inputFile = paste("inst/base/data/GeneList/102.txt", sep="")
 #  outputFile = paste("GDA/output.txt", sep="")
-#  entity = "gene"
-#  identifier = "entrez"
+# entity = "gene"
+# identifier = "entrez"
 #
 #
 # print("Querying the database ")

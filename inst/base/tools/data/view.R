@@ -52,8 +52,6 @@ observeEvent(input$dataviewer_state, {
 output$dataviewer <- DT::renderDataTable({
 
   if (not_available(input$view_vars)) return()
-
-
   dat <- dplyr::select_(.getdata(), .dots = input$view_vars)
   ## this causes problems when r_state is NULL to latter on ??
   if (!identical(r_state$view_vars, input$view_vars)) {

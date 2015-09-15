@@ -6,7 +6,6 @@ shinyServer(function(input, output, session) {
   library(metabologram)
   library(tcltk)
   library(DT)
-  library(coffeewheel)
   #library(Biobase)
  library(geNetClassifier)
   library(AnnotationFuncs)

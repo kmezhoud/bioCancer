@@ -56,6 +56,7 @@ output$ProfDataTable <- DT::renderDataTable({
   dat <- round(dat, digits = 3)
   }
   dat <- dat %>% add_rownames("Patients")
+  r_data[['ProfData']] <- dat
   ####
 
   # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
@@ -76,3 +77,13 @@ output$ProfDataTable <- DT::renderDataTable({
                 )
   )
 })
+
+output$dl_ProfData_tab <- shiny::downloadHandler(
+  filename = function() { paste0("ProfData_tab.csv") },
+  content = function(file) {
+    data_filter <- if (input$show_filter) input$data_filter else ""
+    getdata(r_data$ProfData, vars = NULL, filt = data_filter,
+            rows = NULL, na.rm = FALSE) %>%
+      write.csv(file, row.names = FALSE)
+  }
+)

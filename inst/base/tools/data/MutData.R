@@ -35,7 +35,7 @@ output$MutDataTable <- DT::renderDataTable({
 #     dat <- round(dat, digits = 3)
    }
   ####
-
+r_data[['MutData']] <- dat
   # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
   action = DT::dataTableAjax(session, dat, rownames = FALSE)
 
@@ -55,3 +55,14 @@ output$MutDataTable <- DT::renderDataTable({
   )
 }
 })
+
+
+output$dl_MutData_tab <- shiny::downloadHandler(
+  filename = function() { paste0("MutData_tab.csv") },
+  content = function(file) {
+    data_filter <- if (input$show_filter) input$data_filter else ""
+    getdata(r_data$MutData, vars = input$ui_Mut_vars, filt = data_filter,
+            rows = NULL, na.rm = FALSE) %>%
+      write.csv(file, row.names = FALSE)
+  }
+)

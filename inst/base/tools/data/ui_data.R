@@ -77,10 +77,18 @@ output$ui_data <- renderUI({
       mainPanel(
         tabsetPanel(
           id = "tabs_data",
-          tabPanel("Studies", DT::dataTableOutput(outputId = "StudiesTable")),
-          tabPanel("Clinical", DT::dataTableOutput(outputId="ClinicalDataTable")),
-          tabPanel("ProfData", DT::dataTableOutput(outputId ="ProfDataTable")),
-          tabPanel("MutData", DT::dataTableOutput(outputId ="MutDataTable")),
+          tabPanel("Studies",
+                   downloadLink("dl_Studies_tab", "", class = "fa fa-download alignright"),
+                   DT::dataTableOutput(outputId = "StudiesTable")),
+          tabPanel("Clinical",
+                   downloadLink("dl_Clinical_tab", "", class = "fa fa-download alignright"),
+                   DT::dataTableOutput(outputId="ClinicalDataTable")),
+          tabPanel("ProfData",
+                   downloadLink("dl_ProfData_tab", "", class = "fa fa-download alignright"),
+                   DT::dataTableOutput(outputId ="ProfDataTable")),
+          tabPanel("MutData",
+                   downloadLink("dl_MutData_tab", "", class = "fa fa-download alignright"),
+                   DT::dataTableOutput(outputId ="MutDataTable")),
           tabPanel("Circomics",
                    conditionalPanel("input.WheelID =='init'",
                                     h3("Available Profiles data in select Studies", align="center"),
@@ -137,6 +145,7 @@ output$ui_data <- renderUI({
 
                    conditionalPanel("input.ClassID=='Plot'",
                                     h4("Which Disease are involved your Genes list", align='center'),
+                                    #plot_downloaderEnrich(".Plot_enricher", pre = ""),
                                     plotOutput("Plot_enricher"),
                                     h4("Diseases Studies Genes associations", align='center'),
                                     plotOutput("compareClusterDO"),
@@ -149,7 +158,7 @@ output$ui_data <- renderUI({
                    )
           ),
           tabPanel("Reactome",
-
+                   actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
                    conditionalPanel( condition = "input.ReacRunId== true",
                        grVizOutput('diagrammeR')
                   )

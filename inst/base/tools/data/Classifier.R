@@ -97,6 +97,8 @@ output$Plot_enricher <- renderPlot({
 })
 })
 
+
+
 ## Disease - Genes - Studies Associations
 output$compareClusterDO <- renderPlot({
   withProgress(message = 'Disease Onthology enrich...', value = 0.1, {
