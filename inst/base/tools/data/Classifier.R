@@ -24,7 +24,7 @@ output$list_GenProfs <- renderUI({
   names(listGenProfs) <- checked_Studies
   listGenProfs <- lapply(listGenProfs, function(x) x[grep("mrna", x)])
   listGenProfs <- listGenProfs[lapply(listGenProfs,length)>0]
-  selectizeInput('GenProfsIDClassifier', 'Select one Genetic Profile by Study', listGenProfs, multiple = TRUE, selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
+  selectizeInput('GenProfsIDClassifier', 'Select one Genetic Profile (v2_mrna) by Study', listGenProfs, multiple = TRUE, selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
   })
 })
 
@@ -41,7 +41,8 @@ TableCases <- reactive({
   matchedCases <- matchedCases[lapply(matchedCases,length)>0]
   matchedGenProf <- matchedGenProf[lapply(matchedGenProf,length)>0]
 
-  for(s in 1:length(checked_Studies)){
+  for(s in 1:length(matchedCases)){
+
         dat[s,] <- c(checked_Studies[s], matchedCases[s], matchedGenProf[s])
   }
   return(dat)
@@ -97,8 +98,6 @@ output$Plot_enricher <- renderPlot({
 })
 })
 
-
-
 ## Disease - Genes - Studies Associations
 output$compareClusterDO <- renderPlot({
   withProgress(message = 'Disease Onthology enrich...', value = 0.1, {
@@ -152,7 +151,9 @@ output$compareClusterGO <- renderPlot({
   genesGroups <- lapply(r_data$GenesClassDetails, function(x)rownames(x))
   GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
   if (inherits(try(cgo <- compareCluster(GroupsID, fun="enrichGO")),"try-error"))
-  {}else{
+  {
+    stop("No GO enrichment found with actual Gene List...")
+  }else{
     cgo <- compareCluster(GroupsID, fun="enrichGO")
     plot(cgo)
   }
@@ -167,7 +168,9 @@ output$compareClusterKEGG <- renderPlot({
     genesGroups <- lapply(r_data$GenesClassDetails, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
     if (inherits(try(cgo <- compareCluster(GroupsID, fun="enrichKEGG")),"try-error"))
-    {}else{
+    {
+      stop("No KEGG enrichment found with actual Gene List...")
+    }else{
       cgo <- compareCluster(GroupsID, fun="enrichKEGG")
       plot(cgo)
     }

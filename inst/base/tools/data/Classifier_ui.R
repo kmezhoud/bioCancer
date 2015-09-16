@@ -19,27 +19,41 @@ output$ui_Classifier <- renderUI({
   wellPanel(
     conditionalPanel("input.tabs_data == 'Classifier'",
 
-                     selectizeInput('StudiesIDClassifier', 'Studies Classification', choices=NULL, multiple = TRUE),
-
-                     radioButtons(inputId = "ClassID", label = "Processing",
-                                  c("Samples"="Samples" ,"Classifier" = "Classifier", "Plot"="Plot"),
-                                  selected = "Samples", inline = TRUE),
+                     selectizeInput('StudiesIDClassifier', 'Studies  to Classify', choices=NULL, multiple = TRUE),
 
                      div(class="col-xs-6",
-                     numericInput("SampleSizeClassifierID",
-                               "Samples",
-                               "50",min = 0, max = 200 , step = 10)),
+                         numericInput("SampleSizeClassifierID",
+                                      "Samples",
+                                      "50",min = 0, max = 200 , step = 10)),
                      div(class="col-xs-6",
-                     numericInput("ClassifierThresholdID",
-                                  "PostProb",
-                                  "0.95",min = 0.9, max = 1 , step = 0.01))
+                         numericInput("ClassifierThresholdID",
+                                      "PostProb",
+                                      "0.95",min = 0.9, max = 1 , step = 0.01)),
+
+#                      radioButtons(inputId = "ClassID", label = "Processing",
+#                                   c("Samples"="Samples" ,"Classifier" = "Classifier", "Plot"="Plot"),
+#                                   selected = "Samples", inline = TRUE),
+
+                     selectizeInput(inputId = "ClassID", label="Processing",
+                                    choices= c("Samples"="Samples" ,"Classifier" = "Classifier", "Plot"="Plot"),
+                                    multiple=FALSE
+                                    )
+
+
 
                      #selectizeInput('CasesIDClassifier', 'Cases', choices=NULL, multiple = TRUE),
                      #uiOutput("list_Cases")
 
 
 
-    )
+    ),
+    conditionalPanel("input.ClassID=='Plot'",
+                     selectizeInput('ClusterPlotsID', 'Cluster Plots',
+                                    choices=c("None","GeneList/Diseases","Disease Onthology","Pathway","GO","KEGG"),
+                                    multiple= FALSE)
+                     )
+
+
   )
 })
 

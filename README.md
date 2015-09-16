@@ -49,10 +49,6 @@ CancerPortal focuses on Cancer Genomics data visualisation and Genes Classificat
 - Required: A modern browser (e.g., [Chrome](https://www.google.com/intl/en/chrome/browser/desktop/) or Safari). Internet Explorer (version 11 or higher) should work as well
 - Recommended: [Rstudio](http://www.rstudio.com/products/rstudio/download/)
 
-<<<<<<< HEAD
-=======
-An older version of Radiant is available on [CRAN](http://cran.r-project.org/web/packages/radiant/index.html). To install the latest version for Windows of Mac with complete documentation for off-line access open R(studio) and copy-and-paste the command below:
->>>>>>> upstream/master
 
 CancerPortal is under development:
 ```r

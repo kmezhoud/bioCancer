@@ -91,7 +91,7 @@ most_recent_session_file <- function() {
 
   if (length(fl) > 0) {
     data.frame(fn = fl, dt = file.mtime(fl)) %>% arrange(desc(dt)) %>%
-    slice(1) %>% .[["fn"]] %>% as.character %>% basename %>%
+    dplyr::slice(1) %>% .[["fn"]] %>% as.character %>% basename %>%
     gsub("r_(.*).rds","\\1",.)
   } else {
     NULL

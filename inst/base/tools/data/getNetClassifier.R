@@ -46,8 +46,13 @@ getGenesClassifier <- reactive({
       ProfData <- t(ProfData)
       #profdata <<- ProfData
       ##remove all NAs rows
-      ProfData<- ProfData[which( apply( !( apply(ProfData,1,is.na) ),2,sum)!=0 ),]
+      if (inherits(try(ProfData<- ProfData[which( apply( !( apply(ProfData,1,is.na) ),2,sum)!=0 ),] , silent=FALSE),"try-error"))
+      {
+        stop("Reselect Cases and Genetic Profiles from Samples. It is recommanded to use v2_mrna data. ")
+      } else{
+        ProfData<- ProfData[which( apply( !( apply(ProfData,1,is.na) ),2,sum)!=0 ),]
 
+      }
       if(ncol(ProfData) < input$SampleSizeClassifierID){
         msgBigSampl <- paste(checked_Studies[s], "has only", ncol(ProfData),"samples.","\nSelect at Max: ",ncol(ProfData), "samples")
         tkmessageBox(message=msgBigSampl, icon="info")

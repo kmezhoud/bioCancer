@@ -61,7 +61,7 @@ output$ui_data <- renderUI({
 
         conditionalPanel("input.tabs_data=='Classifier'",
                          uiOutput("ui_Classifier")
-                         ),
+        ),
 
         conditionalPanel("input.tabs_data=='Reactome'",
                          uiOutput("ui_Reactome")
@@ -123,20 +123,20 @@ output$ui_data <- renderUI({
           ),
           tabPanel("Classifier",
                    conditionalPanel("input.ClassID =='Samples'",
-                                    h5("Enter sampling size smaller than in Studies"),
+                                    h4("Enter sampling size smaller than in Case"),
                                     tableOutput("viewTableCases"),
-                                    verbatimTextOutput("SampleSize"),
-                                    verbatimTextOutput("ClassifierThreshold"),
+                                    #verbatimTextOutput("SampleSize"),
+                                    #verbatimTextOutput("ClassifierThreshold"),
                                     #selectizeInput('StudiesIDClassifier', 'Studies Classification', choices=NULL, multiple = TRUE),
-                                    h3("Filter only Studies that have mRNA data", align="center"),
+                                    h4("Filter only Studies that have mRNA data", align="center"),
                                     fluidRow(
                                       column(6,
                                              uiOutput("list_Cases")),
                                       column(6,
                                              uiOutput("list_GenProfs")
                                       )
-                                    ),
-                                    textOutput("PrintCases")
+                                    )
+                                    # textOutput("PrintCases")
 
 
                    ),
@@ -144,24 +144,34 @@ output$ui_data <- renderUI({
                                     tableOutput("viewTablegetGenesClassifier")),
 
                    conditionalPanel("input.ClassID=='Plot'",
-                                    h4("Which Disease are involved your Genes list", align='center'),
-                                    #plot_downloaderEnrich(".Plot_enricher", pre = ""),
-                                    plotOutput("Plot_enricher"),
-                                    h4("Diseases Studies Genes associations", align='center'),
-                                    plotOutput("compareClusterDO"),
-                                    h4("Pathway cluster Enrichment", align='center'),
-                                    plotOutput("compareClusterPathway"),
-                                    h4("Gene Ontholgy Studies associations", align='center'),
-                                    plotOutput("compareClusterGO"),
-                                    h4("KEGG Pathway Enrichment", align='center'),
-                                    plotOutput("compareClusterKEGG")
+
+                                    conditionalPanel("input.ClusterPlotsID=='GeneList/Diseases'",
+                                                     h4("Which Disease are involved your Genes list", align='center'),
+                                                     plotOutput("Plot_enricher")
+                                    ),
+                                    conditionalPanel("input.ClusterPlotsID=='Disease Onthology'",
+                                                     h4("Diseases Studies Genes associations", align='center'),
+                                                     plotOutput("compareClusterDO")
+                                    ),
+                                    conditionalPanel("input.ClusterPlotsID=='Pathway'",
+                                                     h4("Pathway cluster Enrichment", align='center'),
+                                                     plotOutput("compareClusterPathway")
+                                    ),
+                                    conditionalPanel("input.ClusterPlotsID=='GO'",
+                                                     h4("Gene Ontholgy Studies associations", align='center'),
+                                                     plotOutput("compareClusterGO")
+                                    ),
+                                    conditionalPanel("input.ClusterPlotsID=='KEGG'",
+                                                     h4("KEGG Pathway Enrichment", align='center'),
+                                                     plotOutput("compareClusterKEGG")
+                                    )
                    )
           ),
           tabPanel("Reactome",
                    actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
                    conditionalPanel( condition = "input.ReacRunId== true",
-                       grVizOutput('diagrammeR')
-                  )
+                                     grVizOutput('diagrammeR')
+                   )
 
 
           ),
@@ -183,14 +193,14 @@ output$ui_data <- renderUI({
                    plotOutput("visualize", width = "100%", height = "100%")),
           tabPanel("Pivot",
                    conditionalPanel("input.pvt_tab == true",
-                     downloadLink("dl_pivot_tab", "", class = "fa fa-download alignright"),
-                     DT::dataTableOutput("pivotr")
+                                    downloadLink("dl_pivot_tab", "", class = "fa fa-download alignright"),
+                                    DT::dataTableOutput("pivotr")
                    ),
                    conditionalPanel("input.pvt_chi2 == true", htmlOutput("pivotr_chi2")),
                    conditionalPanel("input.pvt_plot == true",
-                     HTML("<br><br>"),
-                     plot_downloader("pivot", width = pvt_plot_width(), height = pvt_plot_height()),
-                     plotOutput("plot_pivot", width = "100%", height = "100%")
+                                    HTML("<br><br>"),
+                                    plot_downloader("pivot", width = pvt_plot_width(), height = pvt_plot_height()),
+                                    plotOutput("plot_pivot", width = "100%", height = "100%")
                    )
           ),
           tabPanel("Explore",
