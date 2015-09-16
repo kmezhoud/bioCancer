@@ -10,7 +10,7 @@ shinyServer(function(input, output, session) {
  library(geNetClassifier)
   library(AnnotationFuncs)
   library("org.Hs.eg.db")
-  #require(DOSE)
+  require(DOSE)
   library(clusterProfiler)
   library(RCurl)
   library(XML)

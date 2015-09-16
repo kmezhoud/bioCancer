@@ -121,9 +121,9 @@ graph_obj <- function(){
       GeneAttri_df2 <- Node_obj_FreqIn(GeneList)
       #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
       GeneAttri_df <- rbind(GeneAttri_df1, GeneAttri_df2)
-      GeneAttri_bkp <<- GeneAttri_df
+      #GeneAttri_bkp <<- GeneAttri_df
       subset <- rbind(subset, GeneAttri_df)
-      subset_bkp <<- subset
+      #subset_bkp <<- subset
     }
 
 }

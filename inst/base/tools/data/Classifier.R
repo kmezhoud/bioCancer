@@ -93,17 +93,27 @@ output$Plot_enricher <- renderPlot({
   disease2gene=gda[, c("diseaseId", "geneId")]
   disease2name=gda[, c("diseaseId", "diseaseName")]
   x <- enricher(GeneID, pvalueCutoff = 0.05,TERM2GENE=disease2gene, TERM2NAME=disease2name)
+  r_data[['x']] <- x
   options(scipen = 0, digits = 2)
   barplot(x,drop=TRUE, showCategory=10 ,digits=2)
 })
 })
+
+
+
+Plot_enrich <- function(){
+    options(scipen = 0, digits = 2)
+    barplot(r_data$x,drop=TRUE, showCategory=10 ,digits=2)
+
+}
+
 
 ## Disease - Genes - Studies Associations
 output$compareClusterDO <- renderPlot({
   withProgress(message = 'Disease Onthology enrich...', value = 0.1, {
     Sys.sleep(0.25)
 
-  genesGroups <- lapply(r_data$GenesClassDetails, function(x)rownames(x))
+  genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
   GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
 
   if (inherits(try(cdo <- compareCluster(GroupsID, fun="enrichDO"), silent=TRUE),"try-error"))
@@ -116,63 +126,81 @@ output$compareClusterDO <- renderPlot({
 
     }else{
     cdo <- compareCluster(GroupsID, fun="enrichDO")
+    r_data[['cdo']] <- cdo
     plot(cdo)
     }
 })
 })
+
+compareClusterDO <- function(){
+plot(r_data$cdo)
+
+}
+
 
 ## Pathway Cluster Enrichment
 output$compareClusterPathway <- renderPlot({
   withProgress(message = 'Cluster Pathway enrich...', value = 0.1, {
     Sys.sleep(0.25)
 
-    genesGroups <- lapply(r_data$GenesClassDetails, function(x)rownames(x))
+    genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
 
-    if (inherits(try(cdo <- compareCluster(GroupsID, fun="enrichPathway"), silent=TRUE),"try-error"))
+    if (inherits(try(cdp <- compareCluster(GroupsID, fun="enrichPathway"), silent=TRUE),"try-error"))
     { print("No enrichment found in any of gene cluster, please check your input...")
       text(x = 0.5, y = 0.5, paste("No Pathway enrichment found\n",
                                     "in any of gene cluster, \n",
                                    "Please check your input..."),
            cex = 1, col = "red")
       }else{
-      cdo <- compareCluster(GroupsID, fun="enrichPathway")
-      plot(cdo)
+      cdp <- compareCluster(GroupsID, fun="enrichPathway")
+      r_data[['cdp']] <- cdp
+      plot(cdp)
     }
   })
 })
 
-
+compareClusterPathway <- function(){
+  plot(r_data$cdp)
+}
 ## Gene Onthology Studies Associations
 output$compareClusterGO <- renderPlot({
   withProgress(message = 'Gene Onthology Enrich...', value = 0.1, {
     Sys.sleep(0.25)
 
-  genesGroups <- lapply(r_data$GenesClassDetails, function(x)rownames(x))
+  genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
   GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
   if (inherits(try(cgo <- compareCluster(GroupsID, fun="enrichGO")),"try-error"))
   {
     stop("No GO enrichment found with actual Gene List...")
   }else{
     cgo <- compareCluster(GroupsID, fun="enrichGO")
+    r_data[['cgo']] <- cgo
     plot(cgo)
   }
 })
 })
 
+compareClusterGO <- function(){
+  plot(r_data$cgo)
+}
 ## KEGG Pathway Enrichment
 output$compareClusterKEGG <- renderPlot({
   withProgress(message = 'KEGG Pathway Enrich...', value = 0.1, {
     Sys.sleep(0.25)
 
-    genesGroups <- lapply(r_data$GenesClassDetails, function(x)rownames(x))
+    genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
     if (inherits(try(cgo <- compareCluster(GroupsID, fun="enrichKEGG")),"try-error"))
     {
       stop("No KEGG enrichment found with actual Gene List...")
     }else{
-      cgo <- compareCluster(GroupsID, fun="enrichKEGG")
-      plot(cgo)
+      ckegg <- compareCluster(GroupsID, fun="enrichKEGG")
+      r_data[['ckegg']] <- ckegg
+      plot(ckegg)
     }
   })
 })
+compareClusterKEGG <- function(){
+  ploy(r_data$ckegg)
+}

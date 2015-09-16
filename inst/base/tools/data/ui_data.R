@@ -147,22 +147,27 @@ output$ui_data <- renderUI({
 
                                     conditionalPanel("input.ClusterPlotsID=='GeneList/Diseases'",
                                                      h4("Which Disease are involved your Genes list", align='center'),
+                                                     plot_downloader("Plot_enrich", pre = ""),
                                                      plotOutput("Plot_enricher")
                                     ),
                                     conditionalPanel("input.ClusterPlotsID=='Disease Onthology'",
                                                      h4("Diseases Studies Genes associations", align='center'),
+                                                     plot_downloader("compareClusterDO", pre=""),
                                                      plotOutput("compareClusterDO")
                                     ),
                                     conditionalPanel("input.ClusterPlotsID=='Pathway'",
                                                      h4("Pathway cluster Enrichment", align='center'),
+                                                     plot_downloader("compareClusterPathway", pre=""),
                                                      plotOutput("compareClusterPathway")
                                     ),
                                     conditionalPanel("input.ClusterPlotsID=='GO'",
                                                      h4("Gene Ontholgy Studies associations", align='center'),
+                                                     plot_downloader("compareClusterGO", pre=""),
                                                      plotOutput("compareClusterGO")
                                     ),
                                     conditionalPanel("input.ClusterPlotsID=='KEGG'",
                                                      h4("KEGG Pathway Enrichment", align='center'),
+                                                     plot_downloader("compareClusterKEGG", pre=""),
                                                      plotOutput("compareClusterKEGG")
                                     )
                    )

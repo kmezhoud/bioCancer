@@ -145,7 +145,7 @@ if (exists("r_state") && exists("r_data")) {
   fn <- paste0(normalizePath("~/r_sessions"),"/r_", mrsf, ".rds")
   rs <- readRDS(fn)
 
-  rs <- readRDS(fn)
+  #rs <- readRDS(fn)
 
   unlink(fn, force = TRUE)
 
