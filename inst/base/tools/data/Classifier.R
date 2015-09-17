@@ -12,10 +12,6 @@ output$list_Cases <- renderUI({
 })
 })
 
-output$PrintCases <- renderPrint({
-input$CasesIDClassifier
-})
-
 output$list_GenProfs <- renderUI({
   withProgress(message = 'loading Genetic Profiles...', value = 0.1, {
     Sys.sleep(0.25)
@@ -24,7 +20,7 @@ output$list_GenProfs <- renderUI({
   names(listGenProfs) <- checked_Studies
   listGenProfs <- lapply(listGenProfs, function(x) x[grep("mrna", x)])
   listGenProfs <- listGenProfs[lapply(listGenProfs,length)>0]
-  selectizeInput('GenProfsIDClassifier', 'Select one Genetic Profile (v2_mrna) by Study', listGenProfs, multiple = TRUE, selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
+  selectizeInput('GenProfsIDClassifier', 'Select one Genetic Profile by Study', listGenProfs, multiple = TRUE, selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
   })
 })
 
@@ -49,26 +45,50 @@ TableCases <- reactive({
   })
 })
 
-output$viewTableCases <- renderTable({
-  if (is.null(input$StudiesIDClassifier))
-    return()
-    TableCases()
+# output$viewTableCases <- renderTable({
+#   if (is.null(input$StudiesIDClassifier))
+#     return()
+#     TableCases()
+# })
+
+output$viewTableCases <- DT::renderDataTable({
+  dat <-   TableCases()
+  action = DT::dataTableAjax(session, dat, rownames = FALSE)
+
+  #DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
+  DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
+                rownames = FALSE, style = "bootstrap", escape = FALSE,
+                # class = "compact",
+                options = list(
+                  ajax = list(url = action),
+                  search = list(regex = TRUE),
+                  columnDefs = list(list(className = 'dt-center', targets = "_all")),
+                  autoWidth = TRUE,
+                  processing = FALSE,
+                  pageLength = 10,
+                  lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
+                )
+  )
 })
+
 
 #Size <- input$SampleSizeClassifier
 
-output$SampleSize <- renderPrint({
-  if (is.null(input$SampleSizeClassifierID))
-    return()
-  str(input$SampleSizeClassifierID)
-})
+# output$SampleSize <- renderPrint({
+#   if (is.null(input$SampleSizeClassifierID))
+#     return()
+#   str(input$SampleSizeClassifierID)
+# })
+#
+# output$ClassifierThreshold <- renderPrint({
+#   if (is.null(input$ClassifierThresholdID))
+#     return()
+#   input$ClassifierThresholdID
+# })
 
-output$ClassifierThreshold <- renderPrint({
-  if (is.null(input$ClassifierThresholdID))
-    return()
-  input$ClassifierThresholdID
-})
-
+# output$PrintCases <- renderPrint({
+# input$CasesIDClassifier
+# })
 
 output$Plot_enricher <- renderPlot({
   withProgress(message = 'Genes Diseases Association...', value = 0.1, {
@@ -99,14 +119,11 @@ output$Plot_enricher <- renderPlot({
 })
 })
 
-
-
 Plot_enrich <- function(){
     options(scipen = 0, digits = 2)
     barplot(r_data$x,drop=TRUE, showCategory=10 ,digits=2)
 
 }
-
 
 ## Disease - Genes - Studies Associations
 output$compareClusterDO <- renderPlot({

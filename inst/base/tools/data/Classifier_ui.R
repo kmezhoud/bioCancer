@@ -1,4 +1,10 @@
+updateSelectizeInput(session, 'ClusterPlotsID',
+                     choices=c("None","GeneList/Diseases","Disease Onthology","Pathway","GO","KEGG"),
+                     selected = "None")
 
+updateSelectizeInput(session, 'ClassID',
+                     choices= c("Samples"="Samples" ,"Classifier" = "Classifier"),
+                     selected = "Samples")
 
 output$ui_Classifier <- renderUI({
   withProgress(message = 'Loading Studies with mRNA Data. Waiting...', value = 0.2, {
@@ -10,7 +16,8 @@ output$ui_Classifier <- renderUI({
 #   listCases <- listCases[lapply(listCases,length)>0]
 })
   updateSelectizeInput(session, 'StudiesIDClassifier', choices = Studies[,1], selected = c("brca_tcga","gbm_tcga","lihc_tcga","lusc_tcga"))
-  #,"prad_tcga_pub","ucec_tcga_pub"
+
+
 
 #   checked_Studies <- input$StudiesIDClassifier
 #   listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,1])
@@ -35,7 +42,7 @@ output$ui_Classifier <- renderUI({
 #                                   selected = "Samples", inline = TRUE),
 
                      selectizeInput(inputId = "ClassID", label="Processing",
-                                    choices= c("Samples"="Samples" ,"Classifier" = "Classifier", "Plot"="Plot"),
+                                    choices= c("Samples"="Samples" ,"Classifier" = "Classifier"),
                                     multiple=FALSE
                                     )
 
@@ -47,14 +54,14 @@ output$ui_Classifier <- renderUI({
 
 
     ),
-    conditionalPanel("input.ClassID=='Plot'",
-                     selectizeInput('ClusterPlotsID', 'Cluster Plots',
+    conditionalPanel("input.ClassID=='Classifier'",
+                     selectizeInput('ClusterPlotsID', 'Plot Clusters',
                                     choices=c("None","GeneList/Diseases","Disease Onthology","Pathway","GO","KEGG"),
                                     multiple= FALSE)
                      )
 
 
+
   )
 })
-
 

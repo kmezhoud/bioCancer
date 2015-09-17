@@ -124,7 +124,8 @@ output$ui_data <- renderUI({
           tabPanel("Classifier",
                    conditionalPanel("input.ClassID =='Samples'",
                                     h4("Enter sampling size smaller than in Case"),
-                                    tableOutput("viewTableCases"),
+                                    #tableOutput("viewTableCases"),
+                                    DT::dataTableOutput("viewTableCases"),
                                     #verbatimTextOutput("SampleSize"),
                                     #verbatimTextOutput("ClassifierThreshold"),
                                     #selectizeInput('StudiesIDClassifier', 'Studies Classification', choices=NULL, multiple = TRUE),
@@ -141,9 +142,11 @@ output$ui_data <- renderUI({
 
                    ),
                    conditionalPanel("input.ClassID =='Classifier'",
-                                    tableOutput("viewTablegetGenesClassifier")),
+                                    downloadLink("dl_GenesClassDetails_tab", "", class = "fa fa-download alignright"),
+                                    #tableOutput("viewTablegetGenesClassifier")),
+                                    DT::dataTableOutput("getGenesClassifier")),
 
-                   conditionalPanel("input.ClassID=='Plot'",
+                  # conditionalPanel("input.ClassID=='Plot'",
 
                                     conditionalPanel("input.ClusterPlotsID=='GeneList/Diseases'",
                                                      h4("Which Disease are involved your Genes list", align='center'),
@@ -170,11 +173,13 @@ output$ui_data <- renderUI({
                                                      plot_downloader("compareClusterKEGG", pre=""),
                                                      plotOutput("compareClusterKEGG")
                                     )
-                   )
+                   #)
           ),
           tabPanel("Reactome",
-                   actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
                    conditionalPanel( condition = "input.ReacRunId== true",
+                                     #plot_downloader("ld_diagrammeR_plot", pre=""),
+                                     #downloadButton('ld_diagrammeR_plot', 'Download Plot'),
+                                     actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
                                      grVizOutput('diagrammeR')
                    )
 

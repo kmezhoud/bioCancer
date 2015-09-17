@@ -156,10 +156,41 @@ getGenesClassifier <- reactive({
   })
 })
 
-output$viewTablegetGenesClassifier  <- renderTable({
-  if (is.null(input$StudiesIDClassifier))
-    return()
+# output$viewTablegetGenesClassifier  <- renderTable({
+#   if (is.null(input$StudiesIDClassifier))
+#     return()
+#
+#   getGenesClassifier()
+# })
 
-  getGenesClassifier()
+
+output$getGenesClassifier <- DT::renderDataTable({
+  dat <-   getGenesClassifier()
+action = DT::dataTableAjax(session, dat, rownames = FALSE)
+
+#DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
+DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
+              rownames = FALSE, style = "bootstrap", escape = FALSE,
+              # class = "compact",
+              options = list(
+                ajax = list(url = action),
+                search = list(regex = TRUE),
+                columnDefs = list(list(className = 'dt-center', targets = "_all")),
+                autoWidth = TRUE,
+                processing = FALSE,
+                pageLength = 10,
+                lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
+              )
+)
 })
 
+
+output$dl_GenesClassDetails_tab <- shiny::downloadHandler(
+  filename = function() { paste0("MutData_tab.csv") },
+  content = function(file) {
+    data_filter <- if (input$show_filter) input$data_filter else ""
+    getdata(r_data$GenesClassDetails, vars = input$ui_Mut_vars, filt = data_filter,
+            rows = NULL, na.rm = FALSE) %>%
+      write.csv(file, row.names = FALSE)
+  }
+)
