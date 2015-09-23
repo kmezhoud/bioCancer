@@ -177,11 +177,31 @@ output$ui_data <- renderUI({
           ),
           tabPanel("Reactome",
                    conditionalPanel( condition = "input.ReacRunId== true",
-                                     #plot_downloader("ld_diagrammeR_plot", pre=""),
+                                     plot_downloader("ld_diagrammeR_plot", pre=""),
                                      #downloadButton('ld_diagrammeR_plot', 'Download Plot'),
                                      actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
                                      grVizOutput('diagrammeR')
+                   ),
+
+                   conditionalPanel(condition = "input.ViewProfDataReactomeID==true",
+                                    h3("Available Profiles data in select Studies", align="center"),
+                                    DT::dataTableOutput(outputId ="ReactomeView")
+                                    ),
+                   conditionalPanel(condition = "input.getlistProfDataID ==true",
+                                    h3("Load Profiles Data", align="center"),
+                                    verbatimTextOutput("StrListProfData")
+
+
                    )
+
+#                    conditionalPanel(condition = "input.getlistProfDataID == 'Availability'",
+#                                     h3("Available Profiles data in select Studies", align="center"),
+#                                     DT::dataTableOutput(outputId ="ReactomeView")),
+#
+#                    conditionalPanel(condition = "input.getlistProfDataID == 'Load'",
+#                                     h3("Load Profiles Data", align="center"),
+#                                     verbatimTextOutput("StrListProfData")
+#                   )
 
 
           ),

@@ -1,8 +1,15 @@
-getListProfData <- function(){
+getListProfData <- function(panel){
 
 
 
-  if(input$GeneListID != "Genes"){
+#   if(input$GeneListID != "Genes"){
+#     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+#   }
+  if(input$GeneListID == "Genes"){
+    GeneList <- r_data$Genes
+  }else if(input$GeneListID == "Reactome_GeneList"){
+    GeneList <- t(r_data$Reactome_GeneList)
+  }else{
     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
   }
 
@@ -101,10 +108,14 @@ getListProfData <- function(){
   #StudiesRef <- getCancerStudies(cgds)[,1]
 
   #listStudies <- c("gbm_tcga_pub","brca_tcga_pub","prad_tcga_pub","ucec_tcga_pub")
-
+if (panel=="Circomics"){
   checked_Studies <- input$StudiesIDCircos
   Lchecked_Studies <- length(checked_Studies)
+}else if (panel=="Reactome"){
+  checked_Studies <- input$StudiesIDReactome
+  Lchecked_Studies <- length(checked_Studies)
 
+}
   ## get Cases for selected Studies
   CasesRefStudies <- unname(unlist(apply(as.data.frame(checked_Studies), 1,function(x) getCaseLists(cgds,x)[1])))
   ## ger Genetics Profiles for selected Studies
@@ -192,17 +203,17 @@ getListProfData <- function(){
         ProfData_miRNA<-grepRef(Case_miRNA, CasesRefStudies, GenProf_miRNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
         MutData <- grepRef(Case_Mut,CasesRefStudies ,GenProf_Mut, GenProfsRefStudies,SubMegaGeneList, Mut=1)
 
-        print("1")
+
         MegaProfData_CNA <- cbind(MegaProfData_CNA, ProfData_CNA)
-        print("2")
+
         MegaProfData_Exp <- cbind(MegaProfData_Exp, ProfData_Exp)
-        print("3")
+
         MegaProfData_Met_HM450 <- cbind(MegaProfData_Met_HM450, ProfData_Met_HM450)
-        print("4")
+
         MegaProfData_Met_HM27 <- cbind(MegaProfData_Met_HM27, ProfData_Met_HM27)
-        print("5")
+
         MegaProfData_RPPA <- cbind(MegaProfData_RPPA, ProfData_RPPA)
-        print("6")
+
         MegaProfData_miRNA <- cbind(MegaProfData_miRNA, ProfData_miRNA)
         MegaMutData <- rbind(MegaMutData, MutData)
 
@@ -253,6 +264,10 @@ getListProfData <- function(){
   r_data[['ListProfData']] <- ListProfData
   r_data[['ListMetData']] <- ListMetData
   r_data[['ListMutData']] <- ListMutData
+
+  ListProfData_bkp <<- ListProfData
+  ListMetData_bkp <<- ListMetData
+  ListMutData_bkp <<- ListMutData
   #     print("Start Ordering ...")
   ## range matrices by the same order
   #     myGlobalEnv$ListProfData$CNA <- myGlobalEnv$ListProfData$CNA[order(names(myGlobalEnv$ListProfData$CNA))]

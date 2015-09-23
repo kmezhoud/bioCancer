@@ -17,8 +17,82 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 }
 
 graph_obj <- function(){
+
+  if(input$GeneListID == "Genes"){
+    GeneList <- r_data$Genes
+  }else if(input$GeneListID == "Reactome_GeneList"){
+    GeneList <- r_data$Reactome_GeneList
+  }else{
+    GeneList <- as.character(t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep="")))))
+  }
+
+  Edges_obj <- Edges_obj()
+
+
+
+
+  if(input$NodeAttri_ReactomeID == 'Freq. Interaction'){
+    ## Nodes Attributes
+    GeneAttri_df <- Node_obj_FreqIn(GeneList)
+    #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
+    Edges_obj<- rbind(Edges_obj, GeneAttri_df)
+  }
+  if(input$NodeAttri_ClassifierID == 'mRNA'){
+    ## Nodes Attributes
+    GeneAttri_df1 <- Node_obj_mRNA(GeneList, r_data$GenesClassDetails)
+    #GeneAttri_df2 <- Node_obj_FreqIn(GeneList)
+    #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
+    #GeneAttri_df <- rbind(GeneAttri_df1, GeneAttri_df2)
+    #GeneAttri_bkp <<- GeneAttri_df
+    Edges_obj <- rbind(Edges_obj, GeneAttri_df1)
+    #Edges_obj_bkp <<- Edges_obj
+
+  }
+  if (input$NodeAttri_ClassifierID =='Studies'){
+
+    Disease_Net <- Studies_obj(df=r_data$GenesClassDetails)
+    Edges_obj<- rbind(Edges_obj, Disease_Net)
+
+  }
+
+  if (input$NodeAttri_ClassifierID == 'mRNA/Studies'){
+
+    ## Nodes Attributes
+    GeneAttri_mRNA <- Node_obj_mRNA(GeneList, r_data$GenesClassDetails)
+    #GeneAttri_FreqIn <- Node_obj_FreqIn(GeneList)
+    Studies_Net <- Studies_obj(df=r_data$GenesClassDetails)
+    #FreqMut_obj <- Mutation_obj()
+
+    #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
+    GeneAttri_df <- rbind(GeneAttri_mRNA, Studies_Net)
+   # GeneAttri_df <- rbind(GeneAttri_df,Studies_Net)
+    #GeneAttri_df <- rbind(GeneAttri_df, FreqMut_obj)
+
+    #GeneAttri_bkp <<- GeneAttri_df
+    Edges_obj <- rbind(Edges_obj, GeneAttri_df)
+    #Edges_obj_bkp <<- Edges_obj
+  }
+
+  if(input$NodeAttri_ProfDataID == 'Mutation'){
+
+    FreqMut_obj <- Mutation_obj()
+    Edges_obj <- rbind(Edges_obj, FreqMut_obj)
+
+  }
+  ## convert Dataframe to graph object
+  #cap <- capture.output(print(Edges_obj, row.names = FALSE)[-1])
+  cap <- apply(Edges_obj, 1, function(x) paste(x, sep="\t", collapse=" "))
+  ca <- paste(cap,"", collapse=";")
+  obj <- paste0("\n","digraph{","\n", ca, "\n","}", sep="")
+
+  return(obj)
+
+}
+
+Edges_obj <- function(){
+
   #if(!'ReactomeFI' %in% r_data){
-  if(!exists("ReactomeFI", r_data)){
+  if(is.null(r_data$ReactomeFI)){
     withProgress(message = 'Loading ReactomeFI...', value = 0.1, {
       Sys.sleep(0.25)
 
@@ -45,100 +119,136 @@ graph_obj <- function(){
     Sys.sleep(0.25)
 
     names(fis) <- c("Gene1", "Gene2")
-    subset1 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))
+    Edges_obj1 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))
     names(fis) <- c("Gene2", "Gene1")
-    subset2 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))
-    subset <- rbind(subset1,subset2)
+    Edges_obj2 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))
+    Edges_obj <- rbind(Edges_obj1,Edges_obj2)
 
     ## Filter Annotation interaction
-    #  subset <- subset[- grep(c("predic",activat), subset$Annotation),]
-    #  subset <- subset[!grepl("predict|activat|binding|complex|indirect",subset$Annotation),]
-    subset <- subset[grepl(paste0(input$FIs_AttId, collapse="|"),subset$Annotation),]
-    subsetbkp <<- subset
-    r_data[['Reactome_GeneList']] <- union(subset$Gene1, subset$Gene2)
+    #  Edges_obj <- Edges_obj[- grep(c("predic",activat), Edges_obj$Annotation),]
+    #  Edges_obj <- Edges_obj[!grepl("predict|activat|binding|complex|indirect",Edges_obj$Annotation),]
+    Edges_obj <- Edges_obj[grepl(paste0(input$FIs_AttId, collapse="|"),Edges_obj$Annotation),]
+
+    r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
 
     ## Get interaction Frequency in dataframe FreqIn
-    FreqIn <- rbind(t(t(table(as.character(subset$Gene2)))), t(t(table(as.character(subset$Gene1)))))
+    FreqIn <- rbind(t(t(table(as.character(Edges_obj$Gene2)))), t(t(table(as.character(Edges_obj$Gene1)))))
     colnames(FreqIn) <- "Freq"
     FreqIn <- as.data.frame(FreqIn) %>% add_rownames("Genes")
     r_data[['FreqIn']] <- plyr::ddply(FreqIn,~Genes,summarise,FreqSum=sum(Freq))
 
-    rownames(subset) <- NULL
+    rownames(Edges_obj) <- NULL
 
-    subset <- as.data.frame(lapply(subset, function(x) gsub("<\\->","dir=both,arrowhead = tee,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub("\\|\\->","dir=both,arrowtail = tee,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub("<\\-\\|","dir=both,arrowhead = tee,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub("->","dir = forward,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub("<-","dir = back, arrowtail = normal,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub("\\|\\-","dir= back, arrowtail = tee,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub("\\-\\|","dir = forward, arrowhead = tee,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub("-","dir = none,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\->","dir=both,arrowhead = tee,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\|\\->","dir=both,arrowtail = tee,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\-\\|","dir=both,arrowhead = tee,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("->","dir = forward,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<-","dir = back, arrowtail = normal,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\|\\-","dir= back, arrowtail = tee,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\-\\|","dir = forward, arrowhead = tee,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("-","dir = none,", x)))
     ## Egdes relationships
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*complex.*","arrowhead=diamond,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*catalyze.*","arrowhead=curve,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*reaction.*","arrowhead=curve,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*phosphoryl.*","arrowhead=dot,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*activat.*","arrowhead=normal,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*inhibit.*","arrowhead=tee,", x)))
-    # subset <- as.data.frame(lapply(subset, function(x) gsub(".*expression.*","arrowhead=normal,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*express.*","arrowhead=normal,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*regulat.*","arrowhead=normal,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*binding.*","dir = none,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*input.*","dir = none,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*dissociation.*"," arrowhead= inv", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*compound.*","dir = none,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*predicted.*","style = dashed,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*indirect.*","style = dashed,", x)))
-    subset <- as.data.frame(lapply(subset, function(x) gsub(".*ubiquitinated.*","style = dashed,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*complex.*","arrowhead=diamond,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*catalyze.*","arrowhead=curve,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*reaction.*","arrowhead=curve,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*phosphoryl.*","arrowhead=dot,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*activat.*","arrowhead=normal,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*inhibit.*","arrowhead=tee,", x)))
+    # Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*expression.*","arrowhead=normal,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*express.*","arrowhead=normal,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*regulat.*","arrowhead=normal,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*binding.*","dir = none,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*input.*","dir = none,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*dissociation.*"," arrowhead= inv", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*compound.*","dir = none,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*predicted.*","style = dashed,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*indirect.*","style = dashed,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub(".*ubiquitinated.*","style = dashed,", x)))
 
-    subset[,5] <-  paste("penwidth=", subset[,5],"]", sep=" ")
-    #subset$int <- "->"
-    subset[,1] <- paste(subset[,1], "->", sep=" ")
-    subset[,2] <- paste(subset[,2],"[", sep=" ")
-    subset$arrowsize <- "arrowsize=0.5,"
-    #subset$croch2 <- "]"
+    Edges_obj[,5] <-  paste("penwidth=", Edges_obj[,5],"]", sep=" ")
+    #Edges_obj$int <- "->"
+    Edges_obj[,1] <- paste(Edges_obj[,1], "->", sep=" ")
+    Edges_obj[,2] <- paste(Edges_obj[,2],"[", sep=" ")
+    Edges_obj$arrowsize <- "arrowsize=0.5,"
+    #Edges_obj$croch2 <- "]"
 
-    subset <- subset[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
-    #subset <- subset[1:150,]
-
-
-    ## Verify radiobutton and Use Node attributes from geNetClassifier
-    if(input$NodeAttriID == 'Freq. Interaction'){
-      ## Nodes Attributes
-      GeneAttri_df <- Node_obj_FreqIn(GeneList)
-      #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
-      subset<- rbind(subset, GeneAttri_df)
-    }else if(input$NodeAttriID == 'Cancer/mRNA'){
-
-      if (inherits(try(GeneAttri_df <- Node_obj_Classifier(GeneList, r_data$GenesClassDetails) , silent=FALSE),"try-error"))
-      {
-      msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
-      #tkmessageBox(message=msgNoClassifier , icon="warning")
-      stop(msgNoClassifier)
-    } else{
-      ## Nodes Attributes
-      GeneAttri_df1 <- Node_obj_Classifier(GeneList, r_data$GenesClassDetails)
-      GeneAttri_df2 <- Node_obj_FreqIn(GeneList)
-      #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
-      GeneAttri_df <- rbind(GeneAttri_df1, GeneAttri_df2)
-      #GeneAttri_bkp <<- GeneAttri_df
-      subset <- rbind(subset, GeneAttri_df)
-      #subset_bkp <<- subset
-    }
-
+    Edges_obj<- Edges_obj[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
+    #Edges_obj <- Edges_obj[1:150,]
+  })
+  Edges_objbkp <<- Edges_obj
+  return(Edges_obj)
 }
 
-  ## convert Dataframe to graph object
-  #cap <- capture.output(print(subset, row.names = FALSE)[-1])
-  cap <- apply(subset, 1, function(x) paste(x, sep="\t", collapse=" "))
-  ca <- paste(cap,"", collapse=";")
-  obj <- paste0("\n","digraph{","\n", ca, "\n","}", sep="")
-  return(obj)
-})
+### Add Studies to Network
+
+# Genes ranking     class postProb exprsMeanDiff exprsUpDw
+# 1 FANCF       1 brca_tcga  1.00000      179.9226        UP
+# 2  MLH1       1  gbm_tcga  0.99703      256.3173        UP
+
+Studies_obj <- function(df){
+  #df <- GenesClassDetails_bkp
+  if(is.null(r_data$GenesClassDetails)){
+    msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
+    stop(msgNoClassifier)
+  }else{
+    names(df) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
+
+    df$Gene2 <- "->"
+    df$Annotation <- "[arrowhead = None,"
+    df$arrowsize <- "color= Gray,alpha=80,"
+    df$Score <- "penwidth= 0.2]"
+
+    V <- as.numeric(df$Direction)
+    set.seed(17)
+    C <- sample(colors(),length(table(df$Direction)))
+    dfbis <- data.frame("Gene1"=df$Direction,
+                        "Gene2"="[shape=egg,",
+                        "Direction" = "style = filled,",
+                        "Annotation"= "fillcolor =",
+                        "arrowsize"= C[V],
+                        "Score"="]"
+    )
+    df <- rbind(df, dfbis)
+    #GenesClassDetails$class <- paste("penwidth=3,color =", C[V],"," ,sep=" ")
+
+    return(df)
   }
+}
 
+### Mutation Attribution
+Mutation_obj <- function(){
 
+  df <- getFreqMutData(list = r_data$ListMutData)
 
+  if(is.null(df)){
+    msgNoFreqMut <- paste("Mutation frequency is not found, please run gene Circomics before...")
+    stop(msgNoFreqMut)
+  }else{
+
+    df <- df[apply(df, 1, function(x) !all(is.na(x))),]
+    c1 <- apply(df,1, function(x)max(x, na.rm=TRUE))
+    c2 <- colnames(df)[apply(df,1, function(x)which.max(x))]
+    c  <- cbind.data.frame(c2,round(c1, digits=2))
+
+    c <- c %>% add_rownames("Genes")
+    colnames(c) <- c("Genes", "Disease", "Percentage")
+
+    V <- as.numeric(c$Disease)
+    set.seed(17)
+    C <- sample(colors(),length(table(c$Disease)))
+
+    Mut <- cbind.data.frame(c,arrowsize=C[V])
+    #BRCA1[shape = box, style= filled, fillcolor="#0007CD", color=red, penwidth=3, peripheries=2 ]
+    #names(df) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
+    Mut$Gene1 <- paste(Mut$Genes,"[", sep=" ")
+    Mut$Gene2 <- "shape="
+    Mut$Direction <- sapply(Mut$Percentage,function(x)if(x < input$FreqMutSliderID){paste("circle","," ,sep="")}else{paste("triangle",",",sep="")})
+    Mut$Annotation <- "color="
+    Mut$Score <- ",fontsize=10]"
+    Mut <- Mut[c("Gene1","Gene2","Direction","Annotation","arrowsize","Score")]
+    return(Mut)
+  }
+}
 
 ### Attributes for Nodes
 attriShape2Gene <- function(gene, genelist){
@@ -169,46 +279,56 @@ Node_obj_FreqIn <- function(GeneList){
 
 }
 
-Node_obj_Classifier <- function(GeneList,GenesClassDetails= r_data$GenesClassDetails){
+Node_obj_mRNA <- function(GeneList,GenesClassDetails= r_data$GenesClassDetails){
+  if(is.null(r_data$GenesClassDetails)){
+    msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
+    stop(msgNoClassifier)
+  }else{
+    GenesClassDetails <- merge(GenesClassDetails, r_data$FreqIn, by="Genes")
+    GenesClassDetails <- GenesClassDetails[,!(names(GenesClassDetails) %in% "exprsUpDw")]
+    GenesClassDetails$FreqSum  <- GenesClassDetails$FreqSum / 10
 
-  GenesClassDetails <- merge(GenesClassDetails, r_data$FreqIn, by="Genes")
-  GenesClassDetails <- GenesClassDetails[,!(names(GenesClassDetails) %in% "exprsUpDw")]
-  GenesClassDetails$FreqSum  <- GenesClassDetails$FreqSum / 10
+    ## geneDiseaseClass_obj
+    # GenesClassDetails_ls <- lapply(r_data$GenesClassDetails, function(x) x %>% add_rownames("Genes")
+    #GenesClassDetails_df <- ldply(GenesClassDetails_ls)
+    #GenesClassDetails_df <- GenesClassDetails_df[,-1]
+    #GenesClassDetails <- r_data$GenesClassDetails
+    ## identify Gene List
+    #   if(input$GeneListID == "Genes"){
+    #     GeneList <- r_data$Genes
+    #   }else if(input$GeneListID =="Reactome_GeneList"){
+    #     GeneList <- r_data$Reactome_GeneList
+    #     print(GeneList)
+    #   }else{
+    #     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+    #   }
 
-  ## geneDiseaseClass_obj
-  # GenesClassDetails_ls <- lapply(r_data$GenesClassDetails, function(x) x %>% add_rownames("Genes")
-  #GenesClassDetails_df <- ldply(GenesClassDetails_ls)
-  #GenesClassDetails_df <- GenesClassDetails_df[,-1]
-  #GenesClassDetails <- r_data$GenesClassDetails
-  ## identify Gene List
-  #   if(input$GeneListID == "Genes"){
-  #     GeneList <- r_data$Genes
-  #   }else if(input$GeneListID =="Reactome_GeneList"){
-  #     GeneList <- r_data$Reactome_GeneList
-  #     print(GeneList)
-  #   }else{
-  #     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
-  #   }
+    GenesClassDetails$Genes <- unname(sapply(GenesClassDetails$Genes,  function(x) attriShape2Gene(x, GeneList)))
 
-  GenesClassDetails$Genes <- unname(sapply(GenesClassDetails$Genes,  function(x) attriShape2Gene(x, GeneList)))
+    ###GenesClassDetails$ranking <- paste("peripheries=",GenesClassDetails$ranking,"," ,sep=" ")
+    GenesClassDetails$ranking <- paste("peripheries=","1","," ,sep=" ")
 
-  GenesClassDetails$ranking <- paste("peripheries=",GenesClassDetails$ranking,"," ,sep=" ")
-  print("ok peripheries=")
-  V <- as.numeric(GenesClassDetails$class)
-  C <- sample(colors(),length(table(GenesClassDetails$class)))
-  GenesClassDetails$class <- paste("penwidth=3,color =", C[V],"," ,sep=" ")
+    V <- as.numeric(GenesClassDetails$class)
+    set.seed(17)
+    C <- sample(colors(),length(table(GenesClassDetails$class)))
 
-  GenesClassDetails$postProb <- "style = filled, fillcolor ='"
+    if(input$NodeAttri_ProfDataID != 'Mutation'){
+    GenesClassDetails$class <- paste("penwidth=3,color =", C[V],"," ,sep=" ")
+    }else{
+    GenesClassDetails$class <- paste("penwidth=3,color =", "white","," ,sep=" ")
+    }
+    GenesClassDetails$postProb <- "style = filled, fillcolor ='"
 
-  GenesClassDetails$exprsMeanDiff <- sapply(GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
+    GenesClassDetails$exprsMeanDiff <- sapply(GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
 
-  GenesClassDetails$FreqSum <- paste0("',fixedsize = TRUE, width =",GenesClassDetails$FreqSum,", alpha_fillcolor =",GenesClassDetails$FreqSum,"]")
+    GenesClassDetails$FreqSum <- paste0("',fixedsize = TRUE, width =",GenesClassDetails$FreqSum,", alpha_fillcolor =",GenesClassDetails$FreqSum,"]")
 
-  # rename column to rbind with edge dataframe
-  names(GenesClassDetails) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
-  GenesClassDetails_bkp <<- GenesClassDetails
-  GeneAttri <- GenesClassDetails
-  return(GeneAttri)
+    # rename column to rbind with edge dataframe
+    names(GenesClassDetails) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
+    GenesClassDetails_bkp <<- GenesClassDetails
+    GeneAttri <- GenesClassDetails
+    return(GeneAttri)
+  }
 }
 
 
@@ -237,4 +357,12 @@ output$diagrammeR <- renderGrViz({
   )
 })
 
+
+ld_diagrammeR_plot<- function(){
+  grViz(
+    graph_obj(),
+    engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
+    width = 1200
+  )
+}
 
