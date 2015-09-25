@@ -28,9 +28,6 @@ graph_obj <- function(){
 
   Edges_obj <- Edges_obj()
 
-
-
-
   if(input$NodeAttri_ReactomeID == 'Freq. Interaction'){
     ## Nodes Attributes
     GeneAttri_df <- Node_obj_FreqIn(GeneList)
@@ -39,7 +36,7 @@ graph_obj <- function(){
   }
   if(input$NodeAttri_ClassifierID == 'mRNA'){
     ## Nodes Attributes
-    GeneAttri_df1 <- Node_obj_mRNA(GeneList, r_data$GenesClassDetails)
+    GeneAttri_df1 <- Node_obj_mRNA_Classifier(GeneList, r_data$GenesClassDetails)
     #GeneAttri_df2 <- Node_obj_FreqIn(GeneList)
     #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
     #GeneAttri_df <- rbind(GeneAttri_df1, GeneAttri_df2)
@@ -58,7 +55,7 @@ graph_obj <- function(){
   if (input$NodeAttri_ClassifierID == 'mRNA/Studies'){
 
     ## Nodes Attributes
-    GeneAttri_mRNA <- Node_obj_mRNA(GeneList, r_data$GenesClassDetails)
+    GeneAttri_mRNA <- Node_obj_mRNA_Classifier(GeneList, r_data$GenesClassDetails)
     #GeneAttri_FreqIn <- Node_obj_FreqIn(GeneList)
     Studies_Net <- Studies_obj(df=r_data$GenesClassDetails)
     #FreqMut_obj <- Mutation_obj()
@@ -79,6 +76,13 @@ graph_obj <- function(){
     Edges_obj <- rbind(Edges_obj, FreqMut_obj)
 
   }
+  if(input$NodeAttri_ProfDataID == 'CNA'){
+
+    CNA_obj <- Node_obj_CNA_ProfData(list=r_data$ListProfData$CNA)
+    Edges_obj <- rbind(Edges_obj, CNA_obj)
+
+  }
+
   ## convert Dataframe to graph object
   #cap <- capture.output(print(Edges_obj, row.names = FALSE)[-1])
   cap <- apply(Edges_obj, 1, function(x) paste(x, sep="\t", collapse=" "))
@@ -279,7 +283,7 @@ Node_obj_FreqIn <- function(GeneList){
 
 }
 
-Node_obj_mRNA <- function(GeneList,GenesClassDetails= r_data$GenesClassDetails){
+Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= r_data$GenesClassDetails){
   if(is.null(r_data$GenesClassDetails)){
     msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
     stop(msgNoClassifier)
@@ -332,6 +336,38 @@ Node_obj_mRNA <- function(GeneList,GenesClassDetails= r_data$GenesClassDetails){
 }
 
 
+
+
+Node_obj_CNA_ProfData <- function(list){
+
+    ListDf <-lapply(list, function(x) apply(x, 2, function(y) as.data.frame(table(y[order(y)]))))
+    ListDf2 <-   lapply(ListDf, function(x) lapply(x, function(y) y[,1][which(y[,2]== max(y[,2]))]))
+    ListDf3 <- ldply(ListDf2, data.frame)
+    MostFreqCNA_Df <- ldply(apply(ListDf3,2,function(x) names(which(max(table(x))==table(x))))[-1],data.frame)
+
+    #MostFreqCNA_Df$arrowsize <- paste(MostFreqCNA_Df[,1], MostFreqCNA_Df[,2], sep=":")
+    MostFreqCNA_Df[,2] <- gsub("-1", "1, style=dashed", MostFreqCNA_Df[,2] )
+    MostFreqCNA_Df[,2] <- gsub("-2", "2, style=dashed", MostFreqCNA_Df[,2] )
+    MostFreqCNA_Df[,2] <- gsub("0", "0.5", MostFreqCNA_Df[,2] )
+    MostFreqCNA_Df[,2] <- gsub("1", " 1, penwidth=2 ", MostFreqCNA_Df[,2] )
+    MostFreqCNA_Df[,2] <- gsub("2", " 2 ", MostFreqCNA_Df[,2] )
+    MostFreqCNA_Df$arrowsize <- MostFreqCNA_Df[,2]
+
+#     MostFreqCNA_Df$arrowsize  <- as.data.frame(lapply(MostFreqCNA_Df[,2], function(x) gsub("-1","1, style=dashed", x)))
+#     MostFreqCNA_Df$arrowsize  <- as.data.frame(lapply(MostFreqCNA_Df[,2], function(x) gsub("-2","2, style=dashed", x)))
+#     MostFreqCNA_Df$arrowsize  <- as.data.frame(lapply(MostFreqCNA_Df[,2], function(x) gsub(" 0 ","1 ", x)))
+#     MostFreqCNA_Df$arrowsize  <- as.data.frame(lapply(MostFreqCNA_Df[,2], function(x) gsub(" 1 ","1 ", x)))
+#     MostFreqCNA_Df$arrowsize  <- as.data.frame(lapply(MostFreqCNA_Df[,2], function(x) gsub(" 2 ","2", x)))
+
+    MostFreqCNA_Df$Gene1 <- MostFreqCNA_Df$.id
+    MostFreqCNA_Df$Gene2 <- "["
+    MostFreqCNA_Df$Direction <- "pripheries"
+    MostFreqCNA_Df$Annotation <- "="
+    MostFreqCNA_Df$Score <- "]"
+    MostFreqCNA_Df <- MostFreqCNA_Df[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
+
+    return(MostFreqCNA_Df)
+}
 
 
 output$diagrammeR <- renderGrViz({

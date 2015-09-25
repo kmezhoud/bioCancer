@@ -185,11 +185,12 @@ output$ui_data <- renderUI({
 
                    conditionalPanel(condition = "input.ViewProfDataReactomeID==true",
                                     h3("Available Profiles data in select Studies", align="center"),
-                                    DT::dataTableOutput(outputId ="ReactomeView")
+                                    DT::dataTableOutput(outputId ="ReactomeAvailability")
                                     ),
                    conditionalPanel(condition = "input.getlistProfDataID ==true",
                                     h3("Load Profiles Data", align="center"),
                                     verbatimTextOutput("StrListProfData")
+                                    #htmlOutput("StrListProfData")
 
 
                    )

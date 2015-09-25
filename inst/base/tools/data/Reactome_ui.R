@@ -87,7 +87,7 @@ output$ui_Reactome <- renderUI({
         selectizeInput('StudiesIDReactome', 'From Which Studies', choices=NULL, multiple = TRUE),
         with(tags, table(
           tr(
-            td(checkboxInput("ViewProfDataReactomeID", "View", value = FALSE)),
+            td(checkboxInput("ViewProfDataReactomeID", "Availability", value = FALSE)),
             td(
               checkboxInput("getlistProfDataID", "Load", value = FALSE)
               #           radioButtons(inputId = "getlistProfDataID", label = "Profile Data",
@@ -126,7 +126,7 @@ output$ui_Reactome <- renderUI({
 
 ## View Available Profile Data
 
-output$ReactomeView <- DT::renderDataTable({
+output$ReactomeAvailability <- DT::renderDataTable({
   withProgress(message = 'Loading Data...', value = 0.1, {
     Sys.sleep(0.25)
     dat <- checkDimensions(panel = "Reactome")
@@ -166,8 +166,10 @@ output$StrListProfData <- renderPrint({
       Sys.sleep(0.25)
     getListProfData(panel='Reactome')
     })
-    str(r_data$ListProfData)
-    str(r_data$ListMutData)
+  cat("STUDIES:\n", names(ListMutData_bkp), "\n")
+  cat("PROFILES DATA:\n",names(ListProfData_bkp) ,"and Mutation", sep = " " )
+    #str(r_data$ListProfData)
+    #str(r_data$ListMutData)
   #}
 })
 

@@ -19,31 +19,35 @@ attriColorValue <- function(Value, df, colors=c(a,b,c, d,e),feet){
 }
 
 attriColorGene <- function(df){
-  ## check Mutation df
-  if(any(df[1,]%%1==0, na.rm = TRUE)&& any(df[1,]>0, na.rm = TRUE)){
-    dfMeansOrCNA <- df
-  }else
-    ## check df is for CNA levels(-2,-1,0,1,2)
-    if(any(df[1,]=="-2", na.rm=TRUE)||
-       any(df[1,]=="-1", na.rm=TRUE)
-       #any(df[1,]=="0", rn.rm=TRUE)||
-       #any(df[1,]=="1", na.rm=TRUE)||
-       #any(df[1,]=="2", na.rm=TRUE)
-    ){
+  ## check Mutation df Old
+  #if(any(df[1,]%%1==0, na.rm = TRUE)&& any(df[1,]>0, na.rm = TRUE)){
+  #   if(any(colnames(df) %in% input$StudieID) && any(df[1,]>0, na.rm = TRUE)){
+  #     print(head(df))
+  #     dfMeansOrCNA <- df
+  #   }else
+  ## check df is for CNA levels(-2,-1,0,1,2)
+  if(all(apply(df,2, function(x)class(x)=='integer'))==TRUE
+     #any(df[1,]=="-2", na.rm=TRUE)||
+     #any(df[1,]=="-1", na.rm=TRUE)
+     #any(df[1,]=="0", rn.rm=TRUE)||
+     #any(df[1,]=="1", na.rm=TRUE)||
+     #any(df[1,]=="2", na.rm=TRUE)
+  ){
 
-      ListFreqCNA <- apply(df, 2, function(x) as.data.frame(table(x[order(x)])))
-      #names((which(ListFreqCNA$brca_tcga$ATM== max(ListFreqCNA$brca_tcga$ATM))))
-      print("getting the most frequent CNA categorie...")
-      dfMeansOrCNA <- as.data.frame(lapply(ListFreqCNA, function(x) x[,1][which(x[,2]== max(x[,2]))]))
+    ListFreqCNA <- apply(df, 2, function(x) as.data.frame(table(x[order(x)])))
+    print("getting the most frequent CNA categorie...")
+    dfMeansOrCNA <- as.data.frame(lapply(ListFreqCNA, function(x) x[,1][which(x[,2]== max(x[,2]))]))
 
-      ## at this step the dfMeansOtCNA is not as numeric
-      namedfMeansOrCNA <- names(dfMeansOrCNA)
-      dfMeansOrCNA <- as.numeric(as.matrix(dfMeansOrCNA))
-      names(dfMeansOrCNA) <- namedfMeansOrCNA
-    }else{
-      dfMeansOrCNA<-apply(df,2,function(x) mean(x, na.rm=TRUE))
-      dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
-    }
+    ## at this step the dfMeansOtCNA is not as numeric
+    namedfMeansOrCNA <- names(dfMeansOrCNA)
+    dfMeansOrCNA <- as.numeric(as.matrix(dfMeansOrCNA))
+    names(dfMeansOrCNA) <- namedfMeansOrCNA
+
+  }else if(all(apply(df,2, function(x)class(x)=='numeric'))==TRUE){
+    ## Compute mean of FreqMutData and mRNA Expression
+    dfMeansOrCNA<-apply(df,2,function(x) mean(x, na.rm=TRUE))
+    dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
+  }
 
   ## Set colors if all value are 0 set only black
   if(all(dfMeansOrCNA=="0")||all(dfMeansOrCNA=="NaN")){
@@ -205,22 +209,22 @@ output$metabologram <- renderMetabologram({
 ## CNA, mRNA, methylation HM450/HM27, miRNA, RPPPA, Mutation
 checkDimensions<- function(panel){
 
- if(panel == "Circomics"){
-  checked_Studies <- input$StudiesIDCircos
-  # get Cases for selected Studies
-  CasesRefStudies <- unname(unlist(apply(as.data.frame(input$StudiesIDCircos), 1,function(x) getCaseLists(cgds,x)[1])))
-  ## ger Genetics Profiles for selected Studies
-  GenProfsRefStudies <- unname(unlist(apply(as.data.frame(input$StudiesIDCircos), 1,function(x) getGeneticProfiles(cgds,x)[1])))
+  if(panel == "Circomics"){
+    checked_Studies <- input$StudiesIDCircos
+    # get Cases for selected Studies
+    CasesRefStudies <- unname(unlist(apply(as.data.frame(input$StudiesIDCircos), 1,function(x) getCaseLists(cgds,x)[1])))
+    ## ger Genetics Profiles for selected Studies
+    GenProfsRefStudies <- unname(unlist(apply(as.data.frame(input$StudiesIDCircos), 1,function(x) getGeneticProfiles(cgds,x)[1])))
 
- }else if (panel== "Reactome"){
+  }else if (panel== "Reactome"){
 
-   checked_Studies <- input$StudiesIDReactome
-   # get Cases for selected Studies
-   CasesRefStudies <- unname(unlist(apply(as.data.frame(input$StudiesIDReactome), 1,function(x) getCaseLists(cgds,x)[1])))
-   ## ger Genetics Profiles for selected Studies
-   GenProfsRefStudies <- unname(unlist(apply(as.data.frame(input$StudiesIDReactome), 1,function(x) getGeneticProfiles(cgds,x)[1])))
+    checked_Studies <- input$StudiesIDReactome
+    # get Cases for selected Studies
+    CasesRefStudies <- unname(unlist(apply(as.data.frame(input$StudiesIDReactome), 1,function(x) getCaseLists(cgds,x)[1])))
+    ## ger Genetics Profiles for selected Studies
+    GenProfsRefStudies <- unname(unlist(apply(as.data.frame(input$StudiesIDReactome), 1,function(x) getGeneticProfiles(cgds,x)[1])))
 
-}
+  }
 
   df <- data.frame(row.names = c("Case_CNA", "GenProf_GISTIC", "Case_mRNA", "GenProf_mRNA", "Case_Met_HM450", "GenProf_Met_HM450",
                                  "Case_Met_HM27", "GenProf_Met_HM27", "Case_RPPA", "GeneProf_RPPA", "Case_miRNA", "GenProf_miRNA",

@@ -19,7 +19,7 @@ getListProfData <- function(panel){
     if(length(grep(regex1,listRef1)) != 0){
       if(length(grep(regex2,listRef2))!= 0){
         if(Mut== 0){
-          print(paste("Getting Profile Data of ",regex2,"...",sep=""))
+          #print(paste("Getting Profile Data of ",regex2,"...",sep=""))
           ProfData_X <- getProfileData(cgds,GeneList, regex2,regex1)
           ########################
           #ProfData_X <- ProfData_X[,as.factor(GeneList)]
@@ -47,9 +47,9 @@ getListProfData <- function(panel){
           }
 
         }else if(Mut==1){
-          print(paste("Getting Mutation Data of ",checked_Studies[s],"...",sep=""))
+          #print(paste("Getting Mutation Data of ",checked_Studies[s],"...",sep=""))
           MutData <- getMutationData(cgds,regex1, regex2, GeneList)
-          print(paste("MutData: ",dim(MutData)))
+          #print(paste("MutData: ",dim(MutData)))
           if(length(MutData)==0){
             ## built emty data.frame as the same form of MutData
             MutData <- data.frame("gene_symbol"=character(1),"mutation_type"=character(1), "amino_acid_change"=character(1))
@@ -63,7 +63,7 @@ getListProfData <- function(panel){
 
         }
       }else{tkmessageBox(message = paste("There is no genetic Profiles: ", regex2," for Study:",checked_Studies[s] ), icon="warning" )
-        print(paste("There is no genetic Profile: ", regex2," for Study:",checked_Studies[s],"..." ))
+        #print(paste("There is no genetic Profile: ", regex2," for Study:",checked_Studies[s],"..." ))
         ## built empty data frame with gene Symbol in colnames
         if(length(GeneList) <500){
           ProfData_X <- as.data.frame(setNames(replicate(length(GeneList),numeric(1), simplify = F), GeneList[order(GeneList)]))
@@ -76,7 +76,7 @@ getListProfData <- function(panel){
       }
     }else{
       tkmessageBox(message = paste("There is no Cases: ",regex1, " for Study:",checked_Studies[s] ), icon="warning" )
-      print(paste("There is no Cases: ", regex1," for Study:",checked_Studies[s],"..." ))
+      #print(paste("There is no Cases: ", regex1," for Study:",checked_Studies[s],"..." ))
       ## built empty data frame with gene Symbol in colnames
       if(length(GeneList) <500){
         ProfData_X <-as.data.frame(setNames(replicate(length(GeneList),numeric(1), simplify = F), GeneList[order(GeneList)]))
@@ -183,21 +183,21 @@ if (panel=="Circomics"){
         if (length(MegaGeneList) - LastSubMegaGeneList > 500){
           SubMegaGeneList <- MegaGeneList[((g-1)*(500)+1):((g)*500)]
           LastSubMegaGeneList <- LastSubMegaGeneList + length(SubMegaGeneList)
-          print(paste("SubMega",g,length(SubMegaGeneList), sep=":"))
+          #print(paste("SubMega",g,length(SubMegaGeneList), sep=":"))
         } else{
-          print(paste("SubMegaGeneList <-MegaGeneList[",LastSubMegaGeneList, ":", length(MegaGeneList),"]"))
+          #print(paste("SubMegaGeneList <-MegaGeneList[",LastSubMegaGeneList, ":", length(MegaGeneList),"]"))
           SubMegaGeneList <- MegaGeneList[LastSubMegaGeneList:length(MegaGeneList)]
-          print(paste("SubMega else",g,length(SubMegaGeneList),sep=":"))
+          #print(paste("SubMega else",g,length(SubMegaGeneList),sep=":"))
         }
 
-        print("*************************************************")
-        print(paste("Getting Profile Data of Genes from: ", (((g-1)*500)+1), "to",((g-1)*500)+length(SubMegaGeneList),"of", checked_Studies[s],sep= " "))
-        print("*************************************************")
+        #print("*************************************************")
+        #print(paste("Getting Profile Data of Genes from: ", (((g-1)*500)+1), "to",((g-1)*500)+length(SubMegaGeneList),"of", checked_Studies[s],sep= " "))
+        #print("*************************************************")
 
         ProfData_CNA<-grepRef(Case_CNA, CasesRefStudies, GenProf_CNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
         ProfData_Exp<-grepRef(Case_Exp, CasesRefStudies, GenProf_Exp, GenProfsRefStudies, SubMegaGeneList, Mut=0)
         ProfData_Met_HM450<-grepRef(Case_Met_HM450, CasesRefStudies, GenProf_Met_HM450, GenProfsRefStudies, SubMegaGeneList, Mut=0)
-        print(paste("SubMega:",length(SubMegaGeneList)))
+        #print(paste("SubMega:",length(SubMegaGeneList)))
         ProfData_Met_HM27<-grepRef(Case_Met_HM27, CasesRefStudies, GenProf_Met_HM27, GenProfsRefStudies, SubMegaGeneList, Mut=0)
         ProfData_RPPA<-grepRef(Case_RPPA, CasesRefStudies, GenProf_RPPA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
         ProfData_miRNA<-grepRef(Case_miRNA, CasesRefStudies, GenProf_miRNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
@@ -245,9 +245,6 @@ if (panel=="Circomics"){
     }
 
 
-    print("Saving... ")
-
-
     ListProfData$CNA[[checked_Studies[s]]] <- ProfData_CNA
     ListProfData$Expression[[checked_Studies[s]]] <- ProfData_Exp
     ListProfData$Met_HM450[[checked_Studies[s]]] <- ProfData_Met_HM450
@@ -258,7 +255,7 @@ if (panel=="Circomics"){
     ListProfData$miRNA[[checked_Studies[s]]] <- ProfData_miRNA
     ListMutData[[checked_Studies[s]]] <- MutData
 
-    print(" End Getting Profiles Data... ")
+    #print(" End Getting Profiles Data... ")
     close(progressBar_ProfilesData)
   }
   r_data[['ListProfData']] <- ListProfData
