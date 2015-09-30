@@ -265,6 +265,23 @@ if (panel=="Circomics"){
   ListProfData_bkp <<- ListProfData
   ListMetData_bkp <<- ListMetData
   ListMutData_bkp <<- ListMutData
+
+#  r_data[['datasetlist']] <- c(ListProfData,r_data[['datasetlist']]) %>% unique
+  r_data$datasetlist[['xmRNA']] <- r_data$ListProfData_bkp$Expression
+
+#   loadInDatasets(fname="xCNA", header=TRUE)
+#   loadInDatasets(fname="xmRNA", header=TRUE)
+#   loadInDatasets(fname="xMetHM450", header=TRUE)
+#   loadInDatasets(fname="xMetHM27", header=TRUE)
+
+  # sorting files alphabetically
+  #r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
+
+ # updateSelectInput(session, "dataset", label = "Datasets:",
+  #                  choices = r_data$datasetlist,
+   #                 selected = "")
+
+
   #     print("Start Ordering ...")
   ## range matrices by the same order
   #     myGlobalEnv$ListProfData$CNA <- myGlobalEnv$ListProfData$CNA[order(names(myGlobalEnv$ListProfData$CNA))]

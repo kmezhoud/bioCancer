@@ -135,10 +135,8 @@ UnifyRowNames <- function(x, GeneList){
   return(Freq_Mut)
 }
 
-getFreqMutData <- function(list){
-  #     if(input$GeneListID != "Genes"){
-  #       GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
-  #     }
+
+whichGeneList <- function(){
   if(input$GeneListID == "Genes"){
     GeneList <- r_data$Genes
   }else if(input$GeneListID == "Reactome_GeneList"){
@@ -146,15 +144,38 @@ getFreqMutData <- function(list){
   }else{
     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
   }
+  return(GeneList)
+
+}
+
+getFreqMutData <- function(list){
+  #     if(input$GeneListID != "Genes"){
+  #       GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+  #     }
+
+    GeneList <- whichGeneList()
+
+  if(is.null(r_data$ListMutData)){stop("Select a less one Study.")}
 
   Freq_ListMutData <- lapply(r_data$ListMutData,function(x) UnifyRowNames(x, GeneList))
   #output1 <- adply(Freq_ListMutData,1)
 
+
+
   ## convert the list of correlation matrices to Array
   Freq_ArrayMutData <- array(unlist( Freq_ListMutData), dim = c(nrow(Freq_ListMutData[[1]]), ncol( Freq_ListMutData[[1]]), length(Freq_ListMutData)))
+
+  if (inherits(try(dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1], colnames(Freq_ListMutData[[1]]), names(Freq_ListMutData)), silent=TRUE),"try-error")){
+    stop("There is a Study without Mutation Data. Use MutData Panel to verify mutations data for selected studies.")
+  }else{
+
   dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1], colnames(Freq_ListMutData[[1]]), names(Freq_ListMutData))
+}
+  Freq_ArrayMutData_bkp <<- Freq_ArrayMutData
 
-
+if(length(input$StudiesIDReactome) < 2){
+  stop("Select more than one Study or use MutData panel")
+}else{
   Freq_DfMutData <- apply(Freq_ArrayMutData[,2,],2,as.numeric)
   rownames(Freq_DfMutData) <- rownames(Freq_ArrayMutData[,2,])
   ## ordering gene list as in GeneList from MSigDB: grouping genes with the same biological process or gene Sets
@@ -165,6 +186,7 @@ getFreqMutData <- function(list){
   r_data[['Freq_DfMutData']] <- Freq_DfMutData
   Freq_DfMutData_bkp <<-  Freq_DfMutData
   return(Freq_DfMutData)
+}
 }
 
 
@@ -202,7 +224,7 @@ output$metabologram <- renderMetabologram({
   #devtools::install_github("armish/metabologram")
   #library("metabologram")
   title<- paste("Wheel with selected Studies")
-  metabologram(CoffeewheelTreeData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 12, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+  metabologram(CoffeewheelTreeData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
 
 
 })

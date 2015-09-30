@@ -14,7 +14,7 @@ shinyServer(function(input, output, session) {
   library(clusterProfiler)
   library(RCurl)
   library(XML)
- #library(dplyr)
+ library(plyr)
   #library(S4Vectors)
 ####masked package
   #library(lubridate)

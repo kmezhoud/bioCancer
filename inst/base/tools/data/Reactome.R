@@ -62,7 +62,7 @@ graph_obj <- function(){
 
     #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
     GeneAttri_df <- rbind(GeneAttri_mRNA, Studies_Net)
-   # GeneAttri_df <- rbind(GeneAttri_df,Studies_Net)
+    # GeneAttri_df <- rbind(GeneAttri_df,Studies_Net)
     #GeneAttri_df <- rbind(GeneAttri_df, FreqMut_obj)
 
     #GeneAttri_bkp <<- GeneAttri_df
@@ -70,18 +70,33 @@ graph_obj <- function(){
     #Edges_obj_bkp <<- Edges_obj
   }
 
-  if(input$NodeAttri_ProfDataID == 'Mutation'){
+  if('Mutation' %in% input$NodeAttri_ProfDataID ){
 
     FreqMut_obj <- Mutation_obj()
     Edges_obj <- rbind(Edges_obj, FreqMut_obj)
 
   }
-  if(input$NodeAttri_ProfDataID == 'CNA'){
+  if('CNA' %in% input$NodeAttri_ProfDataID){
 
     CNA_obj <- Node_obj_CNA_ProfData(list=r_data$ListProfData$CNA)
     Edges_obj <- rbind(Edges_obj, CNA_obj)
 
   }
+
+  if('Met_HM450' %in% input$NodeAttri_ProfDataID){
+
+    Met_obj <- Node_obj_Met_ProfData(list= r_data$ListProfData$Met_HM450, type ='HM450')
+    Edges_obj <- rbind(Edges_obj, Met_obj)
+
+  }
+
+  if('Met_HM27' %in% input$NodeAttri_ProfDataID ){
+
+    Met_obj <- Node_obj_Met_ProfData(list= r_data$ListProfData$Met_HM27, type='HM27')
+    Edges_obj <- rbind(Edges_obj, Met_obj)
+
+  }
+
 
   ## convert Dataframe to graph object
   #cap <- capture.output(print(Edges_obj, row.names = FALSE)[-1])
@@ -246,7 +261,10 @@ Mutation_obj <- function(){
     #names(df) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
     Mut$Gene1 <- paste(Mut$Genes,"[", sep=" ")
     Mut$Gene2 <- "shape="
-    Mut$Direction <- sapply(Mut$Percentage,function(x)if(x < input$FreqMutSliderID){paste("circle","," ,sep="")}else{paste("triangle",",",sep="")})
+    Mut$Direction <- sapply(Mut$Percentage,function(x)if(x < input$FreqMutSliderID){
+      paste("circle","," ,sep="")
+    }else{
+      paste("diamond",",",sep="")})
     Mut$Annotation <- "color="
     Mut$Score <- ",fontsize=10]"
     Mut <- Mut[c("Gene1","Gene2","Direction","Annotation","arrowsize","Score")]
@@ -316,10 +334,10 @@ Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= r_data$GenesCla
     set.seed(17)
     C <- sample(colors(),length(table(GenesClassDetails$class)))
 
-    if(input$NodeAttri_ProfDataID != 'Mutation'){
-    GenesClassDetails$class <- paste("penwidth=3,color =", C[V],"," ,sep=" ")
+    if(is.null(input$NodeAttri_ProfDataID)){
+      GenesClassDetails$class <- paste("penwidth=3,color =", C[V],"," ,sep=" ")
     }else{
-    GenesClassDetails$class <- paste("penwidth=3,color =", "white","," ,sep=" ")
+      GenesClassDetails$class <- paste("penwidth=3,color =", "white","," ,sep=" ")
     }
     GenesClassDetails$postProb <- "style = filled, fillcolor ='"
 
@@ -340,33 +358,58 @@ Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= r_data$GenesCla
 
 Node_obj_CNA_ProfData <- function(list){
 
-    ListDf <-lapply(list, function(x) apply(x, 2, function(y) as.data.frame(table(y[order(y)]))))
-    ListDf2 <-   lapply(ListDf, function(x) lapply(x, function(y) y[,1][which(y[,2]== max(y[,2]))]))
-    ListDf3 <- ldply(ListDf2, data.frame)
-    MostFreqCNA_Df <- ldply(apply(ListDf3,2,function(x) names(which(max(table(x))==table(x))))[-1],data.frame)
+  ListDf <-lapply(list, function(x) apply(x, 2, function(y) as.data.frame(table(y[order(y)]))))
+  ListDf2 <-   lapply(ListDf, function(x) lapply(x, function(y) y[,1][which(y[,2]== max(y[,2]))]))
+  ListDf3 <- ldply(ListDf2, data.frame)
+  MostFreqCNA_Df <- ldply(apply(ListDf3,2,function(x) names(which(max(table(x))==table(x))))[-1],data.frame)
 
-    #MostFreqCNA_Df$arrowsize <- paste(MostFreqCNA_Df[,1], MostFreqCNA_Df[,2], sep=":")
-    MostFreqCNA_Df[,2] <- gsub("-1", "1, style=dashed", MostFreqCNA_Df[,2] )
-    MostFreqCNA_Df[,2] <- gsub("-2", "2, style=dashed", MostFreqCNA_Df[,2] )
-    MostFreqCNA_Df[,2] <- gsub("0", "0.5", MostFreqCNA_Df[,2] )
-    MostFreqCNA_Df[,2] <- gsub("1", " 1, penwidth=2 ", MostFreqCNA_Df[,2] )
-    MostFreqCNA_Df[,2] <- gsub("2", " 2 ", MostFreqCNA_Df[,2] )
-    MostFreqCNA_Df$arrowsize <- MostFreqCNA_Df[,2]
+  #MostFreqCNA_Df$arrowsize <- paste(MostFreqCNA_Df[,1], MostFreqCNA_Df[,2], sep=":")
+  MostFreqCNA_Df[,2] <- gsub("-1", "1, style=dashed", MostFreqCNA_Df[,2] )
+  MostFreqCNA_Df[,2] <- gsub("-2", "2, style=dashed", MostFreqCNA_Df[,2] )
+  MostFreqCNA_Df[,2] <- gsub("0", "0.5", MostFreqCNA_Df[,2] )
+  MostFreqCNA_Df[,2] <- gsub("1", " 1, penwidth=2 ", MostFreqCNA_Df[,2] )
+  MostFreqCNA_Df[,2] <- gsub("2", " 2 ", MostFreqCNA_Df[,2])
+  MostFreqCNA_Df$arrowsize <- MostFreqCNA_Df[,2]
+  MostFreqCNA_Df$Gene1 <- MostFreqCNA_Df$.id
+  MostFreqCNA_Df$Gene2 <- "["
+  MostFreqCNA_Df$Direction <- "pripheries"
+  MostFreqCNA_Df$Annotation <- "="
+  MostFreqCNA_Df$Score <- "]"
+  MostFreqCNA_Df <- MostFreqCNA_Df[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
 
-#     MostFreqCNA_Df$arrowsize  <- as.data.frame(lapply(MostFreqCNA_Df[,2], function(x) gsub("-1","1, style=dashed", x)))
-#     MostFreqCNA_Df$arrowsize  <- as.data.frame(lapply(MostFreqCNA_Df[,2], function(x) gsub("-2","2, style=dashed", x)))
-#     MostFreqCNA_Df$arrowsize  <- as.data.frame(lapply(MostFreqCNA_Df[,2], function(x) gsub(" 0 ","1 ", x)))
-#     MostFreqCNA_Df$arrowsize  <- as.data.frame(lapply(MostFreqCNA_Df[,2], function(x) gsub(" 1 ","1 ", x)))
-#     MostFreqCNA_Df$arrowsize  <- as.data.frame(lapply(MostFreqCNA_Df[,2], function(x) gsub(" 2 ","2", x)))
+  return(MostFreqCNA_Df)
+}
 
-    MostFreqCNA_Df$Gene1 <- MostFreqCNA_Df$.id
-    MostFreqCNA_Df$Gene2 <- "["
-    MostFreqCNA_Df$Direction <- "pripheries"
-    MostFreqCNA_Df$Annotation <- "="
-    MostFreqCNA_Df$Score <- "]"
-    MostFreqCNA_Df <- MostFreqCNA_Df[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
+Node_obj_Met_ProfData <- function(list, type){
+  #dfMeansOrCNA<-apply(df,2,function(x) mean(x, na.rm=TRUE))
+  #dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
 
-    return(MostFreqCNA_Df)
+  Met_Obj <- lapply(list, function(x) apply(x,2,function(y) mean(y, na.rm=TRUE)))
+  Met_Obj <- lapply(Met_Obj, function(x) round(x, digits = 2))
+  Met_Obj <- ldply(Met_Obj)[,-1]
+
+  Met_Obj <- ldply(Met_Obj,function(x) (max(x, na.rm = TRUE)))
+
+  if(type == "HM450"){
+    Met_Obj <- subset(Met_Obj, V1 > input$ThresholdMetHM450ID)
+  } else if( type == "HM27"){
+    Met_Obj <- subset(Met_Obj, V1 > input$ThresholdMetHM27ID)
+  }
+
+  if(nrow(Met_Obj)== 0){
+
+  }else{
+    Met_Obj$Gene1 <- Met_Obj$.id
+    Met_Obj$Gene2 <- "["
+    Met_Obj$Direction <- "shape"
+    Met_Obj$Annotation <- "="
+    Met_Obj$arrowsize <- "polygon, sides= 3,"
+    Met_Obj$Score <- "distortion=0.5,fixedsize=true]"
+    Met_Obj <- Met_Obj[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
+
+    #lapply(ListProfData_bkp$Met_HM450, function(x) attriColorGene(x))
+    return(Met_Obj)
+  }
 }
 
 
@@ -402,3 +445,15 @@ ld_diagrammeR_plot<- function(){
   )
 }
 
+output$ReactomeLegend <- renderImage({
+  # When input$n is 3, filename is ./images/image3.jpeg
+  filename <- paste(getwd(),"/www/imgs/ReactomeLegend.png", sep="")
+
+  # Return a list containing the filename and alt text
+  list(src = filename,
+       contentType = 'image/png',
+       width = 500,
+       height = 300,
+       alt = paste("Image number"))
+
+}, deleteFile = FALSE)

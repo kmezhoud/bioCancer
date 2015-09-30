@@ -181,7 +181,14 @@ output$ui_data <- renderUI({
                                      #downloadButton('ld_diagrammeR_plot', 'Download Plot'),
                                      actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
                                      grVizOutput('diagrammeR')
+
+
+
                    ),
+                   conditionalPanel(condition= "input.ReacLegendId == true",
+                                    h4("Legend", align="center"),
+                                    imageOutput("ReactomeLegend")
+                                    ),
 
                    conditionalPanel(condition = "input.ViewProfDataReactomeID==true",
                                     h3("Available Profiles data in select Studies", align="center"),

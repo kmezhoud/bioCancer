@@ -77,7 +77,7 @@ loadInDatasets <- function(fname, header= TRUE){
 
   objname <- fname
   if(fname=="ProfData"){
-  GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+    GeneList <- whichGeneList()
   dat <- as.data.frame(getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
   r_data[[objname]] <- dat %>% add_rownames("Patients")
 
@@ -87,9 +87,21 @@ loadInDatasets <- function(fname, header= TRUE){
   r_data[[objname]] <- dat %>% add_rownames("Patients")
 
   }else if (fname=="MutData"){
-    GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+    GeneList <- whichGeneList()
     dat <- as.data.frame((getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)))
     r_data[[objname]] <- dat %>% add_rownames("Patients")
+  } else if (fname=="xCNA"){
+    dat <- ldply(r_data$ListProfData$CNA)
+    r_data[[objname]] <- dat
+  } else if(fname =="xmRNA"){
+    dat <- ldply(r_data$ListProfData$Expression)
+    r_data[[objname]] <- dat
+  }else if(fname == "xMetHM450"){
+    dat <- ldply(r_data$ListProfData$Met_HM450)
+    r_data[[objname]] <- dat
+  }else if(fname== "xMetHM27"){
+    dat <- ldply(r_data$ListProfData$Met_HM27)
+    r_data[[objname]] <- dat
   }
   r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
   r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
