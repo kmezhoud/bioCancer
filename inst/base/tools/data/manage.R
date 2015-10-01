@@ -102,6 +102,19 @@ loadInDatasets <- function(fname, header= TRUE){
   }else if(fname== "xMetHM27"){
     dat <- ldply(r_data$ListProfData$Met_HM27)
     r_data[[objname]] <- dat
+  }else if (fname=="xMut"){
+
+    dat <- ldply(r_data$ListMutData)
+    r_data[[objname]] <- dat
+  } else if(fname== "xFreqMut"){
+    dat <- r_data$Freq_DfMutData
+    r_data[[objname]] <- dat %>% add_rownames("Genes")
+  }else if (fname== "xmiRNA"){
+    dat <- ldply(r_data$ListProfData$miRNA)
+    r_data[[objname]] <- dat
+  }else if (fname== "xRPPA"){
+    dat <- ldply(r_data$ListProfData$RPPA)
+    r_data[[objname]] <- dat
   }
   r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
   r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique

@@ -107,50 +107,51 @@ output$ui_Reactome <- renderUI({
         #                        selected = "", inline = TRUE),
 
 
-  ),
-conditionalPanel(condition= "input.getlistProfDataID==true",
-                 uiOutput("ui_NodeAttri_ProfData")
-),
+      ),
+      conditionalPanel(condition= "input.getlistProfDataID==true",
+                       actionButton('loadListProfData', 'Load Profiles in Datasets'),
+                       uiOutput("ui_NodeAttri_ProfData")
+      ),
 
 
-#),
-#                 )
-conditionalPanel(condition ="input.getlistProfDataID==true",
-                 uiOutput("ui_Freq_MutSlider"),
-                 uiOutput("ui_MetSliderHM450"),
-                 uiOutput("ui_MetSliderHM27")
-)
-#         conditionalPanel(condition= "input.NodeAttri_ProfDataID=='Met_HM450'",
-#                           uiOutput("ui_MetSliderHM450")
-#         ),
-#         conditionalPanel(condition= "input.NodeAttri_ProfDataID %in%'Met_HM27'",
-#                          uiOutput("ui_MetSliderHM27")
-#       )
-#conditionalPanel(condition ="input.NodeAttri_ClassID =='All'",
-#                uiOutput("ui_Freq_MutSlider2")
-#),
+      #),
+      #                 )
+      conditionalPanel(condition ="input.getlistProfDataID==true",
+                       uiOutput("ui_Freq_MutSlider"),
+                       uiOutput("ui_MetSliderHM450"),
+                       uiOutput("ui_MetSliderHM27")
+      )
+      #         conditionalPanel(condition= "input.NodeAttri_ProfDataID=='Met_HM450'",
+      #                           uiOutput("ui_MetSliderHM450")
+      #         ),
+      #         conditionalPanel(condition= "input.NodeAttri_ProfDataID %in%'Met_HM27'",
+      #                          uiOutput("ui_MetSliderHM27")
+      #       )
+      #conditionalPanel(condition ="input.NodeAttri_ClassID =='All'",
+      #                uiOutput("ui_Freq_MutSlider2")
+      #),
 
 
-),
+    ),
 
-#     radioButtons(inputId = "ClassID2", label = "Processing",
-#                  c("Samples"="Samples" ,"Classifier" = "Classifier", "Plot"="Plot"),
-#                  selected = "Samples", inline = TRUE),
-div(class="row",
-    div(class="col-xs-4",
-        checkboxInput("ReacRunId", "Run" ,value = FALSE)),
-    div(class="col-xs-4",
-        checkboxInput("ReacLegendId", "Legend", value=FALSE))
-)
+    #     radioButtons(inputId = "ClassID2", label = "Processing",
+    #                  c("Samples"="Samples" ,"Classifier" = "Classifier", "Plot"="Plot"),
+    #                  selected = "Samples", inline = TRUE),
+    div(class="row",
+        div(class="col-xs-4",
+            checkboxInput("ReacRunId", "Run" ,value = FALSE)),
+        div(class="col-xs-4",
+            checkboxInput("ReacLegendId", "Legend", value=FALSE))
+    )
 
-# with(tags, table(
-#   tr(
-#     td(checkboxInput("ReacRunId", "Run" ,value = FALSE)),
-#     td(h4("", align="center")),
-#     td(checkboxInput("ReacLegendId", "Legend", value=FALSE))
-#   ))),
-#checkboxGroupInput(inputId="ReacRunId", label="", choices=c("Run","Legend"), inline = TRUE)
-)
+    # with(tags, table(
+    #   tr(
+    #     td(checkboxInput("ReacRunId", "Run" ,value = FALSE)),
+    #     td(h4("", align="center")),
+    #     td(checkboxInput("ReacLegendId", "Legend", value=FALSE))
+    #   ))),
+    #checkboxGroupInput(inputId="ReacRunId", label="", choices=c("Run","Legend"), inline = TRUE)
+  )
 })
 
 
@@ -215,4 +216,26 @@ observe({
 })
 
 
+## Load Profile data in datasets
+observe({
+  if (not_pressed(input$loadListProfData)) return()
+  isolate({
 
+    loadInDatasets(fname="xCNA", header=TRUE)
+    loadInDatasets(fname="xmRNA", header=TRUE)
+    loadInDatasets(fname="xMetHM450", header=TRUE)
+    loadInDatasets(fname="xMetHM27", header=TRUE)
+    loadInDatasets(fname="xMut", header=TRUE)
+   # loadInDatasets(fname="xFreqMut", header=TRUE)
+    loadInDatasets(fname="xmiRNA", header=TRUE)
+    loadInDatasets(fname="xRPPA", header=TRUE)
+
+    # sorting files alphabetically
+    r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
+
+    updateSelectInput(session, "dataset", label = "Datasets:",
+                      choices = r_data$datasetlist,
+                      selected = "")
+
+  })
+})
