@@ -1,8 +1,64 @@
 shinyServer(function(input, output, session) {
+  #library(PSICQUIC)
+  #library(networkD3)
+  library(cgdsr)
+  library(coffeewheel)
+  library(metabologram)
+  library(tcltk)
+  library(DT)
+  #library(Biobase)
+  library(geNetClassifier)
+  library(AnnotationFuncs)
+  library("org.Hs.eg.db")
+  require(DOSE)
+  library(clusterProfiler)
+  library(RCurl)
+  library(XML)
+  library(plyr)
+  #library(S4Vectors)
+  ####masked package
+  #library(lubridate)
+  #remove(list = conflicts(detail = TRUE)$.GlobalEnv)
+  ##################
+  # for cgdsr
+
+  cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+  Studies<- getCancerStudies(cgds)
+  updateSelectizeInput(session, 'StudiesID', choices = Studies[,1], selected = "gbm_tcga_pub")
+
+  ####### Gene List
+  ## get gene list path
+  #listfiles <- list.files(file.path(r_path,"base/data/GeneList"), full.names = TRUE)
+
+  ## load Gene list in list
+  #GeneLists <- lapply(listfiles, function(x) t(unique(read.table(x))))
+  #GeneLists <- t(unique(read.table(listfiles[5])))
+  ## rename gene lists
+  #names(GeneLists)<- basename(listfiles)
+
+
+  #GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID, sep=""))))
+  #GeneList <- t(unique(read.table(paste0(getwd(),"/inst/base/data/GeneList/102.txt", sep=""))))
+
+  ## get Cases in side bar panel
+  output$ui_Cases <- renderUI({
+    selectInput("CasesID", "Cases for selected study",getCaseLists(cgds,input$StudiesID)[,1] )
+  })
+
+  ## get Genetic Profiles in side bar panel
+  output$ui_GenProfs <- renderUI({
+    selectInput("GenProfID", "Genetic Profiles",getGeneticProfiles(cgds,input$StudiesID)[,1] )
+  })
 
 	# source shared functions
 	source(file.path(r_path,"base/init.R"), encoding = r_encoding, local = TRUE)
 	source(file.path(r_path,"base/radiant.R"), encoding = r_encoding, local = TRUE)
+
+
+  output$ui_GeneList <- renderUI({
+    selectInput("GeneListID", "Gene List:", r_data$genelist)
+  })
+
 
   # for shiny-server
   if (!"package:radiant" %in% search()) {
