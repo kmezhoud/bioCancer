@@ -101,14 +101,14 @@ r_sessions <- new.env(parent = emptyenv())
 
 ## create directory to hold session files
 # if (!r_local)
-  # "~/r_sessions/" %>% { if (!file.exists(.)) dir.create(., recursive = TRUE) }
-
-"~/r_sessions/" %>% {if (!file.exists(.)) sshhr( dir.create(., recursive = TRUE) )}
+  "~/r_sessions/" %>% { if (!file.exists(.)) dir.create(., recursive = TRUE) }
+# "~/r_sessions/" %>% {if (!file.exists(.)) sshhr( dir.create(., recursive = TRUE) )}
 
 ## adding the figures path to avoid making a copy of all figures in www/figures
 addResourcePath("figures", file.path(r_path,"base/tools/help/figures/"))
 addResourcePath("imgs", file.path(r_path,"base/www/imgs/"))
 addResourcePath("js", file.path(r_path,"base/www/js/"))
+# addResourcePath("rmarkdown", file.path(r_path,"base/www/rmarkdown/"))
 
 ## using local mathjax if available to avoid shiny bug
 ## https://github.com/rstudio/shiny/issues/692

@@ -1,3 +1,144 @@
+#' Parse yaml input for dtree to provide (more) useful error messages
+#'
+#' @details See \url{http://vnijs.github.io/radiant/base/dtree.html} for an example in Radiant
+#'
+#' @param yl A yaml string
+#'
+#' @return An updated yaml string or a vector messages to return to the users
+#'
+#' @seealso \code{\link{dtree}} to calculate tree
+#' @seealso \code{\link{summary.dtree}} to summarize results
+#' @seealso \code{\link{plot.dtree}} to plot results
+#'
+#' @export
+dtree_parser <- function(yl) {
+  ############################
+  ## test
+  # library(radiant)
+  # yl <- readLines("~/Dropbox/teaching/MGT403-2015/homework/radiant/chapter1/bio-imaging/bio-imaging-input.yaml")
+  # yl <- readLines("~/Dropbox/teaching/MGT403-2015/homework/radiant/chapter1/tee-times/tee-times-monday-input.yaml")
+  # yl <- paste0(yl, collapse = "\n")
+  ############################
+
+  yl <- unlist(strsplit(yl, "\n"))
+
+  ## substitute values
+  var_def <- grepl("=",yl) %>% which
+  if (length(var_def) > 0) {
+    for (i in var_def) {
+      var <- strsplit(yl[i], "=")[[1]]
+      var[1] <- gsub("^\\s+|\\s+$", "", var[1]) %>% gsub("(\\W)", "\\\\\\1", .)
+      var[2] <- eval(parse(text = gsub("[a-zA-Z]+","",var[2])))
+      yl[-i] <- gsub(paste0("(\\s*)",var[1]), paste0("\\1",var[2]), yl[-i], perl = TRUE)
+      # yl[-i] <- gsub(paste0(":\\s*",var[1]), paste0(": ",var[2]), yl[-i], fixed = TRUE)
+      ## can't work in the variable definition section
+      # yl[-i] <- gsub(paste0(":\\s*",var[1]), paste0(": ",var[2]), yl[-i])
+    }
+    yl[var_def] <- paste0("# ", yl[var_def])
+  }
+
+  ## collect errors
+  err <- c()
+
+  ## cheching if a : is present
+  # yl <- c(yl, "something without a colon")
+  col_ln <- yl %>% grepl("(?=:)|(?=^\\s*$)|(?=^\\s*#)",., perl = TRUE)
+  if (any(!col_ln))
+    err <- c(err, paste0("Each line must have a ':'. Add a ':' in line(s): ", paste0(which(!col_ln), collapse = ", ")))
+
+  ## replace .4 by 0.4
+  # yl <- c(yl, "p: .4")
+  yl %<>% gsub("(^\\s*p\\s*:)\\s*(\\.[0-9]+$)","\\1 0\\2", .,  perl = TRUE)
+
+  ## check type line is followed by a name
+  # yl <- c(yl, "   type   : another   ")
+  type_id <- yl %>% grepl("^\\s*type\\s*:\\s*(.*)$",., perl = TRUE) %>% which
+  type_cid <- yl %>% grepl("^\\s*type\\s*:\\s*((chance)|(decision)|())\\s*$",., perl = TRUE) %>% which
+
+  if (!identical(type_id, type_cid))
+    err <- c(err, paste0("Node type should be 'type: chance', or 'type: decision' in line(s): ", paste0(setdiff(type_id, type_cid), collapse = ", ")))
+
+  ## can't have # signs anywhere if line is not a comment
+  # yl <- c(" # name # 3:")
+  # yl <- c(" storm leaves # 4 now:")
+  # yl <- c(" storm # leaves # 4 now:")
+  # yl %<>% gsub("(^\\s*[^\\s\\#]+\\s*)(\\#)", "\\1//", .,  perl = TRUE)
+  # yl %<>% gsub("(^\\s*[^#][^#]+\\s*)#", "\\1//", .,  perl = TRUE)
+  ## incase there are 2 # signs - should be able to do that in
+  # yl %<>% gsub("(^\\s*[^#][^#]+\\s*)#", "\\1//", .,  perl = TRUE)
+  nc_id <- yl %>% grepl("^\\s*#", .,  perl = TRUE) %>% {. == FALSE} %>% which
+
+  if (length(nc_id) > 0) {
+    yl[nc_id] %<>% gsub("#", "//", .,  perl = TRUE) %>%
+      gsub("(^\\s*)[\\!`@%&\\*-\\+]*\\s*", "\\1", .,  perl = TRUE)
+  }
+
+  ## Find node names
+  # yl <- c(" # name 3:")
+  # yl <- c(" p:   ", "  type: ")
+  # yl <- c(" name 3:")
+  # nn_id <- yl %>% grepl("^[^:#]+:\\s*$",., perl = TRUE) %>% which
+  # nn_id <- yl %>% grepl("^\\s*[^#]+[^:]+:\\s*$",., perl = TRUE) %>% which
+  nn_id <-
+
+  yl %>% gsub("(^\\s*p\\s*:\\s*$)","\\1 0",.) %>%
+    gsub("(^\\s*type\\s*:\\s*$)","\\1 0",.) %>%
+    gsub("(^\\s*cost\\s*:\\s*$)","\\1 0",.) %>%
+    gsub("(^\\s*payoff\\s*:\\s*$)","\\1 0",.) %>%
+    grepl("^\\s*[^#]+:\\s*$",., perl = TRUE) %>% which
+
+  ## replace ( ) { } [ ]
+  if (length(nn_id) > 0)
+    yl[nn_id] %<>% gsub("[\\(\\)\\{\\}\\[\\]<>\\@;~]", "/", .,  perl = TRUE)
+
+  ## check that type is followed by a name
+  # yl <- c(yl, "   type   :  decision   ")
+
+  ## non-commented next line after type
+  ncnl_id <- c()
+  for (i in type_cid) {
+    ncnl_id <- c(ncnl_id, nc_id[nc_id > i][1])
+  }
+
+  # type_nn <- type_cid %in% (nn_id - 1)
+  type_nn <- ncnl_id %in% nn_id
+
+  if (!all(type_nn))
+    err <- c(err, paste0("The node types defined on line(s) ", paste0(type_cid[!type_nn], collapse = ", "), " must be followed by a node name.\nA valid node name could be 'mud slide:'"))
+
+  ## check indent of next line is the same for type defs
+  indent_type <- yl[type_cid] %>% gsub("^(\\s*).*","\\1", .) %>% nchar
+  # indent_next <- yl[type_cid+1] %>% gsub("^(\\s*).*","\\1", .) %>% nchar
+
+  ## non-commented next node-name after type
+  ncnn_id <- c()
+  for (i in type_cid) {
+    ncnn_id <- c(ncnn_id, nn_id[nn_id > i][1])
+  }
+
+  indent_next <- yl[ncnn_id] %>% gsub("^(\\s*).*","\\1", .) %>% nchar
+  indent_issue <- indent_type == indent_next
+
+  if (any(!indent_issue))
+    err <- c(err, paste0("Indent issue in line(s): ", paste0(type_cid[!indent_issue] + 1, collapse = ", "), "\nUse the tab key to ensure a node name is indented the same amount\nas the node type on the preceding line."))
+
+  ## check indent for node names
+  indent_name <- yl[nn_id] %>% gsub("^(\\s*).*","\\1", .) %>% nchar
+
+   ## check indent of next line for node names
+  indent_next <- yl[nn_id+1] %>% gsub("^(\\s*).*","\\1", .) %>% nchar
+  indent_issue <- indent_name >= indent_next
+  if (any(indent_issue))
+    err <- c(err, paste0("Indent issue in line(s): ", paste0(nn_id[indent_issue] + 1, collapse = ", "), "\nAlways use the tab key to indent the line(s) after specifying a node name."))
+
+  ## determine return value
+  if (length(err) > 0) {
+    paste0("\n**\n", paste0(err, collapse = "\n"), "\n**\n") %>% set_class(c("dtree", class(.)))
+  } else {
+    paste0(yl, collapse = "\n")
+  }
+}
+
 #' Create a decision tree
 #'
 #' @details See \url{http://vnijs.github.io/radiant/base/dtree.html} for an example in Radiant
@@ -7,21 +148,46 @@
 #' @return A list with the initial tree and the calculated tree
 #'
 #' @importFrom yaml yaml.load
+#' @importFrom stringr str_match
+#' @importFrom data.tree as.Node Clone isLeaf isNotLeaf
 #'
 #' @seealso \code{\link{summary.dtree}} to summarize results
 #' @seealso \code{\link{plot.dtree}} to plot results
+#'
 #' @export
 dtree <- function(yl) {
 
   ## most of the code in this function is from
   ## https://github.com/gluc/useR15/blob/master/01_showcase/02_decision_tree.R
 
-  ## load yaml from string of list not provide
+  ## load yaml from string if list not provide
   if (is_string(yl)) {
-    yl <- yaml.load(yl)
-    if (is_string(yl)) yl <- getdata(yl) %>% yaml.load(.)
+
+    yl <- dtree_parser(yl)
+    ## test
+    # return(paste0(paste0("\n**\n", yl, collapse = "\n"), "\n**\n") %>% set_class(c("dtree", class(.))))
+    if (class(yl)[1] == "dtree") return(yl)
+
+    yl <- try(yaml.load(yl), silent = TRUE)
+
+    ## if the name of input-list in r_data is provided
+    if (!is(yl, 'try-error') && is_string(yl)) yl <- try(yaml.load(getdata(yl)), silent = TRUE)
+
+    ## used when a string is provided
+    if (is(yl, 'try-error')) {
+      err_line <- stringr::str_match(attr(yl,"condition")$message, "^Scanner error:.*line\\s([0-9]*),")[2]
+      if (is.na(err_line))
+        err <- paste0("**\nError reading input:\n", attr(yl,"condition")$message, "\n\nPlease try again. Examples are shown in the help file\n**")
+      else
+        err <- paste0("**\nIndentation error in line ", err_line, ".\nUse tabs to separate the branches in the decision tree.\nFix the indentation error and try again. Examples are shown in the help file\n**")
+      return(set_class(err, c("dtree",class(err))))
+    }
   }
-  # if (length(yl) == 0) return("The provided list is empty or not in the correct format")
+
+  if (length(yl) == 0) {
+    err <- "**\nThe provided list is empty or not in the correct format.\nPlease check the input file.\n**"
+    return(set_class(err, c("dtree",class(err))))
+  }
 
   ## convert list to node object
   jl <- as.Node(yl)
@@ -38,29 +204,63 @@ dtree <- function(yl) {
   # }
 
   ## making a copy of the initial Node object
-#   jl_init <- as.Node(yl)
-#   pt <- . %>% {if (is.null(.$type)) .$Set(type = "terminal")}
-#   jl_init$Do(pt, filterFun = isLeaf)
-  ## see issue https://github.com/gluc/data.tree/issues/22
-  # jl_init <- sshhr(Clone(jl))
   jl_init <- Clone(jl)
-  ## without sshhr:
-  ## Warning messages: 1: In res[fieldName] <- field : number of items to replace is not a multiple of replacement length
 
+  ## Aggregate gives strange errors when used twice (see issue at gluc/data.tree)
   ## calculate payoff
-  calc_payoff <- function(x) {
-    if (x$type == 'chance') x$payoff <- Aggregate(x, function(node) node$payoff * node$p, sum)
-    else if (x$type == 'decision') x$payoff <- Aggregate(x, "payoff", max)
+  # calc_payoff <- function(x) {
+  #   if (x$type == 'chance') x$payoff <- Aggregate(x, function(node) node$payoff * node$p, sum)
+  #   else if (x$type == 'decision') x$payoff <- Aggregate(x, "payoff", max)
+
+  #   ## subtract cost if specified
+  #   if (!is.null(x$cost)) x$payoff <- x$payoff - x$cost
+  # }
+
+  chance_payoff <- function(node) {
+    if(is.null(node$payoff) || is.null(node$p)) {
+      0
+    } else {
+      node$payoff * node$p
+    }
   }
 
+  decision_payoff <- function(node)
+    if(is.null(node$payoff)) 0 else node$payoff
+
+  calc_payoff <- function(x) {
+    # if (x$type == 'chance') x$payoff <- sum(sapply(x$children, function(node) node$payoff * node$p))
+    if (is_empty(x$type)) x$payoff <- 0
+    else if (x$type == 'chance') x$payoff <- sum(sapply(x$children, chance_payoff))
+    # else if (x$type == 'decision') x$payoff <- max(sapply(x$children, function(node) node$payoff))
+    else if (x$type == 'decision') x$payoff <- max(sapply(x$children, decision_payoff))
+
+    ## subtract cost if specified
+    if (!is.null(x$cost)) x$payoff <- x$payoff - x$cost
+  }
+
+  # err <- try(jl$Do(calc_payoff, traversal = "post-order", filterFun = isNotLeaf), silent = TRUE)
   jl$Do(calc_payoff, traversal = "post-order", filterFun = isNotLeaf)
+  err <- ""
+
+  if (is(err, 'try-error')) {
+    err <- paste0("**\nError calculating payoffs associated with a chance or decision node.\nPlease check that each terminal node has a payoff and that probabilities\nare correctly specificied\n**")
+    return(err %>% set_class(c("dtree", class(.))))
+  }
 
   decision <- function(x) {
-    po <- sapply(x$children, function(child) child$payoff)
+    # po <- sapply(x$children, function(child) child$payoff)
+    po <- sapply(x$children, decision_payoff)
     x$decision <- names(po[po == x$payoff])
   }
 
   jl$Do(decision, filterFun = function(x) !is.null(x$type) && x$type == 'decision')
+  # err <- try(jl$Do(decision, filterFun = function(x) !is.null(x$type) && x$type == 'decision'), silent = TRUE)
+  err <- ""
+
+  if (is(err, 'try-error')) {
+    err <- paste0("**\nError calculating payoffs associated with a decision node. Please check\nthat each terminal node has a payoff\n**")
+    return(err %>% set_class(c("dtree", class(.))))
+  }
 
   list(jl_init = jl_init, jl = jl) %>% set_class(c("dtree",class(.)))
 }
@@ -72,11 +272,15 @@ dtree <- function(yl) {
 #' @param object Return value from \code{\link{simulater}}
 #' @param ... further arguments passed to or from other methods
 #'
+#' @importFrom data.tree Traverse Get FormatPercent
+#'
 #' @seealso \code{\link{dtree}} to generate the results
 #' @seealso \code{\link{plot.dtree}} to plot results
 #'
 #' @export
 summary.dtree <- function(object, ...) {
+
+  if (is.character(object)) return(cat(object))
 
   print_money <- function(x) {
     x %>% {if (is.na(.)) "" else .} %>%
@@ -88,33 +292,32 @@ summary.dtree <- function(object, ...) {
 
   # format_percent <- . %>% as.character %>% sprintf("%.2f%%", . * 100)
 
-  ## format data.tree
   format_dtree <- function(jl) {
     ## set parent type
     nt <- jl$Get(function(x) x$parent$type)
     jl$Set(ptype = nt)
 
     Traverse(jl) %>%
-      {data.frame(Probability = Get(., "p", format = FormatPercent),
+      {data.frame(
+        ` ` = Get(.,"levelName"),
+        Probability = Get(., "p", format = FormatPercent),
         Payoff = Get(., "payoff", format = print_money),
+        Cost = Get(., "cost", format = print_money),
         Type = Get(., "ptype", format = rm_terminal),
-        check.names = FALSE,
-        row.names = Get(.,"levelName"))}
+        check.names = FALSE
+      )
+    } %>% { .[[" "]] <- format(.[[" "]], justify = "left"); .}
   }
 
   ## initial setup
   cat("Initial decision tree:\n")
-  format_dtree(object$jl_init) %>% print
+  format_dtree(object$jl_init) %>% print(row.names = FALSE)
 
   cat("\n\nFinal decision tree:\n")
-  format_dtree(object$jl) %>% print
+  format_dtree(object$jl) %>% print(row.names = FALSE)
 
-  cat("\n\nDecision:\n")
-  object$jl$Get("decision") %>% .[!is.na(.)] %>% paste0(collapse = " & ") %>% cat
-
-  ## useful to avoid row.names and left-align all character variables
-  # format(justify = "left") %>%
-  # print(row.names = FALSE)
+  # cat("\n\nDecision:\n")
+  # object$jl$Get("decision") %>% .[!is.na(.)] %>% paste0(collapse = " & ") %>% cat
 }
 
 #' Plot method for the dtree function
@@ -122,15 +325,21 @@ summary.dtree <- function(object, ...) {
 #' @details See \url{http://vnijs.github.io/radiant/quant/dtree.html} for an example in Radiant
 #'
 #' @param x Return value from \code{\link{dtree}}
+#' @param symbol Monetary symbol to use ($ is the default)
+#' @param dec Decimal places to round results to
 #' @param final If TRUE plot the decision tree solution, else the initial decision tree
 #' @param shiny Did the function call originate inside a shiny app
 #' @param ... further arguments passed to or from other methods
+#'
+#' @importFrom data.tree Traverse Get isNotRoot
 #'
 #' @seealso \code{\link{dtree}} to generate the result
 #' @seealso \code{\link{summary.dtree}} to summarize results
 #'
 #' @export
-plot.dtree <- function(x, final = FALSE, shiny = FALSE, ...) {
+plot.dtree <- function(x, symbol = "$", dec = 3, final = FALSE, shiny = FALSE, ...) {
+
+  if (is.character(x)) return(cat(x))
 
   ## based on https://gist.github.com/gluc/79ef7a0e747f217ca45e
   jl <- if (final) x$jl else x$jl_init
@@ -163,7 +372,8 @@ plot.dtree <- function(x, final = FALSE, shiny = FALSE, ...) {
   }
 
   FormatPayoff <- function(payoff) {
-    paste0("$", format(payoff, scientific = FALSE, big.mark = ","))
+    if (is.null(payoff)) payoff <- 0
+    paste0(symbol, format(round(payoff, dec), scientific = FALSE, big.mark = ","))
   }
 
   ToLabel <- function(node) {
@@ -192,11 +402,25 @@ plot.dtree <- function(x, final = FALSE, shiny = FALSE, ...) {
     {if (shiny) . else DiagrammeR::DiagrammeR(.)}
 }
 
-# library(data.tree); library(yaml); library(radiant)
-#
-# yl <- yaml::yaml.load_file("~/Dropbox/teaching/MGT403-2015/data.tree/jennylind.yaml")
-# object <- x <- dtree(yl)
-# print(object$jl)
+## some initial ideas for sensitivity analysis
+# library(yaml); library(radiant)
+# library(radiant); library(data.tree)
+# # yl <- yaml::yaml.load_file("~/Dropbox/teaching/MGT403-2015/data.tree/jennylind.yaml")
+# yl <- yaml::yaml.load_file("~/Dropbox/teaching/MGT403-2015/data.tree/quant_job.yaml")
+# dtree(yl)
+# dtree(yl)
+# dtree(yl) %>% summary
+# dtree(yl) %>% plot
+
+
+# dtree(yl) %>% plot(final = TRUE)
+# dtree(yl) %>% plot(final = FALSE)
+# yl <- yaml::yaml.load_file("~/Dropbox/teaching/MGT403-2015/data.tree/quant_job.yaml")
+# dtree(yl) %>% summary
+# dtree(yl) %>% plot
+# dtree(yl) %>% plot(final = TRUE)
+
+# shiny::runApp("~/gh/radiant/inst/quant")
 
 # df <- ToDataFrameTree(object$jl, "p", "payoff")
 # df <- ToDataFrameTable(object$jl, "p", "payoff")
@@ -261,13 +485,3 @@ plot.dtree <- function(x, final = FALSE, shiny = FALSE, ...) {
 # as.Node(df)
 
 
-# x %>% summary
-# dtree(yl) %>% plot(shiny = TRUE)
-# dtree(yl) %>% plot(final = TRUE)
-# dtree(yl) %>% plot(final = FALSE)
-# yl <- yaml::yaml.load_file("~/Dropbox/teaching/MGT403-2015/data.tree/quant_job.yaml")
-# dtree(yl) %>% summary
-# dtree(yl) %>% plot
-# dtree(yl) %>% plot(final = TRUE)
-
-# shiny::runApp("~/gh/radiant/inst/quant")
