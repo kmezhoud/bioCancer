@@ -403,8 +403,8 @@ Node_obj_Met_ProfData <- function(list, type){
     Met_Obj$Gene2 <- "["
     Met_Obj$Direction <- "shape"
     Met_Obj$Annotation <- "="
-    Met_Obj$arrowsize <- "polygon, sides= 3,"
-    Met_Obj$Score <- "distortion=0.5,fixedsize=true]"
+    Met_Obj$arrowsize <- "invtriangle,"
+    Met_Obj$Score <- "fixedsize=true]"
     Met_Obj <- Met_Obj[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
 
     #lapply(ListProfData_bkp$Met_HM450, function(x) attriColorGene(x))
@@ -447,7 +447,7 @@ ld_diagrammeR_plot<- function(){
 
 output$ReactomeLegend <- renderImage({
   # When input$n is 3, filename is ./images/image3.jpeg
-  filename <- paste(getwd(),"/www/imgs/ReactomeLegend.png", sep="")
+  filename <- paste(getwd(),"/data/imgs/ReactomeLegend.png", sep="")
 
   # Return a list containing the filename and alt text
   list(src = filename,

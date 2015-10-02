@@ -5,13 +5,8 @@ getListProfData <- function(panel){
 #   if(input$GeneListID != "Genes"){
 #     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
 #   }
-  if(input$GeneListID == "Genes"){
-    GeneList <- r_data$Genes
-  }else if(input$GeneListID == "Reactome_GeneList"){
-    GeneList <- t(r_data$Reactome_GeneList)
-  }else{
-    GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
-  }
+
+  GeneList <- whichGeneList()
 
 
   ## Testing The existing  Cases and GenProf cgdsr references and getProfileData

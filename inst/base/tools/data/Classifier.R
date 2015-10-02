@@ -1,3 +1,12 @@
+output$ClassifierHowto <- renderPrint({
+  cat("1 - Select Studies \n
+       2 - Get Samples size \n
+       3 - Select Cases and Genetic Profiles \n
+       4 - Run Classifier
+      ")
+})
+
+
 
 output$list_Cases <- renderUI({
   withProgress(message = 'loading Cases...', value = 0.1, {
@@ -27,19 +36,21 @@ output$list_GenProfs <- renderUI({
 TableCases <- reactive({
   withProgress(message = 'loading Sample size...', value = 0.1, {
   Sys.sleep(0.25)
-  dat <- data.frame(Studies=NA,Case=NA, GenProf=NA)
+
   checked_Studies <- input$StudiesIDClassifier
   listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,3])
-  listGenProf <- lapply(checked_Studies, function(x)getGeneticProfiles(cgds,x)[,2])
-  matchedCases <- lapply(listCases, function(x) x[grep("mRNA", x)])
-  matchedGenProf <- lapply(listGenProf, function(x)x[grep("mRNA",x)])
+  #listGenProf <- lapply(checked_Studies, function(x)getGeneticProfiles(cgds,x)[,2])
+  matchedCases <- lapply(listCases, function(x) x[grep("mRNA expression", x)])
+  #matchedGenProf <- lapply(listGenProf, function(x)x[grep("mRNA expression",x)])
   ## remove emply list
   matchedCases <- matchedCases[lapply(matchedCases,length)>0]
-  matchedGenProf <- matchedGenProf[lapply(matchedGenProf,length)>0]
+  #matchedGenProf <- matchedGenProf[lapply(matchedGenProf,length)>0]
 
+  #  dat <- data.frame(Studies=NA,Case=NA, GenProf=NA)
+  dat <- data.frame(Studies=NA,Cases=NA)
   for(s in 1:length(matchedCases)){
-
-        dat[s,] <- c(checked_Studies[s], matchedCases[s], matchedGenProf[s])
+        dat <- rbind(dat, c(checked_Studies[s], matchedCases[[s]]))
+        #dat[s,] <- c(checked_Studies[s], matchedCases[[s]], matchedGenProf[[s]])
   }
   return(dat)
   })

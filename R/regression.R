@@ -56,7 +56,7 @@ regression <- function(dataset, dep_var, indep_var,
   isFct <- sapply(dplyr::select(dat,-1), is.factor)
   if (sum(isFct) > 0) {
 
-    for (i in names(select(dat,-1)[isFct]))
+    for (i in names(dplyr::select(dat,-1)[isFct]))
       reg_coeff$`  ` %<>% sub(i, paste0(i," > "), .)
 
 

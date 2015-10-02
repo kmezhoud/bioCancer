@@ -26,20 +26,6 @@ shinyServer(function(input, output, session) {
   Studies<- getCancerStudies(cgds)
   updateSelectizeInput(session, 'StudiesID', choices = Studies[,1], selected = "gbm_tcga_pub")
 
-  ####### Gene List
-  ## get gene list path
-  #listfiles <- list.files(file.path(r_path,"base/data/GeneList"), full.names = TRUE)
-
-  ## load Gene list in list
-  #GeneLists <- lapply(listfiles, function(x) t(unique(read.table(x))))
-  #GeneLists <- t(unique(read.table(listfiles[5])))
-  ## rename gene lists
-  #names(GeneLists)<- basename(listfiles)
-
-
-  #GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID, sep=""))))
-  #GeneList <- t(unique(read.table(paste0(getwd(),"/inst/base/data/GeneList/102.txt", sep=""))))
-
   ## get Cases in side bar panel
   output$ui_Cases <- renderUI({
     selectInput("CasesID", "Cases for selected study",getCaseLists(cgds,input$StudiesID)[,1] )

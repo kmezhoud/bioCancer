@@ -14,12 +14,7 @@
 
 output$ui_Mut_vars <- renderUI({
 
-  if(input$GeneListID != "Genes"){
-    GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
-  } else{
-    GeneList <- r_data$Genes
-  }
-
+  GeneList <- whichGeneList()
 
   dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
   ## change rownames in the first column

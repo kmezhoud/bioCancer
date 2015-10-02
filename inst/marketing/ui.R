@@ -38,7 +38,7 @@ marketing_ui <- tagList(
 )
 
 shinyUI(
-  do.call(navbarPage, c("Marketing Research", nav_ui, quant_ui, marketing_ui,
+  do.call(navbarPage, c("CancerPortal", nav_ui, quant_ui, marketing_ui,
                         shared_ui, help_menu))
 )
 

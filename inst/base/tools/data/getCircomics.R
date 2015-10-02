@@ -166,7 +166,7 @@ getFreqMutData <- function(list){
   Freq_ArrayMutData <- array(unlist( Freq_ListMutData), dim = c(nrow(Freq_ListMutData[[1]]), ncol( Freq_ListMutData[[1]]), length(Freq_ListMutData)))
 
   if (inherits(try(dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1], colnames(Freq_ListMutData[[1]]), names(Freq_ListMutData)), silent=TRUE),"try-error")){
-    stop("There is a Study without Mutation Data. Use MutData Panel to verify mutations data for selected studies.")
+    stop("There is a Study without Mutation Data. Use Mutation Panel to verify mutations data for selected studies.")
   }else{
 
   dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1], colnames(Freq_ListMutData[[1]]), names(Freq_ListMutData))
@@ -174,7 +174,7 @@ getFreqMutData <- function(list){
   Freq_ArrayMutData_bkp <<- Freq_ArrayMutData
 
 if(length(input$StudiesIDReactome) < 2){
-  stop("Select more than one Study or use MutData panel")
+  stop("Select more than one Study or use Mutation panel")
 }else{
   Freq_DfMutData <- apply(Freq_ArrayMutData[,2,],2,as.numeric)
   rownames(Freq_DfMutData) <- rownames(Freq_ArrayMutData[,2,])

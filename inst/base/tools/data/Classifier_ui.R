@@ -3,8 +3,8 @@ updateSelectizeInput(session, 'ClusterPlotsID',
                      selected = "None")
 
 updateSelectizeInput(session, 'ClassID',
-                     choices= c("Samples"="Samples" ,"Classifier" = "Classifier"),
-                     selected = "Samples")
+                     choices= c("None"="None", "Samples"="Samples" ,"Classifier" = "Classifier"),
+                     selected = "None")
 
 output$ui_Classifier <- renderUI({
   withProgress(message = 'Loading Studies with mRNA Data. Waiting...', value = 0.2, {
@@ -24,7 +24,8 @@ output$ui_Classifier <- renderUI({
 #   updateSelectizeInput(session, 'CasesIDClassifier', choices = listCases)
 
   wellPanel(
-    conditionalPanel("input.tabs_data == 'Classifier'",
+
+    conditionalPanel("input.tabs_Analysis == 'Classifier'",
 
                      selectizeInput('StudiesIDClassifier', 'Studies  to Classify', choices=NULL, multiple = TRUE),
 
@@ -42,7 +43,7 @@ output$ui_Classifier <- renderUI({
 #                                   selected = "Samples", inline = TRUE),
 
                      selectizeInput(inputId = "ClassID", label="Processing",
-                                    choices= c("Samples"="Samples" ,"Classifier" = "Classifier"),
+                                    choices= c("None"="None","Samples"="Samples" ,"Classifier" = "Classifier"),
                                     multiple=FALSE
                                     )
 

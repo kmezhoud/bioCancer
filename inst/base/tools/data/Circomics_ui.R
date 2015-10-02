@@ -17,14 +17,15 @@ output$ui_Circomics <- renderUI({
   updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies[,1], selected = c("luad_tcga_pub","blca_tcga_pub"))
 #,"prad_tcga_pub","ucec_tcga_pub"
 
-  wellPanel(
-  conditionalPanel("input.tabs_data == 'Circomics'",
+ # wellPanel(
+
+  conditionalPanel("input.tabs_Analysis == 'Circomics'",
 
                    selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=NULL, multiple = TRUE),
 
                    radioButtons(inputId = "WheelID", label = "Wheel Style:",
-                                c("Init"="init" ,"Zoom" = "Zoom",  "Static" = "Static"),
-                                selected = "init", inline = TRUE),
+                                c("Summary"="init" ,"Zoom" = "Zoom",  "Static" = "Static"),
+                                selected = "", inline = TRUE),
 
                    radioButtons(inputId = "saveWheelID", label = "Save Wheel:",
                                 c("SVG" = "SVG", "Gif" = "Gif"),
@@ -48,7 +49,7 @@ output$ui_Circomics <- renderUI({
 )
 
                   )
-)
+#)
 })
 
 
