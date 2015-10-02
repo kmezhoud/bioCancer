@@ -26,10 +26,10 @@ psicquic <- PSICQUIC::PSICQUIC()
 providers <- PSICQUIC::providers(psicquic)
 updateSelectizeInput(session, 'ProviderID', choices = providers, selected = NULL)
 
-                    conditionalPanel("input.tabs_data == 'Network'",
-
+                    conditionalPanel("input.tabs_data == 'Analysis'",
+                    conditionalPanel("input.tabs_Analysis == 'Network'",
                    selectizeInput('ProviderID', 'Select Data Bases', choices=NULL, multiple = TRUE)
-                  )
+                  ))
 })
 
 output$ui_saveSimpleNetwork <- renderUI({

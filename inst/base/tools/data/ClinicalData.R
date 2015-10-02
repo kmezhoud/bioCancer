@@ -33,20 +33,18 @@ output$dl_Studies_tab <- shiny::downloadHandler(
 
 
 
-
-
-
 output$ClinicalDataTable <- DT::renderDataTable({
 
-  #if (not_available(input$view_vars)) return()
-
+  #if (not_available(r_data$Clinical_vars)) return()
   ##### get Clinical Data for selected Case
   dat <- getClinicalData(cgds, input$CasesID)
   ## change rownames in the first column
   dat <- dat %>% add_rownames("Patients")
-  ####
-  dat <- dat[input$ui_Clinical_vars]
+
   r_data[['ClinicalData']] <- dat
+
+  dat <- dat[input$ui_Clinical_vars]
+
 
   # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
   action = DT::dataTableAjax(session, dat, rownames = FALSE)
@@ -54,7 +52,7 @@ output$ClinicalDataTable <- DT::renderDataTable({
   #DT::datatable(dat, filter = "top", rownames =FALSE, server = TRUE,
   DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
                 rownames = FALSE, style = "bootstrap", escape = FALSE,
-                # class = "compact",
+                 class = "compact",
                 options = list(
                   ajax = list(url = action),
                   search = list(regex = TRUE),

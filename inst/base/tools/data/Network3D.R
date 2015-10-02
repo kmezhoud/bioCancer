@@ -34,9 +34,7 @@
 
    output$forceNetwork <- networkD3::renderForceNetwork({
 
-  if(input$GeneListID != "Genes"){
-    GeneList <- unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep="")))
-  }
+ GeneList <- whichGeneList()
   #GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
   #GeneList <- c("CHEK1","CHEK2","RAD51","BRCA1","BRCA2","MLH1","MSH2","ATM","ATR","MDC1","PARP1","FANCF")
 
@@ -44,7 +42,7 @@
     Sys.sleep(0.25)
 
     psicquic <- PSICQUIC::PSICQUIC()
-    tbl <- PSICQUIC::interactions(psicquic, id=GeneList,species="9606", provider = input$ProviderID,quiet=TRUE)
+    tbl <- PSICQUIC::interactions(psicquic, id= GeneList, species="9606", provider = input$ProviderID,quiet=TRUE)
 
     if(nrow(tbl)==0){
 

@@ -53,38 +53,8 @@ output$ui_ProfData <- renderUI({
     radioButtons(inputId = "ProfData", label = "Load ProfData to Datasets:",
                  c("ProfData"="ProfData"), selected = FALSE, inline =TRUE),
     conditionalPanel(condition = "input.ProfData == 'ProfData'",
-                     actionButton('loadProfData', 'Load ProfData')
-
-    )
-  ),
-#   wellPanel(
-#     radioButtons(inputId = "saveAs", label = "Save data:",
-#                  c("rda" = "rda", "csv" = "csv", "clipboard" = "clipboard",
-#                    "state_Prof" = "state_Prof"), selected = "rda", inline = TRUE),
-#
-#     conditionalPanel(condition = "input.saveAs == 'clipboard'",
-#                      uiOutput("ui_clipboard_save")
-#     ),
-#     conditionalPanel(condition = "input.saveAs != 'clipboard' &&
-#                      input.saveAs != 'state_Prof'",
-#                      downloadButton('downloadData', 'Save')
-#     ),
-#     conditionalPanel(condition = "input.saveAs == 'state_Prof'",
-#                      HTML("<label>Save current app state_Prof:</label><br/>"),
-#                      downloadButton('downloadstate_Prof', 'Save')
-#     )
-#   ),
-#   wellPanel(
-#     checkboxInput('man_show_remove', 'Remove data from memory', FALSE),
-#     conditionalPanel(condition = "input.man_show_remove == true",
-#                      uiOutput("uiRemoveDataset"),
-#                      actionButton('removeDataButton', 'Remove data')
-#     )
-#   ),
-#   help_modal('Manage','manageHelp',inclMD(file.path(r_path,"base/tools/help/manage.md")))
-fileInput('file1', 'Choose txt File',
-          accept=c('text',
-                   'text,text/plain'))
+                     actionButton('loadProfData', 'Load ProfData'))
+  )
   )
 })
 ####################

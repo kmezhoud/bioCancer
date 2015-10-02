@@ -173,9 +173,9 @@ getFreqMutData <- function(list){
 }
   Freq_ArrayMutData_bkp <<- Freq_ArrayMutData
 
-if(length(input$StudiesIDReactome) < 2){
-  stop("Select more than one Study or use Mutation panel")
-}else{
+#if(length(input$StudiesIDReactome) < 2){
+#  stop("Select more than one Study or use Mutation panel")
+#}else{
   Freq_DfMutData <- apply(Freq_ArrayMutData[,2,],2,as.numeric)
   rownames(Freq_DfMutData) <- rownames(Freq_ArrayMutData[,2,])
   ## ordering gene list as in GeneList from MSigDB: grouping genes with the same biological process or gene Sets
@@ -186,7 +186,7 @@ if(length(input$StudiesIDReactome) < 2){
   r_data[['Freq_DfMutData']] <- Freq_DfMutData
   Freq_DfMutData_bkp <<-  Freq_DfMutData
   return(Freq_DfMutData)
-}
+#}
 }
 
 

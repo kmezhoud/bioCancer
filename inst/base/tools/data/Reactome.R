@@ -1,3 +1,11 @@
+output$ReactomeHowto <- renderPrint({
+  cat("1 - Select Gene list \n
+       2 - Set Edges attributes \n
+       3 - Set Nodes attributes from Classifier panel. \n
+           This step needs to classiy genes by studies (mRNA, Studies) \n
+       4 - Set Nodes attributes from Profiles data (CNA, Methylation, Mutation, miRNA, RPPA)
+      ")
+})
 
 ####### Attribute Color to Value in Vector
 attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){

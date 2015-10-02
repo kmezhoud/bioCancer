@@ -6,38 +6,25 @@ output$MutDataTable <- DT::renderDataTable({
     dat <- as.data.frame("Please select mutations from Genetic Profiles")
   }else{
 
-    #dat <-
+    GeneList <- whichGeneList()
 
-    if(input$GeneListID == "Genes"){
-      GeneList <- r_data$Genes
-    }else if(input$GeneListID == "Reactome_GeneList"){
-      GeneList <- t(r_data$Reactome_GeneList)
-    }else{
-      GeneList <- as.character(t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep="")))))
-    }
     ##### Get Mutation Data for selected Case and Genetic Profile
     if(length(GeneList)>500){
       dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="MutData")
     } else{
       if (inherits(try(dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList), silent=FALSE),"try-error")){
-        msgbadGeneList <- "There are some Gene Symbols not supported by cbioportal server"
-        tkmessageBox(message=msgbadGeneList, icon="warning")
+
+        stop("There are some Gene Symbols not supported by cbioportal server")
+
       }else{
         dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
       }
-
-
-
-      ## change rownames in the first column
-      dat <- as.data.frame(dat %>% add_rownames("Patients"))
-      dat <- dat[input$ui_Mut_vars]
-
-      #   if(is.numeric(dat[1,1])){
-      #     dat <- round(dat, digits = 3)
     }
-    ####
+    ## change rownames in the first column
+    dat <- as.data.frame(dat %>% add_rownames("Patients"))
+    dat <- dat[input$ui_Mut_vars]
     r_data[['MutData']] <- dat
-    # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
+
     action = DT::dataTableAjax(session, dat, rownames = FALSE)
 
     #DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,

@@ -38,11 +38,11 @@ output$ui_data <- renderUI({
         ),
         conditionalPanel("input.tabs_data== 'Analysis'",
                          conditionalPanel("input.tabs_Analysis == 'Circomics'", uiOutput("ui_Circomics")),
-                         conditionalPanel("input.tabs_Analysis=='Network'",
-                                          wellPanel(
-                                            uiOutput("ui_NetworkSlider"),
-                                            uiOutput("ui_Provider")
-                                          )),
+#                          conditionalPanel("input.tabs_Analysis=='Network'",
+#                                           wellPanel(
+#                                             uiOutput("ui_NetworkSlider"),
+#                                             uiOutput("ui_Provider")
+#                                           )),
 
                          conditionalPanel("input.tabs_Analysis=='Classifier'",
                                           uiOutput("ui_Classifier")
@@ -117,6 +117,7 @@ output$CGDS <- renderUI({
 output$Analysis <- renderUI({
 
   tabsetPanel(id = "tabs_Analysis",
+
               tabPanel("Circomics",
                        conditionalPanel("input.WheelID =='init'",
                                         h3("Available Profiles data in select Studies", align="center"),
@@ -143,12 +144,12 @@ output$Analysis <- renderUI({
 
               ),
 
-              tabPanel("Network",
-                       h3("Simple Network"),
-                       networkD3::simpleNetworkOutput("simpleNetwork"),
-                       h3("Forced Network"),
-                       networkD3::forceNetworkOutput("forceNetwork")
-              ),
+#               tabPanel("Network",
+#                        h3("Simple Network"),
+#                        networkD3::simpleNetworkOutput("simpleNetwork"),
+#                        h3("Forced Network"),
+#                        networkD3::forceNetworkOutput("forceNetwork")
+#               ),
               tabPanel("Classifier",
                        conditionalPanel("input.ClassID=='None'",
                                         verbatimTextOutput("ClassifierHowto")
@@ -175,12 +176,12 @@ output$Analysis <- renderUI({
                        conditionalPanel("input.ClassID =='Classifier'",
                                         downloadLink("dl_GenesClassDetails_tab", "", class = "fa fa-download alignright"),
                                         #tableOutput("viewTablegetGenesClassifier")),
-                                        DT::dataTableOutput("getGenesClassifier")),
+                                        DT::dataTableOutput("getGenesClassifier"),
 
                        # conditionalPanel("input.ClassID=='Plot'",
 
                        conditionalPanel("input.ClusterPlotsID=='GeneList/Diseases'",
-                                        h4("Which Disease are involved your Genes list", align='center'),
+                                        h4("Which Disease are involving your Genes list", align='center'),
                                         plot_downloader("Plot_enrich", pre = ""),
                                         plotOutput("Plot_enricher")
                        ),
@@ -203,10 +204,13 @@ output$Analysis <- renderUI({
                                         h4("KEGG Pathway Enrichment", align='center'),
                                         plot_downloader("compareClusterKEGG", pre=""),
                                         plotOutput("compareClusterKEGG")
-                       )
+                       ))
                        #)
               ),
               tabPanel("Reactome",
+                       conditionalPanel(condition = "input.ReacRunId == false",
+                                        verbatimTextOutput("ReactomeHowto")
+                                        ),
                        conditionalPanel( condition = "input.ReacRunId== true",
                                          plot_downloader("ld_diagrammeR_plot", pre=""),
                                          #downloadButton('ld_diagrammeR_plot', 'Download Plot'),
