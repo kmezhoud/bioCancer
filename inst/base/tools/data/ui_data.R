@@ -20,16 +20,16 @@ output$ui_data <- renderUI({
     sidebarLayout(
       sidebarPanel(
 
-           #### Include selectize prompt Studies, Clinical data and Profile data
-          conditionalPanel("input.tabs_data== 'Data'",
-                           selectizeInput(
-                             'StudiesID', 'Studies List', choices = NULL, multiple = FALSE
-                           ),
-                           uiOutput("ui_Cases"),
-                           uiOutput("ui_GenProfs"),
-                           uiOutput("ui_GeneList")
-                           #selectizeInput('GeneListID', 'Gene List', choices=NULL, multiple = FALSE)
-          ),
+        #### Include selectize prompt Studies, Clinical data and Profile data
+        conditionalPanel("input.tabs_data== 'Data'",
+                         selectizeInput(
+                           'StudiesID', 'Studies List', choices = NULL, multiple = FALSE
+                         ),
+                         uiOutput("ui_Cases"),
+                         uiOutput("ui_GenProfs"),
+                         uiOutput("ui_GeneList")
+                         #selectizeInput('GeneListID', 'Gene List', choices=NULL, multiple = FALSE)
+        ),
 
         conditionalPanel("input.tabs_data=='Data'",
                          conditionalPanel("input.tabs_cgds == 'Clinical'", uiOutput("ui_ClinicalData")),
@@ -38,11 +38,11 @@ output$ui_data <- renderUI({
         ),
         conditionalPanel("input.tabs_data== 'Analysis'",
                          conditionalPanel("input.tabs_Analysis == 'Circomics'", uiOutput("ui_Circomics")),
-#                          conditionalPanel("input.tabs_Analysis=='Network'",
-#                                           wellPanel(
-#                                             uiOutput("ui_NetworkSlider"),
-#                                             uiOutput("ui_Provider")
-#                                           )),
+                         #                          conditionalPanel("input.tabs_Analysis=='Network'",
+                         #                                           wellPanel(
+                         #                                             uiOutput("ui_NetworkSlider"),
+                         #                                             uiOutput("ui_Provider")
+                         #                                           )),
 
                          conditionalPanel("input.tabs_Analysis=='Classifier'",
                                           uiOutput("ui_Classifier")
@@ -52,23 +52,23 @@ output$ui_data <- renderUI({
                                           uiOutput("ui_Reactome")
                          )),
 
-      conditionalPanel("input.tabs_data== 'Handle'",
-                       uiOutput("ui_datasets"),
+        conditionalPanel("input.tabs_data== 'Handle'",
+                         uiOutput("ui_datasets"),
 
-                       conditionalPanel(
-                         "input.tabs_data != 'Manage'",
-                         checkboxInput(
-                           'show_filter', 'Filter (e.g., price > 5000)', value = state_init("show_filter",FALSE)
-                         ),
                          conditionalPanel(
-                           "input.show_filter == true",
-                           returnTextAreaInput(
-                             "data_filter", label = "", value = state_init("data_filter")
+                           "input.tabs_data != 'Manage'",
+                           checkboxInput(
+                             'show_filter', 'Filter (e.g., price > 5000)', value = state_init("show_filter",FALSE)
                            ),
-                           uiOutput("ui_filter_error")
+                           conditionalPanel(
+                             "input.show_filter == true",
+                             returnTextAreaInput(
+                               "data_filter", label = "", value = state_init("data_filter")
+                             ),
+                             uiOutput("ui_filter_error")
+                           )
                          )
-                       )
-      ),
+        ),
 
         conditionalPanel("input.tabs_data == 'Handle'",
 
@@ -119,41 +119,95 @@ output$Analysis <- renderUI({
   tabsetPanel(id = "tabs_Analysis",
 
               tabPanel("Circomics",
-                       conditionalPanel("input.WheelID =='init'",
+
+                       conditionalPanel(condition = "input.ViewProfDataCircosID==true",
                                         h3("Available Profiles data in select Studies", align="center"),
-                                        DT::dataTableOutput(outputId ="CircosInit")),
+                                        DT::dataTableOutput(outputId ="CircosAvailability")
+                       ),
+                       conditionalPanel(condition = "input.getlistProfDataCircosID ==true",
+                                        h3("Load Profiles Data", align="center"),
+                                        verbatimTextOutput("StrListProfDataCircos")
+                       ),
 
 
-                       conditionalPanel(
-                         "input.WheelID == 'Zoom'",
-                         h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)"),
-                         coffeewheelOutput('getCoffeeWheel', width = 600, height = 600),
-                         h3("Correlation of silencing gene by Methylation: (0:1)"),
-                         coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600),
-                         h3("Mutation Frequency: (Min,Max)"),
+                       if('CNA' %in% input$CircosDimensionID ){
+
+                         coffeewheelOutput('getCoffeeWheel_CNA', width = 600, height = 600)
+                       },
+
+                       if('Methylation' %in% input$CircosDimensionID ){
+                       #  h3("Correlation of silencing gene by Methylation: (0:1)")
+                         coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
+
+                       },
+                       if('mRNA' %in% input$CircosDimensionID ){
+                        # h3("Gene Expression")
+                         coffeewheelOutput('getCoffeeWheel_mRNA', width = 600, height = 600)
+
+                       },
+
+                       if('Mutation' %in% input$CircosDimensionID ){
+                        # h3("Mutation Frequency: (Min,Max)")
                          coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
-                         # uiOutput("dataDescriptionHTML")
-                       )
+
+                       },
+
+
+                       if('miRNA' %in% input$CircosDimensionID ){
+                         #h3("Protein phosphorylation:")
+                         coffeewheelOutput('getCoffeeWheel_miRNA', width = 600, height = 600)
+
+                       },
+                       if('RPPA' %in% input$CircosDimensionID ){
+                         #h3("Protein phosphorylation:")
+                         coffeewheelOutput('getCoffeeWheel_RPPA', width = 600, height = 600)
+
+                       },
+                       if('All' %in% input$CircosDimensionID ){
+                         #h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)")
+                         downloadButton('dl_metabologram', 'Download')
+                         plot_downloader("saveCoffeWheel", pre = "")
+                         coffeewheelOutput('getCoffeeWheel_All', width = 600, height = 600)
+
+                       }
+
+#                        conditionalPanel("input.WheelID =='init'",
+#                                         h3("Available Profiles data in select Studies", align="center"),
+#                                         DT::dataTableOutput(outputId ="CircosInit")),
+#
+#
+#                        conditionalPanel("input.WheelID == 'Zoom'",
+#                                         h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)"),
+#
+#                                         coffeewheelOutput('getCoffeeWheel_All', width = 600, height = 600),
+#
+#                                         h3("Correlation of silencing gene by Methylation: (0:1)"),
+#                                         coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600),
+#
+#                                         h3("Mutation Frequency: (Min,Max)"),
+#                                         coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
+#                                         # uiOutput("dataDescriptionHTML")
+#                        )
                        # conditionalPanel("input.WheelID == 'Zoom'", uiOutput("dataDescriptionHTML"))
 
-                       #              conditionalPanel(
-                       #               "input.WheelID == 'Static'",
-                       #               metabologramOutput('metabologram')
-                       #             )
+                       #                                     conditionalPanel(
+                       #                                      "input.WheelID == 'Static'",
+                       #                                      metabologramOutput('metabologram')
+                       #                                    )
 
 
               ),
 
-#               tabPanel("Network",
-#                        h3("Simple Network"),
-#                        networkD3::simpleNetworkOutput("simpleNetwork"),
-#                        h3("Forced Network"),
-#                        networkD3::forceNetworkOutput("forceNetwork")
-#               ),
+              #               tabPanel("Network",
+              #                        h3("Simple Network"),
+              #                        networkD3::simpleNetworkOutput("simpleNetwork"),
+              #                        h3("Forced Network"),
+              #                        networkD3::forceNetworkOutput("forceNetwork")
+              #               ),
               tabPanel("Classifier",
                        conditionalPanel("input.ClassID=='None'",
                                         verbatimTextOutput("ClassifierHowto")
-                                        ),
+                       ),
                        conditionalPanel("input.ClassID =='Samples'",
                                         h4("Enter sampling size smaller than in Case"),
                                         #tableOutput("viewTableCases"),
@@ -178,39 +232,39 @@ output$Analysis <- renderUI({
                                         #tableOutput("viewTablegetGenesClassifier")),
                                         DT::dataTableOutput("getGenesClassifier"),
 
-                       # conditionalPanel("input.ClassID=='Plot'",
+                                        # conditionalPanel("input.ClassID=='Plot'",
 
-                       conditionalPanel("input.ClusterPlotsID=='GeneList/Diseases'",
-                                        h4("Which Disease are involving your Genes list", align='center'),
-                                        plot_downloader("Plot_enrich", pre = ""),
-                                        plotOutput("Plot_enricher")
-                       ),
-                       conditionalPanel("input.ClusterPlotsID=='Disease Onthology'",
-                                        h4("Diseases Studies Genes associations", align='center'),
-                                        plot_downloader("compareClusterDO", pre=""),
-                                        plotOutput("compareClusterDO")
-                       ),
-                       conditionalPanel("input.ClusterPlotsID=='Pathway'",
-                                        h4("Pathway cluster Enrichment", align='center'),
-                                        plot_downloader("compareClusterPathway", pre=""),
-                                        plotOutput("compareClusterPathway")
-                       ),
-                       conditionalPanel("input.ClusterPlotsID=='GO'",
-                                        h4("Gene Ontholgy Studies associations", align='center'),
-                                        plot_downloader("compareClusterGO", pre=""),
-                                        plotOutput("compareClusterGO")
-                       ),
-                       conditionalPanel("input.ClusterPlotsID=='KEGG'",
-                                        h4("KEGG Pathway Enrichment", align='center'),
-                                        plot_downloader("compareClusterKEGG", pre=""),
-                                        plotOutput("compareClusterKEGG")
-                       ))
+                                        conditionalPanel("input.ClusterPlotsID=='GeneList/Diseases'",
+                                                         h4("Which Disease are involving your Genes list", align='center'),
+                                                         plot_downloader("Plot_enrich", pre = ""),
+                                                         plotOutput("Plot_enricher")
+                                        ),
+                                        conditionalPanel("input.ClusterPlotsID=='Disease Onthology'",
+                                                         h4("Diseases Studies Genes associations", align='center'),
+                                                         plot_downloader("compareClusterDO", pre=""),
+                                                         plotOutput("compareClusterDO")
+                                        ),
+                                        conditionalPanel("input.ClusterPlotsID=='Pathway'",
+                                                         h4("Pathway cluster Enrichment", align='center'),
+                                                         plot_downloader("compareClusterPathway", pre=""),
+                                                         plotOutput("compareClusterPathway")
+                                        ),
+                                        conditionalPanel("input.ClusterPlotsID=='GO'",
+                                                         h4("Gene Ontholgy Studies associations", align='center'),
+                                                         plot_downloader("compareClusterGO", pre=""),
+                                                         plotOutput("compareClusterGO")
+                                        ),
+                                        conditionalPanel("input.ClusterPlotsID=='KEGG'",
+                                                         h4("KEGG Pathway Enrichment", align='center'),
+                                                         plot_downloader("compareClusterKEGG", pre=""),
+                                                         plotOutput("compareClusterKEGG")
+                                        ))
                        #)
               ),
               tabPanel("Reactome",
                        conditionalPanel(condition = "input.ReacRunId == false",
                                         verbatimTextOutput("ReactomeHowto")
-                                        ),
+                       ),
                        conditionalPanel( condition = "input.ReacRunId== true",
                                          plot_downloader("ld_diagrammeR_plot", pre=""),
                                          #downloadButton('ld_diagrammeR_plot', 'Download Plot'),

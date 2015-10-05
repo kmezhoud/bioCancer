@@ -105,14 +105,7 @@ output$Plot_enricher <- renderPlot({
   withProgress(message = 'Genes Diseases Association...', value = 0.1, {
     Sys.sleep(0.25)
 
-  if(input$GeneListID == "Genes"){
-    GeneList <- r_data$Genes
-
-  }else if(input$GeneListID =="Reactome_GeneList"){
-    GeneList <- r_data$Reactome_GeneList
-  }else{
-    GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
-  }
+    GeneList <- whichGeneList()
 
  ## clusterProfile package
   #GeneID = bitr(GeneList, fromType="SYMBOL", toType="ENTREZID", annoDb="org.Hs.eg.db")[,2]

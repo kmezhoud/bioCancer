@@ -257,9 +257,11 @@ if (panel=="Circomics"){
   r_data[['ListMetData']] <- ListMetData
   r_data[['ListMutData']] <- ListMutData
 
+
   ListProfData_bkp <<- ListProfData
   ListMetData_bkp <<- ListMetData
   ListMutData_bkp <<- ListMutData
+  ListCNAData_bkp <<- ListProfData$CNA
 
   #     print("Start Ordering ...")
   ## range matrices by the same order

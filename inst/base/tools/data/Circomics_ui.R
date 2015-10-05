@@ -15,66 +15,99 @@ output$ui_Circomics <- renderUI({
 
   ## get Studies for Circomics
   updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies[,1], selected = c("luad_tcga_pub","blca_tcga_pub"))
-#,"prad_tcga_pub","ucec_tcga_pub"
+  #,"prad_tcga_pub","ucec_tcga_pub"
 
- # wellPanel(
+  output$ui_CircosDimension <- renderUI({
+
+    Dimension <- c("CNA","Methylation", "mRNA","Mutation","miRNA","RPPA", "All" )
+    selectizeInput("CircosDimensionID", label= "Select Dimension:", choices= Dimension,
+                   selected= "", multiple=TRUE)
+  })
+
+  output$StrListProfDataCircos <- renderPrint({
+    #   if(is.null(input$getlistProfDataID)){
+    #     return()
+    #   }else{
+    withProgress(message = 'loading Profiles Data... ', value = 0.1, {
+      Sys.sleep(0.25)
+      getListProfData(panel='Circomics')
+    })
+    cat("STUDIES:\n", names(r_data$ListMutData), "\n")
+    cat("PROFILES DATA:\n",names(r_data$ListProfData) ,"and Mutation", sep = " " )
+    #str(r_data$ListProfData)
+    #str(r_data$ListMutData)
+    #}
+  })
 
   conditionalPanel("input.tabs_Analysis == 'Circomics'",
 
                    selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=NULL, multiple = TRUE),
+                   div(class="row",
+                       div(class="col-xs-6",
+                           checkboxInput("ViewProfDataCircosID", "Availability", value = FALSE)),
+                       div(class="col-xs-6",
+                           checkboxInput("getlistProfDataCircosID", "Load", value = FALSE))
+                   ),
 
-                   radioButtons(inputId = "WheelID", label = "Wheel Style:",
-                                c("Summary"="init" ,"Zoom" = "Zoom",  "Static" = "Static"),
-                                selected = "", inline = TRUE),
+                   conditionalPanel("input.getlistProfDataCircosID==true",
+                                    uiOutput("ui_CircosDimension")
+                   ),
 
-                   radioButtons(inputId = "saveWheelID", label = "Save Wheel:",
-                                c("SVG" = "SVG", "Gif" = "Gif"),
-                                selected = "SVG", inline = TRUE),
+                   checkboxInput("CircosLegendID", "Legend", value=FALSE),
+                   #                    radioButtons(inputId = "WheelID", label = "Wheel Style:",
+                   #                                 c("Summary"="init" ,"Zoom" = "Zoom",  "Static" = "Static"),
+                   #                                 selected = "", inline = TRUE),
 
-                   conditionalPanel(condition = "input.saveWheelID == 'SVG'",
-                                    downloadButton('SaveSVG', 'SVG')),
-
-                   conditionalPanel(condition = "input.saveWheelID == 'Gif'",
-                                    downloadButton("SaveGif")),
+                   #                    radioButtons(inputId = "saveWheelID", label = "Save Wheel:",
+                   #                                 c("SVG" = "SVG", "Gif" = "Gif"),
+                   #                                 selected = "SVG", inline = TRUE),
+                   #
+                   #                    conditionalPanel(condition = "input.saveWheelID == 'SVG'",
+                   #                                     downloadButton('SaveSVG', 'SVG')),
+                   #
+                   #                    conditionalPanel(condition = "input.saveWheelID == 'Gif'",
+                   #                                     downloadButton("SaveGif")),
                    wellPanel(
+                     conditionalPanel("input.CircosLegendID==true",
+                                      plotOutput("LegendCircos")
+                     )
 
-                     plotOutput("LegendCircos")
-#                    h4("Wheel Legend"),
-#                    p(span("Black", style="color:black"),": Non available data."),
-#                    p(span("White", style="color:black"),": Non significant rate."),
-#                    p(span("Cyan", style="color:deepskyblue"),": Middle Negative significant rate."),
-#                    p(span("Blue", style="color:blue"),": Negative significant rate."),
-#                    p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
-#                    p(span("Red", style="color:red"),": Positive significant rate.")
-)
+                     #                    h4("Wheel Legend"),
+                     #                    p(span("Black", style="color:black"),": Non available data."),
+                     #                    p(span("White", style="color:black"),": Non significant rate."),
+                     #                    p(span("Cyan", style="color:deepskyblue"),": Middle Negative significant rate."),
+                     #                    p(span("Blue", style="color:blue"),": Negative significant rate."),
+                     #                    p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
+                     #                    p(span("Red", style="color:red"),": Positive significant rate.")
+                   )
 
-                  )
-#)
+  )
+
 })
 
 
 
-observe({
+# observe({
+#
+#   if (not_pressed(input$SaveSVG)) return()
+#   isolate({
+#     library(metabologram)
+#     CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
+#     metabologram(CoffeewheelTreeData, width=500, height=500, main="metabologram", showLegend = TRUE, fontSize = 12, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+#
+#   })
+# })
 
-  if (not_pressed(input$SaveSVG)) return()
-  isolate({
-    library(metabologram)
-    CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
-    metabologram(CoffeewheelTreeData, width=500, height=500, main="metabologram", showLegend = TRUE, fontSize = 12, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
 
-  })
-})
-
-
-
-output$SaveGif = downloadHandler(
-  filename = function(){'random.png'},
-  content  = function(file){
-    CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
-    ggsave(file,metabologram(CoffeewheelTreeData, width=500, height=500, main="metabologram", showLegend = TRUE, fontSize = 12, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend"))
-    #file.rename('random.gif', file)
-}
-    )
+#
+# output$SaveGif = downloadHandler(
+#   filename = function(){'random.png'},
+#   content  = function(file){
+#     CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
+#     ggsave(file,metabologram(CoffeewheelTreeData, width=500, height=500, main="metabologram", showLegend = TRUE, fontSize = 12, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend"))
+#     #file.rename('random.gif', file)
+# }
+#     )
 
 
 

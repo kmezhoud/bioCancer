@@ -80,8 +80,6 @@ reStrDisease <- function(List){
   return(child)
 }
 
-
-
 ## This function restructure the Dimensions
 reStrDimension <- function(LIST){
   print("restructuring Dimensions...")
@@ -95,19 +93,18 @@ reStrDimension <- function(LIST){
 
 
 ## get Wheel for Profiles Data
-output$getCoffeeWheel <- renderCoffeewheel({
+output$getCoffeeWheel_All <- renderCoffeewheel({
   withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
-    getListProfData(panel="Circomics")
+    #getListProfData(panel="Circomics")
     #Shiny.unbindAll()
     CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData)
-    #title<- paste("Profiles Data: CNA, Exp, RPPA, miRNA")
-    coffeewheel(CoffeewheelTreeProfData, width=600, height=600, partitionAttribute="value") # main=title
+    title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA")
+    coffeewheel(CoffeewheelTreeProfData, width=600, height=600, partitionAttribute="value", main=title)
   })
 
 })
-
 
 ## get Wheel for Methylation
 output$getCoffeeWheel_Met <- renderCoffeewheel({
@@ -116,11 +113,64 @@ output$getCoffeeWheel_Met <- renderCoffeewheel({
 
     #getListProfData()
     CoffeewheelTreeMetData <- reStrDimension(r_data$ListMetData)
-    #title<- paste("Methylations: HM450 and HM27")
-    coffeewheel(CoffeewheelTreeMetData, width=600, height=600) # main=title
+    title<- paste("Methylations: HM450 and HM27")
+    coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main=title)
   })
 
 })
+
+## get Wheel for CNA
+output$getCoffeeWheel_CNA <- renderCoffeewheel({
+  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+    Sys.sleep(0.25)
+
+    #getListProfData()
+    CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$CNA)
+    title<- paste("Copy Number Alteration [-2, +2]")
+    coffeewheel(CoffeewheelTreeMetData, width=600, height=600,main=title)
+  })
+
+})
+
+## get Wheel for mRNA
+output$getCoffeeWheel_mRNA <- renderCoffeewheel({
+  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+    Sys.sleep(0.25)
+
+    #getListProfData()
+    CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$Expression)
+    title<- paste("mRNA expression")
+    coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main=title)
+  })
+
+})
+
+## get Wheel for miRNA
+output$getCoffeeWheel_miRNA <- renderCoffeewheel({
+  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+    Sys.sleep(0.25)
+
+    #getListProfData()
+    CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$miRNA)
+    title<- paste("miRNA Expression")
+    coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main= title)
+  })
+
+})
+
+## get Wheel for RPPA
+output$getCoffeeWheel_RPPA <- renderCoffeewheel({
+  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+    Sys.sleep(0.25)
+
+    #getListProfData()
+    CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$RPPA)
+    title<- paste("Reverse Phase Protein Arrays")
+    coffeewheel(CoffeewheelTreeMetData, width=600, height=600,main=title)
+  })
+
+})
+
 
 UnifyRowNames <- function(x, GeneList){
   df_MutData <-as.data.frame(table(x$gene_symbol)/sum(table(x$gene_symbol))*100)
@@ -134,7 +184,6 @@ UnifyRowNames <- function(x, GeneList){
   Freq_Mut <- df_merge[,c(-2,-3)]
   return(Freq_Mut)
 }
-
 
 whichGeneList <- function(){
   if(input$GeneListID == "Genes"){
@@ -213,8 +262,17 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
 
 })
 
+getmetabologram <- function(){
+  CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
+  title<- paste("Wheel with selected Studies")
+  metabologram(CoffeewheelTreeData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
 
+}
 
+output$dl_metabologram <- downloadHandler(
+  filename='plot.png',
+  content= getmetabologram()
+)
 
 output$metabologram <- renderMetabologram({
 
@@ -376,7 +434,7 @@ checkDimensions<- function(panel){
 
 
 
-output$CircosInit <- DT::renderDataTable({
+output$CircosAvailability <- DT::renderDataTable({
 
 
   withProgress(message = 'Loading Data...', value = 0.1, {

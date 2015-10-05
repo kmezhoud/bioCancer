@@ -43,8 +43,8 @@ output$ui_NodeAttri_Classifier <- renderUI({
 
 output$ui_NodeAttri_ProfData <- renderUI({
 
-  ProfDataEnrich <- c("None","CNA","Met_HM27", "Met_HM450","Mutation" )
-  selectizeInput("NodeAttri_ProfDataID", label= "Select Profiles Data:", choices= ProfDataEnrich,
+  Dimension <- c("None","CNA","Met_HM27", "Met_HM450","Mutation" )
+  selectizeInput("NodeAttri_ProfDataID", label= "Select Profiles Data:", choices= Dimension,
                  selected= "None", multiple=TRUE)
 })
 output$ui_Freq_MutSlider <- renderUI({
