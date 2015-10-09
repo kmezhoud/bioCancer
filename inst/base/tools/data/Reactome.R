@@ -26,13 +26,7 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 
 graph_obj <- function(){
 
-  if(input$GeneListID == "Genes"){
-    GeneList <- r_data$Genes
-  }else if(input$GeneListID == "Reactome_GeneList"){
-    GeneList <- r_data$Reactome_GeneList
-  }else{
-    GeneList <- as.character(t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep="")))))
-  }
+GeneList <- whichGeneList()
 
   Edges_obj <- Edges_obj()
 
@@ -124,18 +118,12 @@ Edges_obj <- function(){
       Sys.sleep(0.25)
 
       #r_data[['ReactomeFI']] <- read.csv("https://raw.githubusercontent.com/kmezhoud/ReactomeFI/master/FIsInGene_121514_with_annotations.txt", header=TRUE, sep="\t")
-      r_data[['ReactomeFI']]  <- read.delim(paste0(getwd(),"/FIsInGene_121514_with_annotations.txt", sep=""))
+      r_data[['ReactomeFI']]  <- read.delim("inst/extdata/FIsInGene_121514_with_annotations.txt")
     })
   }
 
   #GeneList <- c("DKK3", "NBN", "MYO6", "TP53","PML", "IFI16", "BRCA1")
-  if(input$GeneListID == "Genes"){
-    GeneList <- r_data$Genes
-  }else if(input$GeneListID == "Reactome_GeneList"){
-    GeneList <- r_data$Reactome_GeneList
-  }else{
-    GeneList <- as.character(t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep="")))))
-  }
+GeneList <- whichGeneList()
   #GeneList <- c("SPRY2","FOXO1","FOXO3")
   ## Edges Attributes
   withProgress(message = 'load FI for GeneList...', value = 0.1, {
@@ -455,7 +443,7 @@ ld_diagrammeR_plot<- function(){
 
 output$ReactomeLegend <- renderImage({
   # When input$n is 3, filename is ./images/image3.jpeg
-  filename <- paste(getwd(),"/data/imgs/ReactomeLegend.png", sep="")
+  filename <- paste(r_path,"/extdata/imgs/ReactomeLegend.png", sep="")
 
   # Return a list containing the filename and alt text
   list(src = filename,

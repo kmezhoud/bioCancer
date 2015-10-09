@@ -1,7 +1,6 @@
 #######################################
 # Shiny interface for data functions
 #######################################
-
 ## show error message from filter dialog
 output$ui_filter_error <- renderUI({
   if (is_empty(r_data$filter_error))
@@ -21,7 +20,7 @@ output$ui_data <- renderUI({
       sidebarPanel(
 
         #### Include selectize prompt Studies, Clinical data and Profile data
-        conditionalPanel("input.tabs_data== 'Data'",
+        conditionalPanel("input.tabs_data== 'Portal'",
                          selectizeInput(
                            'StudiesID', 'Studies List', choices = NULL, multiple = FALSE
                          ),
@@ -31,32 +30,34 @@ output$ui_data <- renderUI({
                          #selectizeInput('GeneListID', 'Gene List', choices=NULL, multiple = FALSE)
         ),
 
-        conditionalPanel("input.tabs_data=='Data'",
-                         conditionalPanel("input.tabs_cgds == 'Clinical'", uiOutput("ui_ClinicalData")),
-                         conditionalPanel("input.tabs_cgds == 'Profiles'", uiOutput("ui_ProfData")),
-                         conditionalPanel("input.tabs_cgds == 'Mutation'", uiOutput("ui_MutData"))
+        conditionalPanel("input.tabs_data=='Portal'",
+                         conditionalPanel("input.tabs_portal=='Studies'", uiOutput("ui_Studies")),
+                         conditionalPanel("input.tabs_portal == 'Clinical'", uiOutput("ui_ClinicalData")),
+                         conditionalPanel("input.tabs_portal == 'Profiles'", uiOutput("ui_ProfData")),
+                         conditionalPanel("input.tabs_portal == 'Mutation'", uiOutput("ui_MutData"))
         ),
-        conditionalPanel("input.tabs_data== 'Analysis'",
-                         conditionalPanel("input.tabs_Analysis == 'Circomics'", uiOutput("ui_Circomics")),
-                         #                          conditionalPanel("input.tabs_Analysis=='Network'",
+        conditionalPanel("input.tabs_data== 'Enrish'",
+                         conditionalPanel("input.tabs_Enrish == 'Circomics'", uiOutput("ui_Circomics")),
+                         #                          conditionalPanel("input.tabs_Enrish=='Network'",
                          #                                           wellPanel(
                          #                                             uiOutput("ui_NetworkSlider"),
                          #                                             uiOutput("ui_Provider")
                          #                                           )),
 
-                         conditionalPanel("input.tabs_Analysis=='Classifier'",
+                         conditionalPanel("input.tabs_Enrish=='Classifier'",
                                           uiOutput("ui_Classifier")
                          ),
 
-                         conditionalPanel("input.tabs_Analysis=='Reactome'",
+                         conditionalPanel("input.tabs_Enrish=='Reactome'",
                                           uiOutput("ui_Reactome")
                          )),
 
         conditionalPanel("input.tabs_data== 'Handle'",
-                         uiOutput("ui_datasets"),
+
+                        uiOutput("ui_datasets"),
 
                          conditionalPanel(
-                           "input.tabs_data != 'Manage'",
+                           "input.tabs_Handle != 'Manage'",
                            checkboxInput(
                              'show_filter', 'Filter (e.g., price > 5000)', value = state_init("show_filter",FALSE)
                            ),
@@ -76,17 +77,19 @@ output$ui_data <- renderUI({
                          conditionalPanel("input.tabs_Handle == 'View'", uiOutput("ui_View")),
                          conditionalPanel("input.tabs_Handle == 'Visualize'", uiOutput("ui_Visualize")),
                          conditionalPanel("input.tabs_Handle == 'Pivot'",uiOutput("ui_Pivotr")),
-                         conditionalPanel("input.tabs_Handle == 'Explore'",
-                                          uiOutput("ui_Explore")),
+                         conditionalPanel("input.tabs_Handle == 'Explore'",uiOutput("ui_Explore")),
                          conditionalPanel("input.tabs_Handle == 'Transform'", uiOutput("ui_Transform")),
                          conditionalPanel("input.tabs_Handle == 'Combine'", uiOutput("ui_Combine"))
-        )),
+
+        )
+
+        ),
       mainPanel(
         tabsetPanel(
           id = "tabs_data",
-          tabPanel("Data", uiOutput("CGDS")),
+          tabPanel("Portal", uiOutput("Portal")),
 
-          tabPanel("Analysis", uiOutput("Analysis")),
+          tabPanel("Enrish", uiOutput("Enrish")),
 
           tabPanel("Handle", uiOutput("Handle"))
 
@@ -96,8 +99,8 @@ output$ui_data <- renderUI({
     ))
 })
 
-output$CGDS <- renderUI({
-  tabsetPanel(id = "tabs_cgds",
+output$Portal <- renderUI({
+  tabsetPanel(id = "tabs_portal",
               tabPanel("Studies",
                        downloadLink("dl_Studies_tab", "", class = "fa fa-download alignright"),
                        DT::dataTableOutput(outputId = "StudiesTable")),
@@ -114,9 +117,9 @@ output$CGDS <- renderUI({
 })
 
 
-output$Analysis <- renderUI({
+output$Enrish <- renderUI({
 
-  tabsetPanel(id = "tabs_Analysis",
+  tabsetPanel(id = "tabs_Enrish",
 
               tabPanel("Circomics",
 
@@ -344,6 +347,7 @@ output$Handle <- renderUI({
                        uiOutput("ui_tr_log")),
               tabPanel("Combine", htmlOutput("cmb_data1"), htmlOutput("cmb_data2"),
                        htmlOutput("cmb_possible"), htmlOutput("cmb_data"))
+
 
   )
 })

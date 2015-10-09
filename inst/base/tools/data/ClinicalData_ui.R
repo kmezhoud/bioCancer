@@ -1,3 +1,7 @@
+output$ui_Studies <- renderUI({
+  help_modal('Studies','StudiesHelp',inclMD(file.path(r_path,"base/tools/help/Studies.md")))
+})
+
 output$ui_clipboard_load_Clinical <- renderUI({
   if (r_local) {
     actionButton('loadClipDataClinical', 'Paste data')

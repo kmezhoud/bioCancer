@@ -1,8 +1,8 @@
 quant_ui <- tagList(
-  navbarMenu("Sample",
-    tabPanel("Sampling", uiOutput("sampling")),
-    tabPanel("Sample size", uiOutput("sample_size"))
-  ),
+#   navbarMenu("Sample",
+#     tabPanel("Sampling", uiOutput("sampling")),
+#     tabPanel("Sample size", uiOutput("sample_size"))
+#   ),
 
   navbarMenu("Base",
     tabPanel("Single mean", uiOutput("single_mean")),

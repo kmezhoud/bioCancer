@@ -33,11 +33,7 @@ output$ProfDataTable <- DT::renderDataTable({
 #     }
 #     #r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
 #   }
- if(input$GeneListID != "Genes"){
-  GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
- }else{
-  GeneList <- r_data$Genes
-}
+GeneList <- whichGeneList()
   #GeneList <- (r_data[[input$GeneListID]])
   #x <<- GeneList
 

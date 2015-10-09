@@ -5,15 +5,7 @@ getGenesClassifier <- reactive({
 
     checked_Studies <- input$StudiesIDClassifier
 
-    if(input$GeneListID == "Genes"){
-      GeneList <- r_data$Genes
-    }else if(input$GeneListID =="Reactome_GeneList"){
-      GeneList <- r_data$Reactome_GeneList
-      print(GeneList)
-    }else{
-      GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
-    }
-
+   GeneList <- whichGeneList()
     #GenProfs_list <<- lapply(checked_Studies, function(x) paste(x, "_rna_seq_v2_mrna", sep=""))
     #Cases_list <<-  lapply(checked_Studies, function(x) paste(x, "_rna_seq_v2_mrna", sep=""))
 
@@ -55,7 +47,12 @@ getGenesClassifier <- reactive({
       }
       if(ncol(ProfData) < input$SampleSizeClassifierID){
         msgBigSampl <- paste(checked_Studies[s], "has only", ncol(ProfData),"samples.","\nSelect at Max: ",ncol(ProfData), "samples")
-        tkmessageBox(message=msgBigSampl, icon="info")
+         withProgress(message= msgBigSampl, value = 0.1,
+                     {p1 <- proc.time()
+                     Sys.sleep(2) # wait 2 seconds
+                     proc.time() - p1 })
+
+        #tkmessageBox(message=msgBigSampl, icon="info")
         # close(progressBar_ProfilesData)
         stop(msgBigSampl)
       }
@@ -83,7 +80,11 @@ getGenesClassifier <- reactive({
     if (inherits(try(rownames(DiseasesType) <- colnames(SamplingProfsData) , silent=FALSE),"try-error"))
     {
       msgDuplicateSamples <- paste("Duplicate sample names are not allowed. Do no select two studies from the same disease.")
-      tkmessageBox(message=msgDuplicateSamples , icon="warning")
+      withProgress(message= msgDuplicateSamples, value = 0.1,
+                   {p1 <- proc.time()
+                   Sys.sleep(2) # wait 2 seconds
+                   proc.time() - p1 })
+      #tkmessageBox(message=msgDuplicateSamples , icon="warning")
       #diseasesType <<- DiseasesType
       stop(msgDuplicateSamples)
     } else{
@@ -126,7 +127,12 @@ getGenesClassifier <- reactive({
     if (inherits(try(signGenesRank_DiseaseType<- geNetClassifier::calculateGenesRanking(eSetClassifier[,1:(input$SampleSizeClassifierID*length(checked_Studies))], sampleLabels="DiseasesType", lpThreshold= input$ClassifierThresholdID, returnRanking="significant", plotLp = FALSE), silent=TRUE),"try-error"))
     {
       msgNoSignificantDiff <- paste("The current genes don't differentiate the classes (Cancers)..")
-      tkmessageBox(message=msgNoSignificantDiff , icon="warning")
+
+      withProgress(message= msgNoSignificantDiff, value = 0.1,
+                   {p1 <- proc.time()
+                   Sys.sleep(2) # wait 2 seconds
+                   proc.time() - p1 })
+      #tkmessageBox(message=msgNoSignificantDiff , icon="warning")
 
       stop(msgNoSignificantDiff )
     } else{

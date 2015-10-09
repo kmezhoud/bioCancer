@@ -1,18 +1,32 @@
-Package: radiant
-Title: Business Analytics using R and Shiny
-Version: 0.3.32
+Package: bioCancer
+Title: Multi-Omics Cancers data Visualisation
+Version: 0.99.0
 Date: 2015-9-28
-Authors@R: person("Vincent", "Nijs", , "radiant@rady.ucsd.edu", c("aut", "cre"))
+Authors@R: person("Karim", "Mezhoud", , "kmezhoud@gmail.com", c("aut", "cre"))
 Description:
-	A platform-independent browser-based interface for business analytics in R, based on the Shiny package.
+	bioCancer is a Shiny App to explore and analysis interactively Multi-Assay of Cancer Genomic Data.
 Depends:
 		R (>= 3.2.0),
-		magrittr (>= 1.5),
+		radiant,
+		 htmlwidgets,
+Imports:
+  cgdsr,
+  coffeewheel,
+  metabologram,
+  Biobase,
+  geNetClassifier,
+  AnnotationFuncs,
+  org.Hs.eg.db,
+  DOSE,
+  clusterProfiler,
+  RCurl,
+  XML,
+  plyr,
+    magrittr (>= 1.5),
 		ggplot2 (>= 1.0.0),
 		lubridate (>= 1.3.3),
 		tidyr (>= 0.3.1),
-		dplyr (>= 0.4.3)
-Imports:
+		dplyr (>= 0.4.3),
 		DiagrammeR(>= 0.7),
 		car (>= 2.0.22),
     MASS (>= 7.3),
@@ -28,7 +42,7 @@ Imports:
 		pryr (>= 0.1),
 	  shiny (>= 0.12.2),
 		shinyAce (>= 0.2.1),
-		DT (>= 0.1.39),
+		DT (>= 0.1),
 		MathJaxR (>= 0.11),
 		readr (>= 0.1.1),
 		data.tree(>= 0.2.1),
@@ -41,7 +55,7 @@ Suggests:
 		devtools (>= 1.8.0),
 		testthat (>= 0.10.0),
 		covr (>= 1.2.0)
-URL: https://github.com/vnijs/radiant, http://vnijs.github.io/radiant/
-BugReports: https://github.com/vnijs/radiant/issues
+URL: https://github.com/kmezhoud/CancerPortal, http://vnijs.github.io/radiant/
+BugReports: https://github.com/kmezhoud/CancerPortal/issues
 License: AGPL-3 | file LICENSE
 LazyData: true

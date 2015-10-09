@@ -16,7 +16,7 @@ stop_radiant <- function() {
 
       assign("r_data", reactiveValuesToList(r_data), envir = .GlobalEnv)
 
-      stop_message <- "\nStopping Radiant. State available as 'r_state' and 'r_data'.\n"
+      stop_message <- "\nStopping CancerPortal. State available as 'r_state' and 'r_data'.\n"
 
       if (!is_empty(input$rmd_report)) {
 
@@ -38,10 +38,10 @@ stop_radiant <- function() {
       if (exists("r_sessions")) rm(r_sessions, envir = .GlobalEnv)
       unlink("~/r_figures/", recursive = TRUE)
       cat(stop_message)
-      stopApp("-- Stopped Radiant --")
+      stopApp("-- Stopped CancerPortal --")
     })
   } else {
-    stopApp("-- Stopped Radiant --")
+    stopApp("-- Stopped CancerPortal --")
     q("no")
   }
 }

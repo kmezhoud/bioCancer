@@ -57,7 +57,12 @@ getListProfData <- function(panel){
           #return(MutData)
 
         }
-      }else{tkmessageBox(message = paste("There is no genetic Profiles: ", regex2," for Study:",checked_Studies[s] ), icon="warning" )
+      }else{
+        withProgress(message= paste("There is no genetic Profiles: ", regex2 ), value = 0.1,
+                     {p1 <- proc.time()
+                     Sys.sleep(2) # wait 2 seconds
+                     proc.time() - p1 })
+        #tkmessageBox(message = paste("There is no genetic Profiles: ", regex2," for Study:",checked_Studies[s] ), icon="warning" )
         #print(paste("There is no genetic Profile: ", regex2," for Study:",checked_Studies[s],"..." ))
         ## built empty data frame with gene Symbol in colnames
         if(length(GeneList) <500){
@@ -70,7 +75,11 @@ getListProfData <- function(panel){
         return( ProfData_X)
       }
     }else{
-      tkmessageBox(message = paste("There is no Cases: ",regex1, " for Study:",checked_Studies[s] ), icon="warning" )
+      withProgress(message= paste("There is no Cases: ",regex1 ), value = 0.1,
+                   {p1 <- proc.time()
+                   Sys.sleep(2)
+                   proc.time() - p1 })
+      #tkmessageBox(message = paste("There is no Cases: ",regex1, " for Study:",checked_Studies[s] ), icon="warning" )
       #print(paste("There is no Cases: ", regex1," for Study:",checked_Studies[s],"..." ))
       ## built empty data frame with gene Symbol in colnames
       if(length(GeneList) <500){
@@ -123,12 +132,16 @@ if (panel=="Circomics"){
   ListMutData <- NULL
   for (s in 1: Lchecked_Studies){
     #Si = myGlobalEnv$checked_StudyIndex[s]
+    withProgress(message= paste(checked_Studies[s],":"), value = 0, {
 
-    progressBar_ProfilesData <- tkProgressBar(title = checked_Studies[s], min = 0,
-                                              max = Lchecked_Studies, width = 400)
+        incProgress(0.1, detail=paste(round((s/Lchecked_Studies)*100, 0),"% of Profiles Data"))
+                Sys.sleep(0.1)
 
-    Sys.sleep(0.1)
-    setTkProgressBar(progressBar_ProfilesData, s, label=paste( round((s/Lchecked_Studies)*100, 0),"% of Profiles Data"))
+#     progressBar_ProfilesData <- tkProgressBar(title = checked_Studies[s], min = 0,
+#                                               max = Lchecked_Studies, width = 400)
+#
+#     Sys.sleep(0.1)
+#     setTkProgressBar(progressBar_ProfilesData, s, label=paste( round((s/Lchecked_Studies)*100, 0),"% of Profiles Data"))
 
 
 
@@ -234,8 +247,8 @@ if (panel=="Circomics"){
       MutData <- grepRef(Case_Mut,CasesRefStudies ,GenProf_Mut, GenProfsRefStudies,GeneList, Mut=1)
 
     } else {
-      tkmessageBox(message= "Load gene List", icon="warning")
-      close(progressBar_ProfilesData)
+      #tkmessageBox(message= "Load gene List", icon="warning")
+      #close(progressBar_ProfilesData)
       stop("Load Gene List")
     }
 
@@ -251,7 +264,8 @@ if (panel=="Circomics"){
     ListMutData[[checked_Studies[s]]] <- MutData
 
     #print(" End Getting Profiles Data... ")
-    close(progressBar_ProfilesData)
+    #close(progressBar_ProfilesData)
+                 })
   }
   r_data[['ListProfData']] <- ListProfData
   r_data[['ListMetData']] <- ListMetData

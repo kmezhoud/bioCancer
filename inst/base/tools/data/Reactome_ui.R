@@ -178,8 +178,8 @@ output$ReactomeAvailability <- DT::renderDataTable({
                     pageLength = 14,
                     lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
                   )
-    )%>%  formatStyle(names(dat),
-                      color = styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
+    )%>%  DT::formatStyle(names(dat),
+                      color = DT::styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
 
 
 

@@ -190,8 +190,8 @@ whichGeneList <- function(){
     GeneList <- r_data$Genes
   }else if(input$GeneListID == "Reactome_GeneList"){
     GeneList <- t(r_data$Reactome_GeneList)
-  }else{
-    GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+  }else{print(getwd())
+    GeneList <- t(unique(read.table(paste0("inst/base/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
   }
   return(GeneList)
 
@@ -245,17 +245,10 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
     Sys.sleep(0.25)
 
     ## get Gene Mutation Frequency
-
-
     print("Start getting Frequency of Mutation ...")
-
     Freq_DfMutData <- getFreqMutData(list = r_data$ListMutData)
-
     print("End getting Mutation Frequency...")
-
     listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
-
-
     TreeMutData <- reStrDisease(listMut_df)
     coffeewheel(TreeMutData, width=600, height=600) # main=title
   })
@@ -436,19 +429,11 @@ checkDimensions<- function(panel){
 
 output$CircosAvailability <- DT::renderDataTable({
 
-
   withProgress(message = 'Loading Data...', value = 0.1, {
     Sys.sleep(0.25)
-
-
     dat <- checkDimensions(panel="Circomics")
-
-
     ## remove rownames to column
     dat <- dat %>% add_rownames("Samples")
-
-
-
 
     # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
     action = DT::dataTableAjax(session, dat, rownames = FALSE)
@@ -465,8 +450,8 @@ output$CircosAvailability <- DT::renderDataTable({
                     pageLength = 14,
                     lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
                   )
-    )%>%  formatStyle(names(dat),
-                      color = styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
+    )%>%  DT::formatStyle(names(dat),
+                      color = DT::styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
 
 
 

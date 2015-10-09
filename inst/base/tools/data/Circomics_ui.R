@@ -39,7 +39,7 @@ output$ui_Circomics <- renderUI({
     #}
   })
 
-  conditionalPanel("input.tabs_Analysis == 'Circomics'",
+  conditionalPanel("input.tabs_Enrish == 'Circomics'",
 
                    selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=NULL, multiple = TRUE),
                    div(class="row",
