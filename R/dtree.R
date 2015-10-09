@@ -20,7 +20,7 @@ dtree_parser <- function(yl) {
   # yl <- paste0(yl, collapse = "\n")
   ############################
 
-  yl <- unlist(strsplit(yl, "\n"))
+  if (is_string(yl)) yl <- unlist(strsplit(yl, "\n"))
 
   ## substitute values
   var_def <- grepl("=",yl) %>% which
@@ -29,7 +29,8 @@ dtree_parser <- function(yl) {
       var <- strsplit(yl[i], "=")[[1]]
       var[1] <- gsub("^\\s+|\\s+$", "", var[1]) %>% gsub("(\\W)", "\\\\\\1", .)
       var[2] <- eval(parse(text = gsub("[a-zA-Z]+","",var[2])))
-      yl[-i] <- gsub(paste0("(\\s*)",var[1]), paste0("\\1",var[2]), yl[-i], perl = TRUE)
+      yl[-i] <- gsub(paste0("(\\s*)",var[1],"\\s*$"), paste0("\\1",var[2]), yl[-i], perl = TRUE)
+
       # yl[-i] <- gsub(paste0(":\\s*",var[1]), paste0(": ",var[2]), yl[-i], fixed = TRUE)
       ## can't work in the variable definition section
       # yl[-i] <- gsub(paste0(":\\s*",var[1]), paste0(": ",var[2]), yl[-i])
@@ -45,6 +46,9 @@ dtree_parser <- function(yl) {
   col_ln <- yl %>% grepl("(?=:)|(?=^\\s*$)|(?=^\\s*#)",., perl = TRUE)
   if (any(!col_ln))
     err <- c(err, paste0("Each line must have a ':'. Add a ':' in line(s): ", paste0(which(!col_ln), collapse = ", ")))
+
+  ## add a space to input after the : YAML needs this
+  yl %<>% gsub(":([^\\s$])",": \\1", .) %>% gsub("  ", " ", .)
 
   ## replace .4 by 0.4
   # yl <- c(yl, "p: .4")
@@ -80,12 +84,11 @@ dtree_parser <- function(yl) {
   # nn_id <- yl %>% grepl("^[^:#]+:\\s*$",., perl = TRUE) %>% which
   # nn_id <- yl %>% grepl("^\\s*[^#]+[^:]+:\\s*$",., perl = TRUE) %>% which
   nn_id <-
-
-  yl %>% gsub("(^\\s*p\\s*:\\s*$)","\\1 0",.) %>%
-    gsub("(^\\s*type\\s*:\\s*$)","\\1 0",.) %>%
-    gsub("(^\\s*cost\\s*:\\s*$)","\\1 0",.) %>%
-    gsub("(^\\s*payoff\\s*:\\s*$)","\\1 0",.) %>%
-    grepl("^\\s*[^#]+:\\s*$",., perl = TRUE) %>% which
+    yl %>% gsub("(^\\s*p\\s*:\\s*$)","\\1 0",.) %>%
+      gsub("(^\\s*type\\s*:\\s*$)","\\1 0",.) %>%
+      gsub("(^\\s*cost\\s*:\\s*$)","\\1 0",.) %>%
+      gsub("(^\\s*payoff\\s*:\\s*$)","\\1 0",.) %>%
+      grepl("^\\s*[^#]+:\\s*$",., perl = TRUE) %>% which
 
   ## replace ( ) { } [ ]
   if (length(nn_id) > 0)
@@ -144,6 +147,7 @@ dtree_parser <- function(yl) {
 #' @details See \url{http://vnijs.github.io/radiant/base/dtree.html} for an example in Radiant
 #'
 #' @param yl A yaml string or a list (e.g., from yaml::yaml.load_file())
+#' @param opt Find the maximum ("max") or minimum ("min") value for each decision node
 #'
 #' @return A list with the initial tree and the calculated tree
 #'
@@ -155,7 +159,7 @@ dtree_parser <- function(yl) {
 #' @seealso \code{\link{plot.dtree}} to plot results
 #'
 #' @export
-dtree <- function(yl) {
+dtree <- function(yl, opt = "max") {
 
   ## most of the code in this function is from
   ## https://github.com/gluc/useR15/blob/master/01_showcase/02_decision_tree.R
@@ -163,15 +167,20 @@ dtree <- function(yl) {
   ## load yaml from string if list not provide
   if (is_string(yl)) {
 
+    ## get input file from r_data
+    # if (!grepl("name\\s*:", yl)) yl <- getdata(yl)
+    if (!grepl("\\n", yl)) yl <- getdata(yl)
+
     yl <- dtree_parser(yl)
     ## test
     # return(paste0(paste0("\n**\n", yl, collapse = "\n"), "\n**\n") %>% set_class(c("dtree", class(.))))
     if (class(yl)[1] == "dtree") return(yl)
 
-    yl <- try(yaml.load(yl), silent = TRUE)
+    # yl <- try(yaml.load(yl), silent = TRUE)
 
     ## if the name of input-list in r_data is provided
-    if (!is(yl, 'try-error') && is_string(yl)) yl <- try(yaml.load(getdata(yl)), silent = TRUE)
+    # if (!is(yl, 'try-error') && is_string(yl)) yl <- try(yaml.load(getdata(yl)), silent = TRUE)
+    yl <- try(yaml.load(yl), silent = TRUE)
 
     ## used when a string is provided
     if (is(yl, 'try-error')) {
@@ -217,10 +226,13 @@ dtree <- function(yl) {
   # }
 
   chance_payoff <- function(node) {
-    if(is.null(node$payoff) || is.null(node$p)) {
+    if (is.null(node$payoff) || is.null(node$p)) {
       0
     } else {
-      node$payoff * node$p
+      # if (is_string(node$p)) node$p <- eval(parse(text = node$p))
+      # node$payoff * node$p
+      p <- if (is_string(node$p)) eval(parse(text = node$p)) else node$p
+      node$payoff * p
     }
   }
 
@@ -232,15 +244,16 @@ dtree <- function(yl) {
     if (is_empty(x$type)) x$payoff <- 0
     else if (x$type == 'chance') x$payoff <- sum(sapply(x$children, chance_payoff))
     # else if (x$type == 'decision') x$payoff <- max(sapply(x$children, function(node) node$payoff))
-    else if (x$type == 'decision') x$payoff <- max(sapply(x$children, decision_payoff))
+    # else if (x$type == 'decision') x$payoff <- max(sapply(x$children, decision_payoff))
+    else if (x$type == 'decision') x$payoff <- get(opt)(sapply(x$children, decision_payoff))
 
     ## subtract cost if specified
     if (!is.null(x$cost)) x$payoff <- x$payoff - x$cost
   }
 
-  # err <- try(jl$Do(calc_payoff, traversal = "post-order", filterFun = isNotLeaf), silent = TRUE)
-  jl$Do(calc_payoff, traversal = "post-order", filterFun = isNotLeaf)
-  err <- ""
+  err <- try(jl$Do(calc_payoff, traversal = "post-order", filterFun = isNotLeaf), silent = TRUE)
+  # jl$Do(calc_payoff, traversal = "post-order", filterFun = isNotLeaf)
+  # err <- ""
 
   if (is(err, 'try-error')) {
     err <- paste0("**\nError calculating payoffs associated with a chance or decision node.\nPlease check that each terminal node has a payoff and that probabilities\nare correctly specificied\n**")
@@ -253,9 +266,9 @@ dtree <- function(yl) {
     x$decision <- names(po[po == x$payoff])
   }
 
-  jl$Do(decision, filterFun = function(x) !is.null(x$type) && x$type == 'decision')
-  # err <- try(jl$Do(decision, filterFun = function(x) !is.null(x$type) && x$type == 'decision'), silent = TRUE)
-  err <- ""
+  # jl$Do(decision, filterFun = function(x) !is.null(x$type) && x$type == 'decision')
+  # err <- ""
+  err <- try(jl$Do(decision, filterFun = function(x) !is.null(x$type) && x$type == 'decision'), silent = TRUE)
 
   if (is(err, 'try-error')) {
     err <- paste0("**\nError calculating payoffs associated with a decision node. Please check\nthat each terminal node has a payoff\n**")
@@ -287,6 +300,13 @@ summary.dtree <- function(object, ...) {
       format(digits = 10, nsmall = 2, decimal.mark = ".", big.mark = ",", scientific = FALSE)
   }
 
+  print_percent <- function(x) {
+    if (is_string(x)) x <- eval(parse(text = x))
+    # print(x)
+    # if (!is.numeric(x)) x <- 0
+    FormatPercent(x)
+  }
+
   rm_terminal <- function(x)
     x %>% {if (is.na(.)) "" else .} %>% {if (. == "terminal") "" else .}
 
@@ -300,7 +320,8 @@ summary.dtree <- function(object, ...) {
     Traverse(jl) %>%
       {data.frame(
         ` ` = Get(.,"levelName"),
-        Probability = Get(., "p", format = FormatPercent),
+        # Probability = Get(., "p", format = FormatPercent),
+        Probability = Get(., "p", format = print_percent),
         Payoff = Get(., "payoff", format = print_money),
         Cost = Get(., "cost", format = print_money),
         Type = Get(., "ptype", format = rm_terminal),
@@ -388,12 +409,18 @@ plot.dtree <- function(x, symbol = "$", dec = 3, final = FALSE, shiny = FALSE, .
     paste0(" ", node$id, lbl)
   }
 
+  style_decision <- jl$Get("id", filterFun = function(x) x$type == "decision")
+  if (is.null(style_decision)) style_decision <- "id_null"
+  style_chance <- jl$Get("id", filterFun = function(x) x$type == "chance")
+  if (is.null(style_chance)) style_chance <- "id_null"
+
   style <- paste0(
     "classDef default fill:none, bg:none, stroke-width:0px;
     classDef chance fill:#FF8C00,stroke:#333,stroke-width:1px;
     classDef decision fill:#9ACD32,stroke:#333,stroke-width:1px;
-    class ", paste(jl$Get("id", filterFun = function(x) x$type == "decision"), collapse = ","), " decision;
-    class ", paste(jl$Get("id", filterFun = function(x) x$type == "chance"), collapse = ","), " chance;")
+    class ", paste(style_decision, collapse = ","), " decision;
+    class ", paste(style_chance, collapse = ","), " chance;")
+
   trv <- Traverse(jl, traversal = "level", filterFun = isNotRoot)
   df <- data.frame(from = Get(trv, FromLabel), edge = Get(trv, EdgeLabel), to = Get(trv, ToLabel))
 
@@ -405,7 +432,15 @@ plot.dtree <- function(x, symbol = "$", dec = 3, final = FALSE, shiny = FALSE, .
 ## some initial ideas for sensitivity analysis
 # library(yaml); library(radiant)
 # library(radiant); library(data.tree)
-# # yl <- yaml::yaml.load_file("~/Dropbox/teaching/MGT403-2015/data.tree/jennylind.yaml")
+# yl <- yaml::yaml.load_file("~/Dropbox/teaching/MGT403-2015/data.tree/jennylind-variables.yaml")
+# eval(parse(text = yl$variables))
+# p_medium
+# p_large
+
+# names(yl)
+
+# yl$test <- function(x) x + 1
+# yl$test(2)
 # yl <- yaml::yaml.load_file("~/Dropbox/teaching/MGT403-2015/data.tree/quant_job.yaml")
 # dtree(yl)
 # dtree(yl)

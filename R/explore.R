@@ -1,4 +1,3 @@
-
 #' Explore data
 #'
 #' @details See \url{http://vnijs.github.io/radiant/base/explore.html} for an example in Radiant
@@ -440,6 +439,28 @@ sd_rm <- function(x) sd(x, na.rm = TRUE)
 #' @export
 var_rm <- function(x) var(x, na.rm = TRUE)
 
+#' Variance for the population na.rm = TRUE
+#' @param x Input variable
+#' @return Variance for the population
+#' @examples
+#' varp_rm(rnorm(100))
+#'
+#' @export
+varp_rm <- function(x) {
+  x <- na.omit(x)
+  n <- length(x)
+  var(x) * ((n-1)/n)
+}
+
+#' Standard deviation for the population na.rm = TRUE
+#' @param x Input variable
+#' @return Standard deviation for the population
+#' @examples
+#' sdp_rm(rnorm(100))
+#'
+#' @export
+sdp_rm <- function(x) sqrt(varp_rm(x))
+
 #' Sum with na.rm = TRUE
 #' @param x Input variable
 #' @return Sum of input values
@@ -481,3 +502,4 @@ make_funs <- function(x) {
   env <- if (exists("radiant")) environment(radiant::radiant) else parent.frame()
   dplyr::funs_(lapply(paste0(xclean, " = ~", x), as.formula, env = env) %>% setNames(xclean))
 }
+

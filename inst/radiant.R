@@ -119,7 +119,8 @@ saveStateOnRefresh <- function(session = session) {
 
 groupable_vars <- reactive({
   .getdata() %>%
-    summarise_each(funs(is.factor(.) || lubridate::is.Date(.) || is.integer(.))) %>%
+    summarise_each(funs(is.factor(.) || lubridate::is.Date(.) || is.integer(.) ||
+                        ((n_distinct(., na_rm = TRUE)/n()) < .05 && !is.numeric(.)))) %>%
     {which(. == TRUE)} %>%
     varnames()[.]
 })
@@ -160,10 +161,21 @@ clean_args <- function(rep_args, rep_default = list()) {
   if (length(rep_default) == 0) rep_default[names(rep_args)] <- ""
 
   ## removing default arguments before sending to report feature
-  for (i in names(rep_args))
+  for (i in names(rep_args)) {
+    # if (is.na(rep_args[[i]])) || all(rep_args[[i]] == rep_default[[i]])) rep_args[[i]] <- NULL
+    if (all(is.na(rep_args[[i]]))) {rep_args[[i]] <- NULL; next}
+    # if (rep_default[[i]] == Inf || rep_default[[i]] == -Inf) next
+    # if (is.symbol(rep_default[[i]])) next
+    if (!all(is.symbol(rep_default[[i]])) && all(is_not(rep_default[[i]]))) next
+    # print(rep_default[[i]])
+    # if (rep_default[[i]] == NA) next
     if (all(rep_args[[i]] == rep_default[[i]])) rep_args[[i]] <- NULL
+  }
+
   rep_args
 }
+
+is.symbol
 
 ## check if a variable is null or not in the selected data.frame
 not_available <- function(x)
@@ -171,6 +183,8 @@ not_available <- function(x)
 
 ## check if a variable is null or not in the selected data.frame
 available <- function(x) not_available(x) == FALSE
+
+is_not <- function(x) is.null(x) || is.na(x)
 
 ## check if a button was NOT pressed
 not_pressed <- function(x) if (is.null(x) || x == 0) TRUE else FALSE
