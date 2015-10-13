@@ -1,23 +1,32 @@
 shinyServer(function(input, output, session) {
   #library(PSICQUIC)
   #library(networkD3)
-  library(shinythemes)
-   library(cgdsr)
+  #   library(shinythemes)
+  library(cgdsr)
+  require(magrittr)
   library(coffeewheel)
   library(htmlwidgets)
   library(metabologram)
- # library(tcltk)
-  #library(DT)
-  library(Biobase)
+  library(DiagrammeR)
+  library(dplyr)
   library(geNetClassifier)
-  library(AnnotationFuncs)
-  library("org.Hs.eg.db")
-  require(DOSE)
-  library(clusterProfiler)
   library(RCurl)
-  library(XML)
+  library(clusterProfiler)
+  library(AnnotationFuncs)
+#### masked
   library(plyr)
-  #library(DiagrammeR)
+
+  #   #library(DT)
+    library(Biobase)
+   library(DOSE)
+  library("org.Hs.eg.db")
+  #
+
+
+    library(XML)
+
+
+  #   library(grDevices)
   #library(S4Vectors)
   ####masked package
   #library(lubridate)
@@ -25,8 +34,8 @@ shinyServer(function(input, output, session) {
   ##################
   # for cgdsr
 
-  cgds <- CGDS("http://www.cbioportal.org/public-portal/")
-  Studies<- getCancerStudies(cgds)
+  cgds <- cgdsr::CGDS("http://www.cbioportal.org/public-portal/")
+  Studies<- cgdsr::getCancerStudies(cgds)
   updateSelectizeInput(session, 'StudiesID', choices = Studies[,1], selected = "gbm_tcga_pub")
 
   ####### Gene List
@@ -58,8 +67,8 @@ shinyServer(function(input, output, session) {
   ## source shared functions
 
   source("inst/init.R", encoding = r_encoding, local = TRUE)
- # source("inst/global.R", encoding = r_encoding, local = TRUE)
-   source("inst/radiant.R", encoding = r_encoding, local = TRUE)
+  # source("inst/global.R", encoding = r_encoding, local = TRUE)
+  source("inst/radiant.R", encoding = r_encoding, local = TRUE)
 
 
 
@@ -69,21 +78,21 @@ shinyServer(function(input, output, session) {
     selectInput("GeneListID", "Gene List:", r_data$genelist)
   })
 
-  if (!"package:radiant" %in% search()) {
-    if (r_path == "inst") {
-      for (file in list.files("R",
-                              pattern="\\.(r|R)$",
-                              full.names = TRUE)) {
+  # if (!"package:radiant" %in% search()) {
+  if (r_path == "inst") {
+    for (file in list.files("R",
+                            pattern="\\.(r|R)$",
+                            full.names = TRUE)) {
 
-        source(file, encoding = r_encoding, local = TRUE)
-      }
-    } else {
-      radiant::copy_all(radiant)
-      set_class <- radiant::set_class
+      source(file, encoding = r_encoding, local = TRUE)
     }
   } else {
-    copy_from(radiant, state_init, state_single, state_multiple)
+    radiant::copy_all(radiant)
+    set_class <- radiant::set_class
   }
+  #   } else {
+  #     copy_from(radiant, state_init, state_single, state_multiple)
+  #   }
 
   ## source data & analysis tools
   for (file in list.files(c("inst/base/tools/app","inst/base/tools/data","inst/base/tools/help"),

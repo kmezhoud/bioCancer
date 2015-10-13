@@ -50,6 +50,7 @@ output$ui_Circomics <- renderUI({
                    ),
 
                    conditionalPanel("input.getlistProfDataCircosID==true",
+                                    actionButton('loadListProfData', 'Load Profiles in Datasets'),
                                     uiOutput("ui_CircosDimension")
                    ),
 
@@ -79,13 +80,35 @@ output$ui_Circomics <- renderUI({
                      #                    p(span("Blue", style="color:blue"),": Negative significant rate."),
                      #                    p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
                      #                    p(span("Red", style="color:red"),": Positive significant rate.")
-                   )
-
+                   ),
+                   help_modal_km('Circomics','CircomicsHelp',inclMD(file.path(r_path,"base/tools/help/Circomics.md")))
   )
 
 })
 
+## Load Profile data in datasets
+observe({
+  if (not_pressed(input$loadListProfData)) return()
+  isolate({
 
+    loadInDatasets(fname="xCNA", header=TRUE)
+    loadInDatasets(fname="xmRNA", header=TRUE)
+    loadInDatasets(fname="xMetHM450", header=TRUE)
+    loadInDatasets(fname="xMetHM27", header=TRUE)
+    loadInDatasets(fname="xMut", header=TRUE)
+    # loadInDatasets(fname="xFreqMut", header=TRUE)
+    loadInDatasets(fname="xmiRNA", header=TRUE)
+    loadInDatasets(fname="xRPPA", header=TRUE)
+
+    # sorting files alphabetically
+    r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
+
+    updateSelectInput(session, "dataset", label = "Datasets:",
+                      choices = r_data$datasetlist,
+                      selected = "")
+
+  })
+})
 
 # observe({
 #

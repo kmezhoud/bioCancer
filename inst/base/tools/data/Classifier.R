@@ -119,7 +119,7 @@ output$Plot_enricher <- renderPlot({
   x <- enricher(GeneID, pvalueCutoff = 0.05,TERM2GENE=disease2gene, TERM2NAME=disease2name)
   r_data[['x']] <- x
   options(scipen = 0, digits = 2)
-  barplot(x,drop=TRUE, showCategory=10 ,digits=2)
+  barplot(x,drop=TRUE,showCategory=10 ,digits=2)
 })
 })
 
@@ -223,5 +223,5 @@ output$compareClusterKEGG <- renderPlot({
   })
 })
 compareClusterKEGG <- function(){
-  ploy(r_data$ckegg)
+  plot(r_data$ckegg)
 }

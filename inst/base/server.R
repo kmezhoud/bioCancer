@@ -1,6 +1,7 @@
 shinyServer(function(input, output, session) {
   #library(PSICQUIC)
   #library(networkD3)
+library(radiant)
   library(cgdsr)
   library(coffeewheel)
   library(metabologram)
@@ -51,8 +52,8 @@ shinyServer(function(input, output, session) {
   })
 
 
-
   ## source shared functions
+  source("global.R", encoding = "UTF-8", local = TRUE)
 	source("init.R", encoding = r_encoding, local = TRUE)
 	source("radiant.R", encoding = r_encoding, local = TRUE)
 

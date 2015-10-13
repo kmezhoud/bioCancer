@@ -36,7 +36,7 @@ r_encoding = "UTF-8"
 # if (r_path == "") r_path <- ".."  # if radiant is not installed revert to local inst
 
 r_path <- ifelse ((file.exists("inst/base") && file.exists("inst/quant")), "inst",
-                  system.file(package = "radiant"))
+                  system.file(package = "bioCancer"))
 
 if (r_path == "") r_path <- ".."  # if radiant is not installed revert to local inst
 
@@ -84,9 +84,9 @@ if (Sys.getenv('SHINY_PORT') == "") {
 
 
   ## if radiant package was not loaded load dependencies
-  if (!"package:radiant" %in% search())
+ # if (!"package:radiant" %in% search()){}
 
-    sapply(r_pkgs, require, character.only = TRUE)
+    #sapply(r_pkgs, require, character.only = TRUE)
 
 
 } else {

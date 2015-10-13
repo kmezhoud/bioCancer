@@ -375,6 +375,26 @@ help_modal <- function(modal_title, link, help_file) {
   enc2utf8 %>% HTML
 }
 
+help_modal_km <- function(modal_title, link, help_file) {
+  sprintf("<div class='modal fade' id='%s' tabindex='-1' role='dialog' aria-labelledby='%s_label' aria-hidden='true'>
+          <div class='modal-dialog'>
+          <div class='modal-content'>
+          <div class='modal-header'>
+          <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
+          <h4 class='modal-title' id='%s_label'>%s</h4>
+          </div>
+          <div class='modal-body'>%s<br>
+          &copy; Karim Mezhoud (2015) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a>
+          </div>
+          </div>
+          </div>
+          </div>
+          <i title='Help' class='fa fa-question' data-toggle='modal' data-target='#%s'></i>",
+           link, link, link, modal_title, help_file, link) %>%
+  enc2utf8 %>% HTML
+}
+
+
 help_and_report <- function(modal_title, fun_name, help_file) {
   sprintf("<div class='modal fade' id='%s_help' tabindex='-1' role='dialog' aria-labelledby='%s_help_label' aria-hidden='true'>
             <div class='modal-dialog'>

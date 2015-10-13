@@ -139,7 +139,7 @@ pivotr <- function(dataset,
     ## only one variable for now
     tabsort <- tabsort[1]
     if (substring(tabsort,1) == "-") {
-      tab %<>% arrange(., desc(.[[substring(tabsort,2)]]))
+      tab %<>% arrange(., plyr::desc(.[[substring(tabsort,2)]]))
     } else {
       tab %<>% arrange_(tabsort)
     }

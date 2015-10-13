@@ -99,7 +99,7 @@ output$ui_Reactome <- renderUI({
                 checkboxInput("ViewProfDataReactomeID", "Availability", value = FALSE)),
             div(class="col-xs-6",
                 checkboxInput("getlistProfDataID", "Load", value = FALSE))
-        )
+        ),
 
 
         #           radioButtons(inputId = "getlistProfDataID", label = "Profile Data",
@@ -107,9 +107,8 @@ output$ui_Reactome <- renderUI({
         #                        selected = "", inline = TRUE),
 
 
-      ),
+
       conditionalPanel(condition= "input.getlistProfDataID==true",
-                       actionButton('loadListProfData', 'Load Profiles in Datasets'),
                        uiOutput("ui_NodeAttri_ProfData")
       ),
 
@@ -120,6 +119,7 @@ output$ui_Reactome <- renderUI({
                        uiOutput("ui_Freq_MutSlider"),
                        uiOutput("ui_MetSliderHM450"),
                        uiOutput("ui_MetSliderHM27")
+      )
       )
       #         conditionalPanel(condition= "input.NodeAttri_ProfDataID=='Met_HM450'",
       #                           uiOutput("ui_MetSliderHM450")
@@ -142,7 +142,8 @@ output$ui_Reactome <- renderUI({
             checkboxInput("ReacRunId", "Run" ,value = FALSE)),
         div(class="col-xs-4",
             checkboxInput("ReacLegendId", "Legend", value=FALSE))
-    )
+    ),
+    help_modal_km('Reactome','ReactomeHelp',inclMD(file.path(r_path,"base/tools/help/Reactome.md")))
 
     # with(tags, table(
     #   tr(
@@ -216,26 +217,4 @@ observe({
 })
 
 
-## Load Profile data in datasets
-observe({
-  if (not_pressed(input$loadListProfData)) return()
-  isolate({
 
-    loadInDatasets(fname="xCNA", header=TRUE)
-    loadInDatasets(fname="xmRNA", header=TRUE)
-    loadInDatasets(fname="xMetHM450", header=TRUE)
-    loadInDatasets(fname="xMetHM27", header=TRUE)
-    loadInDatasets(fname="xMut", header=TRUE)
-   # loadInDatasets(fname="xFreqMut", header=TRUE)
-    loadInDatasets(fname="xmiRNA", header=TRUE)
-    loadInDatasets(fname="xRPPA", header=TRUE)
-
-    # sorting files alphabetically
-    r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
-
-    updateSelectInput(session, "dataset", label = "Datasets:",
-                      choices = r_data$datasetlist,
-                      selected = "")
-
-  })
-})

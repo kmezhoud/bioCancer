@@ -30,15 +30,15 @@ output$ui_ProfData <- renderUI({
 
     wellPanel(
 
-      radioButtons(inputId = "loadGeneListID", label = "Load Gene List:",
-                   c( "examples" = "ExampleGeneList",  "clipboard" = "clipboard_GeneList"),
+      radioButtons(inputId = "loadGeneListID_ProfData", label = "Load Gene List:",
+                   c( "examples" = "ExampleGeneList_ProfData",  "clipboard" = "clipboard_GeneList_ProfData"),
                    selected = "Genes", inline = TRUE),
 
-      conditionalPanel(condition = "input.loadGeneListID == 'clipboard_GeneList'",
+      conditionalPanel(condition = "input.loadGeneListID_ProfData == 'clipboard_GeneList_ProfData'",
                        actionButton('loadClipProf_GeneList', 'Paste Gene List')
                        #uiOutput("ui_clipboard_load_ProfData")
       ),
-      conditionalPanel(condition = "input.loadGeneListID == 'ExampleGeneList'",
+      conditionalPanel(condition = "input.loadGeneListID_ProfData == 'ExampleGeneList_ProfData'",
                        actionButton('loadExampleGeneList_ProfData', 'Load examples')
       )
 #       conditionalPanel(condition = "input.loadGeneListID == 'state_Prof'",
@@ -49,12 +49,13 @@ output$ui_ProfData <- renderUI({
   ),
 
   wellPanel(
-
-    radioButtons(inputId = "ProfData", label = "Load ProfData to Datasets:",
-                 c("ProfData"="ProfData"), selected = FALSE, inline =TRUE),
-    conditionalPanel(condition = "input.ProfData == 'ProfData'",
-                     actionButton('loadProfData', 'Load ProfData'))
-  )
+    checkboxInput(inputId = "ProfData", "Load Profile to Datasets" ,value = FALSE),
+   # radioButtons(inputId = "ProfData", label = "Load ProfData to Datasets:",
+    #             c("ProfData"="ProfData"), selected = "ProfData", inline =TRUE),
+    conditionalPanel(condition = "input.ProfData == true",
+                     actionButton('loadProfData', 'Load Profiles Table'))
+  ),
+    help_modal_km('Profiles Data','ProfilesHelp',inclMD(file.path(r_path,"base/tools/help/Profiles.md")))
   )
 })
 ####################
@@ -94,7 +95,6 @@ observe({
                       choices = r_data$genelist, selected = "Genes")
   })
 })
-
 
 ## Load Profile data in datasets
 observe({

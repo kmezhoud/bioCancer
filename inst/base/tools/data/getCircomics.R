@@ -250,7 +250,7 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
     print("End getting Mutation Frequency...")
     listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
     TreeMutData <- reStrDisease(listMut_df)
-    coffeewheel(TreeMutData, width=600, height=600) # main=title
+    coffeewheel(TreeMutData, width=600, height=600, main="Mutation Frequency: (Min,Max)")
   })
 
 })

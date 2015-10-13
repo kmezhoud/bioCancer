@@ -1,5 +1,5 @@
 output$ui_Studies <- renderUI({
-  help_modal('Studies','StudiesHelp',inclMD(file.path(r_path,"base/tools/help/Studies.md")))
+  help_modal_km('Studies','StudiesHelp',inclMD(file.path(r_path,"base/tools/help/Studies.md")))
 })
 
 output$ui_clipboard_load_Clinical <- renderUI({
@@ -47,11 +47,9 @@ output$ui_ClinicalData <- renderUI({
       conditionalPanel(condition = "input.ClinicalDataID == 'clipboard_Clin'",
                        uiOutput("ui_clipboard_load_Clinical")
       )
-  )
+  ),
 
-#   fileInput('file1', 'Choose txt File',
-#             accept=c('text',
-#                      'text,text/plain'))
+help_modal_km('Clinical Data','ClinicalHelp',inclMD(file.path(r_path,"base/tools/help/Clinical.md")))
   )
 })
 

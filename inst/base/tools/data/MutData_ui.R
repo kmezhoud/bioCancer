@@ -31,15 +31,15 @@ output$ui_MutData <- renderUI({
   list(
     wellPanel(
 
-      radioButtons(inputId = "loadGeneListID", label = "Load Gene List:",
+      radioButtons(inputId = "loadGeneListID_Mut", label = "Load Gene List:",
                    c( "examples" = "ExampleGeneList",  "clipboard" = "clipboard_GeneList"),
                    selected = "Genes", inline = TRUE),
 
-      conditionalPanel(condition = "input.loadGeneListID == 'clipboard_GeneList'",
+      conditionalPanel(condition = "input.loadGeneListID_Mut == 'clipboard_GeneList'",
                        actionButton('loadClip_GeneList', 'Paste Gene List')
                        #uiOutput("ui_clipboard_load_MutData")
       ),
-      conditionalPanel(condition = "input.loadGeneListID == 'ExampleGeneList'",
+      conditionalPanel(condition = "input.loadGeneListID_Mut == 'ExampleGeneList'",
                        actionButton('loadExampleGeneList_MutData', 'Load examples')
       )
       #       conditionalPanel(condition = "input.loadGeneListID == 'state_Prof'",
@@ -55,14 +55,15 @@ output$ui_MutData <- renderUI({
     ),
 
     wellPanel(
-
-      radioButtons(inputId = "MutData", label = "Load Mutations to Datasets:",
-                   c("MutData"="MutData"), selected = FALSE, inline =TRUE),
-      conditionalPanel(condition = "input.MutData == 'MutData'",
-                       actionButton('loadMutData', 'Load MutData')
+      checkboxInput(inputId = "MutData", "Load Mutations to Datasets" ,value = FALSE),
+      #radioButtons(inputId = "MutData", label = "Load Mutations to Datasets:",
+       #            c("MutData"="MutData"), selected = FALSE, inline =TRUE),
+      conditionalPanel(condition = "input.MutData == true",
+                       actionButton('loadMutData', 'Load Mutation Table')
 
       )
-    )
+    ),
+    help_modal_km('Mutation Data','MutationHelp',inclMD(file.path(r_path,"base/tools/help/Mutation.md")))
   )
 })
 ####################
@@ -72,7 +73,7 @@ observe({
   if (not_pressed(input$loadExampleGeneList_MutData)) return()
   isolate({
 
-    # loading data bundled with Radiant
+    # loading data bundled with bioCancer
     data_path <- file.path(r_path,"base/data/GeneList")
     examples <- list.files(data_path)
 

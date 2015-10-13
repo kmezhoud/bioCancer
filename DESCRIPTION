@@ -1,15 +1,16 @@
 Package: bioCancer
 Title: Multi-Omics Cancers data Visualisation
 Version: 0.99.0
-Date: 2015-9-28
+Date: 2015-10-10
 Authors@R: person("Karim", "Mezhoud", , "kmezhoud@gmail.com", c("aut", "cre"))
 Description:
-	bioCancer is a Shiny App to explore and analysis interactively Multi-Assay of Cancer Genomic Data.
+	bioCancer is a Shiny App to visualise and analysis interactively Multi-Assays of Cancer Genomic Data.
 Depends:
 		R (>= 3.2.0),
 		radiant,
-		 htmlwidgets,
+		htmlwidgets
 Imports:
+  shinythemes,
   cgdsr,
   coffeewheel,
   metabologram,

@@ -147,13 +147,13 @@ getGenesClassifier <- reactive({
 
     GenesClassDetails <- geNetClassifier::genesDetails(signGenesRank_DiseaseType)
     r_data[['GenesClassDetailsForPlots']] <- GenesClassDetails
-    GenesClassDetails_bkp1 <<- GenesClassDetails
+    #GenesClassDetails_bkp1 <<- GenesClassDetails
 
     print("getting Genes Details...")
     GenesClassDetails_ls <- lapply(GenesClassDetails, function(x) x %>% add_rownames("Genes"))
     GenesClassDetails_df <- plyr::ldply(GenesClassDetails_ls)
     r_data[['GenesClassDetails']] <- GenesClassDetails_df[,-1]
-    GenesClassDetails_bkp <<- GenesClassDetails_df[,-1]
+    #GenesClassDetails_bkp <<- GenesClassDetails_df[,-1]
 
     #GenesClassTab <- do.call(rbind.data.frame, GenesClassDetails)
     #GenesClassTab <- t(t(as.data.frame.matrix(GenesClassTab)))

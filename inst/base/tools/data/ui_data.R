@@ -128,7 +128,7 @@ output$Enrish <- renderUI({
                                         DT::dataTableOutput(outputId ="CircosAvailability")
                        ),
                        conditionalPanel(condition = "input.getlistProfDataCircosID ==true",
-                                        h3("Load Profiles Data", align="center"),
+                                        h3("Loaded Profiles Data", align="center"),
                                         verbatimTextOutput("StrListProfDataCircos")
                        ),
 
@@ -287,7 +287,7 @@ output$Enrish <- renderUI({
                                         DT::dataTableOutput(outputId ="ReactomeAvailability")
                        ),
                        conditionalPanel(condition = "input.getlistProfDataID ==true",
-                                        h3("Load Profiles Data", align="center"),
+                                        h3("Loaded Profiles Data", align="center"),
                                         verbatimTextOutput("StrListProfData")
                                         #htmlOutput("StrListProfData")
 

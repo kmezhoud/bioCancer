@@ -23,7 +23,7 @@ sampling <- function(dataset, var, sample_size,
 	## example list of names obtained from http://listofrandomnames.com
   dat$rnd_number <- runif(nrow(dat), min = 0, max = 1) %>% round(3)
   dat %>%
-    arrange(desc(rnd_number)) %>%
+    arrange(plyr::desc(rnd_number)) %>%
     dplyr::slice(1:sample_size) -> seldat
 
   environment() %>% as.list %>% set_class(c("sampling",class(.)))
