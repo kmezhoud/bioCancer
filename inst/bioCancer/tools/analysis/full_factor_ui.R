@@ -55,7 +55,7 @@ output$ui_full_factor <- renderUI({
   	),
 		help_and_report(modal_title = "Factor",
 		                fun_name = "full_factor",
-		                help_file = inclMD(file.path(r_path,"modeling/tools/help/full_factor.md")))
+		                help_file = inclMD(file.path(r_path,"bioCancer/tools/help/full_factor.md")))
 	)
 })
 

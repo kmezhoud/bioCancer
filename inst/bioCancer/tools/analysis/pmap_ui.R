@@ -89,7 +89,7 @@ output$ui_pmap <- renderUI({
  		),
 		help_and_report(modal_title = "Attribute based brand maps",
 		                fun_name = "pmap",
-		                help_file = inclMD(file.path(r_path,"modeling/tools/help/pmap.md")))
+		                help_file = inclMD(file.path(r_path,"bioCancer/tools/help/pmap.md")))
 	)
 })
 

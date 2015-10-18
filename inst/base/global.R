@@ -35,7 +35,7 @@ r_encoding = "UTF-8"
 #                   system.file(package = "radiant"))
 # if (r_path == "") r_path <- ".."  # if radiant is not installed revert to local inst
 
-r_path <- ifelse ((file.exists("inst/base") && file.exists("inst/quant")), "inst",
+r_path <- ifelse ((file.exists("../base") && file.exists("../quant")), "..",
                   system.file(package = "bioCancer"))
 
 if (r_path == "") r_path <- ".."  # if radiant is not installed revert to local inst

@@ -51,7 +51,7 @@ output$ui_hier_clus <- renderUI({
   	),
   	help_and_report(modal_title = "Hierarchical cluster analysis",
   	                fun_name = "hier_clus",
-  	                help_file = inclMD(file.path(r_path,"modeling/tools/help/hier_clus.md")))
+  	                help_file = inclMD(file.path(r_path,"bioCancer/tools/help/hier_clus.md")))
 	)
 })
 

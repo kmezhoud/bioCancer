@@ -58,7 +58,7 @@ output$ui_conjoint <- renderUI({
 	  ),
   	help_and_report(modal_title = "Conjoint",
   	                fun_name = "conjoint",
-  	                help_file = inclMD(file.path(r_path,"modeling/tools/help/conjoint.md")))
+  	                help_file = inclMD(file.path(r_path,"bioCancer/tools/help/conjoint.md")))
 	)
 })
 
