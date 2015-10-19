@@ -1,8 +1,58 @@
-pc_dist <- c("Normal" = "norm", "Binomial" = "binom", "Uniform" = "unif", "t" = "tdist")
+pc_dist <- c("Normal" = "norm", "Binomial" = "binom", "Uniform" = "unif",
+             "t" = "tdist", "F" = "fdist", "Chi-squared" = "chisq")
 pc_type <- c("Values" = "values", "Probabilities" = "probs")
 
+output$ui_pc_fdist <- renderUI({
+  tagList(
+    numericInput("pcf_df1", label = "Degrees of freedom 1:", value = state_init("pcf_df1", 10), min = 1),
+    numericInput("pcf_df2", label = "Degrees of freedom 2:", value = state_init("pcf_df2", 10), min = 1)
+  )
+})
+
+output$ui_pc_input_fdist   <- renderUI({
+
+  if (input$pc_type == "values") {
+    div(class="row",
+        div(class="col-xs-6", numericInput("pcf_lb", label = "Lower bound:",
+                              value = state_init("pcf_lb", -Inf))),
+        div(class="col-xs-6",numericInput("pcf_ub", label = "Upper bound:",
+                             value = state_init("pcf_ub", Inf)))
+    )
+  } else {
+    div(class="row",
+        div(class="col-xs-6", numericInput("pcf_plb", label = "Lower bound:",
+                              value = state_init("pcf_plb", NA), step = .005)),
+        div(class="col-xs-6",numericInput("pcf_pub", label = "Upper bound:",
+                             value = state_init("pcf_pub", 0.95), step = .005))
+    )
+  }
+})
+
+output$ui_pc_chisq <- renderUI({
+  numericInput("pcc_df", label = "Degrees of freedom:", value = state_init("pcc_df", 1), min = 1)
+})
+
+output$ui_pc_input_chisq   <- renderUI({
+
+  if (input$pc_type == "values") {
+    div(class="row",
+        div(class="col-xs-6", numericInput("pcc_lb", label = "Lower bound:",
+                              value = state_init("pcc_lb", -Inf))),
+        div(class="col-xs-6",numericInput("pcc_ub", label = "Upper bound:",
+                             value = state_init("pcc_ub", Inf)))
+    )
+  } else {
+    div(class="row",
+        div(class="col-xs-6", numericInput("pcc_plb", label = "Lower bound:",
+                              value = state_init("pcc_plb", NA), step = .005)),
+        div(class="col-xs-6",numericInput("pcc_pub", label = "Upper bound:",
+                             value = state_init("pcc_pub", 0.95), step = .005))
+    )
+  }
+})
+
 output$ui_pc_tdist <- renderUI({
-  numericInput("pct_df", label = "Degrees of freedom:", value = state_init("pct_df", 2), min = 2)
+  numericInput("pct_df", label = "Degrees of freedom:", value = state_init("pct_df", 10), min = 3)
 })
 
 output$ui_pc_input_tdist <- renderUI({
@@ -17,9 +67,9 @@ output$ui_pc_input_tdist <- renderUI({
   } else {
     div(class="row",
         div(class="col-xs-6", numericInput("pct_plb", label = "Lower bound:",
-                              value = state_init("pct_plb", .025))),
+                              value = state_init("pct_plb", .025), step = .005)),
         div(class="col-xs-6",numericInput("pct_pub", label = "Upper bound:",
-                             value = state_init("pct_pub", 0.975)))
+                             value = state_init("pct_pub", 0.975), step = .005))
     )
   }
 })
@@ -49,9 +99,9 @@ output$ui_pc_input_norm <- renderUI({
   } else {
     div(class="row",
         div(class="col-xs-6", numericInput("pc_plb", label = "Lower bound:",
-                              value = state_init("pc_plb", NA))),
+                              value = state_init("pc_plb", NA), step = .005)),
         div(class="col-xs-6",numericInput("pc_pub", label = "Upper bound:",
-                             value = state_init("pc_pub", 0.5)))
+                             value = state_init("pc_pub", 0.2), step = .005))
     )
   }
 })
@@ -63,7 +113,7 @@ output$ui_pc_binom <- renderUI({
         div(class="col-xs-6", numericInput("pcb_n", label = "n:",
                               value = state_init("pcb_n", 10)), min = 0),
         div(class="col-xs-6",numericInput("pcb_p", label = "p:", min = 0, max = 1,
-                             value = state_init("pcb_p", .2)))
+                             value = state_init("pcb_p", .2), step = .005))
     )
   )
 })
@@ -80,9 +130,9 @@ output$ui_pc_input_binom <- renderUI({
   } else {
     div(class="row",
         div(class="col-xs-6", numericInput("pcb_plb", label = "Lower bound:",
-                              value = state_init("pcb_plb", NA), min = 0, max = 1)),
+                              value = state_init("pcb_plb", NA), min = 0, max = 1, step = .005)),
         div(class="col-xs-6",numericInput("pcb_pub", label = "Upper bound:",
-                             value = state_init("pcb_pub", 0.5), min = 0, max = 1))
+                             value = state_init("pcb_pub", 0.3), min = 0, max = 1, step = .005))
     )
   }
 })
@@ -107,15 +157,15 @@ output$ui_pc_input_unif <- renderUI({
         div(class="col-xs-6", numericInput("pcu_lb", label = "Lower bound:",
                               value = state_init("pcu_lb", NA))),
         div(class="col-xs-6",numericInput("pcu_ub", label = "Upper bound:",
-                             value = state_init("pcu_ub", 0.5)))
+                             value = state_init("pcu_ub", 0.3)))
                              # value = state_init("pc_ub", input$pc_mean)))
     )
   } else {
     div(class="row",
         div(class="col-xs-6", numericInput("pcu_plb", label = "Lower bound:",
-                              value = state_init("pcu_plb", NA))),
+                              value = state_init("pcu_plb", NA), step = .005)),
         div(class="col-xs-6",numericInput("pcu_pub", label = "Upper bound:",
-                             value = state_init("pcu_pub", 0.5)))
+                             value = state_init("pcu_pub", 0.3), step = .005))
     )
   }
 })
@@ -138,6 +188,12 @@ output$ui_prob_calc <- renderUI({
       ),
       conditionalPanel("input.pc_dist == 'tdist'",
         uiOutput("ui_pc_tdist")
+      ),
+      conditionalPanel("input.pc_dist == 'fdist'",
+        uiOutput("ui_pc_fdist")
+      ),
+      conditionalPanel("input.pc_dist == 'chisq'",
+        uiOutput("ui_pc_chisq")
       )
     ),
     wellPanel(
@@ -155,6 +211,12 @@ output$ui_prob_calc <- renderUI({
       ),
       conditionalPanel("input.pc_dist == 'tdist'",
         uiOutput("ui_pc_input_tdist")
+      ),
+      conditionalPanel("input.pc_dist == 'fdist'",
+        uiOutput("ui_pc_input_fdist")
+      ),
+      conditionalPanel("input.pc_dist == 'chisq'",
+        uiOutput("ui_pc_input_chisq")
       ),
       numericInput("pc_dec", label = "Decimals:",
                    value = state_init("pc_dec", 3), min = 0)
@@ -178,6 +240,10 @@ pc_args <- reactive({
     as.list(formals(prob_unif))
   } else if (pc_dist == "tdist") {
     as.list(formals(prob_tdist))
+  } else if (pc_dist == "fdist") {
+    as.list(formals(prob_fdist))
+  } else if (pc_dist == "chisq") {
+    as.list(formals(prob_chisq))
   }
 })
 
@@ -193,6 +259,10 @@ pc_inputs <- reactive({
     pre <- "pcu_"
   } else if (pc_dist == "tdist") {
     pre <- "pct_"
+  } else if (pc_dist == "fdist") {
+    pre <- "pcf_"
+  } else if (pc_dist == "chisq") {
+    pre <- "pcc_"
   }
 
   # loop needed because reactive values don't allow single bracket indexing
@@ -237,13 +307,23 @@ pc_available <- reactive({
   } else {
     a <- "available"
     if (input$pc_dist == "norm") {
-      if (is_not(input$pc_mean) || is_not(input$pc_stdev)) a <- ""
+      if (is_not(input$pc_mean) || is_not(input$pc_stdev))
+        a <- "Please provide a mean and standard deviation"
     } else if (input$pc_dist == "binom") {
-      if (is_not(input$pcb_n) || is_not(input$pcb_p)) a <- ""
+      if (is_not(input$pcb_n) || is_not(input$pcb_p))
+        a <- "Please provide a value for n (number of trials) and p (probability of success)"
     } else if (input$pc_dist == "unif") {
-      if (is_not(input$pcu_min) || is_not(input$pcu_max)) a <- ""
+      if (is_not(input$pcu_min) || is_not(input$pcu_max))
+        a <- "Please provide a minimum and a maxium value"
     } else if (input$pc_dist == "tdist") {
-      if (is_not(input$pct_df)) a <- ""
+      if (is_not(input$pct_df))
+        a <- "Please provide a value for the degrees of freedom"
+    } else if (input$pc_dist == "fdist") {
+      if (is_not(input$pcf_df1) || is_not(input$pcf_df2))
+        a <- "Please provide a value for the degrees of freedom"
+    } else if (input$pc_dist == "chisq") {
+      if (is_not(input$pcc_df))
+        a <- "Please provide a value for the degrees of freedom"
     } else {
       a <- ""
     }

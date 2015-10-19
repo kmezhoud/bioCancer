@@ -8,6 +8,7 @@
 #' @param samples Are samples indepent ("independent") or not ("paired")
 #' @param alternative The alternative hypothesis ("two.sided", "greater" or "less")
 #' @param conf_lev Span of the confidence interval
+#' @param comb Combinations to evaluate
 #' @param adjust Adjustment for multiple comparisons ("none" or "bonf" for Bonferroni)
 #' @param test T-test ("t") or Wilcox ("wilcox")
 #' @param data_filter Expression entered in, e.g., Data > View to filter the dataset in Radiant. The expression should be a string (e.g., "price > 10000")
@@ -26,6 +27,7 @@ compare_means <- function(dataset, var1, var2,
                           samples = "independent",
                           alternative = "two.sided",
                           conf_lev = .95,
+                          comb = "",
                           adjust = "none",
                           test = "t",
                           data_filter = "") {
@@ -46,9 +48,9 @@ compare_means <- function(dataset, var1, var2,
   }
 
 	## check there is variation in the data
-  # if (dat %>% summarise_each(., funs(var(., na.rm = TRUE))) %>% min %>% {. == 0})
   if (any(summarise_each(dat, funs(does_vary)) == FALSE))
-  	return("Test could not be calculated. Please select another variable.")
+  	return("Test could not be calculated (no variation). Please select another variable." %>%
+  	       set_class(c("compare_means",class(.))))
 
 	## resetting option to independent if the number of observations is unequal
   ## summary on factor gives counts
@@ -57,31 +59,51 @@ compare_means <- function(dataset, var1, var2,
       samples <- "independent (obs. per level unequal)"
   }
 
-	##############################################
-	## flip the order of pairwise testing - part 1
-	##############################################
-  flip_alt <- c("two.sided" = "two.sided",
-                "less" = "greater",
-                "greater" = "less")
-	##############################################
+	levs <- levels(dat[["variable"]])
+  cmb <- combn(levs, 2) %>% t %>% as.data.frame
+  rownames(cmb) <- cmb %>% apply(1, paste, collapse = ":")
+  colnames(cmb) <- c("group1","group2")
 
-	# pairwise.t.test(dat[,"values"], dat[,"variable"], pool.sd = FALSE,
-	# res <- pairwise.t.test(dat[["values"]], dat[["variable"]], pool.sd = FALSE,
-	# res <- pairwise.t.test(dat[["values"]], dat[["variable"]],
-	#          p.adjust.method = adjust, paired = samples == "paired",
-	#          alternative = flip_alt[alternative]) %>% tidy
+	if (!is_empty(comb)) {
+		if (all(comb %in% rownames(cmb))) {
+			cmb <- cmb[comb, ]
+		} else {
+			cmb <- cmb[1,]
+  	}
+	}
 
-	res <- get(paste0("pairwise.", test, ".test"))(dat[["values"]], dat[["variable"]],
-	         p.adjust.method = adjust, paired = samples == "paired",
-	         alternative = flip_alt[alternative]) %>% tidy
+  res <- cmb
+  res[ ,c("t.value","p.value", "df", "ci_low", "ci_high", "cis_low", "cis_high")] <- 0
 
-	##############################################
-	# flip the order of pairwise testing - part 2
-	##############################################
-	res[,c("group1","group2")] <- res[,c("group2","group1")]
-	##############################################
+  for (i in 1:nrow(cmb)) {
+  	sel <- cmb[i,]
+  	x <- filter_(dat, paste0("variable == '", sel[[1]], "'")) %>% .[["values"]]
+  	y <- filter_(dat, paste0("variable == '", sel[[2]], "'")) %>% .[["values"]]
 
-	# from http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)/
+  	res[i,c("t.value","p.value", "df", "ci_low", "ci_high")] <-
+  	  t.test(x, y, paired = samples == "paired", alternative = alternative, conf.level = conf_lev) %>%
+  	  tidy %>% .[1, c("statistic", "p.value","parameter", "conf.low", "conf.high")]
+
+  	## bootstrap confidence intervals
+  	## seem almost identical, even with highly skewed data
+		# nr_x <- length(x)
+		# nr_y <- length(y)
+
+  #   sim_ci <-
+  #     replicate(1000,
+  #               mean(sample(x, nr_x, replace = TRUE)) -
+  #               mean(sample(y, nr_y, replace = TRUE))) %>%
+		# 						quantile(probs = {(1-conf_lev)/2} %>% c(., 1 - .))
+
+		# res[i, c("cis_low", "cis_high")] <- sim_ci
+
+  }
+  rm(x,y,sel)
+
+	if (adjust != "none")
+		res$p.value %<>% p.adjust(method = adjust)
+
+	## from http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)/
 	ci_calc <- function(se, n, conf.lev = .95)
 	 	se * qt(conf.lev/2 + .5, n - 1)
 
@@ -102,6 +124,7 @@ compare_means <- function(dataset, var1, var2,
 #' @details See \url{http://vnijs.github.io/radiant/quant/compare_means.html} for an example in Radiant
 #'
 #' @param object Return value from \code{\link{compare_means}}
+#' @param show Show additional output (i.e., t.value, df, and confidence interval)
 #' @param ... further arguments passed to or from other methods
 #'
 #' @examples
@@ -116,7 +139,9 @@ compare_means <- function(dataset, var1, var2,
 #' @seealso \code{\link{plot.compare_means}} to plot results
 #'
 #' @export
-summary.compare_means <- function(object, ...) {
+summary.compare_means <- function(object, show = FALSE, ...) {
+
+	if (is.character(object)) return(object)
 
   cat(paste0("Pairwise mean comparisons (", object$test, "-test)\n"))
 	cat("Data      :", object$dataset, "\n")
@@ -138,11 +163,29 @@ summary.compare_means <- function(object, ...) {
   means <- object$dat_summary$mean
   names(means) <- object$dat_summary[[1]] %>% as.character
 
+	# determine lower and upper % for ci
+	ci_perc <-
+	  {100 * (1-object$conf_lev)/2} %>%
+		c(., 100 - .) %>%
+		round(1) %>%
+		paste0(.,"%")
+
 	mod <- object$res
 	mod$`Alt. hyp.` <- paste(mod$group1,hyp_symbol,mod$group2," ")
 	mod$`Null hyp.` <- paste(mod$group1,"=",mod$group2, " ")
 	mod$diff <- { means[mod$group1 %>% as.character] - means[mod$group2 %>% as.character] } %>% round(3)
-	mod <- mod[,c("Alt. hyp.", "Null hyp.", "diff", "p.value")]
+	# mod[,"t.value"] %<>% round(3)
+
+	if (show) {
+	  mod <- mod[,c("Alt. hyp.", "Null hyp.", "diff", "t.value", "df", "ci_low", "ci_high", "p.value")]
+	  # mod <- mod[,c("Alt. hyp.", "Null hyp.", "diff", "t.value", "df", "ci_low", "ci_high", "cis_low", "cis_high", "p.value")]
+		if (!is.integer(mod[["df"]])) mod[["df"]] %<>% round(3)
+		mod[,c("t.value", "ci_low","ci_high")] %<>% round(3)
+	  mod <- rename_(mod, .dots = setNames(c("ci_low","ci_high"), ci_perc))
+	} else {
+	  mod <- mod[,c("Alt. hyp.", "Null hyp.", "diff", "p.value")]
+	}
+
 	mod$` ` <- sig_stars(mod$p.value)
 	mod$p.value <- round(mod$p.value,3)
 	mod$p.value[ mod$p.value < .001 ] <- "< .001"
@@ -172,6 +215,7 @@ plot.compare_means <- function(x,
                                shiny = FALSE,
                                ...) {
 
+	if (is.character(x)) return(x)
 	object <- x; rm(x)
 
 	dat <- object$dat
