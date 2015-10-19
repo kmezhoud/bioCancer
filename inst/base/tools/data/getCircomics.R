@@ -190,7 +190,7 @@ whichGeneList <- function(){
     GeneList <- r_data$Genes
   }else if(input$GeneListID == "Reactome_GeneList"){
     GeneList <- t(r_data$Reactome_GeneList)
-  }else{print(getwd())
+  }else{
     GeneList <- t(unique(read.table(paste0(r_path,"/base/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
   }
   return(GeneList)

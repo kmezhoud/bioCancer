@@ -82,7 +82,7 @@ shinyServer(function(input, output, session) {
 
   # if (!"package:radiant" %in% search()) {
   if (r_path == "..") {
-    for (file in list.files("../R",
+    for (file in list.files("../Rbis",
                             pattern="\\.(r|R)$",
                             full.names = TRUE)) {
 

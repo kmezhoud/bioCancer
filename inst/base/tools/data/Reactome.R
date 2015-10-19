@@ -33,7 +33,8 @@ Edges_obj <- function(){
       Sys.sleep(0.25)
 
       #r_data[['ReactomeFI']] <- read.csv("https://raw.githubusercontent.com/kmezhoud/ReactomeFI/master/FIsInGene_121514_with_annotations.txt", header=TRUE, sep="\t")
-      r_data[['ReactomeFI']]  <- read.delim("inst/extdata/FIsInGene_121514_with_annotations.txt")
+      #r_data[['ReactomeFI']]  <- read.delim("inst/extdata/FIsInGene_121514_with_annotations.txt")
+      r_data[['ReactomeFI']]  <- read.delim(paste0(system.file(package = "bioCancer"), "/extdata/FIsInGene_121514_with_annotations.txt", sep=""))
     })
   }
 
@@ -105,7 +106,7 @@ Edges_obj <- function(){
     Edges_obj<- Edges_obj[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
     #Edges_obj <- Edges_obj[1:150,]
   })
-  Edges_objbkp <<- Edges_obj
+  #Edges_objbkp <<- Edges_obj
   return(Edges_obj)
 }
 

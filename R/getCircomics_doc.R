@@ -121,7 +121,7 @@ reStrColorGene <- function(df){
 #' @examples
 #' \dontrun{
 #' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
-#' Cild <- reStrDisease(ListProfData_bkp$Expression)
+#' Child <- reStrDisease(ListProfData_bkp$Expression)
 #' }
 reStrDisease <- function(List){
   print("restructuring Selected Diseases...")

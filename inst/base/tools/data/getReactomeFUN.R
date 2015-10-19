@@ -1,6 +1,6 @@
 
 
- serviceURL <- function(version){
+serviceURL <- function(version){
 
   base.url = "http://reactomews.oicr.on.ca:8080/"
 
@@ -16,11 +16,11 @@
 
 
 queryBuildNetwork <- function(version, genes){
-            service.url <- paste0(serviceURL(version), "buildNetwork")
-            genes.str <- paste(genes, collapse = "\t")
-            doc <- getPostXML(service.url, genes.str)
-            return(extractFIs(doc))
-          }
+  service.url <- paste0(serviceURL(version), "buildNetwork")
+  genes.str <- paste(genes, collapse = "\t")
+  doc <- getPostXML(service.url, genes.str)
+  return(extractFIs(doc))
+}
 
 extractFIs <- function(doc) {
   interactions <- xpathApply(doc, "//interaction", function(x) {
@@ -46,24 +46,24 @@ getPostXML <- function(url, body) {
 }
 
 queryFIs <- function(version, genes){
-            service.url <- paste0(serviceURL(version), "queryFIs")
-            genes.str <- paste(genes, collapse = "\t")
-            doc <- getPostXML(service.url, genes.str)
-            return(extractFIs(doc))
-          }
+  service.url <- paste0(serviceURL(version), "queryFIs")
+  genes.str <- paste(genes, collapse = "\t")
+  doc <- getPostXML(service.url, genes.str)
+  return(extractFIs(doc))
+}
 
 getReactomeFI <- function(version, genes, use.linkers = FALSE){
-            if (length(genes) > 1) {
+  if (length(genes) > 1) {
 
 
-              if (use.linkers) {
-                fis <- queryBuildNetwork(version, genes)
-              } else {
-                fis <- queryFIs(version, genes)
-              }
-            }
-            version
-            fis
+    if (use.linkers) {
+      fis <- queryBuildNetwork(version, genes)
+    } else {
+      fis <- queryFIs(version, genes)
+    }
+  }
+  version
+  fis
 }
 
 
@@ -90,19 +90,19 @@ fis2str <- function(fis) {
 }
 
 queryCluster<-  function(object, fis) {
-            service.url <- paste0(serviceURL(object), "cluster")
-            fis.str <- fis2str(fis)
-            doc <- getPostXML(service.url, fis.str)
-            modules <- xpathApply(doc, "//geneClusterPairs", function(x) {
-              info <- xmlChildren(x)
-              module <- xmlValue(info$cluster)
-              gene <- xmlValue(info$geneId)
-              data.frame(gene = gene, module = module, stringsAsFactors = FALSE)
-            })
-            modules <- do.call(rbind, modules)
-            modules$module <- as.numeric(modules$module)
-            return(modules)
-          }
+  service.url <- paste0(serviceURL(object), "cluster")
+  fis.str <- fis2str(fis)
+  doc <- getPostXML(service.url, fis.str)
+  modules <- xpathApply(doc, "//geneClusterPairs", function(x) {
+    info <- xmlChildren(x)
+    module <- xmlValue(info$cluster)
+    gene <- xmlValue(info$geneId)
+    data.frame(gene = gene, module = module, stringsAsFactors = FALSE)
+  })
+  modules <- do.call(rbind, modules)
+  modules$module <- as.numeric(modules$module)
+  return(modules)
+}
 
 
 ####################  Get ANNOTATION #############
@@ -133,34 +133,34 @@ extractAnnotations <- function(xml.node) {
   return(annotations[order(annotations$fdr), ])
 }
 queryAnnotateGeneSet <-  function(object, genes, type = c("Pathway", "BP", "CC", "MF")){
-            type <- match.arg(type)
-            service.url <- paste0(serviceURL(object), "annotateGeneSet/", type)
-            genes.str <- paste(genes, collapse = "\n")
-            doc <- getPostXML(service.url, genes.str)
-            annot.node <- xmlChildren(doc)$moduleGeneSetAnnotations
-            annot.node <- xmlChildren(annot.node)$moduleGeneSetAnnotation
-            annotations <- extractAnnotations(annot.node)
-            return(annotations)
-          }
+  type <- match.arg(type)
+  service.url <- paste0(serviceURL(object), "annotateGeneSet/", type)
+  genes.str <- paste(genes, collapse = "\n")
+  doc <- getPostXML(service.url, genes.str)
+  annot.node <- xmlChildren(doc)$moduleGeneSetAnnotations
+  annot.node <- xmlChildren(annot.node)$moduleGeneSetAnnotation
+  annotations <- extractAnnotations(annot.node)
+  return(annotations)
+}
 
 annotate <- function(object, GeneList,fis,type = c("Pathway", "BP", "CC", "MF"),
-                   include.linkers = FALSE) {
-            if (nrow(fis) == 0) {
-              warning("No FI network data found. Please build the network first.")
-              return(object)
-            }
+                     include.linkers = FALSE) {
+  if (nrow(fis) == 0) {
+    warning("No FI network data found. Please build the network first.")
+    return(object)
+  }
 
-            #fis <- fis(object)
-            fi.genes <- union(fis$first.protein, fis$second.protein)
+  #fis <- fis(object)
+  fi.genes <- union(fis$first.protein, fis$second.protein)
 
-            if (!include.linkers) {
-              fi.genes <- fi.genes[fi.genes %in% GeneList]
-            }
+  if (!include.linkers) {
+    fi.genes <- fi.genes[fi.genes %in% GeneList]
+  }
 
-            type <- match.arg(type)
+  type <- match.arg(type)
 
-            return(queryAnnotateGeneSet(object, fi.genes, type))
-          }
+  return(queryAnnotateGeneSet(object, fi.genes, type))
+}
 
 
 ####  Get Annotation Module  #####
@@ -179,46 +179,46 @@ df2tsv <- function(dat) {
 
 
 queryAnnotateModules <- function(object, module.nodes,type = c("Pathway", "BP", "CC", "MF")){
-            type <- match.arg(type)
-            service.url <- paste0(serviceURL(object), "annotateModules/", type)
-            query <- df2tsv(module.nodes)
-            doc <- getPostXML(service.url, query)
-            module.annotations <- xpathApply(doc, "//moduleGeneSetAnnotation",
-                                             function(x) {
-                                               module <- xmlValue(xmlChildren(x)$module)
-                                               annotations <- extractAnnotations(x)
-                                               if (all(is.na(annotations))) return(annotations)
-                                               cbind(data.frame(module = module), annotations)
-                                             })
-            module.annotations <- module.annotations[!is.na(module.annotations)]
-            module.annotations <- do.call(rbind, module.annotations)
-            module.annotations$module <- as.numeric(module.annotations$module)
-            module.annotations$module <- module.annotations$module - 1
-            return(module.annotations)
-          }
+  type <- match.arg(type)
+  service.url <- paste0(serviceURL(object), "annotateModules/", type)
+  query <- df2tsv(module.nodes)
+  doc <- getPostXML(service.url, query)
+  module.annotations <- xpathApply(doc, "//moduleGeneSetAnnotation",
+                                   function(x) {
+                                     module <- xmlValue(xmlChildren(x)$module)
+                                     annotations <- extractAnnotations(x)
+                                     if (all(is.na(annotations))) return(annotations)
+                                     cbind(data.frame(module = module), annotations)
+                                   })
+  module.annotations <- module.annotations[!is.na(module.annotations)]
+  module.annotations <- do.call(rbind, module.annotations)
+  module.annotations$module <- as.numeric(module.annotations$module)
+  module.annotations$module <- module.annotations$module - 1
+  return(module.annotations)
+}
 
 
 ##### FIs Between###
 
 queryFIsBetween <- function(object, fis) {
-            service.url <- paste0(serviceURL(object), "queryFIsBetween")
-            gene.pairs <- as.matrix(fis)
-            first.str <- paste(gene.pairs[, 1], collapse = ",")
-            second.str <- paste(gene.pairs[, 2], collapse = ",")
-            pairs.str <- paste(first.str, second.str, sep = "\n")
-            doc <- getPostXML(service.url, pairs.str)
-            return(extractFIs(doc))
-          }
+  service.url <- paste0(serviceURL(object), "queryFIsBetween")
+  gene.pairs <- as.matrix(fis)
+  first.str <- paste(gene.pairs[, 1], collapse = ",")
+  second.str <- paste(gene.pairs[, 2], collapse = ",")
+  pairs.str <- paste(first.str, second.str, sep = "\n")
+  doc <- getPostXML(service.url, pairs.str)
+  return(extractFIs(doc))
+}
 
 #### EDGE #####
 
 #queryEdge(2012, "TP53", "BRCA1")
 queryEdge <-  function(object, name1, name2) {
-            service.url <- paste0(serviceURL(object), "queryEdge")
-            edge.str <- paste(name1, name2, sep = "\t")
-            doc <- getPostXML(service.url, edge.str)
-            first.prot <- getNodeSet(doc, "//firstProtein", fun = extractProteinInfo)
-            second.prot <- getNodeSet(doc, "//secondProtein", fun = extractProteinInfo)
-            return(do.call(rbind, c(first.prot, second.prot)))
-          }
+  service.url <- paste0(serviceURL(object), "queryEdge")
+  edge.str <- paste(name1, name2, sep = "\t")
+  doc <- getPostXML(service.url, edge.str)
+  first.prot <- getNodeSet(doc, "//firstProtein", fun = extractProteinInfo)
+  second.prot <- getNodeSet(doc, "//secondProtein", fun = extractProteinInfo)
+  return(do.call(rbind, c(first.prot, second.prot)))
+}
 

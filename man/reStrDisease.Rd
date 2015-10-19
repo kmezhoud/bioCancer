@@ -18,7 +18,7 @@ Restructure the list of color attributed to the genes in every disease
 \examples{
 \dontrun{
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
-Cild <- reStrDisease(ListProfData_bkp$Expression)
+Child <- reStrDisease(ListProfData_bkp$Expression)
 }
 }
 
