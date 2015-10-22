@@ -4,7 +4,7 @@ help_menu <-
                tabPanel("Help", uiOutput("help_modeling"), icon = icon("question")),
                tabPanel("Videos", uiOutput("help_videos"), icon = icon("film")),
                tabPanel("About", uiOutput("help_about"), icon = icon("info")),
-               tabPanel(tags$a("", href = "http://kmezhoud.github.io/bioCancer/", target = "_blank",
+               tabPanel(tags$a("", href = "http://kmezhoud.github.io/KurumVita/", target = "_blank",
                                list(icon("globe"), "bioCancer docs"))),
                tabPanel(tags$a("", href = "https://github.com/kmezhoud/CancerPortal/issues", target = "_blank",
                                list(icon("github"), "Report issue")))
