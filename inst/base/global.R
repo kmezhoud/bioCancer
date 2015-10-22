@@ -150,7 +150,7 @@ shared_ui <-
 
     ## stop app *and* close browser window
     navbarMenu(title = "", id = "Stop", icon = icon("power-off"),
-               tabPanel(actionLink("stop_radiant", "Stop", icon = icon("stop"),
+               tabPanel(actionLink("stop_bioCancer", "Stop", icon = icon("stop"),
                                    onclick = "setTimeout(function(){window.close();}, 100); ")),
                tabPanel(tags$a(id = "refresh_radiant", href = "#", class = "action-button",
                                list(icon("refresh"), "Refresh"), onclick = "window.location.reload();")),

@@ -55,7 +55,7 @@ library(radiant)
   ## source shared functions
   source("global.R", encoding = "UTF-8", local = TRUE)
 	source("init.R", encoding = r_encoding, local = TRUE)
-	source("radiant.R", encoding = r_encoding, local = TRUE)
+	source("bioCancerInit.R", encoding = r_encoding, local = TRUE)
 
 
 

@@ -106,7 +106,8 @@ shinyServer(function(input, output, session) {
 
   # source data & app tools from base
   for (file in list.files(c(file.path(r_path,"base/tools/app"),
-                            file.path(r_path,"base/tools/data")),
+                            file.path(r_path,"base/tools/data")
+                            ),
                           pattern="\\.(r|R)$", full.names = TRUE))
     source(file, encoding = r_encoding, local = TRUE)
 

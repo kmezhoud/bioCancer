@@ -11,21 +11,21 @@
 #   }
 # })
 
-
-observe({
-  ## reset r_state on dataset change ... when you are not on the
-  ## Manage > Data tab
-  if (is.null(r_state$dataset) || is.null(input$dataset)) return()
-  if (input$tabs_data != "Handle")  {
-    shinyUI(
-      do.call(navbarPage, c("bioCancer", nav_ui, shared_ui, help_menu))
-    )
-  } else{
-    shinyUI(
-      do.call(navbarPage, c("bioCancer", nav_ui,quant_ui,marketing_ui, shared_ui, help_menu))
-    )
-  }
-})
+# ## try to change navbarPage wit conditions
+# observe({
+#   ## reset r_state on dataset change ... when you are not on the
+#   ## Manage > Data tab
+#   if (is.null(r_state$dataset) || is.null(input$dataset)) return()
+#   if (input$tabs_data != "Handle")  {
+#     shinyUI(
+#       do.call(navbarPage, c("bioCancer", nav_ui, shared_ui, help_menu))
+#     )
+#   } else{
+#     shinyUI(
+#       do.call(navbarPage, c("bioCancer", nav_ui,quant_ui,modeling_ui, shared_ui, help_menu))
+#     )
+#   }
+# })
 
 ################################################################################
 ## function to save app state on refresh or crash
@@ -62,7 +62,7 @@ observeEvent(input$refresh_radiant, {
 saveStateOnRefresh <- function(session = session) {
   session$onSessionEnded(function() {
     isolate({
-      if (not_pressed(input$refresh_radiant) && not_pressed(input$stop_radiant) &&
+      if (not_pressed(input$refresh_radiant) && not_pressed(input$stop_bioCancer) &&
           is.null(input$uploadState)) {
         saveSession(session)
         if (r_local) sshh( rm(r_env, envir = .GlobalEnv) )

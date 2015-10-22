@@ -12,18 +12,18 @@ bioCancer is a platform-independent browser-based interface for Cancer Genomics 
 - Explore: Quickly and easily summarize, visualize, and analyze your data
 - Cross-platform: It runs in a browser on Windows, Mac, and Linux
 - Reproducible: Recreate results and share work with others as a state file or an [Rmarkdown](http://rmarkdown.rstudio.com/) report
-- Programming: Integrate Radiant's analysis functions into your own R-code
+- Programming: Integrate bioCancer's analysis functions into your own R-code
 - Context: Data and examples focus on business applications
 
 <iframe width="640" height="375" src="https://www.youtube.com/embed/ioHopyfD2f0" frameborder="0" allowfullscreen></iframe>
 
 #### Explore
 
-CancerPortal is interactive. Results update immediately when inputs are changed (i.e., no separate dialog boxes). This greatly facilitates exploration and understanding of the data.
+bioCancer is interactive. Results update immediately when inputs are changed (i.e., no separate dialog boxes). This greatly facilitates exploration and understanding of the data.
 
 #### Cross-platform
 
-CancerPortal works on Windows, Mac, or Linux. It can run without an Internet connection and no data will leave your computer. You can also run the app as a web application on a server.
+bioCancer works on Windows, Mac, or Linux. It can run without an Internet connection and no data will leave your computer. You can also run the app as a web application on a server.
 
 > **Note:** For Windows users with data that contain multibyte characters please make sure your data are in ANSI format so R(adiant) can load characters correctly.
 
@@ -34,15 +34,15 @@ Simply saving output is not enough. You need the ability to recreate results for
 
 #### Programming
 
-Although CancerPortal's web-interface can handle quite a few data and analysis tasks, at times you may prefer to write your own code. Radiant provides a bridge to programming in R(studio) by exporting the functions used for analysis. For more information about programming with Radiant see the [programming](http://vnijs.github.io/radiant/programming.html) page on the documentation site.
+Although bioCancer's web-interface can handle quite a few data and analysis tasks, at times you may prefer to write your own code. bioCancer provides a bridge to programming in R(studio) by exporting the functions used for analysis. For more information about programming with Radiant see the [programming](http://vnijs.github.io/radiant/programming.html) page on the documentation site.
 
 #### Context
 
-CancerPortal focuses on Cancer Genomics data visualisation and Genes Classifications.
+bioCancer focuses on Cancer Genomics data visualisation and Genes Classifications.
 
 
 
-## How to install CancerPortal
+## How to install bioCancer
 
 
 - Required: [R](http://cran.rstudio.com/) version 3.2 or later
@@ -50,32 +50,32 @@ CancerPortal focuses on Cancer Genomics data visualisation and Genes Classificat
 - Recommended: [Rstudio](http://www.rstudio.com/products/rstudio/download/)
 
 
-CancerPortal is under development:
+bioCancer is under development:
 ```r
- devtools::install_github("kmezhoud/CancerPortal")
- library("CancerPortal")
+ devtools::install_github("kmezhoud/bioCancer")
+ library("bioCancer")
 ```
 
 
 
-When CancerPortal starts you will see a table of available Cancer Studies.  To close the application click on `Quit` in the Navigation bar and then click the `Quit` button on the left of the screen. The CancerPortal process will stop and the browser window will close (or gray-out).
+When bioCancer starts you will see a table of available Cancer Studies.  To close the application click on `Quit` in the Navigation bar and then click the `Quit` button on the left of the screen. The bioCancer process will stop and the browser window will close (or gray-out).
 
 
 
 ## Documentation
 
 
-Documentation and tutorials are available in the CancerPortal web interface (the `?` icons and the `Help` menu).
+Documentation and tutorials are available in the bioCancer web interface (the `?` icons and the `Help` menu).
 
 
 Want some help getting started? Watch the tutorials on the [documentation site of radiant](http://vnijs.github.io/radiant/tutorials.html)
 
 
-## Saving and loading state from CancerPortal
-To save your analyses save the state of the app to a file by clicking on the <i title='Save' class='fa fa-save'></i> icon in the navbar and then on `Save state` (see also the `Data > Manage` tab). You can open this state file at a later time or on another computer to continue where you left off. You can also share the file with others that may want to replicate your analyses. As an example, load the state_file [`RadiantState.rda`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.rda?raw=true) through the Data > Manage tab. Go to `Data > View`, `Data > Visualize` to see some of the settings. There is also a report in `R > Report` that was created using the Radiant interface. The html file [`RadiantState.html`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.html?raw=true) contains the output.
+## Saving and loading state from bioCancer
+To save your analyses save the state of the app to a file by clicking on the <i title='Save' class='fa fa-save'></i> icon in the navbar and then on `Save state` (see also the `Data > Manage` tab). You can open this state file at a later time or on another computer to continue where you left off. You can also share the file with others that may want to replicate your analyses. As an example, load the state_file [`RadiantState.rda`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.rda?raw=true) through the Data > Manage tab. Go to `Data > View`, `Data > Visualize` to see some of the settings. There is also a report in `R > Report` that was created using the bioCancer interface. The html file [`RadiantState.html`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.html?raw=true) contains the output.
 
 
-Loading and saving state also works with Rstudio. If you start Radiant from Rstudio and use <i title='Power off' class='fa fa-power-off'></i> > `Stop` to stop the app, lists called `r_data` and `r_state` will be put into Rstudio's global workspace. If you start radiant again using `radiant()` it will use these lists to restore state. This can be convenient if you want to make changes to a data file in Rstudio and load it back into Radiant. Also, if you load a state file directly into Rstudio it will be used when you start Radiant to recreate a previous state.
+Loading and saving state also works with Rstudio. If you start bioCancer from Rstudio and use <i title='Power off' class='fa fa-power-off'></i> > `Stop` to stop the app, lists called `r_data` and `r_state` will be put into Rstudio's global workspace. If you start bioCancer again using `bioCancer()` it will use these lists to restore state. This can be convenient if you want to make changes to a data file in Rstudio and load it back into bioCancer. Also, if you load a state file directly into Rstudio it will be used when you start bioCancer to recreate a previous state.
 
 ```r
 numericInput("sm_comp_value", "Comparison value:", state_init('sm_comp_value',sm_args$comp_value))
@@ -84,12 +84,12 @@ numericInput("sm_comp_value", "Comparison value:", state_init('sm_comp_value',sm
 ## Acknowledgment
 
 
-CancerPortal is inspired from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
+bioCancer is inspired from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
 
 
 ## License
 
-CancerPortal is licensed under the <a href="http://www.tldrlegal.com/l/AGPL3" target="\_blank">AGPLv3</a>. The documentation and videos on this site and the radiant help files are licensed under the creative commons attribution, non-commercial, share-alike license <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC-NC-SA</a>.
+bioCancer is licensed under the <a href="http://www.tldrlegal.com/l/AGPL3" target="\_blank">AGPLv3</a>. The documentation and videos on this site and the bioCancer help files are licensed under the creative commons attribution, non-commercial, share-alike license <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC-NC-SA</a>.
 
 As a summary, the AGPLv3 license requires, attribution, including copyright and license information in copies of the software, stating changes if the code is modified, and disclosure of all source code.
 

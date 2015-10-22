@@ -130,14 +130,14 @@ help_quant_ui <- tagList(
   )
 )
 
-if ("radiant" %in% (installed.packages()[,'Package'])) {
-  r_version <- packageVersion("radiant")
+if ("bioCancer" %in% (installed.packages()[,'Package'])) {
+  r_version <- packageVersion("bioCancer")
 } else {
   r_version <- "unknown"
 }
 
 help_quant_main <- tagList(
-  HTML(paste0("<h3>Radiant (",r_version, "): Select help files to show and search</h3>")),
+  HTML(paste0("<h3>bioCancer (",r_version, "): Select help files to show and search</h3>")),
   # HTML("<script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>"),
   htmlOutput("help_data"),
   htmlOutput("help_sample"),
@@ -160,26 +160,26 @@ output$help_quant <- renderUI({
 
 
 help_maps <- c("(Dis)similarity" = "mds.md", "Attributes" = "pmap.md")
-output$help_maps <- reactive(append_help("help_maps", file.path(r_path,"marketing/tools/help/")))
+output$help_maps <- reactive(append_help("help_maps", file.path(r_path,"bioCancer/tools/help/")))
 observe( help_switch(input$help_maps_all, "help_maps") )
 observe( help_switch(input$help_maps_none, "help_maps", help_on = FALSE) )
 
 help_factor <- c("Pre-factor" = "pre_factor.md", "Factor" = "full_factor.md")
-output$help_factor <- reactive(append_help("help_factor", file.path(r_path,"marketing/tools/help/")))
+output$help_factor <- reactive(append_help("help_factor", file.path(r_path,"bioCancer/tools/help/")))
 observe( help_switch(input$help_factor_all, "help_factor") )
 observe( help_switch(input$help_factor_none, "help_factor", help_on = FALSE) )
 
 help_cluster <- c("Hierarchical" = "hier_clus.md", "Kmeans" = "kmeans_clus.md")
-output$help_cluster <- reactive(append_help("help_cluster", file.path(r_path,"marketing/tools/help/")))
+output$help_cluster <- reactive(append_help("help_cluster", file.path(r_path,"bioCancer/tools/help/")))
 observe( help_switch(input$help_cluster_all, "help_cluster") )
 observe( help_switch(input$help_cluster_none, "help_cluster", help_on = FALSE) )
 
 help_conjoint <- c("Conjoint" = "conjoint.md", "Conjoint profiles" = "conjoint_profiles.md")
-output$help_conjoint <- reactive(append_help("help_conjoint", file.path(r_path,"marketing/tools/help/")))
+output$help_conjoint <- reactive(append_help("help_conjoint", file.path(r_path,"bioCancer/tools/help/")))
 observe( help_switch(input$help_conjoint_all, "help_conjoint") )
 observe( help_switch(input$help_conjoint_none, "help_conjoint", help_on = FALSE) )
 
-help_marketing_ui <- tagList(
+help_modeling_ui <- tagList(
   wellPanel(
     HTML("<label>Maps menu: <i id='help_maps_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
     <i id='help_maps_none' title='Uncheck all' href='#' class='action-button glyphicon glyphicon-remove'></i></label>"),
@@ -206,11 +206,11 @@ help_marketing_ui <- tagList(
   )
 )
 
-output$help_marketing <- renderUI({
+output$help_modeling <- renderUI({
   sidebarLayout(
     sidebarPanel(
       help_quant_ui,
-      help_marketing_ui,
+      help_modeling_ui,
       uiOutput("help_text")
     ),
     mainPanel(
