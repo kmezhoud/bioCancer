@@ -233,7 +233,7 @@ clean_loadings <- function(floadings,
                            dec = 8) {
 
 	floadings %<>%
-		{if (fsort) select(fa.sort(.), -order) else .}
+		{if (fsort) dplyr::select(fa.sort(.), -order) else .}
 
 	if (cutoff == 0) {
 	  floadings %<>% round(dec)

@@ -52,7 +52,7 @@ pivotr <- function(dataset,
     }
   }
 
-  sel <- function(x, nvar) if (nvar == "n") x else select_(x, .dots = nvar)
+  sel <- function(x, nvar) if (nvar == "n") x else dplyr::select_(x, .dots = nvar)
   sfun <- function(x, nvar, cvars = "", fun = fun) {
     if (nvar == "n")
       if (all(cvars == "")) count_(x) else count_(x, cvars)
@@ -92,7 +92,7 @@ pivotr <- function(dataset,
       group_by_(.dots = cvars[-1]) %>%
       sfun(nvar, cvars[-1], fun) %>%
       ungroup %>%
-      select_(Total = nvar) %>%
+      dplyr::select_(Total = nvar) %>%
       bind_rows(total %>% set_colnames("Total"))
 
     ## creating cross tab
@@ -112,7 +112,7 @@ pivotr <- function(dataset,
   # tab %>% getclass
   ## resetting factor levels
   ind <- ifelse (length(cvars) > 1, -1, 1)
-  levs <- lapply(select_(dat, .dots = cvars[ind]), levels)
+  levs <- lapply(dplyr::select_(dat, .dots = cvars[ind]), levels)
 
   for (i in cvars[ind])
     tab[[i]] %<>% factor(., levels = c(levs[[i]],"Total"))
@@ -122,7 +122,7 @@ pivotr <- function(dataset,
     tab[,isNum] %<>% {. / total[[1]]} %>% round(3)
   } else if (normalize == "row") {
     if (!is.null(tab[["Total"]]))
-      tab[,isNum] %<>% {. / select(., Total)[[1]]} %>% round(3)
+      tab[,isNum] %<>% {. / dplyr::select(., Total)[[1]]} %>% round(3)
   } else if (normalize == "column") {
     tab[,isNum] %<>% apply(2, function(.) . / .[which(tab[,1] == "Total")]) %>% round(3)
     ## mutate_each has issues for spaces in variable names
@@ -195,7 +195,7 @@ summary.pivotr <- function(object,
 
   if (chi2) {
     cst <- object$tab %>% filter(.[[1]] != "Total") %>%
-      select(-which(names(.) %in% c(object$cvars, "Total")))  %>%
+      dplyr::select(-which(names(.) %in% c(object$cvars, "Total")))  %>%
       mutate_each(funs(rep_na = ifelse (is.na(.),0,.))) %>%
       {sshhr(chisq.test(., correct = FALSE))}
 
@@ -365,7 +365,7 @@ plot.pivotr <- function(x, type = "dodge", perc = FALSE, flip = FALSE, shiny = F
         geom_bar(stat="identity", position = "dodge", alpha=.7)
   } else if (length(cvars) == 2) {
     ctot <- which(colnames(tab) == "Total")
-    if (length(ctot) > 0) tab %<>% select(-matches("Total"))
+    if (length(ctot) > 0) tab %<>% dplyr::select(-matches("Total"))
 
     plot_list[[1]] <-
       tab %>% gather_(cvars[1], nvar, setdiff(colnames(.),cvars[2])) %>% na.omit %>%
@@ -373,7 +373,7 @@ plot.pivotr <- function(x, type = "dodge", perc = FALSE, flip = FALSE, shiny = F
           geom_bar(stat="identity", position = type, alpha=.7)
   } else if (length(cvars) == 3) {
     ctot <- which(colnames(tab) == "Total")
-    if (length(ctot) > 0) tab %<>% select(-matches("Total"))
+    if (length(ctot) > 0) tab %<>% dplyr::select(-matches("Total"))
 
     plot_list[[1]] <-
       tab %>% gather_(cvars[1], nvar, setdiff(colnames(.),cvars[2:3])) %>% na.omit %>%

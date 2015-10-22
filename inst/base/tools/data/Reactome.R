@@ -408,8 +408,8 @@ GeneList <- whichGeneList()
 }
 
 
-output$diagrammeR <- renderGrViz({
-  grViz(
+output$diagrammeR <- DiagrammeR::renderGrViz({
+  DiagrammeR::grViz(
     #   digraph{
     # ## Edge Atrributes
     #
@@ -433,7 +433,7 @@ output$diagrammeR <- renderGrViz({
 
 
 ld_diagrammeR_plot<- function(){
-  grViz(
+  DiagrammeR::grViz(
     graph_obj(),
     engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
     width = 1200

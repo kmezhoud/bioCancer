@@ -560,8 +560,11 @@ graph_obj <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData
 #' diagrammeR('Freq. Interaction', 'mRNA', 'Met_HM450')
 #' }
 #' @import DiagrammeR
+#' @importFrom DiagrammeR grViz
+#' @importFrom DiagrammeR renderGrViz
+#' @importFrom DiagrammeR grVizOutput
 diagrammeR <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData){
-  grViz(
+  DiagrammeR::grViz(
     #   digraph{
     # ## Edge Atrributes
     #

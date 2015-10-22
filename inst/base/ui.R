@@ -15,7 +15,7 @@ help_menu <-
 ## ui for base radiant
 shinyUI(
 
-  do.call(navbarPage, c("CancerPortal", nav_ui, shared_ui, help_menu))
+  do.call(navbarPage, c("bioCancer", nav_ui, shared_ui, help_menu))
 
 )
 

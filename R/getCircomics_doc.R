@@ -173,8 +173,12 @@ reStrDimension <- function(LIST){
 #' getCoffeeWhel(ListPorofData_bkp)
 #' }
 #'
+#'@import coffeewheel
 #'@importFrom coffeewheel coffeewheel
+#'@importFrom coffeewheel renderCoffeewheel
 #'@import metabologram
+#'@importFrom metabologram metabologram
+#'@importFrom metabologram renderMetabologram
 getCoffeeWheel <- function(ListProfData){
 
   CoffeewheelTreeProfData <- reStrDimension(ListProfData)

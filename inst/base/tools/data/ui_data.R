@@ -36,19 +36,19 @@ output$ui_data <- renderUI({
                          conditionalPanel("input.tabs_portal == 'Profiles'", uiOutput("ui_ProfData")),
                          conditionalPanel("input.tabs_portal == 'Mutation'", uiOutput("ui_MutData"))
         ),
-        conditionalPanel("input.tabs_data== 'Enrish'",
-                         conditionalPanel("input.tabs_Enrish == 'Circomics'", uiOutput("ui_Circomics")),
-                         #                          conditionalPanel("input.tabs_Enrish=='Network'",
+        conditionalPanel("input.tabs_data== 'Enrich'",
+                         conditionalPanel("input.tabs_Enrich == 'Circomics'", uiOutput("ui_Circomics")),
+                         #                          conditionalPanel("input.tabs_Enrich=='Network'",
                          #                                           wellPanel(
                          #                                             uiOutput("ui_NetworkSlider"),
                          #                                             uiOutput("ui_Provider")
                          #                                           )),
 
-                         conditionalPanel("input.tabs_Enrish=='Classifier'",
+                         conditionalPanel("input.tabs_Enrich=='Classifier'",
                                           uiOutput("ui_Classifier")
                          ),
 
-                         conditionalPanel("input.tabs_Enrish=='Reactome'",
+                         conditionalPanel("input.tabs_Enrich=='Reactome'",
                                           uiOutput("ui_Reactome")
                          )),
 
@@ -89,7 +89,7 @@ output$ui_data <- renderUI({
           id = "tabs_data",
           tabPanel("Portal", uiOutput("Portal")),
 
-          tabPanel("Enrish", uiOutput("Enrish")),
+          tabPanel("Enrich", uiOutput("Enrich")),
 
           tabPanel("Handle", uiOutput("Handle"))
 
@@ -117,9 +117,9 @@ output$Portal <- renderUI({
 })
 
 
-output$Enrish <- renderUI({
+output$Enrich <- renderUI({
 
-  tabsetPanel(id = "tabs_Enrish",
+  tabsetPanel(id = "tabs_Enrich",
 
               tabPanel("Circomics",
 

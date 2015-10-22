@@ -27,8 +27,20 @@ init_state <- function(r_data) {
   df <- get(robj)
   r_data[["diamonds"]] <- df
   r_data[["diamonds_descr"]] <- attr(df,'description')
-  r_data$datasetlist <- c("diamonds")
+
+  robj <- load(file.path(r_path,"base/data/epiGenomics.rda"))
+  df <- get(robj)
+  r_data[["epiGenomics"]] <- df
+  r_data[["epiGenomics_descr"]] <- attr(df,'description')
+
+  robj <- load(file.path(r_path,"base/data/xmRNA.rda"))
+  df <- get(robj)
+  r_data[["xmRNA"]] <- df
+  r_data[["xmRNA_descr"]] <- attr(df,'description')
+
+  r_data$datasetlist <- c("epiGenomics","xmRNA","diamonds")
   r_data$url <- NULL
+
   r_data[["DNA_damage_Response"]] <- c("CHEK1", "CHEK2", "RAD51", "BRCA1", "BRCA2", "MLH1", "MSH2","ATM", "ATR", "MDC1", "PARP1", "FANCF")
   r_data$genelist <- c("DNA_damage_Response")
   r_data

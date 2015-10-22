@@ -204,9 +204,9 @@ getFreqMutData <- function(list){
 
     GeneList <- whichGeneList()
 
-  if(is.null(r_data$ListMutData)){stop("Select a less one Study.")}
+  if(is.null(list)){stop("Select a less one Study.")}
 
-  Freq_ListMutData <- lapply(r_data$ListMutData,function(x) UnifyRowNames(x, GeneList))
+  Freq_ListMutData <- lapply(list,function(x) UnifyRowNames(x, GeneList))
   #output1 <- adply(Freq_ListMutData,1)
 
 
@@ -220,7 +220,7 @@ getFreqMutData <- function(list){
 
   dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1], colnames(Freq_ListMutData[[1]]), names(Freq_ListMutData))
 }
-  Freq_ArrayMutData_bkp <<- Freq_ArrayMutData
+  # Freq_ArrayMutData_bkp <<- Freq_ArrayMutData
 
 #if(length(input$StudiesIDReactome) < 2){
 #  stop("Select more than one Study or use Mutation panel")
@@ -230,10 +230,10 @@ getFreqMutData <- function(list){
   ## ordering gene list as in GeneList from MSigDB: grouping genes with the same biological process or gene Sets
 
   Freq_DfMutData <- Freq_DfMutData[GeneList,,drop=FALSE]
-  Freq_DfMutData <- round(Freq_DfMutData,digits=2)
+  Freq_DfMutData <- data.frame(round(Freq_DfMutData,digits=2))
 
   r_data[['Freq_DfMutData']] <- Freq_DfMutData
-  Freq_DfMutData_bkp <<-  Freq_DfMutData
+  # Freq_DfMutData_bkp <<-  Freq_DfMutData
   return(Freq_DfMutData)
 #}
 }

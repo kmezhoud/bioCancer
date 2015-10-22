@@ -83,6 +83,7 @@ summary.hier_clus <- function(object, ...) {
 #' @seealso \code{\link{plot.hier_clus}} to plot results
 #'
 #' @import ggdendro
+#' @importFrom ggdendro dendro_data
 #'
 #' @export
 plot.hier_clus <- function(x,
@@ -127,9 +128,9 @@ plot.hier_clus <- function(x,
 					theme(axis.text.x  = element_text(angle=90, size=6)) -> plot_list[['dendro']]
 
 			} else {
-				object$hc_out %>% dendro_data(type="rectangle") %>%
-					segment %>% filter(y > cutoff) %>%
-					ggplot(.) + geom_segment(aes_string(x="x", y="y", xend="xend", yend="yend")) +
+				object$hc_out %>% ggdendro::dendro_data(type="rectangle") %>%
+			    ggdendro::segment %>% filter(y > cutoff) %>%
+					ggplot(.) + ggplot::geom_segment(aes_string(x="x", y="y", xend="xend", yend="yend")) +
 					  # scale_y_continuous(limits=c(cutoff, 1)) +
 					  labs(list(title = paste("Cutoff dendrogram"), x = "", y = "Within cluster heterogeneity")) +
 					  theme_bw() + theme(axis.text.x = element_blank()) -> plot_list[['dendro']]

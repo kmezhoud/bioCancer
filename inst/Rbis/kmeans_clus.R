@@ -40,9 +40,9 @@ kmeans_clus <- function(dataset, vars,
 			mutate_each(funs(scale)) %T>%
 			{ group_by(., clus_var) %>%
 				summarise_each(funs(mean)) %>%
-				select(-clus_var) %>%
+				dplyr::select(-clus_var) %>%
 				as.matrix  ->> hc_cent
-			} %>% select(-clus_var) %>%
+			} %>% dplyr::select(-clus_var) %>%
 		kmeans(centers = hc_cent, iter.max = 500) -> km_out
 		rm(init, hc_cent)
 	} else {
@@ -57,7 +57,7 @@ kmeans_clus <- function(dataset, vars,
 		mutate(clus_var = km_out$cluster) %>%
 		group_by(clus_var) %>%
 		summarise_each(funs(mean)) %>%
-		select(-clus_var) %>%
+		dplyr::select(-clus_var) %>%
 		round(3) %>%
 		set_rownames(clus_names) %>%
 		as.data.frame -> clus_means

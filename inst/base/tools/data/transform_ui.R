@@ -221,11 +221,11 @@ output$ui_Transform <- renderUI({
 
   if (!store || !is.character(dataset)) {
     if (gsub("\\s","",cmd) == "") return(dataset)
-    nvar <- try(do.call(within, list(dataset, parse(text = cmd))), silent = TRUE)
+    nvar <- try(base::do.call(within, list(dataset, base::parse(text = cmd))), silent = TRUE)
     if (is(nvar, 'try-error')) {
       paste0(" **\nThe create command was not valid. The command entered was:\n\n", cmd, "\n\nThe error message was:\n\n", attr(nvar,"condition")$message, "\n\nPlease try again. Examples are shown in the help file\n**")
     } else {
-      nvars <- strsplit(cmd, ";")[[1]] %>% strsplit(., "=") %>% sapply("[", 1)
+      nvars <- base::strsplit(cmd, ";")[[1]] %>% base::strsplit(., "=") %>% sapply("[", 1)
       dplyr::select_(nvar, .dots = nvars)
     }
   } else {

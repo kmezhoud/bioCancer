@@ -25,7 +25,7 @@ output$ui_Classifier <- renderUI({
 
   wellPanel(
 
-    conditionalPanel("input.tabs_Enrish == 'Classifier'",
+    conditionalPanel("input.tabs_Enrich == 'Classifier'",
 
                      selectizeInput('StudiesIDClassifier', 'Studies  to Classify', choices=NULL, multiple = TRUE),
 

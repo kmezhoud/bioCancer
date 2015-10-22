@@ -271,11 +271,12 @@ if (panel=="Circomics"){
   r_data[['ListMetData']] <- ListMetData
   r_data[['ListMutData']] <- ListMutData
 
+  r_data[['Freq_DfMutData']] <- getFreqMutData(list = r_data$ListMutData)
 
-  ListProfData_bkp <<- ListProfData
-  ListMetData_bkp <<- ListMetData
-  ListMutData_bkp <<- ListMutData
-  ListCNAData_bkp <<- ListProfData$CNA
+#   ListProfData_bkp <<- ListProfData
+#   ListMetData_bkp <<- ListMetData
+#   ListMutData_bkp <<- ListMutData
+#   ListCNAData_bkp <<- ListProfData$CNA
 
   #     print("Start Ordering ...")
   ## range matrices by the same order

@@ -39,7 +39,7 @@ output$ui_Circomics <- renderUI({
     #}
   })
 
-  conditionalPanel("input.tabs_Enrish == 'Circomics'",
+  conditionalPanel("input.tabs_Enrich == 'Circomics'",
 
                    selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=NULL, multiple = TRUE),
                    div(class="row",
@@ -96,7 +96,7 @@ observe({
     loadInDatasets(fname="xMetHM450", header=TRUE)
     loadInDatasets(fname="xMetHM27", header=TRUE)
     loadInDatasets(fname="xMut", header=TRUE)
-    # loadInDatasets(fname="xFreqMut", header=TRUE)
+    loadInDatasets(fname="xFreqMut", header=TRUE)
     loadInDatasets(fname="xmiRNA", header=TRUE)
     loadInDatasets(fname="xRPPA", header=TRUE)
 

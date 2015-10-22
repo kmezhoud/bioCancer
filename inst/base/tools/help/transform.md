@@ -1,4 +1,7 @@
-> Transform variables in data
+  robj <- load(file.path(r_path,"base/data/epiGenomics.rda"))
+  df <- get(robj)
+  r_data[["epiGenomics"]] <- df
+  r_data[["epiGenomics_descr"]] <- attr(df,'description')> Transform variables in data
 
 ### Transform command log
 
@@ -6,7 +9,7 @@ All transformations applied in the _Data > Transform_ tab can be _logged_. If, f
 
 <pre>
 ## transform variable
-r_data[["diamonds"]] <- mutate_each(r_data[["diamonds"]], funs(log), ext = "_log", price, carat)
+r_data[["epiGenomics"]] <- mutate_each(r_data[["epiGenomics"]], funs(log), ext = "_log", mRNA, Met450)
 </pre>
 
 This is an important feature if you need to recreate your results at some point in the future or you want to re-run a report with new, but similar, data. Even more important is that there is a record of the steps taken to generate all results.
@@ -19,7 +22,7 @@ Filter functionality must be turned off when transforming variables. If a filter
 
 ### Type
 
-When you select `Type` from the `Transformation type` drop-down another drop-down menu is shown that will allow you to change the type (or class) of one or more variables. For example, you can change a variable of type integer to a variable of type factor. Click the `Store` button to change variable(s) in the data set. A description of the transformations included in Radiant is provided below.
+When you select `Type` from the `Transformation type` drop-down another drop-down menu is shown that will allow you to change the type (or class) of one or more variables. For example, you can change a variable of type integer to a variable of type factor. Click the `Store` button to change variable(s) in the data set. A description of the transformations included in bioCancer is provided below.
 
 1. As factor: convert a variable to type factor (i.e., a categorical variable)
 2. As number: convert a variable to type numeric
@@ -42,7 +45,7 @@ When you select `Type` from the `Transformation type` drop-down another drop-dow
 
 ### Transform
 
-When you select `Transform` from the `Transformation type` drop-down another drop-down menu is shown that will allow you to apply common transformations to one or more variables in the data. For example, to take the (natural) log of a variable select the variable(s) you want to transform and choose `Log` from the `Apply function` drop-down. A new variable is created with the extension specified in the 'Variable name extension` text input (e.g,. `_log`). Make sure to press `return` after changing the extension. Click the `Store` button to add the variable(s) to the data set. A description of the transformation functions included in Radiant is provided below.
+When you select `Transform` from the `Transformation type` drop-down another drop-down menu is shown that will allow you to apply common transformations to one or more variables in the data. For example, to take the (natural) log of a variable select the variable(s) you want to transform and choose `Log` from the `Apply function` drop-down. A new variable is created with the extension specified in the 'Variable name extension` text input (e.g,. `_log`). Make sure to press `return` after changing the extension. Click the `Store` button to add the variable(s) to the data set. A description of the transformation functions included in bioCancer is provided below.
 
 1. Log: create a log-transformed version of the selected variable (i.e., log(x))
 2. Square: multiply a variable by itself (i.e., x^2)
@@ -148,13 +151,13 @@ Choose `Replace` from the `Transformation type` drop-down if you want to replace
 
 ### Clipboard
 
-It is possible to manipulate your data in a spreadsheet (e.g., Excel or Google sheets) and copy-and-paste the data back into Radiant. If you don't have the original data in a spreadsheet already use the clipboard feature in _Data > Manage_ so you can paste it into the spreadsheet or click the download icon on the top right of your screen in the _Data > View_ tab. Apply your transformations in the spreadsheet program and then copy the new variable(s), with a header label, to the clipboard (i.e., CTRL-C on windows and CMD-C on mac). Select `Clipboard` from the `Transformation type` drop-down and paste the new data into the `Paste from spreadsheet` box. It is key that new variable(s) have the same number of observations as the data in Radiant. To add the new variables to the data click `Store`.
+It is possible to manipulate your data in a spreadsheet (e.g., Excel or Google sheets) and copy-and-paste the data back into bioCancer. If you don't have the original data in a spreadsheet already use the clipboard feature in _Data > Manage_ so you can paste it into the spreadsheet or click the download icon on the top right of your screen in the _Data > View_ tab. Apply your transformations in the spreadsheet program and then copy the new variable(s), with a header label, to the clipboard (i.e., CTRL-C on windows and CMD-C on mac). Select `Clipboard` from the `Transformation type` drop-down and paste the new data into the `Paste from spreadsheet` box. It is key that new variable(s) have the same number of observations as the data in bioCancer. To add the new variables to the data click `Store`.
 
 > **Note:** Using the clipboard feature for data transformation is discouraged because it is not reproducible.
 
 ### Normalize
 
-Choose `Normalize` from the `Transformation type` drop-down to standardize one or more variables. For example, in the diamonds data we may want to express price of a diamond per-carat. Select `carat` as the normalizing variable and `price` in the `Select variable(s)` box. You will see summary statistics for the new variable (e.g., `price_carat`) in the main panel. Store changes by clicking the `Store` button.
+Choose `Normalize` from the `Transformation type` drop-down to standardize one or more variables. For example, in the epiGenomics data we may want to express mRNA of a Genes per-FreqMut. Select `FreqMut` as the normalizing variable and `mRNA` in the `Select variable(s)` box. You will see summary statistics for the new variable (e.g., `mRNA_FreqMut`) in the main panel. Store changes by clicking the `Store` button.
 
 ### Reorder or remove columns
 
@@ -174,4 +177,4 @@ It is common to have one or more variables in a dataset that have only unique va
 
 ### Show duplicates
 
-If there are duplicates in the data use `Show duplicates` to get a better sense for the data points that have the same value in multiple rows. If you want to explore duplicates using the _View_ tab make sure to `Store` them in a different dataset (i.e., make sure **not** to overwrite the data you are working on). If you choose to show duplicates based on all columns in the data only one of the duplicate rows will be shown. These rows are **exactly** the same so showing 2 or 3 isn't helpful. If, however, we look for duplicates based on a subset of the available variables Radiant will generate a dataset with **all** rows that are deemed similar.
+If there are duplicates in the data use `Show duplicates` to get a better sense for the data points that have the same value in multiple rows. If you want to explore duplicates using the _View_ tab make sure to `Store` them in a different dataset (i.e., make sure **not** to overwrite the data you are working on). If you choose to show duplicates based on all columns in the data only one of the duplicate rows will be shown. These rows are **exactly** the same so showing 2 or 3 isn't helpful. If, however, we look for duplicates based on a subset of the available variables bioCancer will generate a dataset with **all** rows that are deemed similar.
