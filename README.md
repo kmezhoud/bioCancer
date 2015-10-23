@@ -1,6 +1,6 @@
 # bioCancer - Interactive Multi-Assay Cancer Genomics Data Visualisation
-<!--
-[![Travis-CI Build Status](https://travis-ci.org/kmezhoud/Cancerportal.png?branch=master)](https://travis-ci.org/kmezhoud/CancerPortal) -->
+
+[![Travis-CI Build Status](https://travis-ci.org/kmezhoud/Cancerportal.png?branch=master)](https://travis-ci.org/kmezhoud/CancerPortal)
 <!-- [![Coverage Status](https://img.shields.io/coveralls/kmezhoud/CancerPortal.svg)](https://coveralls.io/r/kmezhoud/CancerPortal?branch=master) -->
 
 
