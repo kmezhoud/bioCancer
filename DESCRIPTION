@@ -7,9 +7,9 @@ Description:
 	bioCancer is a Shiny App to visualise and analysis interactively Multi-Assays of Cancer Genomic Data.
 Depends:
 		R (>= 3.2.0),
-		radiant,
-		htmlwidgets
+		radiant
 Imports:
+  htmlwidgets,
   shinythemes,
   cgdsr,
   coffeewheel,

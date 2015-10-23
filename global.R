@@ -45,11 +45,11 @@ r_encoding = "UTF-8"
    r_path <- ".."
 } else{
   r_path <- "inst"
-
+ # setwd("inst/bioCancer")
 }
 
 
-if (r_path == "") r_path <- ".."  # if radiant is not installed revert to local inst
+if (r_path == "") r_path <- ".."  # if bioCancer is not installed revert to local inst
 
 
 ## print options
@@ -121,7 +121,9 @@ if (!file.exists("~/r_sessions/")) dir.create("~/r_sessions")
 addResourcePath("figures", file.path(r_path,"base/tools/help/figures"))
 addResourcePath("imgs", file.path(r_path,"base/www/imgs/"))
 addResourcePath("js", file.path(r_path,"base/www/js/"))
-# addResourcePath("rmarkdown", file.path(r_path,"base/www/rmarkdown/"))
+addResourcePath("rmarkdown", file.path(r_path,"base/www/rmarkdown/"))
+addResourcePath("figures_marketing", file.path(r_path,"bioCancer/tools/help/figures/"))
+addResourcePath("figures_quant", file.path(r_path,"quant/tools/help/figures/"))
 
 ## using local mathjax if available to avoid shiny bug
 ## https://github.com/rstudio/shiny/issues/692
@@ -181,5 +183,6 @@ js_head <-
     tags$script(src = "js/video_reset.js"),
     tags$link(rel = "shortcut icon", href = "imgs/icon.png")
   )
+
 
 

@@ -4,7 +4,7 @@
 \alias{getListProfData}
 \title{get list of data frame with profiles data (CNA,mRNA, Methylation, Mutation...)}
 \usage{
-result <- getListProfData(panel= "Circomics")
+result <- getListProfData(panel)
 }
 \arguments{
 \item{panel}{Panel name (string) in which Studies are selected. There are two panels ("Circomics" or "Reactome")}

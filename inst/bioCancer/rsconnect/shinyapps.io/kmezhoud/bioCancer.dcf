@@ -1,8 +1,8 @@
 name: bioCancer
 account: kmezhoud
 server: shinyapps.io
-bundleId: 295470
+bundleId: 294439
 url: https://kmezhoud.shinyapps.io/bioCancer
-when: 1445615905.13961
+when: 1445528939.7011
 asMultiple: FALSE
 asStatic: FALSE

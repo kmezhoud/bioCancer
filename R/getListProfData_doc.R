@@ -128,7 +128,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #' @return A LIST of a list data frame. Each LIST is related to profiles data (CNA, mRNA, Methylation, Mutation, miRNA, RPPA).
 #'         each list of data frame is related to studies.
 #'@usage
-#'result <- getListProfData(panel= "Circomics")
+#'result <- getListProfData(panel)
 #'
 #'@export
 #'

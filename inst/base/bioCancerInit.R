@@ -47,7 +47,7 @@ saveSession <- function(session = session) {
   # saveRDS(r_sessions[[r_ssuid]], file = paste0("~/r_sessions/r_", r_ssuid, ".rds"))
 }
 
-observeEvent(input$refresh_radiant, {
+observeEvent(input$refresh_bioCancer, {
   if (r_local) {
     fn <- normalizePath("~/r_sessions")
     file.remove(list.files(fn, full.names = TRUE))
@@ -62,7 +62,7 @@ observeEvent(input$refresh_radiant, {
 saveStateOnRefresh <- function(session = session) {
   session$onSessionEnded(function() {
     isolate({
-      if (not_pressed(input$refresh_radiant) && not_pressed(input$stop_bioCancer) &&
+      if (not_pressed(input$refresh_bioCancer) && not_pressed(input$stop_bioCancer) &&
           is.null(input$uploadState)) {
         saveSession(session)
         if (r_local) sshh( rm(r_env, envir = .GlobalEnv) )

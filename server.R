@@ -1,3 +1,4 @@
+## SERVER FOR SHINY APP DEPLOY
 shinyServer(function(input, output, session) {
   #library(PSICQUIC)
   #library(networkD3)
@@ -34,6 +35,19 @@ library(XML)
   ####masked package
   #library(lubridate)
   #remove(list = conflicts(detail = TRUE)$.GlobalEnv)
+
+
+
+#   if (file.exists("inst/base") && file.exists("inst/bioCancer")){
+#     #source("inst/bioCancer/global.R", encoding = r_encoding, local = TRUE)
+#     setwd("inst/bioCancer")
+#   }
+  #source("../base/global.R", encoding = "UTF-8", local = TRUE)
+
+
+  source("inst/base/init.R", encoding = r_encoding, local = TRUE)
+  source("inst/base/bioCancerInit.R", encoding = r_encoding, local = TRUE)
+
   ##################
   # for cgdsr
 
@@ -66,12 +80,8 @@ library(XML)
   })
 
 
-
   ## source shared functions
 
-  source("init.R", encoding = r_encoding, local = TRUE)
-  # source("inst/global.R", encoding = r_encoding, local = TRUE)
-  source("bioCancerInit.R", encoding = r_encoding, local = TRUE)
 
 
 
@@ -81,32 +91,33 @@ library(XML)
     selectInput("GeneListID", "Gene List:", r_data$genelist)
   })
 
-  # if (!"package:radiant" %in% search()) {
+ # if (!"package:bioCancer" %in% search()) {
   if (r_path == "inst") {
-    for (file in list.files("../R",
+    for (file in list.files("inst/Rbis",
                             pattern="\\.(r|R)$",
                             full.names = TRUE)) {
 
       source(file, encoding = r_encoding, local = TRUE)
     }
-  } else {
-    radiant::copy_all(radiant)
-    set_class <- radiant::set_class
   }
-  #   } else {
-  #     copy_from(radiant, state_init, state_single, state_multiple)
-  #   }
+#  else {
+#     radiant::copy_all(radiant)
+#     set_class <- radiant::set_class
+#   }
+#     } else {
+#       copy_from(bioCancer, state_init, state_single, state_multiple)
+#     }
 
   ## source for Documents
-  for (file in list.files("R",
-                          pattern="\\.(r|R)$",
-                          full.names = TRUE)) {
-
-    source(file, encoding = r_encoding, local = TRUE)
-  }
+#   for (file in list.files("R",
+#                           pattern="\\.(r|R)$",
+#                           full.names = TRUE)) {
+#
+#     source(file, encoding = r_encoding, local = TRUE)
+#   }
 
   ## source data & analysis tools
-  for (file in list.files(c("base/tools/app","base/tools/data","base/tools/help"),
+  for (file in list.files(c("inst/base/tools/app","inst/base/tools/data","inst/base/tools/help"),
                           pattern="\\.(r|R)$",
                           full.names = TRUE)) {
 
@@ -115,12 +126,12 @@ library(XML)
 
 
   # source analysis tools from quant app
-  for (file in list.files(c("quant/tools/analysis", "quant/tools/help"),
+  for (file in list.files(c("inst/quant/tools/analysis", "inst/quant/tools/help"),
                           pattern="\\.(r|R)$", full.names = TRUE))
     source(file, encoding = r_encoding, local = TRUE)
 
   # source additional analysis tools for marketing app
-  for (file in list.files(c("modeling/tools/analysis","modeling/tools/help"),
+  for (file in list.files(c("inst/bioCancer/tools/analysis","inst/bioCancer/tools/help"),
                           pattern="\\.(r|R)$", full.names = TRUE))
     source(file, encoding = r_encoding, local = TRUE)
 

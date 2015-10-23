@@ -1,33 +1,34 @@
+## SERVER FOR bioCancer PACKAGE
 shinyServer(function(input, output, session) {
   #library(PSICQUIC)
   #library(networkD3)
-
-  library(shinythemes)
-  library(cgdsr)
-  library(magrittr)
-  library(coffeewheel)
-  library(htmlwidgets)
-  library(metabologram)
-  library(DiagrammeR)
-  library(dplyr)
-  library(geNetClassifier)
-  library(RCurl)
-  library(clusterProfiler)
-  library(AnnotationFuncs)
-  #### masked
-  library(plyr)
-
-  ##library(DT)
-  library(Biobase)
-  library(DOSE)
-  library("org.Hs.eg.db")
-  library(XML)
-  #
-  ### package in NAMESSPACE not imported
-  library(gridExtra)
-  library(psych)
-  library(broom)
-  library(radiant)
+#
+#   library(shinythemes)
+#   library(cgdsr)
+#   library(magrittr)
+#   library(coffeewheel)
+#   library(htmlwidgets)
+#   library(metabologram)
+#   library(DiagrammeR)
+#   library(dplyr)
+#   library(geNetClassifier)
+#   library(RCurl)
+#   library(clusterProfiler)
+#   library(AnnotationFuncs)
+#   #### masked
+#   library(plyr)
+#
+#   ##library(DT)
+#   library(Biobase)
+#   library(DOSE)
+#   library("org.Hs.eg.db")
+#   library(XML)
+#   #
+#   ### package in NAMESSPACE not imported
+#   library(gridExtra)
+#   library(psych)
+#   library(broom)
+#   library(radiant)
 
   #   library(grDevices)
   #library(S4Vectors)

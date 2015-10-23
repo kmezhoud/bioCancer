@@ -34,10 +34,18 @@
 #'@importFrom car recode
 #'@importFrom car vif
 #'@importFrom curl curl
-#'
-#'
+#'@import gridExtra
+#'@import GPArotation
+#'@import knitr
+#'@import pryr
+#'@import DT
+#'@import readr
+#'@import scales
+#'@import htmlwidgets
 bioCancer <- function(){
-  if (!"package:bioCancer" %in% search())
-    if (!require(bioCancer)) stop("Calling bioCancer start function but bioCancer is not installed.")
-  runApp(paste0(system.file(package = "bioCancer", "/bioCancer", sep="")), launch.browser = TRUE)
+  if ("package:bioCancer" %in% search()){
+    runApp(paste0(system.file(package = "bioCancer", "/bioCancer", sep="")), launch.browser = TRUE)
+  }else{
+    stop("Calling bioCancer start function but bioCancer is not installed.")
+  }
 }
