@@ -104,17 +104,19 @@ output$ui_compare_props <- renderUI({
       uiOutput("ui_cp_var2"),
       uiOutput("ui_cp_levs"),
       conditionalPanel(condition = "input.tabs_compare_props == 'Summary'",
-                       uiOutput("ui_cp_comb"),
-                       selectInput(inputId = "cp_alternative", label = "Alternative hypothesis:",
-                                   choices = cp_alt,
-                                   selected = state_single("cp_alternative", cp_alt,
-                                                           cp_args$alternative)),
-                       checkboxInput("cp_show", "Show additional statistics", value = state_init("cp_show", FALSE)),
-                       sliderInput("cp_conf_lev","Confidence level:", min = 0.85, max = 0.99,
-                                   value = state_init("cp_conf_lev",cp_args$conf_lev), step = 0.01),
-                       radioButtons(inputId = "cp_adjust", label = "Multiple comp. adjustment:", cp_adjust,
-                                    selected = state_init("cp_adjust", cp_args$adjust),
-                                    inline = TRUE)
+
+        uiOutput("ui_cp_comb"),
+        selectInput(inputId = "cp_alternative", label = "Alternative hypothesis:",
+                    choices = cp_alt,
+                    selected = state_single("cp_alternative", cp_alt,
+                                               cp_args$alternative)),
+        checkboxInput("cp_show", "Show additional statistics", value = state_init("cp_show", FALSE)),
+        sliderInput("cp_conf_lev","Confidence level:", min = 0.85, max = 0.99,
+          value = state_init("cp_conf_lev",cp_args$conf_lev), step = 0.01),
+        radioButtons(inputId = "cp_adjust", label = "Multiple comp. adjustment:", cp_adjust,
+          selected = state_init("cp_adjust", cp_args$adjust),
+          inline = TRUE)
+
       )
     ),
     help_and_report(modal_title = "Compare proportions",

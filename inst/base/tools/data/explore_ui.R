@@ -37,14 +37,15 @@ output$ui_expl_byvar <- renderUI({
   }
 
   isolate({
-    if (available(r_state$expl_byvar) && all(r_state$expl_byvar %in% vars))
-      vars <- unique(c(r_state$expl_byvar, vars))
+    if (available(r_state$expl_byvar) && all(r_state$expl_byvar %in% vars)) {
+      ## can't use unique here - removes variable type information
+      vars <- c(r_state$expl_byvar, vars) %>% .[!duplicated(.)]
+    }
 
     sel <- use_input("expl_byvar", vars, fun = "state_multiple")
   })
 
   selectizeInput("expl_byvar", label = "Group by:", choices = vars,
-    # selected = state_multiple("expl_byvar", vars, ""), multiple = TRUE,
     selected = sel, multiple = TRUE,
     options = list(placeholder = 'Select group-by variable',
                    plugins = list('remove_button', 'drag_drop'))

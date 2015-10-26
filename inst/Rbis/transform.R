@@ -397,8 +397,10 @@ getsummary <- function(dat, dc = getclass(dat)) {
     ## finding unique elements can be slow for large files
     if (nrow(dat) < 10^5) {
       cat("Summarize character variables (< 20 unique values shown):\n")
-      dplyr::select(dat, which(isChar)) %>% lapply(unique) %>%
-        {for(i in names(.)) cat(i, ":", .[[i]][1:min(20,length(.[[i]]))], "\n")}
+
+        dplyr::select(dat, which(isChar)) %>% lapply(unique) %>%
+        {for(i in names(.)) cat(i, paste0("(n_distinct ", length(.[[i]]), "): "), .[[i]][1:min(20,length(.[[i]]))], "\n")}
+
     } else {
       cat("Summarize character variables (< 20 values shown):\n")
       dplyr::select(dat, which(isChar)) %>%

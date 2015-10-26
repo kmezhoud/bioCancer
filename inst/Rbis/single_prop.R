@@ -8,6 +8,7 @@
 #' @param comp_value Population value to compare to the sample proportion
 #' @param alternative The alternative hypothesis ("two.sided", "greater", or "less")
 #' @param conf_lev Span of the confidence interval
+#' @param dec Number of decimals to show
 #' @param data_filter Expression entered in, e.g., Data > View to filter the dataset in Radiant. The expression should be a string (e.g., "price > 10000")
 #'
 #' @return A list of variables used in single_prop as an object of class single_prop
@@ -25,10 +26,15 @@ single_prop <- function(dataset, var,
                         comp_value = 0.5,
                         alternative = "two.sided",
                         conf_lev = .95,
+                        dec = 3,
                         data_filter = "") {
 
-	dat <- getdata(dataset, var, filt = data_filter) %>% mutate_each(funs(as.factor))
+	dat <- getdata(dataset, var, filt = data_filter, na.rm = FALSE) %>% mutate_each(funs(as.factor))
 	if (!is_string(dataset)) dataset <- "-----"
+
+  ## removing any missing values
+	miss <- n_missing(dat)
+  dat <- na.omit(dat)
 
 	levs <- levels(dat[[var]])
 	if (lev != "") {
@@ -42,9 +48,16 @@ single_prop <- function(dataset, var,
 
 	n <- nrow(dat)
 	ns <- sum(dat == lev)
+	p <- ns / n
 
-	# res <- prop.test(ns, n, p = comp_value, alternative = alternative,
-	#                  conf.level = conf_lev, correct = FALSE) %>% tidy
+  dat_summary <- data.frame(
+    diff = p - comp_value,
+    prop = p,
+    mean = n*p,
+		sd = sqrt(n*p*(1-p)),
+		n = n,
+	  n_missing = miss
+  )
 
 	## use binom.test for exact
 	res <- binom.test(ns, n, p = comp_value, alternative = alternative,
@@ -71,11 +84,14 @@ single_prop <- function(dataset, var,
 #' @export
 summary.single_prop <- function(object, ...) {
 
+	dec <- object$dec
+
   cat("Single proportion test (binomial exact)\n")
 	cat("Data      :", object$dataset, "\n")
 	if (object$data_filter %>% gsub("\\s","",.) != "")
 		cat("Filter    :", gsub("\\n","", object$data_filter), "\n")
 	cat("Variable  :", object$var, "\n")
+	cat("Level     :", object$lev, "in", object$var, "\n")
 	cat("Confidence:", object$conf_lev, "\n")
 
 	hyp_symbol <- c("two.sided" = "not equal to",
@@ -88,27 +104,29 @@ summary.single_prop <- function(object, ...) {
 	    object$comp_value, "\n\n")
 
 	## determine lower and upper % for ci
-	{100 * (1 - object$conf_lev)/2} %>%
-		c(., 100 - .) %>%
-		round(1) %>%
-		paste0(.,"%") -> ci_perc
+	ci_perc <- ci_label(object$alternative, object$conf_lev)
 
-	# res <- round(object$res, 3) 	## restrict to 3 decimal places
-	# res$ns <- object$ns
-	# res$n <- object$n
-	# names(res) <- c("prop","chisq.value","p.value","df", ci_perc[1], ci_perc[2],
-	# 								"ns","n")
+	## print summary statistics
+  print(object$dat_summary[-1] %>% round(dec) %>% as.data.frame, row.names = FALSE)
+	cat("\n")
 
-	res <- round(object$res, 3) 	## restrict to 3 decimal places
-	res$statistic <- res$parameter <- NULL
-	res$ns <- object$ns
-	res$n <- object$n
-	# names(res) <- c("prop","p.value","df", ci_perc[1], ci_perc[2], "ns","n")
-	names(res) <- c("prop","p.value", ci_perc[1], ci_perc[2], "ns","n")
+	res <- object$res
+	res <- bind_cols(
+	         data.frame(diff = object$dat_summary[["diff"]]),
+	         res[,-1]
+	       ) %>%
+	       select(-matches("parameter")) %>%
+	       as.data.frame
 
+	names(res) <- c("diff","ns","p.value", ci_perc[1], ci_perc[2])
+	res %<>% round(dec) 	# restrict the number of decimals
+	res$` ` <- sig_stars(res$p.value)
 	if (res$p.value < .001) res$p.value <- "< .001"
 
+	## print statistics
 	print(res, row.names = FALSE)
+	cat("\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n")
+
 }
 
 #' Plot method for the single_prop function
@@ -153,14 +171,7 @@ plot.single_prop <- function(x,
 							  data.frame %>%
 							  set_colnames(lev_name)
 
-		ci_perc <- {if (object$alternative == 'two.sided') {
-									{(1 - object$conf_lev)/2}  %>% c(., 1 - .)
-								 } else if (object$alternative == 'less') {
-									{1 - object$conf_lev}
-								 } else {
-									object$conf_lev
-								 }
-							 } %>% quantile(simdat[[lev_name]], probs = . )
+    cip <- ci_perc(simdat[[lev_name]], object$alternative, object$conf_lev) %>% set_names(NULL)
 
 		bw <- simdat %>% range %>% diff %>% divide_by(20)
 
@@ -170,13 +181,12 @@ plot.single_prop <- function(x,
 
 		plot_list[[which("simulate" == plots)]] <-
 			ggplot(simdat, aes(x = col1)) +
-				geom_histogram(colour = 'black', fill = 'blue', binwidth = bw, alpha = .1) +
+				geom_histogram(fill = 'blue', binwidth = bw, alpha = .3) +
 				geom_vline(xintercept = object$comp_value, color = 'red',
 				           linetype = 'solid', size = 1) +
 				geom_vline(xintercept = object$res$estimate, color = 'black',
 				           linetype = 'solid', size = 1) +
-				geom_vline(xintercept = ci_perc,
-				           color = 'red', linetype = 'longdash', size = .5) +
+				geom_vline(xintercept = cip, color = 'red', linetype = 'longdash', size = .5) +
 	 	 		ggtitle(paste0("Simulated proportions if null hyp. is true (", lev_name, " in ", object$var, ")")) +
 	 	 		labs(x = paste0("Level ",lev_name, " in variable ", object$var))
 	}

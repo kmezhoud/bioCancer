@@ -121,28 +121,28 @@ getdata <- function(dataset,
   # filt %<>% gsub("\\s","", .) %>% gsub("\"","\'",.)
   filt %<>% gsub("\\n","", .) %>% gsub("\"","\'",.)
   { if (!is_string(dataset)) {
-    dataset
-  } else if (exists("r_env")) {
-    r_env$r_data[[dataset]]
-  } else if (exists("r_data") && !is.null(r_data[[dataset]])) {
-    if (exists("r_local")) { if (r_local) message("Dataset ", dataset, " loaded from r_data list\n") }
-    r_data[[dataset]]
-  } else if (exists(dataset)) {
-    d_env <- pryr::where(dataset)
-    # message("Dataset ", dataset, " loaded from ", environmentName(d_env), " environment\n")
-    d_env[[dataset]]
-  } else {
-    message("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call") %>%
-      stop %>% return
-  }
+      dataset
+    } else if (exists("r_env")) {
+      r_env$r_data[[dataset]]
+    } else if (exists("r_data") && !is.null(r_data[[dataset]])) {
+      if (exists("r_local")) { if (r_local) message("Dataset ", dataset, " loaded from r_data list\n") }
+      r_data[[dataset]]
+    } else if (exists(dataset)) {
+      d_env <- pryr::where(dataset)
+      # message("Dataset ", dataset, " loaded from ", environmentName(d_env), " environment\n")
+      d_env[[dataset]]
+    } else {
+      message("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call") %>%
+        stop %>% return
+    }
   } %>% { if ("grouped_df" %in% class(.)) ungroup(.) else . } %>%     # ungroup data if needed
-    # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
-  { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
-  { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
-  { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
-  { if (na.rm) na.omit(.) else . }
-  ## line below may cause an error https://github.com/hadley/dplyr/issues/219
-  # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
+        # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
+        { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
+        { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
+        { if (vars[1] == "" || is.null(vars)) . else select_(., .dots = vars) } %>%
+        { if (na.rm) na.omit(.) else . }
+        ## line below may cause an error https://github.com/hadley/dplyr/issues/219
+        # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
 
   # use the below when all data is setup as tbl_df
   # } %>% { if (is.na(groups(.))) . else ungroup(.) } %>%     # ungroup data if needed
@@ -159,10 +159,10 @@ getdata <- function(dataset,
 factorizer <- function(dat, safx = 20) {
   isChar <- sapply(dat, is.character)
   if (sum(isChar) == 0) return(dat)
-  toFct <-
-    dplyr::select(dat, which(isChar)) %>%
-    summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
-    dplyr::select(which(. == TRUE)) %>% names
+    toFct <-
+      dplyr::select(dat, which(isChar)) %>%
+      summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
+      dplyr::select(which(. == TRUE)) %>% names
   if (length(toFct) == 0) return(dat)
 
 
@@ -177,6 +177,40 @@ factorizer <- function(dat, safx = 20) {
   # rmiss <- . %>% ifelse (is.na(.), "[Empty]", .) %>% ifelse (. == "", "[Empty]", .)
   # mutate_each_(dat, funs(rmiss), vars = toFct)  %>%  # replace missing levels
   mutate_each_(dat, funs(as.factor), vars = toFct)
+}
+
+#' Load an rda file and add it to the radiant data list (r_data)
+#'
+#' @param fn File name string
+#' @param ext File extension ("rda" is the default)
+#'
+#' @return Data.frame in r_data
+#'
+#' @export
+loadrda <- function(fn, ext = "rda") {
+
+  # filename <- basename(fn)
+  # ## objname is used as the name of the data.frame
+  # objname <- sub(paste0(".",ext,"$"),"", filename)
+
+  # ## if ext isn't in the filename nothing was replaced and so ...
+  # if (objname == filename) {
+  #   fext <- tools::file_ext(filename) %>% tolower
+  #   message(paste0("### The filename extension (",fext,") does not match the one expected (",ext,"). Please specify the file extension used for the r-data file"))
+  #   return()
+  # }
+
+  # ## objname will hold the name of the object(s) inside the R datafile
+  # robjname <- try(load(fn), silent = TRUE)
+  # if (is(robjname, 'try-error')) {
+  #   message("### There was an error loading the data. Please make sure the data are in r-data format and the correct file extension has been specified.")
+  # } else {
+  #   if (exists("r_data") && length(robjname == 1)) {
+  #     r_data[[objname]] <<- as.data.frame(get(robjname))
+  #     r_data[[paste0(objname,"_descr")]] <<- attr(r_data[[objname]], "description")
+  #     r_data[['datasetlist']] <<- c(objname, r_data[['datasetlist']]) %>% unique
+  #   }
+  # }
 }
 
 #' Load a csv file with read.csv and read_csv
@@ -196,13 +230,13 @@ loadcsv <- function(fn, header = TRUE, sep = ",", dec = ".", saf = TRUE, safx = 
   cn <- try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE, nrows = 1), silent = TRUE)
   # dat <- try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
   try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
-  {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
-    try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
-    else . } %>%
+    {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
+       try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
+     else . } %>%
     {if (is(., 'try-error'))
-      return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
-      else .} %>%
-      {if (saf) factorizer(., safx) else . } %>% as.data.frame
+       return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
+     else .} %>%
+    {if (saf) factorizer(., safx) else . } %>% as.data.frame
 
   ## workaround for https://github.com/rstudio/DT/issues/161
   # isDate <- sapply(dat, is.Date)
@@ -235,8 +269,8 @@ loadcsv_url <- function(csv_url, header = TRUE, sep = ",", dec = ".", saf = TRUE
     return("### There was an error loading the csv file from the provided url.")
   } else {
     dat <- try(read.table(con, header = header, comment.char = "",
-                          quote = "\"", fill = TRUE, stringsAsFactors = saf,
-                          sep = sep, dec = dec), silent = TRUE)
+               quote = "\"", fill = TRUE, stringsAsFactors = saf,
+               sep = sep, dec = dec), silent = TRUE)
     close(con)
 
     if (is(dat, 'try-error'))
@@ -351,27 +385,27 @@ viewdata <- function(dataset,
 
   shinyApp(
     ui = fluidPage(title = title,
-                   includeCSS(file.path(system.file(package = "radiant"),"base/www/style.css")),
-                   fluidRow(DT::dataTableOutput("tbl")),
-                   tags$button(id = "stop", type = "button",
-                               class = "btn btn-danger action-button shiny-bound-input",
-                               onclick = "window.close();", "Stop")
+      includeCSS(file.path(system.file(package = "radiant"),"base/www/style.css")),
+      fluidRow(DT::dataTableOutput("tbl")),
+      tags$button(id = "stop", type = "button",
+                  class = "btn btn-danger action-button shiny-bound-input",
+                  onclick = "window.close();", "Stop")
     ),
     server = function(input, output, session) {
       widget <- DT::datatable(dat,
-                              rownames = FALSE, style = "bootstrap",
-                              filter = filt,
-                              # filter = alist(position = "top", clear = FALSE, plain = FALSE),
-                              escape = FALSE,
-                              # extensions = 'KeyTable'# ,
-                              options = list(
-                                search = list(regex = TRUE),
-                                columnDefs = list(list(className = 'dt-center', targets = "_all")),
-                                autoWidth = TRUE,
-                                processing = FALSE,
-                                pageLength = 10,
-                                lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-                              )
+        rownames = FALSE, style = "bootstrap",
+        filter = filt,
+        # filter = alist(position = "top", clear = FALSE, plain = FALSE),
+        escape = FALSE,
+        # extensions = 'KeyTable'# ,
+        options = list(
+          search = list(regex = TRUE),
+          columnDefs = list(list(className = 'dt-center', targets = "_all")),
+          autoWidth = TRUE,
+          processing = FALSE,
+          pageLength = 10,
+          lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
+        )
       )
       output$tbl <- DT::renderDataTable(widget)
       observeEvent(input$stop, {stopApp("Stopped viewdata")})
@@ -666,7 +700,7 @@ copy_from <- function(.from, ...) {
   dots <- eval(substitute(alist(...)), parent.frame(), parent.frame())
   names <- names(dots)
   unnamed <- if (is.null(names)) 1:length(dots)
-  else which(names == "")
+             else which(names == "")
   dots <- vapply(dots, as.character, character(1))
   names(dots)[unnamed] <- dots[unnamed]
 
@@ -806,12 +840,12 @@ state_single <- function(inputvar, vals, init = character(0)) {
 state_multiple <- function(inputvar, vals, init = character(0)) {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
   r_state %>%
-  { if (is.null(.[[inputvar]]))
-    ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
-    vals[vals %in% init]
-    else
-      vals[vals %in% .[[inputvar]]]
-  }
+    { if (is.null(.[[inputvar]]))
+        ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
+        vals[vals %in% init]
+      else
+        vals[vals %in% .[[inputvar]]]
+    }
 }
 
 #' Print/draw method for grobs produced by gridExtra
@@ -827,4 +861,55 @@ state_multiple <- function(inputvar, vals, init = character(0)) {
 print.gtable <- function(x, ...) {
   if (is.ggplot(x)) x <- ggplotGrob(x)
   grid::grid.draw(x)
+}
+
+#' Labels for confidence intervals
+#'
+#' @param alt Type of hypothesis ("two.sided","less","greater")
+#' @param cl Confidence level
+#'
+#' @return A charater vector with labels for a confidence interval
+#'
+#' @examples
+#' ci_label("less",.95)
+#' ci_label("two.sided",.95)
+#' ci_label("greater",.9)
+#'
+#' @export
+ci_label <- function(alt, cl) {
+  if (alt == "less") {
+    c("0%", paste0(100*cl,"%"))
+  } else if (alt == "greater") {
+    c(paste0(100*(1-cl),"%"), "100%")
+  } else {
+    {100 * (1-cl)/2} %>%
+      c(., 100 - .) %>%
+      round(1) %>%
+      paste0(.,"%")
+  }
+}
+
+#' Values at confidence levels
+#'
+#' @param dat Data
+#' @param alt Type of hypothesis ("two.sided","less","greater")
+#' @param cl Confidence level
+#'
+#' @return A charater vector with labels for a confidence interval
+#'
+#' @examples
+#' ci_perc(0:100, "less",.95)
+#' ci_perc(0:100, "greater",.95)
+#' ci_perc(0:100, "two.sided",.80)
+#'
+#' @export
+ci_perc <- function(dat, alt, cl) {
+  probs <- if (alt == 'two.sided') {
+    ((1-cl)/2) %>% c(., 1 - .)
+  } else if (alt == 'less') {
+    1-cl
+  } else {
+    cl
+  }
+  quantile(dat, probs = probs)
 }

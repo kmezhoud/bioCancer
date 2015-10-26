@@ -29,9 +29,7 @@ output$ui_sp_var <- renderUI({
 
 output$up_sp_lev <- renderUI({
   if (not_available(input$sp_var)) return()
-  # levs <- if (not_available(input$sp_var)) c()
-  #         else .getdata()[1,input$sp_var] %>% as.factor %>% levels
-  levs <- .getdata()[1,input$sp_var] %>% as.factor %>% levels
+  levs <- .getdata()[[input$sp_var]] %>% as.factor %>% levels
 
   selectInput(inputId = "sp_lev", label = "Choose level:", choices = levs,
               selected = state_single("sp_lev",levs), multiple = FALSE)
@@ -55,7 +53,7 @@ output$ui_single_prop <- renderUI({
   	  	choices = sp_alt,
         selected = state_single("sp_alternative", sp_alt, sp_args$alternative),
   	  	multiple = FALSE),
-    	sliderInput('sp_conf_lev',"Significance level:", min = 0.85, max = 0.99,
+    	sliderInput('sp_conf_lev',"Confidence level:", min = 0.85, max = 0.99,
     		value = state_init('sp_conf_lev', sp_args$conf_lev), step = 0.01),
       numericInput("sp_comp_value", "Comparison value:",
                    state_init('sp_comp_value', sp_args$comp_value),
@@ -103,7 +101,7 @@ output$single_prop <- renderUI({
 
 sp_available <- reactive({
   if (not_available(input$sp_var))
-    return("This analysis requires a categorical variable. In none are available\nplease select another dataset.\n\n" %>% suggest_data("diamonds"))
+    return("This analysis requires a categorical variable. In none are available\nplease select another dataset.\n\n" %>% suggest_data("consider"))
 
   if (input$sp_comp_value %>% { is.na(.) | . > 1 | . <= 0 })
     return("Please choose a comparison value between 0 and 1")
