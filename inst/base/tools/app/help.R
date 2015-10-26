@@ -30,9 +30,9 @@ append_help <- function(help_str, help_path, Rmd = FALSE) {
                       inclMD(file.path(help_path,local_hd[i])),
                       sep="\n")
   }
-  #mathjax_script <- ifelse (Rmd, "<script>MathJax.Hub.Typeset();</script>", "")
-  #cc <- "&copy; Vincent Nijs (2015) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a></br>"
-  #paste(all_help,"\n",mathjax_script,"\n",cc) %>% HTML
+  mathjax_script <- ifelse (Rmd, "<script>MathJax.Hub.Typeset();</script>", "")
+  cc <- "&copy; V. Nijs & K. Mezhoud (2015) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a></br>"
+  paste(all_help,"\n",mathjax_script,"\n",cc) %>% HTML
 }
 
 help_data <- c("Manage" = "manage.md","View" = "view.md", "Visualize" = "visualize.md",
@@ -139,11 +139,11 @@ if ("bioCancer" %in% (installed.packages()[,'Package'])) {
 help_quant_main <- tagList(
   HTML(paste0("<h3>bioCancer (",r_version, "): Select help files to show and search</h3>")),
   # HTML("<script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>"),
-  htmlOutput("help_data"),
-  htmlOutput("help_sample"),
-  htmlOutput("help_base_menu"),
-  htmlOutput("help_regression"),
-  htmlOutput("help_decide")
+  shiny::htmlOutput("help_data"),
+  shiny::htmlOutput("help_sample"),
+  shiny::htmlOutput("help_base_menu"),
+  shiny::htmlOutput("help_regression"),
+  shiny::htmlOutput("help_decide")
 )
 
 output$help_quant <- renderUI({
@@ -211,14 +211,14 @@ output$help_modeling <- renderUI({
     sidebarPanel(
       help_quant_ui,
       help_modeling_ui,
-      uiOutput("help_text")
+      shiny::uiOutput("help_text")
     ),
     mainPanel(
       help_quant_main,
-      htmlOutput("help_maps"),
-      htmlOutput("help_factor"),
-      htmlOutput("help_cluster"),
-      htmlOutput("help_conjoint")
+      shiny::htmlOutput("help_maps"),
+      shiny::htmlOutput("help_factor"),
+      shiny::htmlOutput("help_cluster"),
+      shiny::htmlOutput("help_conjoint")
     )
   )
 })

@@ -1,8 +1,3 @@
-  robj <- load(file.path(r_path,"base/data/epiGenomics.rda"))
-  df <- get(robj)
-  r_data[["epiGenomics"]] <- df
-  r_data[["epiGenomics_descr"]] <- attr(df,'description')> Transform variables in data
-
 ### Transform command log
 
 All transformations applied in the _Data > Transform_ tab can be _logged_. If, for example, you apply a `log` transformation to numeric variables the following code is generated and put in the _Transform command log_ window at the bottom of your screen when you click the `Store` button.
@@ -89,9 +84,9 @@ Choose `Create` from the `Transformation type` drop-down. This is the most flexi
 
 	z = ifelse(x < 60, '< 60', ifelse(x > 65, '> 65', '60-65'))
 
-8. Convert an outlier to a missing value. For example, if we want to remove the maximum value from a variable called `sales` that is equal to 400 we could use an `ifelse` statement and enter the command below in the `Create` box. Press `return` and `Store` to add the new `sales_rc` variable. Note that if we had entered `sales` on the left-hand side of the `=` sign the original variable would have been overwritten
+8. Convert an outlier to a missing value. For example, if we want to remove the maximum value from a variable called `xmRNA` that is equal to 400 we could use an `ifelse` statement and enter the command below in the `Create` box. Press `return` and `Store` to add the new `xmRNA_rc` variable. Note that if we had entered `xmTNA` on the left-hand side of the `=` sign the original variable would have been overwritten
 
-  sales_rc = ifelse(sales > 400, NA, sales)
+  xmRNA_rc = ifelse(xmRNA > 400, NA, sales)
 
 9. If you have a date in a format not available through the `Type` menu you can use the `parse_date_time` function. For a date formated as "2-1-14" you would specify the command below (note that this format will also be parsed correctly by the `mdy` function in the `Type` menu)
 
@@ -135,9 +130,9 @@ To use the recode feature select the variable you want to change and choose `Rec
 
 	'<25' = '<35'; '25-34' = '<35'; '35-44' = '35-54'; '45-54' = '35-54'; '55-64' = '>54'; '>64' = '>54'
 
-4. To exclude a particular value (e.g., an outlier in the data) for subsequent analyses we can recode it to a missing value. For example, if we want to remove the maximum value from a variable called `sales` that is equal to 400 we would (1) select the variable `sales` in the `Select variable(s)` box and enter the command below in the `Recode` box. Press `return` and `Store` to add the recoded variable to the data
+4. To exclude a particular value (e.g., an outlier in the data) for subsequent analyses we can recode it to a missing value. For example, if we want to remove the maximum value from a variable called `FreqMut` that is equal to 102 we would (1) select the variable `FreqMut` in the `Select variable(s)` box and enter the command below in the `Recode` box. Press `return` and `Store` to add the recoded variable to the data
 
-	400 = NA
+	102 = NA
 
 **Note:** Never use a `=` symbol in a label (e.g., 50:hi = '>= 50') as this will cause an error.
 

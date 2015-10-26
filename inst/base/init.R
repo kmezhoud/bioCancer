@@ -192,7 +192,7 @@ if (r_local) {
     isolate({
       r_data[[df]] <- get(df, envir = .GlobalEnv)
       r_data[[paste0(df,"_descr")]] <- attr(r_data[[df]],'description') %>%
-        { if (is.null(.)) "No description provided. Please use Radiant to add an overview of the data in markdown format.\n Check the 'Add/edit data description' box on the left of your screen" else . }
+        { if (is.null(.)) "No description provided. Please use bioCancer to add an overview of the data in markdown format.\n Check the 'Add/edit data description' box on the left of your screen" else . }
       r_data$datasetlist %<>% c(df, .) %>% unique
     })
   }

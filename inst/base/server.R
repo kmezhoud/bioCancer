@@ -65,7 +65,7 @@ library(radiant)
     selectInput("GeneListID", "Gene List:", r_data$genelist)
   })
 
- 	if (!"package:radiant" %in% search()) {
+ 	if (!"package:bioCancer" %in% search()) {
  		if (r_path == "..") {
       for (file in list.files("../../R",
 		      pattern="\\.(r|R)$",
@@ -74,11 +74,11 @@ library(radiant)
 		  	source(file, encoding = r_encoding, local = TRUE)
 		  }
 		} else {
-			radiant::copy_all(radiant)
-      set_class <- radiant::set_class
+			bioCancer::copy_all(bioCancer)
+      set_class <- bioCancer::set_class
 		}
 	} else {
-	  copy_from(radiant, state_init, state_single, state_multiple)
+	  copy_from(bioCancer, state_init, state_single, state_multiple)
 	}
 
 	## source data & analysis tools

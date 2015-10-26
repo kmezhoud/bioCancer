@@ -1,5 +1,5 @@
 ################################################################
-# Run R-code within Radiant using the shinyAce editor
+# Run R-code within bioCancer using the shinyAce editor
 ################################################################
 r_example <- "## get the active dataset and show the first few observations
 .getdata() %>% head

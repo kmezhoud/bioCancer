@@ -1,8 +1,6 @@
 # bioCancer - Interactive Multi-Assay Cancer Genomics Data Visualisation
 
 [![Travis-CI Build Status](https://travis-ci.org/kmezhoud/CancerPortal.svg?branch=master)](https://travis-ci.org/kmezhoud/CancerPortal)
-
-
  [![Coverage Status](https://img.shields.io/coveralls/kmezhoud/CancerPortal.svg)](https://coveralls.io/r/kmezhoud/CancerPortal?branch=master) 
 
 
@@ -86,7 +84,7 @@ numericInput("sm_comp_value", "Comparison value:", state_init('sm_comp_value',sm
 ## Acknowledgment
 
 
-bioCancer is inspired from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
+bioCancer is adapted from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
 
 
 ## License

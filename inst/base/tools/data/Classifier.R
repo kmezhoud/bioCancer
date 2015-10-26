@@ -113,7 +113,7 @@ output$Plot_enricher <- renderPlot({
     GeneID<- unname(unlist(translate(GeneList, org.Hs.egSYMBOL2EG)))
 
     ## downloaded from http://www.disgenet.org/ds/DisGeNET/results/all_gene_disease_associations.tar.gz
-    gda <- read.delim(paste0(system.file(package = "bioCancer"),"inst/extdata/all_gene_disease_associations.txt"))
+    gda <- read.delim(paste0(system.file(package = "bioCancer"),"/extdata/all_gene_disease_associations.txt"))
     disease2gene=gda[, c("diseaseId", "geneId")]
     disease2name=gda[, c("diseaseId", "diseaseName")]
     x <- enricher(GeneID, pvalueCutoff = 0.05,TERM2GENE=disease2gene, TERM2NAME=disease2name)

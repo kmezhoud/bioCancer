@@ -1,8 +1,8 @@
 > Combine two datasets
 
-There are six _join_ (or _merge_) options available in Radiant from the [dplyr](http://www.rdocumentation.org/packages/dplyr) package developed by Hadley Wickham and Romain Francois on [GitHub](https://github.com/hadley/dplyr).
+There are six _join_ (or _merge_) options available in bioCancer from the [dplyr](http://www.rdocumentation.org/packages/dplyr) package developed by Hadley Wickham and Romain Francois on [GitHub](https://github.com/hadley/dplyr).
 
-The examples below are adapted from [Cheatsheet for dplyr join functions](http://stat545-ubc.github.io/bit001_dplyr-cheatsheet.html) by Jenny Bryan and focus on three small datasets, `superheroes`, `publishers`, and `avengers`, to illustrate the different _join_ types and other ways to combine datasets in R and Radiant. The data is also available in csv format through the links below:
+The examples below are adapted from [Cheatsheet for dplyr join functions](http://stat545-ubc.github.io/bit001_dplyr-cheatsheet.html) by Jenny Bryan and focus on three small datasets, `superheroes`, `publishers`, and `avengers`, to illustrate the different _join_ types and other ways to combine datasets in R and bioCancer. The data is also available in csv format through the links below:
 
 <a href="https://github.com/vnijs/radiant/blob/gh-pages/examples/superheroes.csv" target = "_blank">superheroes.csv</a>
 
@@ -166,7 +166,7 @@ In the table above we lose _Hellboy_ because, although this hero does appear in 
 The R(adiant) commands are:
 
 ```r
-# Radiant
+# bioCancer
 combinedata("superheroes", "publishers", by = "publisher", type = "inner_join")
 
 # R
@@ -249,7 +249,7 @@ The join result contains `superheroes` with variable `yr_founded` from `publishe
 The R(adiant) commands are:
 
 ```r
-# Radiant
+# bioCancer
 combinedata("superheroes", "publishers", by = "publisher", type = "left_join")
 
 # R
@@ -332,7 +332,7 @@ The join result contains all rows and columns from `publishers` and all variable
 The R(adiant) commands are:
 
 ```r
-# Radiant
+# bioCancer
 combinedata("superheroes", "publishers", by = "publisher", type = "right_join")
 
 # R
@@ -422,7 +422,7 @@ In this table we keep _Hellboy_ (even though _Dark Horse Comics_ is not in `publ
 The R(adiant) commands are:
 
 ```r
-# Radiant
+# bioCancer
 combinedata("superheroes", "publishers", by = "publisher", type = "full_join")
 
 # R
@@ -485,7 +485,7 @@ full_join(superheroes, publishers, by = "publisher")
 We get a similar table as with `inner_join` but it contains only the variables in `superheroes`. The R(adiant) commands are:
 
 ```r
-# Radiant
+# bioCancer
 combinedata("superheroes", "publishers", by = "publisher", type = "semi_join")
 
 # R
@@ -765,7 +765,7 @@ If the `avengers` dataset were meant to extend the list of superheroes we could 
 The R(adiant) commands are:
 
 ```r
-# Radiant
+# bioCancer
 combinedata("avengers", "superheroes", type = "bind_rows")
 
 # R
@@ -863,7 +863,7 @@ bind_rows(avengers, superheroes)
 </tbody>
 </table>
 
-If the dataset had different columns for the same superheroes we could combine the two datasets, side by side. In radiant you will see an error message if you try to bind these columns because they have the same name. Something that we should always avoid. The method can be useful if we *know* the order of the row ids of two dataset are the same but the columns are all different.
+If the dataset had different columns for the same superheroes we could combine the two datasets, side by side. In bioCancer you will see an error message if you try to bind these columns because they have the same name. Something that we should always avoid. The method can be useful if we *know* the order of the row ids of two dataset are the same but the columns are all different.
 
 <br>
 

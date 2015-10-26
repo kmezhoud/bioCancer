@@ -36,7 +36,7 @@ output$ui_cp_var2 <- renderUI({
   ## after storing residuals or predictions
   isolate({
     init <- input$cp_var2 %>%
-      {if (!is_empty(.) && . %in% vars) . else character(0)}
+    {if (!is_empty(.) && . %in% vars) . else character(0)}
   })
 
   if (not_available(input$cp_var1)) return()
@@ -62,7 +62,18 @@ output$ui_cp_levs <- renderUI({
 output$ui_cp_comb <- renderUI({
   if (not_available(input$cp_var1)) return()
 
-  levs <- .getdata()[1,input$cp_var1] %>% as.factor %>% levels
+  levs <- .getdata()[ ,input$cp_var1] %>% as.factor %>% levels
+  alevs <- .getdata()[ ,input$cp_var1] %>% unique
+
+  # levs <- c("a","b","c")
+  # alevs <- c("b","a")
+  # levs <-
+  # alevs %in% levs
+  levs <- levs[levs %in% alevs]
+  # levs
+
+
+
   if (length(levs) > 2) {
     cmb <- combn(levs, 2) %>% apply(2, paste, collapse = ":")
   } else {
@@ -70,40 +81,40 @@ output$ui_cp_comb <- renderUI({
   }
 
   selectizeInput("cp_comb", label = "Choose combinations:",
-    choices = cmb,
-    selected = state_multiple("cp_comb", cmb, cmb[1]),
-    multiple = TRUE,
-    options = list(plugins = list('remove_button', 'drag_drop')))
+                 choices = cmb,
+                 selected = state_multiple("cp_comb", cmb, cmb[1]),
+                 multiple = TRUE,
+                 options = list(plugins = list('remove_button', 'drag_drop')))
 })
 
 
 output$ui_compare_props <- renderUI({
   tagList(
     conditionalPanel(condition = "input.tabs_compare_props == 'Plot'",
-      wellPanel(
-        selectizeInput(inputId = "cp_plots", label = "Select plots:",
-                choices = cp_plots,
-                selected = state_multiple("cp_plots", cp_plots, "bar"),
-                multiple = TRUE,
-                options = list(plugins = list('remove_button', 'drag_drop')))
-      )
+                     wellPanel(
+                       selectizeInput(inputId = "cp_plots", label = "Select plots:",
+                                      choices = cp_plots,
+                                      selected = state_multiple("cp_plots", cp_plots, "bar"),
+                                      multiple = TRUE,
+                                      options = list(plugins = list('remove_button', 'drag_drop')))
+                     )
     ),
     wellPanel(
       uiOutput("ui_cp_var1"),
       uiOutput("ui_cp_var2"),
       uiOutput("ui_cp_levs"),
       conditionalPanel(condition = "input.tabs_compare_props == 'Summary'",
-        uiOutput("ui_cp_comb"),
-        selectInput(inputId = "cp_alternative", label = "Alternative hypothesis:",
-                    choices = cp_alt,
-                    selected = state_single("cp_alternative", cp_alt,
-                                               cp_args$alternative)),
-        checkboxInput("cp_show", "Show chisq.value, df, and ci", value = state_init("cp_show", FALSE)),
-        sliderInput("cp_conf_lev","Significance level:", min = 0.85, max = 0.99,
-          value = state_init("cp_conf_lev",cp_args$conf_lev), step = 0.01),
-        radioButtons(inputId = "cp_adjust", label = "Multiple comp. adjustment:", cp_adjust,
-          selected = state_init("cp_adjust", cp_args$adjust),
-          inline = TRUE)
+                       uiOutput("ui_cp_comb"),
+                       selectInput(inputId = "cp_alternative", label = "Alternative hypothesis:",
+                                   choices = cp_alt,
+                                   selected = state_single("cp_alternative", cp_alt,
+                                                           cp_args$alternative)),
+                       checkboxInput("cp_show", "Show additional statistics", value = state_init("cp_show", FALSE)),
+                       sliderInput("cp_conf_lev","Confidence level:", min = 0.85, max = 0.99,
+                                   value = state_init("cp_conf_lev",cp_args$conf_lev), step = 0.01),
+                       radioButtons(inputId = "cp_adjust", label = "Multiple comp. adjustment:", cp_adjust,
+                                    selected = state_init("cp_adjust", cp_args$adjust),
+                                    inline = TRUE)
       )
     ),
     help_and_report(modal_title = "Compare proportions",
@@ -125,22 +136,22 @@ cp_plot_height <- function()
 # output is called from the main radiant ui.R
 output$compare_props <- renderUI({
 
-    register_print_output("summary_compare_props", ".summary_compare_props", )
-    register_plot_output("plot_compare_props", ".plot_compare_props",
-                         height_fun = "cp_plot_height")
+  register_print_output("summary_compare_props", ".summary_compare_props", )
+  register_plot_output("plot_compare_props", ".plot_compare_props",
+                       height_fun = "cp_plot_height")
 
-    # two separate tabs
-    cp_output_panels <- tabsetPanel(
-      id = "tabs_compare_props",
-      tabPanel("Summary", verbatimTextOutput("summary_compare_props")),
-      tabPanel("Plot", plot_downloader("compare_props", height = cp_plot_height()),
-               plotOutput("plot_compare_props", height = "100%"))
-    )
+  # two separate tabs
+  cp_output_panels <- tabsetPanel(
+    id = "tabs_compare_props",
+    tabPanel("Summary", verbatimTextOutput("summary_compare_props")),
+    tabPanel("Plot", plot_downloader("compare_props", height = cp_plot_height()),
+             plotOutput("plot_compare_props", height = "100%"))
+  )
 
-    stat_tab_panel(menu = "Base",
-                  tool = "Compare proportions",
-                  tool_ui = "ui_compare_props",
-                  output_panels = cp_output_panels)
+  stat_tab_panel(menu = "Base",
+                 tool = "Compare proportions",
+                 tool_ui = "ui_compare_props",
+                 output_panels = cp_output_panels)
 })
 
 cp_available <- reactive({
@@ -155,12 +166,20 @@ cp_available <- reactive({
 })
 
 .compare_props <- reactive({
-  do.call(compare_props, cp_inputs())
+  base::do.call(compare_props, cp_inputs())
 })
 
 .summary_compare_props <- reactive({
   if (cp_available() != "available") return(cp_available())
-  if (input$cp_show) summary(.compare_props(), show = TRUE) else summary(.compare_props())
+  ####### bug
+  if (input$cp_show){
+    summary(.compare_props(), show = TRUE)
+  }else{
+    cps<- .compare_props()
+    summary(cps)
+  }
+  #######
+
 })
 
 .plot_compare_props <- reactive({
