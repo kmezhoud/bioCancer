@@ -28,7 +28,7 @@ correlation <- function(dataset, vars,
 	## data.matrix as the last step in the chain is about 25% slower using
 	## system.time but results (using diamonds and mtcars) are identical
 	dat <- getdata(dataset, vars, filt = data_filter) %>%
-		mutate_each(funs(as.numeric))
+		dplyr::mutate_each(funs(as.numeric))
 
 	if (!is_string(dataset)) dataset <- "-----"
 
@@ -65,7 +65,7 @@ summary.correlation_ <- function(object,
 	# library(psych)
 	# cutoff <- 0
 
-	cmat <- sshhr( corr.test(object$dat, method = object$type) )
+	cmat <- sshhr( psych::corr.test(object$dat, method = object$type) )
 
 	cr <- format(round(cmat$r,2))
   cr[abs(cmat$r) < cutoff] <- ""
@@ -146,8 +146,8 @@ plot.correlation_ <- function(x, ...) {
 	  graphics::points(jitter(x,.3), jitter(y,.3), pch = 16, col = alpha("black", 0.5))
     ## uncomment the lines below if you want linear and loess lines
     ## in the scatter plot matrix
-		# abline(lm(y~x), col="red")
-		# lines(stats::lowess(y~x), col="blue")
+		 abline(lm(y~x), col="red")
+		 lines(stats::lowess(y~x), col="blue")
 	}
 	object$dat %>% {if (is.null(.)) object else .} %>%
 	  pairs(lower.panel = panel.smooth, upper.panel = panel.plot)
