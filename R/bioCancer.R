@@ -42,6 +42,7 @@
 #'@import readr
 #'@import scales
 #'@import htmlwidgets
+#'@import car
 bioCancer <- function(){
   if ("package:bioCancer" %in% search()){
     runApp(paste0(system.file(package = "bioCancer", "/bioCancer", sep="")), launch.browser = TRUE)

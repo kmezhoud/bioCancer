@@ -115,7 +115,7 @@ summary.single_prop <- function(object, ...) {
 	         data.frame(diff = object$dat_summary[["diff"]]),
 	         res[,-1]
 	       ) %>%
-	       select(-matches("parameter")) %>%
+	       dplyr::select(-matches("parameter")) %>%
 	       as.data.frame
 
 	names(res) <- c("diff","ns","p.value", ci_perc[1], ci_perc[2])

@@ -2,33 +2,33 @@
 shinyServer(function(input, output, session) {
   #library(PSICQUIC)
   #library(networkD3)
-#
-#   library(shinythemes)
-#   library(cgdsr)
-#   library(magrittr)
-#   library(coffeewheel)
-#   library(htmlwidgets)
-#   library(metabologram)
-#   library(DiagrammeR)
-#   library(dplyr)
-#   library(geNetClassifier)
-#   library(RCurl)
-#   library(clusterProfiler)
-#   library(AnnotationFuncs)
-#   #### masked
-#   library(plyr)
-#
-#   ##library(DT)
-#   library(Biobase)
-#   library(DOSE)
-#   library("org.Hs.eg.db")
-#   library(XML)
-#   #
-#   ### package in NAMESSPACE not imported
-#   library(gridExtra)
-#   library(psych)
-#   library(broom)
-#   library(radiant)
+
+  library(shinythemes)
+  library(cgdsr)
+  library(magrittr)
+  library(coffeewheel)
+  library(htmlwidgets)
+  library(metabologram)
+  library(DiagrammeR)
+  library(dplyr)
+  library(geNetClassifier)
+  library(RCurl)
+  library(clusterProfiler)
+  library(AnnotationFuncs)
+  #### masked
+  library(plyr)
+
+  library(DT)
+  library(Biobase)
+  library(DOSE)
+  library("org.Hs.eg.db")
+  library(XML)
+  #
+  ### package in NAMESSPACE not imported
+  library(gridExtra)
+  library(psych)
+  library(broom)
+  library(radiant)
 
   #   library(grDevices)
   #library(S4Vectors)
@@ -90,8 +90,8 @@ shinyServer(function(input, output, session) {
       source(file, encoding = r_encoding, local = TRUE)
     }
   } else {
-    radiant::copy_all(radiant)
-    set_class <- radiant::set_class
+    bioCancer::copy_all(bioCancer)
+    set_class <- bioCancer::set_class
   }
   #   } else {
   #     copy_from(radiant, state_init, state_single, state_multiple)
