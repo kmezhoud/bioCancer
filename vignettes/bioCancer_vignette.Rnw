@@ -1,0 +1,22 @@
+\documentclass[a4paper]{article}
+%\usepackage[OT1]{fontenc}
+\usepackage{zi4}
+\usepackage{Sweave}
+\usepackage{url}
+\usepackage[pdftex,plainpages=true,pdfpagelabels, colorlinks=true ,urlcolor= blue, linkcolor= red, citecolor=magenta]{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[margin=1in]{geometry}
+\setkeys{Gin}{width=0.9\textwidth} % set figures width (this is the default)
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+%\SweaveOpts{concordance=TRUE}
+
+
+\title{bioCancer: Multi-Omics Cancers data Visualisation}
+\author{Karim Mezhoud}
+\date{July 12, 2015}
+\maketitle
+
+%%%%%
+\end{document}

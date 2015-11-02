@@ -1,0 +1,2 @@
+load("/Volumes/DATA/Dosimetry/radiant-master copy/inst/base/data/anscombe.rda")
+anscombe
