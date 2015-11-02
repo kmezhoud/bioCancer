@@ -270,11 +270,7 @@ output$Enrich <- renderUI({
                        ),
                        conditionalPanel( condition = "input.ReacRunId== true",
                                          plot_downloader("ld_diagrammeR_plot", pre=""),
-<<<<<<< HEAD
                                          downloadButton('Save_diagrammeR_plot', 'HTML'),
-=======
-                                         #downloadButton('ld_diagrammeR_plot', 'Download Plot'),
->>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
                                          actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
                                          grVizOutput('diagrammeR')
 

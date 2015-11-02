@@ -1,25 +1,4 @@
-<<<<<<< HEAD
+
 .Rproj.user
 .Rhistory
 .RData
-=======
-.Rapp.history
-.RData
-.Rhistory
-.Rproj.user
-.DS_Store
-inst/quant/data/data_rady/
-inst/marketing/data/data_rady/
-*.xls
-inst/base/shinyapps/vnijs/base.dcf
-inst/quant/shinyapps/vnijs/quant.dcf
-inst/marketing/shinyapps/vnijs/marketing.dcf
-.V8history
-._all_gene_disease_associations.txt
-README.md
-._CancerPortal.Rproj
-._CancerPortal.Rmd
-._bioCancer.Rproj
-._NEWS
-NAMESPACE
->>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b

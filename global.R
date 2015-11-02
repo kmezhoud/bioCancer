@@ -1,5 +1,4 @@
 ## No longer need when dplyr 0.5 comes out
-<<<<<<< HEAD
 # if (packageVersion("Rcpp") < "0.12.0") {
 #   stop(
 #   "bioCancer requires Rcpp >= 0.12.0. ",
@@ -15,23 +14,6 @@
 #   "install.packages('dplyr', repo = 'http://cran.rstudio.com')"
 #   )
 # }
-=======
-if (packageVersion("Rcpp") < "0.12.0") {
-  stop(
-  "bioCancer requires Rcpp >= 0.12.0. ",
-  "Please install the latest version of Rcpp from CRAN: ",
-  "install.packages('Rcpp', repo = 'http://cran.rstudio.com')"
-  )
-}
-
-if (packageVersion("dplyr") < "0.4.3") {
-  stop(
-  "bioCancer requires dplyr >= 0.4.3. ",
-  "Please install the latest version of dplyr from CRAN: ",
-  "install.packages('dplyr', repo = 'http://cran.rstudio.com')"
-  )
-}
->>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 
 ## turn off warnings globally
 # options(warn=-1)

@@ -1,16 +1,10 @@
 ## SERVER FOR SHINY APP DEPLOY
-<<<<<<< HEAD
 ## rsync -avz -e "ssh" bioCancer kmezhoud@46.101.227.144:/srv/shiny-server/
 shinyServer(function(input, output, session) {
 
 #   #library(networkD3)
 #
-=======
-shinyServer(function(input, output, session) {
-  #library(PSICQUIC)
-  #library(networkD3)
 
->>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
   library(shinythemes)
   library(cgdsr)
   library(magrittr)
@@ -36,12 +30,10 @@ library(XML)
   library(gridExtra)
   library(psych)
   library(broom)
-<<<<<<< HEAD
+
   library(car)
   library(scales)
-=======
-  library(radiant)
->>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
+
 
   #   library(grDevices)
   #library(S4Vectors)

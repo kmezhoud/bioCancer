@@ -7,15 +7,9 @@ quant_ui <- tagList(
   navbarMenu("Base",
     tabPanel("Probability calculator", uiOutput("prob_calc")),
     tabPanel("Central Limit Theorem", uiOutput("clt")),
-<<<<<<< HEAD
    # tabPanel("Single mean", uiOutput("single_mean")),
     tabPanel("Compare means", uiOutput("compare_means")),
    # tabPanel("Single proportion", uiOutput("single_prop")),
-=======
-    tabPanel("Single mean", uiOutput("single_mean")),
-    tabPanel("Compare means", uiOutput("compare_means")),
-    tabPanel("Single proportion", uiOutput("single_prop")),
->>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
     tabPanel("Compare proportions", uiOutput("compare_props")),
     tabPanel("Cross-tabs", uiOutput("cross_tabs"))
   ),
