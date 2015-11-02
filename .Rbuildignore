@@ -1,2 +1,13 @@
 ^.*\.Rproj$
+<<<<<<< HEAD
 ^\.Rproj\.user$
+=======
+^.*\.V8history$
+^\.Rproj\.user$
+^\.travis\.yml$
+radiant.sublime-project
+radiant.sublime-workspace
+build/
+cran-comments.md
+coverage.R
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b

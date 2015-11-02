@@ -11,8 +11,14 @@
 #'@import shiny
 #'@importFrom shinyAce aceEditor
 #'@importFrom shinyAce updateAceEditor
+<<<<<<< HEAD
 #'@import dplyr
 #'@importFrom plyr adply
+=======
+#'@import radiant
+#'@import dplyr
+#'@import plyr
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 #'@import ggplot2
 #'@import ggdendro
 #'@import data.tree
@@ -42,7 +48,10 @@
 #'@import scales
 #'@import htmlwidgets
 #'@import car
+<<<<<<< HEAD
 #'@import scales
+=======
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 bioCancer <- function(){
   if ("package:bioCancer" %in% search()){
     runApp(paste0(system.file(package = "bioCancer", "/bioCancer", sep="")), launch.browser = TRUE)

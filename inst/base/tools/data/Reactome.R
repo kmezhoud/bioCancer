@@ -440,6 +440,7 @@ ld_diagrammeR_plot<- function(){
   )
 }
 
+<<<<<<< HEAD
 output$Save_diagrammeR_plot <- downloadHandler(
   filename = function() {
     paste(getwd(),"Reactomeplot.html", sep="/")
@@ -465,6 +466,8 @@ output$Save_diagrammeR_plot <- downloadHandler(
 
 
 
+=======
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 output$ReactomeLegend <- renderImage({
   # When input$n is 3, filename is ./images/image3.jpeg
   filename <- paste(r_path,"/extdata/imgs/ReactomeLegend.png", sep="")

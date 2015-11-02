@@ -1,8 +1,14 @@
 > Estimate a Logit (Probit) model
 
+<<<<<<< HEAD
 ### Functionality 
 
 Selecting a binary dependent variable and one or more independents variables. Also specify the level of the dependent variable to use as _success_ (i.e., the `Choose level:` dropdown). In the example data file `ClinicalData_ucec_tcga_pub`, success for the variable `OS_STATUS` would be the level `Living`.
+=======
+### Functionality
+
+Selecting a binary dependent variable and one or more independents variables. Also specify the level of the dependent variable to use as _success_ (i.e., the `Choose level:` dropdown). In the example data file `titanic`, success for the variable `survived` would be the level `Yes`.
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 
 Predicting probabilities for different values of the independent variable(s) is a very common operation for GLM models. First, select the type of input for prediction using the `Prediction` radio buttons. Choose either an existing dataset for prediction ("Data") or specify a command ("Command") to generate the prediction inputs. If you choose to enter a command you must specify at least one variable and one value to get a prediction. If you do not specify a value for each variable in the model either the mean value or the most frequent level will be used. It is only possible to predict outcomes based on variables used in the model (e.g., `age` must be one of the selected independent variables to predict survival probability for a 90 year old passenger).
 

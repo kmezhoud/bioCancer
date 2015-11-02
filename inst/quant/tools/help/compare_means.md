@@ -6,7 +6,11 @@ We can perform either a one-tailed test (i.e., `less than` or `greater than`) or
 
 ### Example: Mutation Frequency through Diseases (Studies)
 
+<<<<<<< HEAD
 The mutations of `DNA_damage_Response` gene list are collected from 4 studies and saved in `epiGenomcis` datasets in column `FreqMut`.
+=======
+The mutations of `DNA_damage_Response` gene list are collected from 4 studies and saved in `epiGenomcis` datastes in column `FreqMut`.
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 
 Suppose we want to test if some genes are more exposed to mutation in selected studies compared other genes. To test this hypothesis we first select `Genes` and select `FreqMut` as the numerical variable to compare across genes.
 ![summary](figures_quant/compare_means_summary.png)
@@ -14,7 +18,11 @@ Suppose we want to test if some genes are more exposed to mutation in selected s
 The first two blocks of output show basic information about the test (e.g.,. selected variables and confidence levels) and summary statistics (e.g., mean, standard deviation, etc. per group). The final block of output shows the following:
 
 * `Null hyp.` is the null hypothesis and `Alt. hyp.` the alternative hypothesis
+<<<<<<< HEAD
 * `diff` is the difference between the sample means for two groups. If the null hypothesis is true we expect this difference to be small (i.e., close to zero)
+=======
+* `diff` is the difference between the sample means for two groups (e.g., 80775 - 93876.44 = -13100.45). If the null hypothesis is true we expect this difference to be small (i.e., close to zero)
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 * `p.value` is the probability of being wrong if we choose to reject the null hypothesis (i.e., the type I error)
 
 If we check `Show additional statistics` the following output is added:
@@ -29,7 +37,10 @@ Because the p-values are smaller than the conventional level of significance (i.
 
 In addition to the numerical output provided in the Summary tab we can also evaluate the hypothesis visually (see Plot tab). The settings in the side-panel are the same as before. The tab displays a box plot of genes mutation frequency with confidence interval (black) and standard error (blue) bars. Consistent with the results shown in the Summary tab there is clear difference between the gene mutation across genes. We can also choose to plot the data as a bar chart or scatter plot or as a set of density curves.
 
+<<<<<<< HEAD
 ![plot](figures_quant/compare_means_plot.png)
+=======
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 
 ### Testing
 
@@ -37,12 +48,23 @@ There are three approaches we can use to evaluate the null hypothesis. We will c
 
 #### p.value
 
+<<<<<<< HEAD
 When the p.values is **smaller** than the significance level (0.05) we reject the null hypothesis for each evaluated pair. Note also the '***' that are used as an indicator for significance.
+=======
+Because each of the p.values is **smaller** than the significance level we reject the null hypothesis for each evaluated pair of professor ranks. The data suggest that associate professors make more than assistant professors and professors make more than assistant and associate professors. Note also the '***' that are used as an indicator for significance.
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 
 #### confidence interval
 
 Because zero is **not** contained in any of the confidence intervals we reject the null hypothesis for each evaluated combination of ranks. Because our alternative hypothesis is `Less than` the confidence interval is actually an upper bound for the difference in mutation in the genes at a 95% confidence level.
 
+<<<<<<< HEAD
+=======
+In addition to the numerical output provided in the _Summary_ tab we can also investigate the association between `rank` and `salary` visually (see the _Plot_ tab). The screen shot below shows a scatter plot of professor salaries and a bar chart with confidence interval (black) and standard error (blue) bars. Consistent with the results shown in the _Summary_ tab there is clear separation between the salaries across ranks. We could also choose to plot the sample data as a box plot or as a set of density curves.
+
+![plot](figures_quant/compare_means_plot.png)
+
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 ### Multiple comparison adjustment
 
 The more comparisons we evaluate the more likely we are to find a "significant" result just by chance even if the null hypothesis is true. If we conduct 100 tests and set our **significance level** at 0.05 (or 5%) we can expect to find 5 p.values smaller than or equal to 0.05 even if the are no associations in the population.

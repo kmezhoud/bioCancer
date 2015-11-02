@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 > (Linear) Regression :  Ordinary Least Squares
 
 <!--
@@ -23,11 +24,60 @@ Interpret each of your estimated coefficients. Also provide a statistical evalua
 ![Regression 1 - summary](figures_quant/regression_summary.png)
 
 The F-statistic suggests that the regression model as a whole explains a significant amount of variance in OS\_MONTHS. The calculated F-value is equal to 1.826 and has a  small p-value (< 0.01). The amount of variance in OS\_MONTHS explained by the model is equal to 1.7%
+=======
+> (Linear) Regression: The workhorse of empirical research in the social sciences
+
+All example files discussed below can be loaded from the Data > Manage page. Click the `examples` radio button and press `Load examples`.
+
+### Functionality
+
+Start by selecting a dependent variable and one or more independents variables. If two or more Independent variables are included in the model we may want to investigate if any interactions are present. An interaction exists when the effect of an independent variable on the dependent variable is determined, at least partially, by the level of another independent variable. For example, the increase in price for a 1 versus a 2 carrot diamond may depend on the clarity level of the diamond.
+
+The `Predict` box allows you calculate predicted values from a regression model. You must specify at least one variable and value to get a prediction. If you do not specify a value for each variable in the model either the mean value or the most frequent factor level will be used. It is only possible to predict outcomes based on variables in the model (e.g., `carat` must one of the selected independent variables to predict the `price` of a 2-carat diamond)
+
+* To predict the price of a 1-carat diamond type `carat = 1` and press return
+* To predict the price of diamonds ranging from .5 to 1 carat at steps of size .05 type `carat = seq(.5.1,.05)` and press return
+* To predict the price of 1,2, or 3 carat diamonds with an ideal cut type `carat = 1:3, cut = "Ideal"` and press return
+
+We can test if two or more variables together add significantly to the fit of a model. This function can be very useful to test if the overall influence of a variable of type `factor` is significant.
+
+Various additional outputs and options can be selected:
+
+* RMSE: Root Mean Squared Error (Prediction error)
+* Sum of Squares: The total variance in the dependent variable split into the variance explained by the model and the remainder
+* VIF: Variance Inflation Factors and Rsq. These are measures of multi-collinearity for the independent variables
+* Standardized coefficients: Coefficients may be hard to compare of the independent variables are measured on different scales. By standardizing the data before estimation we can see which variables move-the-needle most
+* Step-wise: A data-mining approach to select the best fitting model
+
+
+### Example 1: Catalog sales
+
+We have access to data from a company selling men's and women's apparel through mail-order catalogs (dataset `catalog`). The company maintains a database on past and current customers' value and characteristics. Value is determined as the total \$ sales to the customer in the last year. The data are a random sample of 200 customers from the company's database. The r-data contains a data frame with 200 observations on 4 variables
+
+- Sales =  Total sales (in \$) to a household in the past year
+- Income = Household income (\$1000)
+- HH.size = Size of the household (# of people)
+- Age = Age of the head of the household
+
+The catalog company is interested in redesigning their Customer Relationship Management (CRM) strategy. We will proceed in two steps:
+
+1. Estimate a regression model using last year's sales total. Dependent variable: sales total for each of the 200 households; explanatory variables: household income (measured in thousands of dollars), size of household, and age of the household head. The data-set is given in the `catalog` data file. Interpret each of your estimated coefficients. Also provide a statistical evaluation of the model as a whole.
+2. Which explanatory variables are significant predictors of customer value (use a 95% confidence level)?
+
+**Answer:**
+
+Output from Radiant (Regression > Linear (OLS)) is provided below:
+
+![Regression 1 - summary](figures_quant/regression_catalog_summary.png)
+
+The F-statistic suggests that the regression model as a whole explains a significant amount of variance in Sales. The calculated F-value is equal to 32.33 and has a very small p-value (< 0.001). The amount of variance in sales explained by the model is equal to 33.1%
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 
 The null and alternate hypothesis for the F-test test can be formulated as follows:
 H0: All regression coefficients are equal to 0
 Ha: At least one regression coefficient is not equal to zero
 
+<<<<<<< HEAD
 The coefficients from the regression can be interpreted as follows (Only for significant p-value <0.05):
 
 - For an **increase** in mRNA expression of `FANCF` we expect, on average, to see a **decrease** in Overall survival of 12.5 months, keeping all other variables constant (other genes).
@@ -54,6 +104,24 @@ The `Prediction input` box allows you to calculate predicted values from a regre
   
   The plot shows the relationships of three gene expressions and OS\_MONTHS. The x-axis shows the mRNA levels and the y-axis indicates the predicted OS\_MONTHS. The details of the linear regression model is displyed below.  
 <!--
+=======
+The coefficients from the regression can be interpreted as follows:
+
+- For an increase in income of \$1000 we expect, on average, to see an increase in sales of \$1.7754, keeping all other variables constant.
+- For an increase in household size of 1 person we expect, on average, to see an increase in sales of \$22.1218, keeping all other variables constant.
+- For an increase in the age of the head of the household of 1 year we expect, on average, to see an increase in sales of \$0.45, keeping all other variables constant.
+
+For each of the independent variables the following null and alternate hypotheses can be formulated:
+H0: The coefficient associated with independent variable X is equal to 0
+Ha: The coefficient associated with independent variable X is not equal to 0
+
+The coefficients for `Income` and `HH.size` are both significant (p-values < 0.05), i.e., we can reject H0 for each of these coefficients. The coefficient for Age HH is not significant (p-value > 0.05), i.e., we cannot reject H0 for Age HH. We conclude that a change in Age of the household head does not lead to a significant change in sales.
+
+We can also use the t.values to evaluate the null and alternative hypotheses for the coefficients. Because the calculated t.value for `Income` and `HH.size` is **larger** than the _critical_ t.value we reject the null hypothesis for both effects. We can obtain the critical t.value by using the probability calculator in the _Base_ menu. For a t-distribution with 196 degrees of freedom (see the `Errors` line in the `Sum of Squares` table shown above) the critical t.value is 1.972. We have to enter 0.025 and 0.975 as the lower and upper probability bounds in the probability calculator because the alternative hypothesis is `two.sided`.
+
+![prob_calc](figures_quant/regression_catalog_prob_calc.png)
+
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
 ### Example 2: Ideal data for regression
 
 The data `ideal` contains simulated data that is very useful to demonstrate what data for and residuals from a regression should ideally look like.  The r-data file contains a data-frame with 1000 observations on 4 variables. y is the dependent variable and x1, x2, and x3 are independent variables. The plots shown below can be used as a bench mark for regressions on real world data. We will use Regression > Linear (OLS) to conduct the analysis. First go the the Plots tab and select y as the dependent variable and x1, x2, and x3 as the independent variables.
@@ -250,4 +318,14 @@ $$
   \end{aligned}
 $$
 
+<<<<<<< HEAD
 The general formula for an elasticity is $\frac{\partial S_t}{\partial P_
+=======
+The general formula for an elasticity is $\frac{\partial S_t}{\partial P_t} \frac{P_t}{S_t}$. Adding this information to the equation above we see that the coefficient $b$ estimated from a log-log regression can be directly interpreted as an elasticity:
+
+$$
+  \frac{\partial S_t}{\partial P_t} \frac{P_t}{S_t} = b \frac{S_t}{P_t} \frac{P_t}{S_t} = b
+$$
+
+So a 1% change in price leads to a $b$% change in sales.
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b

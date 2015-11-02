@@ -1,6 +1,10 @@
 ## SERVER FOR bioCancer PACKAGE
 shinyServer(function(input, output, session) {
+<<<<<<< HEAD
 
+=======
+  #library(PSICQUIC)
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
   #library(networkD3)
 
   library(shinythemes)
@@ -10,7 +14,11 @@ shinyServer(function(input, output, session) {
   library(htmlwidgets)
   library(metabologram)
   library(DiagrammeR)
+<<<<<<< HEAD
   #library(dplyr)
+=======
+  library(dplyr)
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
   library(geNetClassifier)
   library(RCurl)
   library(clusterProfiler)
@@ -30,7 +38,10 @@ shinyServer(function(input, output, session) {
   library(broom)
   library(radiant)
   library(car)
+<<<<<<< HEAD
   library(scales)
+=======
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
   #   library(grDevices)
   #library(S4Vectors)
   ####masked package

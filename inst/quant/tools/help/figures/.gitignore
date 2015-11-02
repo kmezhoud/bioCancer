@@ -5,9 +5,12 @@
 ._compare_props_plot.png
 ._regression_catalog_summary.png
 ._single_mean_plot.png
+<<<<<<< HEAD
 ._regression_summary.png
 ._cross_tabs_plot.png
 ._cross_tabs_summary.png
 ._correlation_summary.png
 ._correlation_plot.png
 ._regression_predict.png
+=======
+>>>>>>> bbe4d9cf03dcd14dc250f9c2de17d39c14fb1c1b
