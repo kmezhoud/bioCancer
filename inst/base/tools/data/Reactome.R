@@ -66,8 +66,16 @@ Edges_obj <- function(){
     #  Edges_obj <- Edges_obj[!grepl("predict|activat|binding|complex|indirect",Edges_obj$Annotation),]
     Edges_obj <- Edges_obj[grepl(paste0(input$FIs_AttId, collapse="|"),Edges_obj$Annotation),]
 
-    r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
+     ## skip infinity loop when load Reactome_Genelist
+    if(is.null(r_data$Reactome_GeneList)){
+      r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
+    }else if (all(length(r_data$Reactome_GeneList) == length(union(Edges_obj$Gene1, Edges_obj$Gene2)))
+              && all(r_data$Reactome_GeneList == union(Edges_obj$Gene1, Edges_obj$Gene2))
+    ){
 
+    }else{
+      r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
+    }
     ## Get interaction Frequency in dataframe FreqIn
     FreqIn <- rbind(t(t(table(as.character(Edges_obj$Gene2)))), t(t(table(as.character(Edges_obj$Gene1)))))
     colnames(FreqIn) <- "Freq"
