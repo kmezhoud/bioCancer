@@ -7,7 +7,7 @@ context("bioCancer functions")
 
 testthat::test_that("cgdsr connection",
 {
-  mycgds = CGDS("http://www.cbioportal.org/public-portal/")
+  mycgds = cgdsr::CGDS("http://www.cbioportal.org/public-portal/")
   result <- test(mycgds)
   expect_equal(result, NULL)
 })
