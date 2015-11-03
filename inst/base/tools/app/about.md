@@ -1,7 +1,7 @@
 # bioCancer - Interactive Multi-Assay Cancer Genomics Data Visualisation
 
-[![Travis-CI Build Status](https://travis-ci.org/kmezhoud/CancerPortal.svg?branch=master)](https://travis-ci.org/kmezhoud/CancerPortal) 
-<!-- [![Coverage Status](https://img.shields.io/coveralls/vnijs/radiant.svg)](https://coveralls.io/r/vnijs/radiant?branch=master) -->
+[![Travis-CI Build Status](https://travis-ci.org/kmezhoud/bioCancer.svg?branch=master)](https://travis-ci.org/kmezhoud/bioCancer) 
+ [![Coverage Status](https://img.shields.io/coveralls/kmezhoud/bioCancer.svg)](https://coveralls.io/r/kmezhoud/bioCancer?branch=master)
 
 
 bioCancer is a platform-independent browser-based interface for Cancer Genomics Data analytics in [R](http://www.r-project.org/), based on the [Shiny](http://www.rstudio.com/shiny/) package. 

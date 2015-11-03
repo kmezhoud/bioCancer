@@ -21,8 +21,12 @@ output$ui_data <- renderUI({
 
         #### Include selectize prompt Studies, Clinical data and Profile data
         conditionalPanel("input.tabs_data== 'Portal'",
+                         conditionalPanel("input.tabs_portal=='Studies'",
+                                         h5("Welcome to bioCancer!", align="center"),
+                                         p("Documentation and tutorials are available in each panel '?' or 'Help' menu.", align ="center")
+                                         ),
                          selectizeInput(
-                           'StudiesID', 'Studies List', choices = NULL, multiple = FALSE
+                           'StudiesID', 'Studies', choices = NULL, multiple = FALSE
                          ),
                          uiOutput("ui_Cases"),
                          uiOutput("ui_GenProfs"),

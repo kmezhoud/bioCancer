@@ -1,4 +1,4 @@
-> Function Interaction Network Enrishment
+> Function Interaction Network Enrichment
 
 ### Edges Attributes
 
