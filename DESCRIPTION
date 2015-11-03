@@ -55,8 +55,8 @@ Suggests:
     devtools (>= 1.8.0),
     testthat (>= 0.10.0),
     covr (>= 1.2.0)
-URL: https://github.com/kmezhoud/CancerPortal
-BugReports: https://github.com/kmezhoud/CancerPortal/issues
+URL: http://kmezhoud.github.io/bioCancer
+BugReports: https://github.com/kmezhoud/bioCancer/issues
 License: AGPL-3 | file LICENSE
 LazyData: true
 biocViews: GUI, DataRepresentation, Network, GeneExpression
