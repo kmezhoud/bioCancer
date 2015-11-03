@@ -7,4 +7,5 @@ r_github_packages:
   - jimhester/covr
   - rstudio/DT
   - vnijs/MathJaxR
-  - vnijs/radiant
+  - armish/coffeewheel
+  - armish/metabologram
