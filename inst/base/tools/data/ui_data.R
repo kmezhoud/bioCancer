@@ -30,10 +30,10 @@ output$ui_data <- renderUI({
         #### Include selectize prompt Studies, Clinical data and Profile data
         conditionalPanel("input.tabs_data== 'Portal'",
                          conditionalPanel("input.tabs_portal=='Studies'",
-                                         #h5("Welcome to bioCancer!", align="center"),
-                                         uiOutput("Welcome")
-                                         #p("Documentation and tutorials are available in each panel <i title='Help' class='fa fa-question'></i>  or 'Help' menu.", align ="center")
-                                         ),
+                                          #h5("Welcome to bioCancer!", align="center"),
+                                          uiOutput("Welcome")
+                                          #p("Documentation and tutorials are available in each panel <i title='Help' class='fa fa-question'></i>  or 'Help' menu.", align ="center")
+                         ),
                          selectizeInput(
                            'StudiesID', 'Studies', choices = NULL, multiple = FALSE
                          ),
@@ -67,7 +67,7 @@ output$ui_data <- renderUI({
 
         conditionalPanel("input.tabs_data== 'Handle'",
 
-                        uiOutput("ui_datasets"),
+                         uiOutput("ui_datasets"),
 
                          conditionalPanel(
                            "input.tabs_Handle != 'Manage'",
@@ -96,7 +96,7 @@ output$ui_data <- renderUI({
 
         )
 
-        ),
+      ),
       mainPanel(
         tabsetPanel(
           id = "tabs_data",
@@ -136,81 +136,76 @@ output$Enrich <- renderUI({
 
               tabPanel("Circomics",
 
-                       conditionalPanel(condition = "input.ViewProfDataCircosID==true",
-                                        h3("Available Profiles data in select Studies", align="center"),
-                                        DT::dataTableOutput(outputId ="CircosAvailability")
-                       ),
-                       conditionalPanel(condition = "input.getlistProfDataCircosID ==true",
-                                        h3("Loaded Profiles Data", align="center"),
-                                        verbatimTextOutput("StrListProfDataCircos")
-                       ),
-
-
                        if('CNA' %in% input$CircosDimensionID ){
 
                          coffeewheelOutput('getCoffeeWheel_CNA', width = 600, height = 600)
                        },
 
                        if('Methylation' %in% input$CircosDimensionID ){
-                       #  h3("Correlation of silencing gene by Methylation: (0:1)")
+                         #  h3("Correlation of silencing gene by Methylation: (0:1)")
                          coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
-
                        },
-                       if('mRNA' %in% input$CircosDimensionID ){
-                        # h3("Gene Expression")
-                         coffeewheelOutput('getCoffeeWheel_mRNA', width = 600, height = 600)
 
+                       if('mRNA' %in% input$CircosDimensionID ){
+                         # h3("Gene Expression")
+                         coffeewheelOutput('getCoffeeWheel_mRNA', width = 600, height = 600)
                        },
 
                        if('Mutation' %in% input$CircosDimensionID ){
-                        # h3("Mutation Frequency: (Min,Max)")
+                         # h3("Mutation Frequency: (Min,Max)")
                          coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
-
                        },
-
 
                        if('miRNA' %in% input$CircosDimensionID ){
                          #h3("Protein phosphorylation:")
                          coffeewheelOutput('getCoffeeWheel_miRNA', width = 600, height = 600)
-
                        },
+
                        if('RPPA' %in% input$CircosDimensionID ){
                          #h3("Protein phosphorylation:")
                          coffeewheelOutput('getCoffeeWheel_RPPA', width = 600, height = 600)
-
                        },
+
                        if('All' %in% input$CircosDimensionID ){
                          #h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)")
-                         downloadButton('dl_metabologram', 'Download')
-                         plot_downloader("saveCoffeWheel", pre = "")
                          coffeewheelOutput('getCoffeeWheel_All', width = 600, height = 600)
 
-                       }
+                       },
+                       conditionalPanel(condition = "input.getlistProfDataCircosID ==true",
+                                        h3("Loaded Profiles Data", align="center"),
+                                        verbatimTextOutput("StrListProfDataCircos")
+                       ),
 
-#                        conditionalPanel("input.WheelID =='init'",
-#                                         h3("Available Profiles data in select Studies", align="center"),
-#                                         DT::dataTableOutput(outputId ="CircosInit")),
-#
-#
-#                        conditionalPanel("input.WheelID == 'Zoom'",
-#                                         h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)"),
-#
-#                                         coffeewheelOutput('getCoffeeWheel_All', width = 600, height = 600),
-#
-#                                         h3("Correlation of silencing gene by Methylation: (0:1)"),
-#                                         coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600),
-#
-#                                         h3("Mutation Frequency: (Min,Max)"),
-#                                         coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
-#                                         # uiOutput("dataDescriptionHTML")
-#                        )
+                       #                        conditionalPanel("input.WheelID =='init'",
+                       #                                         h3("Available Profiles data in select Studies", align="center"),
+                       #                                         DT::dataTableOutput(outputId ="CircosInit")),
+                       #
+                       #
+                       #                        conditionalPanel("input.WheelID == 'Zoom'",
+                       #                                         h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)"),
+                       #
+                       #                                         coffeewheelOutput('getCoffeeWheel_All', width = 600, height = 600),
+                       #
+                       #                                         h3("Correlation of silencing gene by Methylation: (0:1)"),
+                       #                                         coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600),
+                       #
+                       #                                         h3("Mutation Frequency: (Min,Max)"),
+                       #                                         coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
+                       #                                         # uiOutput("dataDescriptionHTML")
+                       #                        )
                        # conditionalPanel("input.WheelID == 'Zoom'", uiOutput("dataDescriptionHTML"))
 
                        #                                     conditionalPanel(
                        #                                      "input.WheelID == 'Static'",
                        #                                      metabologramOutput('metabologram')
                        #                                    )
-
+                       conditionalPanel(condition = "input.ViewProfDataCircosID==true",
+                                        h3("Available Profiles data in select Studies", align="center"),
+                                        DT::dataTableOutput(outputId ="CircosAvailability")
+                       ),
+                       conditionalPanel("input.getlistProfDataCircosID==false",
+                                        verbatimTextOutput("CircomicsHowto")
+                       )
 
               ),
 

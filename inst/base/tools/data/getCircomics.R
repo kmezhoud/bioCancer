@@ -1,3 +1,13 @@
+output$CircomicsHowto <- renderPrint({
+  cat("
+      1 - Select Studies
+      2 - Check availability
+      3 - Load Genetic Profiles
+      4 - Select Dimension
+      5 - Compare colors with legend
+      ")
+})
+
 ####### Functions to get tree for coffeeWheel
 attriColorValue <- function(Value, df, colors=c(a,b,c, d,e),feet){
 
@@ -255,19 +265,37 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
 
 })
 
-getmetabologram <- function(){
-  CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
-  title<- paste("Wheel with selected Studies")
-  metabologram(CoffeewheelTreeData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
 
-}
-
-output$dl_metabologram <- downloadHandler(
-  filename='plot.png',
-  content= getmetabologram()
+output$Save_Metabologram_All <- downloadHandler(
+  filename = function() {
+    paste(getwd(),"Metabologram_All.html", sep="/")
+  },
+  content = function(file) {
+    saveWidget(
+      #metabologramOutput('metabologram_All')
+      CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData),
+      title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA"),
+      #coffeewheel(CoffeewheelTreeProfData, width=600, height=600, partitionAttribute="value", main=title)
+      metabologram::metabologram(CoffeewheelTreeData, width=600, height=600, main=title,
+                   showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
+                   legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+      , file)
+  }
 )
 
-output$metabologram <- renderMetabologram({
+# getMetabologram_All <- function(){
+#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData)
+#   title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA")
+#   metabologram(CoffeewheelTreeData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+#
+# }
+
+# output$dl_metabologram <- downloadHandler(
+#   filename='plot.png',
+#   content= getmetabologram()
+# )
+
+output$metabologram_All <- renderMetabologram({
 
   CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
 
@@ -275,9 +303,9 @@ output$metabologram <- renderMetabologram({
   #devtools::install_github("armish/metabologram")
   #library("metabologram")
   title<- paste("Wheel with selected Studies")
-  metabologram(CoffeewheelTreeData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-
-
+  metabologram(CoffeewheelTreeData, width=600, height=600, main=title,
+               showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
+               legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
 })
 ## CNA, mRNA, methylation HM450/HM27, miRNA, RPPPA, Mutation
 checkDimensions<- function(panel){

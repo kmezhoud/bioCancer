@@ -1,7 +1,8 @@
 output$ClassifierHowto <- renderPrint({
-  cat("1 - Select Studies \n
-       2 - Get Samples size \n
-       3 - Select Cases and Genetic Profiles \n
+  cat("
+       1 - Select Studies
+       2 - Get Samples size
+       3 - Select Cases and Genetic Profiles
        4 - Run Classifier
       ")
 })

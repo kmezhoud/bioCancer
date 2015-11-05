@@ -1,8 +1,9 @@
 output$ReactomeHowto <- renderPrint({
-  cat("1 - Select Gene list \n
-       2 - Set Edges attributes \n
-       3 - Set Nodes attributes from Classifier panel. \n
-           This step needs to classiy genes by studies (mRNA, Studies) \n
+  cat("
+       1 - Select Gene list
+       2 - Set Edges attributes
+       3 - Set Nodes attributes from Classifier panel
+           This step needs to classiy genes by studies (mRNA, Studies)
        4 - Set Nodes attributes from Profiles data (CNA, Methylation, Mutation, miRNA, RPPA)
       ")
 })

@@ -24,6 +24,19 @@ output$ui_Circomics <- renderUI({
                    selected= "", multiple=TRUE)
   })
 
+#   output$ui_SaveCircos <- renderUI({
+#     Dimension <- c("","CNA","Methylation", "mRNA","Mutation","miRNA","RPPA", "All" )
+#     selectizeInput("SaveCircosID", label= "Save Dimension:", choices= Dimension,
+#                    selected= "", multiple=FALSE)
+#
+#   })
+#
+#   if('All' %in% input$SaveCircosID ){
+#
+#     metabologramOutput('metabologram_All')
+#
+#   }
+
   output$StrListProfDataCircos <- renderPrint({
     #   if(is.null(input$getlistProfDataID)){
     #     return()
@@ -52,6 +65,13 @@ output$ui_Circomics <- renderUI({
                    conditionalPanel("input.getlistProfDataCircosID==true",
                                     actionButton('loadListProfData', 'Load Profiles in Datasets'),
                                     uiOutput("ui_CircosDimension")
+                                    #uiOutput("ui_SaveCircos")
+                   ),
+
+                   conditionalPanel("input.CircosDimensionID == 'All'",
+
+                                    downloadButton('Save_Metabologram_All', 'All')
+
                    ),
 
                    checkboxInput("CircosLegendID", "Legend", value=FALSE),
@@ -68,11 +88,11 @@ output$ui_Circomics <- renderUI({
                    #
                    #                    conditionalPanel(condition = "input.saveWheelID == 'Gif'",
                    #                                     downloadButton("SaveGif")),
-                   wellPanel(
+
                      conditionalPanel("input.CircosLegendID==true",
+                                      wellPanel(
                                       plotOutput("LegendCircos")
                      )
-
                      #                    h4("Wheel Legend"),
                      #                    p(span("Black", style="color:black"),": Non available data."),
                      #                    p(span("White", style="color:black"),": Non significant rate."),
@@ -81,6 +101,7 @@ output$ui_Circomics <- renderUI({
                      #                    p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
                      #                    p(span("Red", style="color:red"),": Positive significant rate.")
                    ),
+
                    help_modal_km('Circomics','CircomicsHelp',inclMD(file.path(r_path,"base/tools/help/Circomics.md")))
   )
 
