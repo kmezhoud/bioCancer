@@ -8,6 +8,14 @@ output$ui_filter_error <- renderUI({
   helpText(r_data$filter_error)
 })
 
+## Welcome message
+output$Welcome <- renderUI({
+  wellPanel(
+    h5("Welcome to bioCancer!", align="center"),
+    HTML("Help is available on each page by clicking the <i title='Help' class='fa fa-question'></i> icon on the bottom left of your screen.")
+  )
+})
+
 ## data ui and tabs
 output$ui_data <- renderUI({
 
@@ -22,8 +30,9 @@ output$ui_data <- renderUI({
         #### Include selectize prompt Studies, Clinical data and Profile data
         conditionalPanel("input.tabs_data== 'Portal'",
                          conditionalPanel("input.tabs_portal=='Studies'",
-                                         h5("Welcome to bioCancer!", align="center"),
-                                         p("Documentation and tutorials are available in each panel '?' or 'Help' menu.", align ="center")
+                                         #h5("Welcome to bioCancer!", align="center"),
+                                         uiOutput("Welcome")
+                                         #p("Documentation and tutorials are available in each panel <i title='Help' class='fa fa-question'></i>  or 'Help' menu.", align ="center")
                                          ),
                          selectizeInput(
                            'StudiesID', 'Studies', choices = NULL, multiple = FALSE

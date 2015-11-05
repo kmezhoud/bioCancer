@@ -37,16 +37,25 @@ append_help <- function(help_str, help_path, Rmd = TRUE) {
   paste(all_help,"\n",mathjax_script,"\n",cc) %>% HTML
 }
 
-help_data <- c("Manage" = "manage.md","View" = "view.md", "Visualize" = "visualize.md",
+help_Portal <- c("Studies"= "Studies.md", "Clinical"="Clinical.md", "Profiles"="Profiles.md", "Mutation"="Mutation.md")
+output$help_Portal <- reactive(append_help("help_Portal", file.path(r_path,"base/tools/help/")))
+
+help_Enrich <- c("Circomics"="Circomics.md", "Classifier"= "Classifier.md", "Reactome"= "Reactome.md")
+output$help_Enrich <- reactive(append_help("help_Enrich", file.path(r_path,"base/tools/help/")))
+
+help_Handle <- c("Manage" = "manage.md","View" = "view.md", "Visualize" = "visualize.md",
                "Pivot" = "pivotr.md", "Explore" = "explore.md", "Combine" = "combine.md", "Transform" = "transform.md")
-output$help_data <- reactive(append_help("help_data", file.path(r_path,"base/tools/help/")))
+output$help_Handle <- reactive(append_help("help_Handle", file.path(r_path,"base/tools/help/")))
 
 help_sample <- c("Sampling" = "sampling.md", "Sample size" = "sample_size.Rmd")
 output$help_sample <- reactive(append_help("help_sample", file.path(r_path,"quant/tools/help/"), Rmd = TRUE))
 
+# help_base_menu <- c("Probability calculator" = "prob_calc.md", "Central limit theorem" = "clt.md",
+#                     "Single mean" = "single_mean.md", "Compare means" = "compare_means.md",
+#                     "Single proportion" = "single_prop.md", "Compare proportions" = "compare_props.md",
+#                     "Cross-tabs" = "cross_tabs.md")
 help_base_menu <- c("Probability calculator" = "prob_calc.md", "Central limit theorem" = "clt.md",
-                    "Single mean" = "single_mean.md", "Compare means" = "compare_means.md",
-                    "Single proportion" = "single_prop.md", "Compare proportions" = "compare_props.md",
+                    "Compare means" = "compare_means.md", "Compare proportions" = "compare_props.md",
                     "Cross-tabs" = "cross_tabs.md")
 
 output$help_base_menu <- reactive(append_help("help_base_menu", file.path(r_path,"quant/tools/help/")))
@@ -68,9 +77,14 @@ help_switch <- function(help_all, help_str, help_on = TRUE) {
     choices = help_choices,
     selected = init, inline = TRUE)
 }
+observe( help_switch(input$help_Portal_all, "help_Portal") )
+observe( help_switch(input$help_Portal_none, "help_Portal", help_on = FALSE) )
 
-observe( help_switch(input$help_data_all, "help_data") )
-observe( help_switch(input$help_data_none, "help_data", help_on = FALSE) )
+observe( help_switch(input$help_Enrich_all, "help_Enrich") )
+observe( help_switch(input$help_Enrich_none, "help_Enrich", help_on = FALSE) )
+
+observe( help_switch(input$help_Handle_all, "help_Handle") )
+observe( help_switch(input$help_Handle_none, "help_Handle", help_on = FALSE) )
 
 observe( help_switch(input$help_sample_all, "help_sample") )
 observe( help_switch(input$help_sample_none, "help_sample", help_on = FALSE) )
@@ -87,31 +101,54 @@ observe( help_switch(input$help_decide_none, "help_decide", help_on = FALSE) )
 output$help_base <- renderUI({
   sidebarLayout(
     sidebarPanel(
+
       wellPanel(
-        checkboxGroupInput("help_data", "Data menu:", help_data,
-          selected = state_init("help_data"), inline = TRUE)
+        checkboxGroupInput("help_Portal", "Portal Panel:", help_Portal,
+                           selected = state_init("help_Portal"), inline = TRUE)
+      ),
+      wellPanel(
+        checkboxGroupInput("help_Enrich", "Enrich Panel:", help_Enrich,
+                           selected = state_init("help_Enrich"), inline = TRUE)
+      ),
+      wellPanel(
+        checkboxGroupInput("help_Handle", "Handle Panel:", help_Handle,
+          selected = state_init("help_Handle"), inline = TRUE)
       ),
       uiOutput("help_text")
     ),
     mainPanel(
-      htmlOutput("help_data")
+      htmlOutput("help_Portal"),
+      htmlOutput("help_Enrich"),
+      htmlOutput("help_Handle")
     )
   )
 })
 
 help_quant_ui <- tagList(
   wellPanel(
-    HTML("<label>Data menu: <i id='help_data_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
-    <i id='help_data_none' title='Uncheck all' href='#' class='action-button glyphicon glyphicon-remove'></i></label>"),
-    checkboxGroupInput("help_data", NULL, help_data,
-      selected = state_init("help_data"), inline = TRUE)
+    HTML("<label>Portal Panel: <i id='help_Portal_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
+    <i id='help_Portal_none' title='Uncheck all' href='#' class='action-button glyphicon glyphicon-remove'></i></label>"),
+    checkboxGroupInput("help_Portal", NULL, help_Portal,
+                       selected = state_init("help_Portal"), inline = TRUE)
   ),
   wellPanel(
-    HTML("<label>Sample menu: <i id='help_sample_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
-    <i id='help_sample_none' title='Uncheck all' href='#' class='action-button glyphicon glyphicon-remove'></i></label>"),
-    checkboxGroupInput("help_sample", NULL, help_sample,
-       selected = state_init("help_sample"), inline = TRUE)
+    HTML("<label>Enrich Panel: <i id='help_Enrich_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
+         <i id='help_Enrich_none' title='Uncheck all' href='#' class='action-button glyphicon glyphicon-remove'></i></label>"),
+    checkboxGroupInput("help_Enrich", NULL, help_Enrich,
+                       selected = state_init("help_Enrich"), inline = TRUE)
+    ),
+  wellPanel(
+    HTML("<label>Handle Panel: <i id='help_Handle_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
+    <i id='help_Handle_none' title='Uncheck all' href='#' class='action-button glyphicon glyphicon-remove'></i></label>"),
+    checkboxGroupInput("help_Handle", NULL, help_Handle,
+      selected = state_init("help_Handle"), inline = TRUE)
   ),
+#   wellPanel(
+#     HTML("<label>Sample menu: <i id='help_sample_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
+#     <i id='help_sample_none' title='Uncheck all' href='#' class='action-button glyphicon glyphicon-remove'></i></label>"),
+#     checkboxGroupInput("help_sample", NULL, help_sample,
+#        selected = state_init("help_sample"), inline = TRUE)
+#   ),
   wellPanel(
     HTML("<label>Base menu: <i id='help_base_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
     <i id='help_base_none' title='Uncheck all' href='#' class='action-button glyphicon glyphicon-remove'></i></label>"),
@@ -140,8 +177,10 @@ if ("bioCancer" %in% (installed.packages()[,'Package'])) {
 
 help_quant_main <- tagList(
   HTML(paste0("<h3>bioCancer (",r_version, "): Select help files to show and search</h3>")),
-  # HTML("<script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>"),
-  shiny::htmlOutput("help_data"),
+  #HTML("<script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>"),
+  shiny::htmlOutput("help_Portal"),
+  shiny::htmlOutput("help_Enrich"),
+  shiny::htmlOutput("help_Handle"),
   shiny::htmlOutput("help_sample"),
   shiny::htmlOutput("help_base_menu"),
   shiny::htmlOutput("help_regression"),
