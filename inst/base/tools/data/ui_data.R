@@ -165,7 +165,6 @@ output$Enrich <- renderUI({
                          #h3("Protein phosphorylation:")
                          coffeewheelOutput('getCoffeeWheel_RPPA', width = 600, height = 600)
                        },
-
                        if('All' %in% input$CircosDimensionID ){
                          #h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)")
                          coffeewheelOutput('getCoffeeWheel_All', width = 600, height = 600)

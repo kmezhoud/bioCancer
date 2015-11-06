@@ -268,27 +268,33 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
 
 output$Save_Metabologram_All <- downloadHandler(
   filename = function() {
-    paste(getwd(),"Metabologram_All.html", sep="/")
+    paste(getwd(),"Metabologram_All.pdf", sep="/")
   },
   content = function(file) {
+    #png(file)
     saveWidget(
+    #file.copy(
+   # pdf(file=file, width=12, height=8)
+    #SaveMetabologram_All()
+    #dev.off()
       #metabologramOutput('metabologram_All')
       CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData),
       title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA"),
       #coffeewheel(CoffeewheelTreeProfData, width=600, height=600, partitionAttribute="value", main=title)
-      metabologram::metabologram(CoffeewheelTreeData, width=600, height=600, main=title,
+      metabologram::metabologram(CoffeewheelTreeProfData, width=600, height=600, main=title,
                    showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
                    legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
       , file)
+      #dev.off()
   }
 )
 
-SaveMetabologram_All <- function(){
+SaveMetabologram_All <- reactive({
   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData)
   title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA")
   metabologram(CoffeewheelTreeProfData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
 
-}
+})
 
 # output$dl_metabologram <- downloadHandler(
 #   filename='plot.png',
