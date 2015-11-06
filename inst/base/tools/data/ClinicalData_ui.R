@@ -41,7 +41,7 @@ output$ui_ClinicalData <- renderUI({
 
 
       conditionalPanel(condition = "input.ClinicalDataID == 'ClinicalData'",
-                       actionButton('loadClinicalData', 'Load Clinical Data')
+                       actionButton('loadClinicalData', 'Load Clinical Data', style="float:center")
 
       ),
       conditionalPanel(condition = "input.ClinicalDataID == 'clipboard_Clin'",

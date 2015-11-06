@@ -283,12 +283,12 @@ output$Save_Metabologram_All <- downloadHandler(
   }
 )
 
-# getMetabologram_All <- function(){
-#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData)
-#   title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA")
-#   metabologram(CoffeewheelTreeData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-#
-# }
+SaveMetabologram_All <- function(){
+  CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData)
+  title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA")
+  metabologram(CoffeewheelTreeProfData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+
+}
 
 # output$dl_metabologram <- downloadHandler(
 #   filename='plot.png',
