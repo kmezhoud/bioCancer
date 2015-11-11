@@ -39,7 +39,7 @@ Edges_obj <- function(){
         r_data[['ReactomeFI']]  <- read.delim(paste0(system.file(package = "bioCancer"), "/extdata/FIsInGene_121514_with_annotations.txt", sep=""))
       }else{
 
-        r_data[['ReactomeFI']]  <- read.delim(file.path(r_path,"extdata/FIsInGene_121514_with_annotations.txt"))
+        r_data[['ReactomeFI']]  <- read.delim(file.path(paste(r_path,"extdata/FIsInGene_121514_with_annotations.txt", sep="")))
       }
 
     })
