@@ -30,9 +30,26 @@ output$ui_ReacLayout <- renderUI({
 
 
 output$ui_NodeAttri_ReactomeFI <- renderUI({
-  ReactomeEnrich <- c("None","Freq. Interaction")
+  ReactomeEnrich <- c("None","Freq. Interaction", "GeneSet", "FreqInt./GeneSet")
   selectizeInput("NodeAttri_ReactomeID", label= "From ReactomeFI:", choices= ReactomeEnrich,
                  selected= "None", multiple=FALSE)
+})
+
+output$ui_AnnoGeneSet_ReactomeFI <- renderUI({
+  type <- c("None","Pathway", "BP","CC","MF")
+  selectizeInput("TypeGeneSetID", label="Type of enrichment:", choices=type,
+                 selected ="None", multiple=FALSE
+                 )
+})
+
+output$ui_GeneSetFDR <- renderUI({
+  #if(is.null(r_data$MinGeneSetFDR)){
+    sliderInput("GeneSetFDRID", "FDR of enrichment", 0.025, min =0.0005,
+                max=0.05, step=0.0005 )
+  #}else{
+  #sliderInput("GeneSetFDRID", "FDR", 0.005, min =r_data$MinGeneSetFDR,
+  #            max=0.05, step=0.0005 )
+  #}
 })
 
 output$ui_NodeAttri_Classifier <- renderUI({
@@ -54,6 +71,7 @@ output$ui_Freq_MutSlider <- renderUI({
   #)
 
 })
+
 
 
 output$ui_MetSliderHM450 <- renderUI({
@@ -87,6 +105,14 @@ output$ui_Reactome <- renderUI({
     h4("Node Attributes:"),
     wellPanel(
       uiOutput("ui_NodeAttri_ReactomeFI"),
+
+      conditionalPanel("input.NodeAttri_ReactomeID =='GeneSet' ||
+                       input.NodeAttri_ReactomeID =='FreqInt./GeneSet'",
+                      uiOutput("ui_AnnoGeneSet_ReactomeFI"),
+                      uiOutput("ui_GeneSetFDR")
+                      ),
+
+
       #conditionalPanel(condition = "input.ClassID=='Classifier'",
       uiOutput("ui_NodeAttri_Classifier"),
       #),
@@ -119,6 +145,14 @@ output$ui_Reactome <- renderUI({
                        uiOutput("ui_Freq_MutSlider"),
                        uiOutput("ui_MetSliderHM450"),
                        uiOutput("ui_MetSliderHM27")
+#                       div(class="col-xs-6",
+#                            numericInput("ThresholdMetHM450ID",
+#                                         "HM450",
+#                                         "0.8",min = 0.8, max = 1 , step = 0.05)),
+#                        div(class="col-xs-6",
+#                            numericInput("ThresholdMetHM27ID",
+#                                         "HM27",
+#                                         "0.8",min = 0.8, max = 1 , step = 0.05))
       )
       )
       #         conditionalPanel(condition= "input.NodeAttri_ProfDataID=='Met_HM450'",

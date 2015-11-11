@@ -89,7 +89,7 @@ fis2str <- function(fis) {
   return(fis.str)
 }
 
-queryCluster<-  function(object, fis) {
+queryCluster<-  function(version, fis) {
   service.url <- paste0(serviceURL(object), "cluster")
   fis.str <- fis2str(fis)
   doc <- getPostXML(service.url, fis.str)
@@ -143,7 +143,7 @@ queryAnnotateGeneSet <-  function(object, genes, type = c("Pathway", "BP", "CC",
   return(annotations)
 }
 
-annotate <- function(object, GeneList,fis,type = c("Pathway", "BP", "CC", "MF"),
+annotate <- function(version, GeneList,fis,type = c("Pathway", "BP", "CC", "MF"),
                      include.linkers = FALSE) {
   if (nrow(fis) == 0) {
     warning("No FI network data found. Please build the network first.")
@@ -211,6 +211,29 @@ queryFIsBetween <- function(object, fis) {
 }
 
 #### EDGE #####
+
+#' extract Protein Info
+#
+#' Extract protein information including accession ID and DB name, protein
+#'  name, and sequence.
+#
+#' @param protein.node XML node containing protein information
+#' @return data.frame Data frame where each row corresponds to a protein and
+#'  the columns contain the information mentioned above.
+extractProteinInfo <- function(protein.node) {
+  accession <- xmlValue(xmlChildren(protein.node)$accession)
+  db.name <- xmlValue(xmlChildren(protein.node)$dbName)
+  name <- xmlValue(xmlChildren(protein.node)$name)
+  short.name <- xmlValue(xmlChildren(protein.node)$shortName)
+  prot.seq <- xmlValue(xmlChildren(protein.node)$sequence)
+  info <- data.frame(accession = accession,
+                     db.name = db.name,
+                     short.name = short.name,
+                     name = name,
+                     sequence = prot.seq,
+                     stringsAsFactors = FALSE)
+  return(info)
+}
 
 #queryEdge(2012, "TP53", "BRCA1")
 queryEdge <-  function(object, name1, name2) {

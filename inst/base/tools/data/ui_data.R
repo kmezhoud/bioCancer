@@ -276,12 +276,21 @@ output$Enrich <- renderUI({
                                         verbatimTextOutput("ReactomeHowto")
                        ),
                        conditionalPanel( condition = "input.ReacRunId== true",
-                                         plot_downloader("ld_diagrammeR_plot", pre=""),
+                                         #plot_downloader("ld_diagrammeR_plot", pre=""),
                                          downloadButton('Save_diagrammeR_plot', 'HTML'),
-                                         actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
-                                         grVizOutput('diagrammeR')
+                                         #actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
+                                         grVizOutput('diagrammeR'),
 
+                        conditionalPanel(condition= "input.NodeAttri_ReactomeID == 'GeneSet'||
+                                                      input.NodeAttri_ReactomeID == 'FreqInt./GeneSet'",
+                                         #tableOutput("GeneSetLegend")
+                                         DT::dataTableOutput("GeneSet_Legend")
+                        )
 
+#                         conditionalPanel(condition= "input.NodeAttri_ReactomeID == 'FreqInt./GeneSet'",
+#                                          #tableOutput("GeneSetLegend")
+#                                          DT::dataTableOutput("GeneSet_Legend")
+#                         )
 
                        ),
                        conditionalPanel(condition= "input.ReacLegendId == true",

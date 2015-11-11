@@ -35,14 +35,14 @@ Edges_obj <- function(){
 
       #r_data[['ReactomeFI']] <- read.csv("https://raw.githubusercontent.com/kmezhoud/ReactomeFI/master/FIsInGene_121514_with_annotations.txt", header=TRUE, sep="\t")
       #r_data[['ReactomeFI']]  <- read.delim("inst/extdata/FIsInGene_121514_with_annotations.txt")
-       if ("package:bioCancer" %in% search()) {
-      r_data[['ReactomeFI']]  <- read.delim(paste0(system.file(package = "bioCancer"), "/extdata/FIsInGene_121514_with_annotations.txt", sep=""))
-       }else{
+      if ("package:bioCancer" %in% search()) {
+        r_data[['ReactomeFI']]  <- read.delim(paste0(system.file(package = "bioCancer"), "/extdata/FIsInGene_121514_with_annotations.txt", sep=""))
+      }else{
 
-         r_data[['ReactomeFI']]  <- read.delim("inst/extdata/FIsInGene_121514_with_annotations.txt")
-       }
+        r_data[['ReactomeFI']]  <- read.delim(file.path(r_path,"extdata/FIsInGene_121514_with_annotations.txt"))
+      }
 
-      })
+    })
   }
 
   #GeneList <- c("DKK3", "NBN", "MYO6", "TP53","PML", "IFI16", "BRCA1")
@@ -67,7 +67,7 @@ Edges_obj <- function(){
     #  Edges_obj <- Edges_obj[!grepl("predict|activat|binding|complex|indirect",Edges_obj$Annotation),]
     Edges_obj <- Edges_obj[grepl(paste0(input$FIs_AttId, collapse="|"),Edges_obj$Annotation),]
 
-     ## skip infinity loop when load Reactome_Genelist
+    ## skip infinity loop when load Reactome_Genelist
     if(is.null(r_data$Reactome_GeneList)){
       r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
     }else if (all(length(r_data$Reactome_GeneList) == length(union(Edges_obj$Gene1, Edges_obj$Gene2)))
@@ -78,6 +78,7 @@ Edges_obj <- function(){
       r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
     }
     ## Get interaction Frequency in dataframe FreqIn
+
     FreqIn <- rbind(t(t(table(as.character(Edges_obj$Gene2)))), t(t(table(as.character(Edges_obj$Gene1)))))
     colnames(FreqIn) <- "Freq"
     FreqIn <- as.data.frame(FreqIn) %>% add_rownames("Genes")
@@ -124,6 +125,102 @@ Edges_obj <- function(){
   #Edges_objbkp <<- Edges_obj
   return(Edges_obj)
 }
+
+
+getAnnoGeneSet_obj <- function(genelist,type){
+  # type = c("Pathway", "BP", "CC", "MF")
+  # type <- input$TypeGeneSetID
+  #type <- match.arg(type)
+
+  ## Query GeneSet Annotation
+  AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type)
+
+  ## Filter significant annotation using FDR
+  AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < input$GeneSetFDRID,]
+
+  r_data[['AnnoGeneSet']] <- AnnoGeneSet
+
+  if(nrow(AnnoGeneSet)== 0){
+    GeneSet_obj <- data.frame(Gene1 = "",
+                              Gene2 = "",
+                              Direction = "",
+                              Annotation = "",
+                              arrowsize = "",
+                              Score = ""
+    )
+  } else{
+
+    #r_data[['MinGeneSetFDR']] <- min(AnnoGeneSet$fdr, na.rm = TRUE)
+
+    ## Split hits to a list
+    key0 <- strsplit(AnnoGeneSet$hits, ",")
+
+    ## from Martin Morgan  http://stackoverflow.com/questions/12837462/how-to-subset-data-with-advance-string-matching
+
+    Index_Gene <- data.frame(index = rep(seq_along(key0), sapply(key0, length)),ID = unlist(key0))
+
+    ## Maybe useful add GeneList with index and genes
+    #ref_GeneSet  <-  cbind(GeneSet = AnnoGeneSet_hits[subset[,1],2],subset)
+
+    #   ## substitute space to _
+    #   AnnoGeneSet[,1] <- gsub(" ","_",AnnoGeneSet[,1])
+    #   ## parenthesis are not supported in GrVis
+    #   AnnoGeneSet[,1] <- gsub("\\(","_", AnnoGeneSet[,1])
+    #   AnnoGeneSet[,1] <- gsub("\\)","", AnnoGeneSet[,1])
+    #   ## substitue , by " "
+    #   AnnoGeneSet[,7] <- gsub(","," ",AnnoGeneSet[,7])
+    #
+    #   AnnoGeneSet[,2] <- "->"
+    #   AnnoGeneSet[,3] <- "{"
+    #   AnnoGeneSet[,4] <- AnnoGeneSet[,7]
+    #   AnnoGeneSet[,5] <- "}"
+    #   AnnoGeneSet[,6] <- "[arrowhead=none, color=LightGray, penwidth=0.2]"
+    #
+    #   GeneSet_obj <- AnnoGeneSet[,1:6]
+    #  names(GeneSet_obj)<- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
+
+    GeneSet_obj <- data.frame(Gene1 = Index_Gene[,1],
+                              Gene2 = "->",
+                              Direction = Index_Gene[,2],
+                              Annotation = "[arrowhead=none,",
+                              arrowsize = "color=Gray,",
+                              Score = "penwidth=0.2]"
+    )
+
+  }
+  return(GeneSet_obj)
+}
+
+# output$GeneSetLegend <- renderTable({
+#   if (is.null(r_data$Legend_GeneSet))
+#         return()
+#  return(r_data$Legend_GeneSet[,1:2])
+#
+# })
+
+output$GeneSet_Legend <- DT::renderDataTable({
+  ## Attribute index to pathway
+  Legend_GeneSet <- cbind(Node = seq_len(nrow(r_data$AnnoGeneSet)), r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"])
+  Legend_GeneSet[,4:7] <- round(Legend_GeneSet[,4:7], digits=2)
+  colnames(Legend_GeneSet)[c(3,4,6)] <- c("nhit","nGenes","pval")
+  dat <- Legend_GeneSet[,c(1,2,3,4,6,7)]
+  action = DT::dataTableAjax(session, dat, rownames = FALSE)
+
+  #DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
+  DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
+                rownames = FALSE, style = "bootstrap", escape = FALSE,
+                # class = "compact",
+                options = list(
+                  ajax = list(url = action),
+                  search = list(regex = TRUE),
+                  columnDefs = list(list(className = 'dt-center', targets = "_all")),
+                  autoWidth = TRUE,
+                  processing = FALSE,
+                  pageLength = 10,
+                  lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
+                )
+  )
+})
 
 ### Add Studies to Network
 
@@ -338,9 +435,10 @@ Node_obj_Met_ProfData <- function(list, type){
 
 graph_obj <- function(){
 
-GeneList <- whichGeneList()
+  GeneList <- whichGeneList()
 
   Edges_obj <- Edges_obj()
+  #Edges_obj_bkp <<- Edges_obj()
 
   if(input$NodeAttri_ReactomeID == 'Freq. Interaction'){
     ## Nodes Attributes
@@ -348,6 +446,37 @@ GeneList <- whichGeneList()
     #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
     Edges_obj<- rbind(Edges_obj, GeneAttri_df)
   }
+  if(input$NodeAttri_ReactomeID == 'FreqInt./GeneSet'){
+    ## Nodes Attributes
+    GeneFreqIn_df <- Node_obj_FreqIn(GeneList)
+
+    if(input$TypeGeneSetID =="Pathway" ||
+       input$TypeGeneSetID =="BP" ||
+       input$TypeGeneSetID =="CC" ||
+       input$TypeGeneSetID =="MF"
+    ){
+      GeneSetAnno_df <- getAnnoGeneSet_obj(GeneList,input$TypeGeneSetID)
+
+      GeneAttri_df <- rbind(GeneFreqIn_df,GeneSetAnno_df)
+      #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
+      Edges_obj<- rbind(Edges_obj, GeneAttri_df)
+    }
+
+  }
+
+  if(input$NodeAttri_ReactomeID == 'GeneSet'){
+    if(input$TypeGeneSetID =="Pathway" ||
+       input$TypeGeneSetID =="BP" ||
+       input$TypeGeneSetID =="CC" ||
+       input$TypeGeneSetID =="MF"
+    ){
+      GeneSetAnno_df <- getAnnoGeneSet_obj(GeneList,input$TypeGeneSetID) #input$TypeGeneSetID
+      Edges_obj <- rbind(Edges_obj, GeneSetAnno_df)
+      # Edges_obj_bkp <<- Edges_obj
+    }
+  }
+
+
   if(input$NodeAttri_ClassifierID == 'mRNA'){
     ## Nodes Attributes
     GeneAttri_df1 <- Node_obj_mRNA_Classifier(GeneList, r_data$GenesClassDetails)
@@ -425,21 +554,21 @@ GeneList <- whichGeneList()
 
 output$diagrammeR <- DiagrammeR::renderGrViz({
   DiagrammeR::grViz(
-    #   digraph{
-    # ## Edge Atrributes
-    #
-    #     BRCA1  -> IFI16   [arrowhead = normal, color= LightGray, alpha=30, penwidth= 0.2] ;
-    #     BRCA1  ->   NBN [arrowhead = normal] ;
-    #     BRCA1  ->  TP53   [color= LightGray] ;
-    #     IFI16  ->  TP53 [arrowtail = normal] ;
-    #     PML  ->  TP53 [arrowtail = normal];
-    #
-    #
-    # ## Node Attributes
-    #
-    #     BRCA1[shape = box, style= filled, fillcolor="#0007CD", color=red, penwidth=3, peripheries=2 ]
-    #
-    # },
+    #     digraph{
+    ## Edge Atrributes
+
+    #         BRCA1  -> IFI16   [arrowhead = normal, color= LightGray, alpha=30, penwidth= 0.2] ;
+    #         BRCA1  ->   NBN [arrowhead = normal] ;
+    #         BRCA1  ->  TP53   [color= LightGray] ;
+    #         IFI16  ->  TP53 [arrowtail = normal] ;
+    #         PML  ->  TP53 [arrowtail = normal];
+
+
+    ## Node Attributes
+
+    #        BRCA1[node_id="BRCA1_id" ,shape = box, style= filled, fillcolor="#0007CD", color=red, penwidth=3, peripheries=2 ]
+
+    #    },
     graph_obj(),
     engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
     width = 1200
@@ -468,7 +597,7 @@ output$Save_diagrammeR_plot <- downloadHandler(
       ), file)
   }
 
- # browseURL(paste('file://',getwd(),"Reactomeplot.html", sep="/"))
+  # browseURL(paste('file://',getwd(),"Reactomeplot.html", sep="/"))
   ## wait 1 sd before delete
   # p1 <- proc.time()
   # Sys.sleep(1)
