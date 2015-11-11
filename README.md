@@ -6,7 +6,7 @@
 -->
 
 [bioCancer](
-http://46.101.227.144:3838/bioCancer/
+http://kmezhoud.github.io/bioCancer/
 ) is a platform-independent browser-based interface for Cancer Genomics Data analytics in [R](http://www.r-project.org/), based on the [Shiny](http://www.rstudio.com/shiny/) package. bioCancer is hosted at 
 http://46.101.227.144:3838/bioCancer/
 
@@ -41,7 +41,7 @@ Simply saving output is not enough. You need the ability to recreate results for
 
 #### Programming
 
-Although bioCancer's web-interface can handle quite a few data and analysis tasks, at times you may prefer to write your own code. bioCancer provides a bridge to programming in R(studio) by exporting the functions used for analysis. For more information about programming with Radiant see the [programming](http://vnijs.github.io/radiant/programming.html) page on the documentation site.
+Although bioCancer's web-interface can handle quite a few data and analysis tasks, at times you may prefer to write your own code. bioCancer provides a bridge to programming in R(studio) by exporting the functions used for analysis. For more information about programming, see Radiant [programming](http://vnijs.github.io/radiant/programming.html) page on the documentation site.
 
 #### Context
 

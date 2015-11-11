@@ -50,7 +50,8 @@ output$ui_data <- renderUI({
                          conditionalPanel("input.tabs_portal == 'Mutation'", uiOutput("ui_MutData"))
         ),
         conditionalPanel("input.tabs_data== 'Enrich'",
-                         conditionalPanel("input.tabs_Enrich == 'Circomics'", uiOutput("ui_Circomics")),
+                         conditionalPanel("input.tabs_Enrich == 'Circomics'",
+                                          uiOutput("ui_Circomics")),
                          #                          conditionalPanel("input.tabs_Enrich=='Network'",
                          #                                           wellPanel(
                          #                                             uiOutput("ui_NetworkSlider"),
