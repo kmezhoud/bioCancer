@@ -281,17 +281,20 @@ output$Enrich <- renderUI({
                                          downloadButton('Save_diagrammeR_plot', 'HTML'),
                                          #actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
                                          grVizOutput('diagrammeR'),
+                                         conditionalPanel(condition= "input.TypeGeneSetID == 'Pathway'||
+                                                    input.TypeGeneSetID == 'BP'||
+                                                    input.TypeGeneSetID == 'CC'||
+                                                    input.TypeGeneSetID == 'MF'",
+                                                          #tableOutput("GeneSetLegend")
+                                                          downloadLink("dl_GeneSet_Legend", "", class = "fa fa-download alignright"),
+                                                          DT::dataTableOutput("GeneSet_Legend")
+                                         )
 
-                        conditionalPanel(condition= "input.NodeAttri_ReactomeID == 'GeneSet'||
-                                                      input.NodeAttri_ReactomeID == 'FreqInt./GeneSet'",
-                                         #tableOutput("GeneSetLegend")
-                                         DT::dataTableOutput("GeneSet_Legend")
-                        )
 
-#                         conditionalPanel(condition= "input.NodeAttri_ReactomeID == 'FreqInt./GeneSet'",
-#                                          #tableOutput("GeneSetLegend")
-#                                          DT::dataTableOutput("GeneSet_Legend")
-#                         )
+                                         #                         conditionalPanel(condition= "input.NodeAttri_ReactomeID == 'FreqInt./GeneSet'",
+                                         #                                          #tableOutput("GeneSetLegend")
+                                         #                                          DT::dataTableOutput("GeneSet_Legend")
+                                         #                         )
 
                        ),
                        conditionalPanel(condition= "input.ReacLegendId == true",

@@ -199,6 +199,15 @@ getAnnoGeneSet_obj <- function(genelist,type){
 #  return(r_data$Legend_GeneSet[,1:2])
 #
 # })
+output$dl_GeneSet_Legend <- shiny::downloadHandler(
+  filename = function() { paste0("GeneSet_Legend.csv") },
+  content = function(file) {
+    data_filter <- if (input$show_filter) input$data_filter else ""
+    getdata(r_data$GeneSet_Legend, vars = NULL, filt = data_filter,
+            rows = NULL, na.rm = FALSE) %>%
+      write.csv(file, row.names = FALSE)
+  }
+)
 
 output$GeneSet_Legend <- DT::renderDataTable({
   ## Attribute index to pathway
@@ -206,6 +215,9 @@ output$GeneSet_Legend <- DT::renderDataTable({
   Legend_GeneSet[,4:7] <- round(Legend_GeneSet[,4:7], digits=2)
   colnames(Legend_GeneSet)[c(3,4,6)] <- c("nhit","nGenes","pval")
   dat <- Legend_GeneSet[,c(1,2,3,4,6,7)]
+
+  r_data[['GeneSet_Legend']] <- dat
+
   action = DT::dataTableAjax(session, dat, rownames = FALSE)
 
   #DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
@@ -585,7 +597,7 @@ output$diagrammeR <- DiagrammeR::renderGrViz({
 ld_diagrammeR_plot<- function(){
   DiagrammeR::grViz(
     graph_obj(),
-    engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
+    #engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
     width = 1200
   )
 }
