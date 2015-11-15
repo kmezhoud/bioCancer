@@ -138,9 +138,9 @@ output$rmd_knitted <- renderUI({
     }
     if (input$rmd_report != "") {
       withProgress(message = 'Knitting report', value = 0, {
-        ifelse (is.null(input$rmd_selection) || input$rmd_selection == "",
-               return(knitIt2(input$rmd_report)),
-               return(knitIt2(input$rmd_selection)))
+        if(is.null(input$rmd_selection) || input$rmd_selection == ""){
+               return(knitIt2(input$rmd_report))
+               return(knitIt2(input$rmd_selection))}
       })
     }
   })

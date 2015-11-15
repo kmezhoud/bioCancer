@@ -41,7 +41,7 @@ Edges_obj <- function(){
         r_data[['ReactomeFI']]  <- read.delim(paste0(system.file(package = "bioCancer"), "/extdata/FIsInGene_121514_with_annotations.txt", sep=""))
       }else{
 
-        r_data[['ReactomeFI']]  <- read.delim(file.path(paste(r_path,"extdata/FIsInGene_121514_with_annotations.txt", sep="")))
+        r_data[['ReactomeFI']]  <- read.delim(file.path(paste(r_path,"/extdata/FIsInGene_121514_with_annotations.txt", sep="")))
       }
 
     })
@@ -547,7 +547,9 @@ graph_obj <- function(){
   #cap <- capture.output(print(Edges_obj, row.names = FALSE)[-1])
   cap <- apply(Edges_obj, 1, function(x) paste(x, sep="\t", collapse=" "))
   ca <- paste(cap,"", collapse=";")
-  obj <- paste0("\n","digraph{","\n", ca, "\n","}", sep="")
+  obj <- paste0("\n","digraph{",
+                "graph [layout=", input$ReacLayoutId,"]",
+                "\n", ca, "\n","}", sep="")
 
   return(obj)
 
@@ -572,7 +574,9 @@ output$diagrammeR <- DiagrammeR::renderGrViz({
 
     #    },
     graph_obj(),
-    engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
+     ## Engine argument do not work in the future (update viz.js)
+     ## https://github.com/rich-iannone/DiagrammeR/issues/150
+    #engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
     width = 1200
   )
 })
@@ -594,7 +598,7 @@ output$Save_diagrammeR_plot <- downloadHandler(
     saveWidget(
       DiagrammeR::grViz(
         graph_obj(),
-        engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
+        #engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
         width = 1200
       ), file)
   }
