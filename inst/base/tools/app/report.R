@@ -1,9 +1,9 @@
 ################################################################
-# Create dynamic reports using Radiant and the shinyAce editor
+# Create dynamic reports using bioCancer and the shinyAce editor
 ################################################################
 rmd_example <- "## Sample report
 
-This is an example of the type of report you can write in Radiant.
+This is an example of the type of report you can write in bioCancer.
 
 * You can create
 * bullet lists
@@ -19,14 +19,14 @@ $$y_t = \\alpha + \\beta x_t + \\epsilon_t.$$
 
 To show the output press the `Update` button.
 
-### Documenting analysis results in Radiant
+### Documenting analysis results in bioCancer
 
-The report feature in Radiant should be used in conjunction with the <i title='Report results' class='fa fa-edit'></i> icons shown at the bottom of the side bar on (almost) all pages. When that icon is clicked the command used to create the ouput is copied into the editor in the R > Report. By default Radiant will paste the code generated for the analysis you just completed at the bottom of the report. However, you can turn off that feature by clicking the `Manual paste (off)` button. The text in the button should now read `Manual paste (on)`. Click the button again to turn manual paste off again. With manual paste on the code is put in the clipboard when you click a book icon and you can paste it where you want in the R > Report editor window.
+The report feature in bioCancer should be used in conjunction with the <i title='Report results' class='fa fa-edit'></i> icons shown at the bottom of the side bar on (almost) all pages. When that icon is clicked the command used to create the ouput is copied into the editor in the R > Report. By default bioCancer will paste the code generated for the analysis you just completed at the bottom of the report. However, you can turn off that feature by clicking the `Manual paste (off)` button. The text in the button should now read `Manual paste (on)`. Click the button again to turn manual paste off again. With manual paste on the code is put in the clipboard when you click a book icon and you can paste it where you want in the R > Report editor window.
 
 
 By clicking the update button, the output from the analysis will be recreated. You can add text, bullets, headers, etc. around the code blocks to describe and explain the results using <a href='http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html' target='_blank'>markdown</a>.
 
-Below is some code created in Radiant that will generate regression outputfor the _diamonds_ data. These are histograms and a scatterplot / heatmap of the price of diamonds versus carats. The colors in the plot reflect the clarity of the diamond.
+Below is some code created in bioCancer that will generate regression outputfor the _diamonds_ data. These are histograms and a scatterplot / heatmap of the price of diamonds versus carats. The colors in the plot reflect the clarity of the diamond.
 
 ```{r fig.width=7, fig.height=4}
 result <- regression(dataset = 'diamonds', dep_var = 'price',
@@ -120,7 +120,7 @@ knitIt <- function(text) {
   scrub %>% HTML
 }
 
-## Knit for report in Radiant
+## Knit for report in bioCancer
 knitIt2 <- function(text) {
   # paste(knitr::knit2html(text = text, fragment.only = TRUE, quiet = TRUE, envir = r_env),
   paste(knitr::knit2html(text = text, fragment.only = TRUE, quiet = TRUE,
@@ -134,7 +134,7 @@ output$rmd_knitted <- renderUI({
 
   isolate({
     if (!r_local) {
-      return(HTML("<h2>Rmd file is not evaluated when running Radiant on a server</h2>"))
+      return(HTML("<h2>Rmd file is not evaluated when running bioCancer on a server</h2>"))
     }
     if (input$rmd_report != "") {
       withProgress(message = 'Knitting report', value = 0, {
@@ -173,7 +173,7 @@ output$saveRmd <- downloadHandler(
       # fbase <- basename(filename)
       # fbase <- sub(paste0(".",tools::file_ext(fbase)),"", fbase)
 
-      paste0("```{r echo = FALSE}\nknitr::opts_chunk$set(comment=NA, echo = FALSE, cache=FALSE, message=FALSE, warning=FALSE)\nsuppressMessages(library(radiant))\nload(\"", fnames[2], "\")\n```\n\n") %>%
+      paste0("```{r echo = FALSE}\nknitr::opts_chunk$set(comment=NA, echo = FALSE, cache=FALSE, message=FALSE, warning=FALSE)\nsuppressMessages(library(bioCancer))\nload(\"", fnames[2], "\")\n```\n\n") %>%
         paste0(., input$rmd_report) %>% cat(., file = fnames[1],sep="\n")
 
       r_data <- reactiveValuesToList(r_data)

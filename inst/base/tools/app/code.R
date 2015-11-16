@@ -20,8 +20,8 @@ dat %>% ggplot(aes(x = price)) + geom_histogram()
 ## and a histogram of log-prices
 dat %>% ggplot(aes(x = log_price)) + geom_histogram()
 
-## open help in the R-studio viewer from Radiant
-help(package = 'radiant')
+## open help in the R-studio viewer from bioCancer
+help(package = 'bioCancer')
 
 ## if you are familiar with Shiny you can call reactives here
 ## for example, if you just transformed some variables in Data > Transform
@@ -99,7 +99,7 @@ output$rmd_code_output <- renderUI({
         knitr::knit2html(text = ., fragment.only = TRUE, quiet = TRUE, envir = r_env) %>%
         HTML
     } else {
-      HTML("<h2>Code is not evaluated when running Radiant on a server</h2>")
+      HTML("<h2>Code is not evaluated when running bioCancer on a server</h2>")
     }
   })
 })
