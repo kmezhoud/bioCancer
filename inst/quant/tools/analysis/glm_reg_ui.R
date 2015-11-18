@@ -56,7 +56,7 @@ glm_pred_inputs <- reactive({
 
   glm_pred_args$pred_cmd <- glm_pred_args$pred_data <- glm_pred_args$pred_vars <- ""
   if (input$glm_predict == "cmd")
-    glm_pred_args$pred_cmd <- gsub('\\s', '', input$glm_pred_cmd)
+    glm_pred_args$pred_cmd <- gsub("\\s", "", input$glm_pred_cmd) %>% gsub("\"","\'",.)
   else if (input$glm_predict == "data")
     glm_pred_args$pred_data <- input$glm_pred_data
   else if (input$glm_predict == "vars")
@@ -78,7 +78,7 @@ glm_pred_plot_inputs <- reactive({
 
 output$ui_glm_dep_var <- renderUI({
  	vars <- two_level_vars()
-  selectInput(inputId = "glm_dep_var", label = "Dependent variable:", choices = vars,
+  selectInput(inputId = "glm_dep_var", label = "Response variable:", choices = vars,
   	selected = state_single("glm_dep_var",vars), multiple = FALSE)
 })
 
@@ -104,7 +104,7 @@ output$ui_glm_indep_var <- renderUI({
     {if (!is_empty(.) && . %in% vars) . else character(0)}
   })
 
-  selectInput(inputId = "glm_indep_var", label = "Independent variables:", choices = vars,
+  selectInput(inputId = "glm_indep_var", label = "Explanatory variables:", choices = vars,
   	selected = state_multiple("glm_indep_var", vars, init),
   	multiple = TRUE, size = min(10, length(vars)), selectize = FALSE)
 })
@@ -123,7 +123,7 @@ output$ui_glm_test_var <- renderUI({
   selectizeInput(inputId = "glm_test_var", label = "Variables to test:",
     choices = vars, selected = state_multiple("glm_test_var", vars),
     multiple = TRUE,
-    options = list(placeholder = 'None', plugins = list('remove_button'))
+    options = list(placeholder = "None", plugins = list("remove_button"))
   )
 })
 
@@ -154,7 +154,7 @@ output$ui_glm_int_var <- renderUI({
   	multiple = TRUE, size = min(4,length(choices)), selectize = FALSE)
 })
 
-# X - variable
+## X - variable
 output$ui_glm_xvar <- renderUI({
   vars <- input$glm_indep_var
   selectizeInput(inputId = "glm_xvar", label = "X-variable:", choices = vars,
@@ -173,7 +173,7 @@ output$ui_glm_facet_row <- renderUI({
 output$ui_glm_facet_col <- renderUI({
   vars <- input$glm_indep_var
   vars <- c("None" = ".", vars)
-  selectizeInput("glm_facet_col", 'Facet column', vars,
+  selectizeInput("glm_facet_col", "Facet column", vars,
                  selected = state_single("glm_facet_col", vars, "."),
                  multiple = FALSE)
 })
@@ -343,10 +343,10 @@ output$glm_reg <- renderUI({
 
 glm_available <- reactive({
   if (not_available(input$glm_dep_var))
-    return("This analysis requires a dependent variable with two levels and one\nor more independent variables. If these variables are not available\nplease select another dataset.\n\n" %>% suggest_data("titanic"))
+    return("This analysis requires a response variable with two levels and one\nor more explanatory variables. If these variables are not available\nplease select another dataset.\n\n" %>% suggest_data("titanic"))
 
   if (not_available(input$glm_indep_var))
-    return("Please select one or more independent variables.\n\n" %>% suggest_data("titanic"))
+    return("Please select one or more explanatory variables.\n\n" %>% suggest_data("titanic"))
 
   "available"
 })
@@ -405,8 +405,8 @@ observeEvent(input$glm_reg_report, {
       inp_out[[2 + figs]] <- clean_args(glm_pred_inputs(), glm_pred_args[-1])
       outputs <- c(outputs,"result <- predict")
       xcmd <-
-        paste0("# store_glm(result, data = \"", input$dataset, "\", type = \"prediction\", name = \"", input$glm_store_pred_name,"\")\n") %>%
-        paste0("# write.csv(result, file = \"~/glm_predictions.csv\", row.names = FALSE)")
+        paste0("# store_glm(result, data = '", input$dataset, "', type = 'prediction', name = '", input$glm_store_pred_name,"')\n") %>%
+        paste0("# write.csv(result, file = '~/glm_predictions.csv', row.names = FALSE)")
       if (!is_empty(input$glm_xvar)) {
         inp_out[[3 + figs]] <- clean_args(glm_pred_plot_inputs(), glm_pred_plot_args[-1])
         outputs <- c(outputs, "plot")

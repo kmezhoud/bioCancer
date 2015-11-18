@@ -139,6 +139,10 @@ visualize <- function(dataset, xvar,
 
   if (type == "hist") {
     for (i in xvar) {
+
+      ## can't create a histogram for a logical
+      if ("logical" %in% class(dat[[i]])) dat[[i]] <- as_factor(dat[[i]])
+
       hist_par <- list(alpha = alpha, position = "dodge")
       plot_list[[i]] <- ggplot(dat, aes_string(x=i))
       if ("density" %in% axes) {
@@ -150,10 +154,12 @@ visualize <- function(dataset, xvar,
         # if ("log_x" %in% axes)
         #   hist_par[["binwidth"]] <- select_(dat,i) %>% filter(. > 0) %>% mutate_each(funs(log)) %>% range %>% {diff(.)/bins}
         # else
-        #   hist_par[["binwidth"]] <- select_(dat,i) %>% range %>% {diff(.)/bins}
+        hist_par[["binwidth"]] <- select_(dat,i) %>% range %>% {diff(.)/bins}
       } else {
         if ("log_x" %in% axes) axes <- sub("log_x","",axes)
       }
+
+      # print(bins)
 
       plot_list[[i]] <- plot_list[[i]] + do.call(geom_histogram, hist_par)
       if ("log_x" %in% axes) plot_list[[i]] <- plot_list[[i]] + xlab(paste("log", i))
@@ -171,7 +177,14 @@ visualize <- function(dataset, xvar,
   } else if (type == "scatter") {
 
     itt <- 1
-    gs <- if ("jitter" %in% check) geom_blank() else geom_point(alpha = alpha)
+    if ("jitter" %in% check) {
+      # gs <- geom_blank() + geom_jitter(alpha = alpha, position = position_jitter(width = 0.4, height = 0.1))
+      gs <- geom_jitter(alpha = alpha, position = position_jitter(width = 0.4, height = 0.1))
+      check <- sub("jitter","", check)
+    } else {
+      gs <- geom_point(alpha = alpha)
+    }
+
     for (i in xvar) {
       if ("log_x" %in% axes && "factor" %in% class(dat[[i]])) axes <- sub("log_x","",axes)
       for (j in yvar) {
@@ -186,6 +199,7 @@ visualize <- function(dataset, xvar,
           ymax <- max(dat[[j]]) %>% {if (. < 0) 0 else .}
           ymin <- min(dat[[j]]) %>% {if (. > 0) 0 else .}
           plot_list[[itt]] <- plot_list[[itt]] + ylim(ymin,ymax)
+
 
           if ("mean" %in% sbar) {
             plot_list[[itt]] <- plot_list[[itt]] +
@@ -216,11 +230,14 @@ visualize <- function(dataset, xvar,
         } else {
           if (is.factor(dat[[i]])) {
             tbv <- if (is.null(byvar)) i else c(i, byvar)
-            print(tbv)
-            tmp <- dat %>% group_by_(.dots = tbv) %>% dplyr::select_(j, color) %>% summarise_each(funs(mean))
-            plot_list[[itt]] <- ggplot(tmp, aes_string(x=i, y=j, color = color)) + geom_point() + geom_line(aes(group = 1))
+
+            tmp <- dat %>% group_by_(.dots = tbv) %>% select_(j, color) %>% summarise_each(funs(mean))
+            # plot_list[[itt]] <- ggplot(tmp, aes_string(x=i, y=j, color = color)) + geom_point() + geom_line(aes(group = 1))
+            plot_list[[itt]] <- ggplot(tmp, aes_string(x=i, y=j, color = color, group = color)) + geom_point() + geom_line()
+
           } else {
-            plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j, color = color)) + geom_line()
+            # plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j, color = color)) + geom_line()
+            plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j, color = color, group = color)) + geom_line()
           }
         }
         if ("log_x" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + xlab(paste("log", i))
@@ -306,7 +323,7 @@ visualize <- function(dataset, xvar,
 
   if ("loess" %in% check) {
     for (i in 1:length(plot_list))
-      plot_list[[i]] <- plot_list[[i]] + sshhr( geom_smooth(span = smooth, size = .75,
+      plot_list[[i]] <- plot_list[[i]] + sshhr( geom_smooth(span = smooth, method = "loess", size = .75,
                                              linetype = "dotdash", aes(group=1)) )
   }
 

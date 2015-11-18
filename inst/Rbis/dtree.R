@@ -1,3 +1,17 @@
+
+# visNetwork looks fantastic!!
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+# https://github.com/rich-iannone/DiagrammeR/issues/110
+
 #' Parse yaml input for dtree to provide (more) useful error messages
 #'
 #' @details See \url{http://vnijs.github.io/radiant/base/dtree.html} for an example in Radiant
@@ -29,7 +43,12 @@ dtree_parser <- function(yl) {
       var <- strsplit(yl[i], "=")[[1]]
       var[1] <- gsub("^\\s+|\\s+$", "", var[1]) %>% gsub("(\\W)", "\\\\\\1", .)
       var[2] <- eval(parse(text = gsub("[a-zA-Z]+","",var[2])))
-      yl[-i] <- gsub(paste0("(\\s*)",var[1],"\\s*$"), paste0("\\1",var[2]), yl[-i], perl = TRUE)
+      # yl[-i] <- gsub(paste0(":(\\s*)",var[1],"\\s*$"), paste0(":\\1 ",var[2]), yl[-i], perl = TRUE)
+      yl[-i] <- gsub(paste0(":\\s*",var[1],"\\s*$"), paste0(": ",var[2]), yl[-i], perl = TRUE)
+
+      # var <- c("MF", .15)
+      # var <- c("MF", .15)
+      # gsub(paste0(":(\\s*)",var[1],"\\s*$"), paste0(":\\1 ",var[2]), ": NMF\n :MF", perl = TRUE)
 
       # yl[-i] <- gsub(paste0(":\\s*",var[1]), paste0(": ",var[2]), yl[-i], fixed = TRUE)
       ## can't work in the variable definition section
@@ -53,6 +72,13 @@ dtree_parser <- function(yl) {
   ## replace .4 by 0.4
   # yl <- c(yl, "p: .4")
   yl %<>% gsub("(^\\s*p\\s*:)\\s*(\\.[0-9]+$)","\\1 0\\2", .,  perl = TRUE)
+
+  ## make sure the labels are in lower case
+  yl %<>% gsub("(^\\s*)name(\\s*:)","\\1name\\2", ., ignore.case = TRUE, perl = TRUE)
+  yl %<>% gsub("(^\\s*)type(\\s*:)","\\1type\\2", ., ignore.case = TRUE, perl = TRUE)
+  yl %<>% gsub("(^\\s*)p(\\s*:)","\\1p\\2", ., ignore.case = TRUE, perl = TRUE)
+  yl %<>% gsub("(^\\s*)payoff(\\s*:)","\\1payoff\\2", ., ignore.case = TRUE, perl = TRUE)
+  yl %<>% gsub("(^\\s*)cost(\\s*:)","\\1cost\\2", ., ignore.case = TRUE, perl = TRUE)
 
   ## check type line is followed by a name
   # yl <- c(yl, "   type   : another   ")
@@ -172,8 +198,11 @@ dtree <- function(yl, opt = "max") {
     if (!grepl("\\n", yl)) yl <- getdata(yl)
 
     yl <- dtree_parser(yl)
-    ## test
+
+    ####### test #######
     # return(paste0(paste0("\n**\n", yl, collapse = "\n"), "\n**\n") %>% set_class(c("dtree", class(.))))
+    ####### test #######
+
     if (class(yl)[1] == "dtree") return(yl)
 
     # yl <- try(yaml.load(yl), silent = TRUE)
@@ -239,10 +268,15 @@ dtree <- function(yl, opt = "max") {
   decision_payoff <- function(node)
     if(is.null(node$payoff)) 0 else node$payoff
 
+  type_none <- ""
   calc_payoff <- function(x) {
     # if (x$type == 'chance') x$payoff <- sum(sapply(x$children, function(node) node$payoff * node$p))
-    if (is_empty(x$type)) x$payoff <- 0
-    else if (x$type == 'chance') x$payoff <- sum(sapply(x$children, chance_payoff))
+    # if (is_empty(x$type)) x$payoff <- 0
+    if (is_empty(x$type)) {
+      x$payoff <- 0
+      x$type <- "NONE"
+      type_none <<- "One or more nodes do not have a 'type'. Search for 'NONE' in the output\nbelow and then update the input file"
+    } else if (x$type == 'chance') x$payoff <- sum(sapply(x$children, chance_payoff))
     # else if (x$type == 'decision') x$payoff <- max(sapply(x$children, function(node) node$payoff))
     # else if (x$type == 'decision') x$payoff <- max(sapply(x$children, decision_payoff))
     else if (x$type == 'decision') x$payoff <- get(opt)(sapply(x$children, decision_payoff))
@@ -275,7 +309,7 @@ dtree <- function(yl, opt = "max") {
     return(err %>% set_class(c("dtree", class(.))))
   }
 
-  list(jl_init = jl_init, jl = jl) %>% set_class(c("dtree",class(.)))
+  list(jl_init = jl_init, jl = jl, type_none = type_none) %>% set_class(c("dtree",class(.)))
 }
 
 #' Summary method for the dree function
@@ -331,11 +365,16 @@ summary.dtree <- function(object, ...) {
   }
 
   ## initial setup
-  cat("Initial decision tree:\n")
-  format_dtree(object$jl_init) %>% print(row.names = FALSE)
+  if (object$type_none != "") {
+    cat(paste0("\n\n**\n",object$type_none,"\n**\n\n"))
+  } else {
+    cat("Initial decision tree:\n")
+    format_dtree(object$jl_init) %>% print(row.names = FALSE)
+  }
 
   cat("\n\nFinal decision tree:\n")
   format_dtree(object$jl) %>% print(row.names = FALSE)
+
 
   # cat("\n\nDecision:\n")
   # object$jl$Get("decision") %>% .[!is.na(.)] %>% paste0(collapse = " & ") %>% cat
@@ -360,7 +399,9 @@ summary.dtree <- function(object, ...) {
 #' @export
 plot.dtree <- function(x, symbol = "$", dec = 3, final = FALSE, shiny = FALSE, ...) {
 
-  if (is.character(x)) return(cat(x))
+  # if (is.character(x)) return(cat(x))
+  if (is.character(x)) return(paste0("graph LR\n A[Errors in the input file]\n"))
+  if (x$type_none != "") return(paste0("graph LR\n A[Node does not have a type. Fix the input file]\n"))
 
   ## based on https://gist.github.com/gluc/79ef7a0e747f217ca45e
   jl <- if (final) x$jl else x$jl_init
@@ -386,7 +427,13 @@ plot.dtree <- function(x, symbol = "$", dec = 3, final = FALSE, shiny = FALSE, .
       lbl <- paste0(node$name,": ", node$p)
     }
 
-    if (!is.null(node$parent$decision) && node$name == node$parent$decision)
+    # print("decision")
+    # print(node$parent$decision)
+    # print("name")
+    # print(node$name)
+
+    # if (!is.null(node$parent$decision) && !is.null(node$name) && node$name == node$parent$decision)
+    if (length(node$parent$decision) > 0 && length(node$name) > 0 && node$name == node$parent$decision)
       paste0(" === |", lbl, "|")
     else
       paste0(" --- |", lbl, "|")
@@ -405,6 +452,7 @@ plot.dtree <- function(x, symbol = "$", dec = 3, final = FALSE, shiny = FALSE, .
       lbl <- paste0("((", po, "))")
     } else if (node$type == "terminal") {
       lbl <- paste0("[", FormatPayoff(node$payoff), "]")
+      # lbl <- paste0("[<span title='test'>", FormatPayoff(node$payoff), "</span>]")
     }
     paste0(" ", node$id, lbl)
   }
@@ -428,6 +476,8 @@ plot.dtree <- function(x, symbol = "$", dec = 3, final = FALSE, shiny = FALSE, .
     style, sep = "\n") %>%
     {if (shiny) . else DiagrammeR::DiagrammeR(.)}
 }
+
+    # "click id1 callback 'Tooltip';\n"
 
 ## some initial ideas for sensitivity analysis
 # library(yaml); library(radiant)

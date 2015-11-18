@@ -33,9 +33,18 @@
 
 saveSession <- function(session = session) {
   if (!exists("r_sessions")) return()
+  if (exists("r_state") && !is_empty(r_state)) {
+    rs <- r_state
+    rs_input <- reactiveValuesToList(input)
+    rs[names(rs_input)] <- rs_input
+  } else {
+    rs <- reactiveValuesToList(input)
+  }
+
   r_sessions[[r_ssuid]] <- list(
     r_data    = reactiveValuesToList(r_data),
-    r_state   = reactiveValuesToList(input),
+    # r_state = reactiveValuesToList(input),
+    r_state = rs,
     timestamp = Sys.time()
   )
 
@@ -120,7 +129,8 @@ saveStateOnRefresh <- function(session = session) {
 groupable_vars <- reactive({
   .getdata() %>%
     summarise_each(funs(is.factor(.) || lubridate::is.Date(.) || is.integer(.) ||
-                        ((n_distinct(., na_rm = TRUE)/n()) < .30 && !is.numeric(.)))) %>%
+                        ((n_distinct(., na_rm = TRUE)/n()) < .30))) %>%
+                        # ((n_distinct(., na_rm = TRUE)/n()) < .30 && !is.numeric(.)))) %>%
     {which(. == TRUE)} %>%
     varnames()[.]
 })

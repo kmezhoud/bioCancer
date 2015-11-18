@@ -142,6 +142,7 @@ if (exists("r_state") && exists("r_data")) {
 } else if (!is.null(r_sessions[[r_ssuid]]$r_data)){
   r_data  <- do.call(reactiveValues, r_sessions[[r_ssuid]]$r_data)
   r_state <- r_sessions[[r_ssuid]]$r_state
+#<<<<<<< HEAD
 #}
 # else if (file.exists(paste0("~/r_sessions/r_", r_ssuid, ".rds"))) {
 #   ## read from file if not in global
@@ -176,7 +177,40 @@ if (exists("r_state") && exists("r_data")) {
 #   r_state$nav_radiant <- NULL
 #   rm(rs)
 # }
-}else {
+#}else {
+# =======
+} else if (file.exists(paste0("~/r_sessions/r_", r_ssuid, ".rds"))) {
+  ## read from file if not in global
+  fn <- paste0(normalizePath("~/r_sessions"),"/r_", r_ssuid, ".rds")
+  rs <- readRDS(fn)
+  unlink(fn, force = TRUE)
+
+  if (length(rs$r_data) == 0)
+    r_data  <- init_state(reactiveValues())
+  else
+    r_data  <- do.call(reactiveValues, rs$r_data)
+
+  r_state <- rs$r_state
+  rm(rs)
+} else if (r_local && file.exists(paste0("~/r_sessions/r_", mrsf, ".rds"))) {
+
+  ## restore from local folder but assign new ssuid
+  fn <- paste0(normalizePath("~/r_sessions"),"/r_", mrsf, ".rds")
+  rs <- readRDS(fn)
+  unlink(fn, force = TRUE)
+
+  if (length(rs$r_data) == 0)
+    r_data  <- init_state(reactiveValues())
+  else
+    r_data  <- do.call(reactiveValues, rs$r_data)
+
+  r_state <- rs$r_state
+
+  ## don't navigate to same tab in case the app locks again
+  r_state$nav_radiant <- NULL
+  rm(rs)
+} else {
+# >>>>>>> upstream/master
   r_data  <- init_state(reactiveValues())
   r_state <- list()
 }

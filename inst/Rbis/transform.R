@@ -297,7 +297,9 @@ mutate_each <- function(tbl, funs, ..., ext = "") {
     if (is.null(vars)) vars <- colnames(tbl)
 
     new <- paste0(vars, ext)
-    tbl[,new] <- tbl %>% dplyr::select_(.dots = vars) %>% mutate_each_(funs, vars = vars) %>%
+    # tbl[,new] <- tbl %>% select_(.dots = vars) %>% mutate_each_(funs, vars = vars) %>%
+    tbl[,new] <- tbl %>% mutate_each_(funs, vars = vars) %>% select_(.dots = vars) %>%
+
       set_colnames(new)
 
     tbl
@@ -410,8 +412,8 @@ getsummary <- function(dat, dc = getclass(dat)) {
   }
   if (sum(isLogic) > 0) {
     cat("Summarize logical variables:\n")
-    dplyr::select(dat, which(isLogic)) %>% summarise_each(funs(sum)) %>%
-      as.data.frame %>% set_rownames("# True") %>% print
+    dplyr::select(dat, which(isLogic)) %>% summarise_each(funs(sum, mean)) %>% matrix(ncol = 2) %>%
+      set_colnames(c("# TRUE", "% TRUE")) %>% set_rownames(names(dat)[isLogic]) %>% print
     cat("\n")
   }
 }

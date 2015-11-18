@@ -5,7 +5,7 @@
 #' @param dataset Dataset name (string). This can be a dataframe in the global environment or an element in an r_data list from Radiant
 #' @param var1 A numeric variable or factor selected for comparison
 #' @param var2 One or more numeric variables for comparison. If var1 is a factor only one variable can be selected and the mean of this variable is compared across (factor) levels of va1r
-#' @param samples Are samples indepent ("independent") or not ("paired")
+#' @param samples Are samples independent ("independent") or not ("paired")
 #' @param alternative The alternative hypothesis ("two.sided", "greater" or "less")
 #' @param conf_lev Span of the confidence interval
 #' @param comb Combinations to evaluate
@@ -83,9 +83,16 @@ compare_means <- function(dataset, var1, var2,
   	x <- filter_(dat, paste0("variable == '", sel[[1]], "'")) %>% .[["values"]]
   	y <- filter_(dat, paste0("variable == '", sel[[2]], "'")) %>% .[["values"]]
 
-  	res[i,c("t.value","p.value", "df", "ci_low", "ci_high")] <-
-  	  t.test(x, y, paired = samples == "paired", alternative = alternative, conf.level = conf_lev) %>%
-  	  tidy %>% .[1, c("statistic", "p.value","parameter", "conf.low", "conf.high")]
+	  	res[i,c("t.value","p.value", "df", "ci_low", "ci_high")] <-
+	  	  t.test(x, y, paired = samples == "paired", alternative = alternative, conf.level = conf_lev) %>%
+	  	  tidy %>% .[1, c("statistic", "p.value","parameter", "conf.low", "conf.high")]
+
+  	if (test != "t") {
+			  res[i,"p.value"] <-
+			    wilcox.test(x, y, paired = samples == "paired", alternative = alternative,
+			                conf.int = TRUE, conf.level = conf_lev) %>%
+			    tidy %>% .[1,"p.value"]
+		}
 
   	## bootstrap confidence intervals
   	## seem almost identical, even with highly skewed data

@@ -99,7 +99,7 @@ filterdata <- function(dat, filt = "") {
 #' @param dataset Name of the dataframe
 #' @param vars Variables to extract from the dataframe
 #' @param filt Filter to apply to the specified dataset. For example "price > 10000" if dataset is "diamonds" (default is "")
-#' @param rows Select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
+#' @param rows dplyr::select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
 #' @param na.rm Remove rows with missing values (default is TRUE)
 #'
 #' @return Data.frame with specified columns and rows
@@ -139,7 +139,7 @@ getdata <- function(dataset,
         # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
         { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
         { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
-        { if (vars[1] == "" || is.null(vars)) . else select_(., .dots = vars) } %>%
+        { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
         { if (na.rm) na.omit(.) else . }
         ## line below may cause an error https://github.com/hadley/dplyr/issues/219
         # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
@@ -448,7 +448,7 @@ getclass <- function(dat) {
 #' is_empty(NULL)
 #'
 #' @export
-is_empty <- function(x, empty = "") if (is.null(x) || x == empty) TRUE else FALSE
+is_empty <- function(x, empty = "") if (length(x) == 0 || is.na(x) || x == empty) TRUE else FALSE
 
 #' Is input a string?
 #'
@@ -913,3 +913,4 @@ ci_perc <- function(dat, alt, cl) {
   }
   quantile(dat, probs = probs)
 }
+

@@ -5,6 +5,7 @@
 
 The data are from Uterine Corpus Endometrioid Carcinoma (TCGA, Nature 2013), containing 373 samples; raw data at the [NCI](https://tcga-data.nci.nih.gov/docs/publications/ucec_2013/).
 
+
 We will examine if there is a relationship  `Living` patient and `tumor grade` <sup>1</sup>. between income level and choice of newspaper. In particular, we test the following null and alternative hypotheses:
 
 - H0: There is no relationship between Living and tumor grade
@@ -21,7 +22,9 @@ In order to determine if the chi-square value can be considered _large_ we first
 Remember to check the expected values: All expected frequencies are larger than 5 therefore the p.value for the chi-square statistic is unlikely to be biased. As usual we reject the null-hypothesis when the p-value is smaller 0.05. Since our p-value is very small (< .001) we can reject the null-hypothesis (i.e., the data suggest there is an association between newspaper readership and income).
 
 
+
 In addition to the numerical output provided in the Summary tab we can evaluate the hypothesis visually (see Plots). We choose the same variables as before. However, we will plot the standardized deviations. This measure is calculated as (o-e)/sqrt(e), i.e., a score of how different the observed and expected frequencies in one cell in our table are. When a cell's standardized deviation is greater than 2 (in absolute value) the cell has a significant deviation from the model of independence (or no association).
+
 
 ![Plot](figures_quant/cross_tabs_plot.png)
 
@@ -30,9 +33,11 @@ In the plot we see that all cells contribute to the association between Living a
 In other words, there seem to be fewer patients with tumor grade 1 were deceased and more patients with tumor grade 3 were deceased. Than we would be expected if the null hypothesis of no-association were false.
 
 
+
 ### Technical note
 
 When one or more expected values are small (e.g., 5 or less) the p.value for the Chi-squared test is calculated using simulation methods. If some cells have an expected count below 1 it may be necessary to _collapse_ rows and/or columns.
 
 
 <sup>1</sup> Tumor grade is the description of a tumor based on how abnormal the tumor cells and the tumor tissue look under a microscope. It is an indicator of how quickly a tumor is likely to grow and spread. If the cells of the tumor and the organization of the tumor’s tissue are close to those of normal cells and tissue, the tumor is called “well-differentiated.” These tumors tend to grow and spread at a slower rate than tumors that are “undifferentiated” or “poorly differentiated,” which have abnormal-looking cells and may lack normal tissue structures. Based on these and other differences in microscopic appearance, doctors assign a numerical “grade” to most cancers. The factors used to determine tumor grade can vary between different types of cancer ([source](http://www.cancer.gov/about-cancer/diagnosis-staging/prognosis/tumor-grade-fact-sheet)).
+
