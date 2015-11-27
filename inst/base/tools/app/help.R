@@ -172,7 +172,7 @@ help_quant_ui <- tagList(
 if ("bioCancer" %in% (installed.packages()[,'Package'])) {
   r_version <- packageVersion("bioCancer")
 } else {
-  r_version <- "unknown"
+  r_version <- "Server"
 }
 
 help_quant_main <- tagList(

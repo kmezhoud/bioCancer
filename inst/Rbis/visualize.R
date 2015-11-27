@@ -112,11 +112,11 @@ visualize <- function(dataset, xvar,
   isChar <- sapply(dat, class) == "character"
   if (sum(isChar) > 0) {
     if (type == "density") {
-      dat[,isChar] <- select(dat, which(isChar)) %>% mutate_each(funs(as_numeric))
-      if ("character" %in% getclass(select(dat,which(isChar))))
+      dat[,isChar] <- dplyr::select(dat, which(isChar)) %>% mutate_each(funs(as_numeric))
+      if ("character" %in% getclass(dplyr::select(dat,which(isChar))))
         return("Character variable(s) were not converted to numeric.\nTo use these variables in a plot convert them to numeric\nvariables (or factors) in the Data > Transform tab")
     } else {
-      dat[,isChar] <- select(dat, which(isChar)) %>% mutate_each(funs(as_factor))
+      dat[,isChar] <- dplyr::select(dat, which(isChar)) %>% mutate_each(funs(as_factor))
       nrlev <- sapply(dat, function(x) if (is.factor(x)) length(levels(x)) else 0)
       if (max(nrlev) > 50)
         return("Character variable(s) were not converted to factors.\nTo use these variable in a plot convert them to factors\n(or numeric variables) in the Data > Transform tab")

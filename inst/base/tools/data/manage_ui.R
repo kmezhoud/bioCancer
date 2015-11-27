@@ -68,7 +68,7 @@ output$ui_Manage <- renderUI({
         conditionalPanel("input.dataType == 'csv' | input.dataType == 'url_csv'",
           with(tags, table(td(checkboxInput('man_header', 'Header', TRUE)),
             td(HTML("&nbsp;&nbsp;")),
-            td(checkboxInput('man_str_as_factor', 'Str. as Factor', TRUE)))),
+            td(checkboxInput('man_str_as_factor', 'Str. as Factor', FALSE)))),
           radioButtons('man_sep', "Separator:", c(Comma=',', Semicolon=';', Tab='\t'),
                        ',', inline = TRUE),
           radioButtons('man_dec', "Decimal:", c(Period='.', Comma=','),
@@ -375,7 +375,7 @@ saveState <- function(filename) {
 }
 
 output$saveState <- downloadHandler(
-  filename = function() { paste0("radiant-state-",Sys.Date(),".rda") },
+  filename = function() { paste0("bioCancer-state-",Sys.Date(),".rda") },
   content = function(file) {
     saveState(file)
   }

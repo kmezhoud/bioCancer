@@ -31,7 +31,7 @@ output$view_state <- renderUI({
 })
 
 output$saveStateNav <- downloadHandler(
-  filename = function() { paste0("radiant-state-",Sys.Date(),".rda") },
+  filename = function() { paste0("bioCancer-state-",Sys.Date(),".rda") },
   content = function(file) {
     saveState(file)
   }

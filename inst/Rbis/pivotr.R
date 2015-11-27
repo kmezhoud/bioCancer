@@ -96,7 +96,7 @@ pivotr <- function(dataset,
       bind_rows(total %>% set_colnames("Total"))
 
     ## creating cross tab
-    tab <- spread_(tab, cvars[1], nvar)
+    tab <- tidyr::spread_(tab, cvars[1], nvar)
     tab <-
       bind_rows(
         tab,
@@ -370,7 +370,7 @@ plot.pivotr <- function(x, type = "dodge", perc = FALSE, flip = FALSE, shiny = F
     if (length(ctot) > 0) tab %<>% dplyr::select(-matches("Total"))
 
     plot_list[[1]] <-
-      tab %>% gather_(cvars[1], nvar, setdiff(colnames(.),cvars[2])) %>% na.omit %>%
+      tab %>% tidyr::gather_(cvars[1], nvar, setdiff(colnames(.),cvars[2])) %>% na.omit %>%
         ggplot(aes_string(x = cvars[1], y = nvar, fill = cvars[2])) +
           geom_bar(stat="identity", position = type, alpha=.7)
   } else if (length(cvars) == 3) {
@@ -378,7 +378,7 @@ plot.pivotr <- function(x, type = "dodge", perc = FALSE, flip = FALSE, shiny = F
     if (length(ctot) > 0) tab %<>% dplyr::select(-matches("Total"))
 
     plot_list[[1]] <-
-      tab %>% gather_(cvars[1], nvar, setdiff(colnames(.),cvars[2:3])) %>% na.omit %>%
+      tab %>% tidyr::gather_(cvars[1], nvar, setdiff(colnames(.),cvars[2:3])) %>% na.omit %>%
         ggplot(aes_string(x = cvars[1], y = nvar, fill = cvars[2])) +
           geom_bar(stat="identity", position = type, alpha=.7) +
           facet_grid(paste(cvars[3], '~ .'))
