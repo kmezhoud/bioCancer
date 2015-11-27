@@ -17,7 +17,7 @@ shinyServer(function(input, output, session) {
   library(magrittr)
   library(coffeewheel)
   library(htmlwidgets)
-  library(metabologram)
+ # library(metabologram)
   library(DiagrammeR)
   library(dplyr)
   library(geNetClassifier)
