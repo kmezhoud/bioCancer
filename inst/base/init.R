@@ -12,7 +12,6 @@
 ## turn off warnings globally
 # options(warn=-1)
 
-
 init_state <- function(r_data) {
 
   ## initial plot height and width
@@ -182,32 +181,50 @@ if (exists("r_state") && exists("r_data")) {
 } else if (file.exists(paste0("~/r_sessions/r_", r_ssuid, ".rds"))) {
   ## read from file if not in global
   fn <- paste0(normalizePath("~/r_sessions"),"/r_", r_ssuid, ".rds")
-  rs <- readRDS(fn)
-  unlink(fn, force = TRUE)
 
-  if (length(rs$r_data) == 0)
+  rs <- try(readRDS(fn), silent = TRUE)
+  if (is(rs, 'try-error')) {
     r_data  <- init_state(reactiveValues())
-  else
-    r_data  <- do.call(reactiveValues, rs$r_data)
+    r_state <- list()
+  } else {
+    if (length(rs$r_data) == 0)
+      r_data  <- init_state(reactiveValues())
+    else
+      r_data  <- do.call(reactiveValues, rs$r_data)
 
-  r_state <- rs$r_state
+    if (length(rs$r_state) == 0)
+      r_state <- list()
+    else
+      r_state <- rs$r_state
+  }
+
+  unlink(fn, force = TRUE)
   rm(rs)
 } else if (r_local && file.exists(paste0("~/r_sessions/r_", mrsf, ".rds"))) {
 
   ## restore from local folder but assign new ssuid
   fn <- paste0(normalizePath("~/r_sessions"),"/r_", mrsf, ".rds")
-  rs <- readRDS(fn)
-  unlink(fn, force = TRUE)
 
-  if (length(rs$r_data) == 0)
+  rs <- try(readRDS(fn), silent = TRUE)
+  if (is(rs, 'try-error')) {
     r_data  <- init_state(reactiveValues())
-  else
-    r_data  <- do.call(reactiveValues, rs$r_data)
+    r_state <- list()
+  } else {
+    if (length(rs$r_data) == 0)
+      r_data  <- init_state(reactiveValues())
+    else
+      r_data  <- do.call(reactiveValues, rs$r_data)
 
-  r_state <- rs$r_state
+    if (length(rs$r_state) == 0)
+      r_state <- list()
+    else
+      r_state <- rs$r_state
+  }
 
   ## don't navigate to same tab in case the app locks again
   r_state$nav_radiant <- NULL
+
+  unlink(fn, force = TRUE)
   rm(rs)
 } else {
 # >>>>>>> upstream/master
@@ -218,7 +235,24 @@ if (exists("r_state") && exists("r_data")) {
 if (r_local) {
   ## reference to radiant environment that can be accessed by exported functions
   ## does *not* make a copy of the data - nice
-  r_env <<- pryr::where("r_data")
+  ## relevant when you want to access Radiant functions outside of a Shiny app
+  # r_env <<- pryr::where("r_data")
+  # r_env <- environment()
+
+  ## doesn't work when Radiant is loaded and in the search path
+  ## i.e., it is not 'sourced' inside server.R
+  # r_env <- environment()
+  # ?shiny::getDefaultReactiveDomain
+
+  ## works but puts r_env in the global environment so 'new session' doesn't work properly
+  ## when run locally
+
+  # if ("package:radiant" %in% search())
+  #   r_env <<- environment()
+  # else
+  #   r_env <- environment()
+
+    r_env <- environment()
 
   ## adding any data.frame from the global environment to r_data should not affect
   ## memory usage ... at least until the entry in r_data is changed
@@ -324,6 +358,7 @@ for (i in names(url_list)) {
   # })
 # }
 
+
 if (!exists("r_knitr")) {
   r_knitr <- if (exists("r_env")) new.env(parent = r_env) else new.env()
 }
@@ -387,4 +422,27 @@ if (!is.null(r_state$nav_radiant)) {
     ## once you arrive at the desired tab suspend the observer
     nav_observe$suspend()
   })
+}
+
+## 'sourcing' radiant's package functions in the server.R environment
+if (!"package:radiant" %in% search()) {
+  ## for shiny-server
+  if (r_path == "..") {
+    for (file in list.files("../../R",
+        pattern="\\.(r|R)$",
+        full.names = TRUE)) {
+
+      source(file, encoding = r_encoding, local = TRUE)
+    }
+  } else {
+    ## for shinyapps.io
+    radiant::copy_all(radiant)
+    set_class <- radiant::set_class         ## needed but not clear why
+    environment(set_class) <- environment() ## needed but not clear why
+  }
+} else {
+  ## for use with launcher
+  radiant::copy_all(radiant)
+  set_class <- radiant::set_class         ## needed but not clear why
+  environment(set_class) <- environment() ## needed but not clear why
 }

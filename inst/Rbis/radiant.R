@@ -99,7 +99,7 @@ filterdata <- function(dat, filt = "") {
 #' @param dataset Name of the dataframe
 #' @param vars Variables to extract from the dataframe
 #' @param filt Filter to apply to the specified dataset. For example "price > 10000" if dataset is "diamonds" (default is "")
-#' @param rows dplyr::select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
+#' @param rows Select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
 #' @param na.rm Remove rows with missing values (default is TRUE)
 #'
 #' @return Data.frame with specified columns and rows
@@ -117,6 +117,10 @@ getdata <- function(dataset,
                     filt = "",
                     rows = NULL,
                     na.rm = TRUE) {
+
+
+  # print(search())
+  # print(parent.frame())
 
   # filt %<>% gsub("\\s","", .) %>% gsub("\"","\'",.)
   filt %<>% gsub("\\n","", .) %>% gsub("\"","\'",.)
@@ -138,7 +142,7 @@ getdata <- function(dataset,
   } %>% { if ("grouped_df" %in% class(.)) ungroup(.) else . } %>%     # ungroup data if needed
         # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
         { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
-        { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
+        { if (is.null(rows)) . else slice(., rows) } %>%
         { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
         { if (na.rm) na.omit(.) else . }
         ## line below may cause an error https://github.com/hadley/dplyr/issues/219
@@ -359,7 +363,7 @@ changedata <- function(dataset,
 #' @param dataset Name of the dataframe to change
 #' @param vars Variables to show (default is all)
 #' @param filt Filter to apply to the specified dataset. For example "price > 10000" if dataset is "diamonds" (default is "")
-#' @param rows Select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
+#' @param rows dplyr::select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
 #' @param na.rm Remove rows with missing values (default is FALSE)
 #'
 #' @examples
@@ -392,7 +396,7 @@ viewdata <- function(dataset,
                   onclick = "window.close();", "Stop")
     ),
     server = function(input, output, session) {
-      widget <- DT::datatable(dat,
+      widget <- DT::datatable(dat, selection = "none",
         rownames = FALSE, style = "bootstrap",
         filter = filt,
         # filter = alist(position = "top", clear = FALSE, plain = FALSE),
@@ -718,6 +722,38 @@ copy_from <- function(.from, ...) {
   invisible(NULL)
 }
 
+#' Import all functions that a package imports for use with Shiny
+#'
+#' @param .from The package to pull the function from
+#'
+#' @examples
+#'
+#' copy_imported(radiant)
+#'
+#' @export
+copy_imported <- function(.from) {
+
+  from <- as.character(substitute(.from))
+
+  import_list <- getNamespaceImports(from)
+  parent  <- parent.frame()
+  import_names <- names(import_list)
+
+  for (i in unique(import_names)) {
+    if (i %in% c("base","shiny","magrittr")) next
+
+    symbols <- unlist(import_list[which(i == import_names)])
+
+    for (j in symbols) {
+      # do.call(import::from, list(i = as.symbol(i), j = as.symbol(j)))
+      fn <- get(j, envir = asNamespace(i), inherits = TRUE)
+      assign(j, eval.parent(call("function", formals(fn), body(fn))), parent)
+    }
+  }
+
+  invisible(NULL)
+}
+
 #' Source all package functions
 #'
 #' @details Equivalent of source with local=TRUE for all package functions. Adapted from functions by smbache, author of the import package. See \url{https://github.com/smbache/import/issues/4} for a discussion. This function will be depracated when (if) it is included in \url{https://github.com/smbache/import}
@@ -732,12 +768,13 @@ copy_from <- function(.from, ...) {
 copy_all <- function(.from) {
 
   from <- as.character(substitute(.from))
+
   ls(getNamespace(from), all.names=TRUE) %>%
     .[grep("^\\.", ., invert = TRUE)] %>%
     set_names(.,.) -> symbols
 
   parent  <- parent.frame()
-  from    <- as.character(substitute(.from))
+  # from    <- as.character(substitute(.from))
 
   for (s in seq_along(symbols)) {
     fn <- get(symbols[s], envir = asNamespace(from), inherits = TRUE)
@@ -777,8 +814,12 @@ copy_all <- function(.from) {
 #' @export
 state_init <- function(inputvar, init = "") {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
-  r_state %>% { if (is.null(.[[inputvar]])) init else .[[inputvar]] }
+  if (is.null(r_state[[inputvar]])) init else r_state[[inputvar]]
 }
+
+# state_init <- function(inputvar, init = "", pf = parent.frame()) {
+# print(parent.frame())
+# r_state %>% { if (is.null(.[[inputvar]])) init else .[[inputvar]] }
 
 #' Set initial value for shiny input from a list of values
 #'
@@ -868,7 +909,7 @@ print.gtable <- function(x, ...) {
 #' @param alt Type of hypothesis ("two.sided","less","greater")
 #' @param cl Confidence level
 #'
-#' @return A charater vector with labels for a confidence interval
+#' @return A character vector with labels for a confidence interval
 #'
 #' @examples
 #' ci_label("less",.95)
@@ -895,7 +936,7 @@ ci_label <- function(alt, cl) {
 #' @param alt Type of hypothesis ("two.sided","less","greater")
 #' @param cl Confidence level
 #'
-#' @return A charater vector with labels for a confidence interval
+#' @return A vector with values at a confidence level
 #'
 #' @examples
 #' ci_perc(0:100, "less",.95)
@@ -913,4 +954,3 @@ ci_perc <- function(dat, alt, cl) {
   }
   quantile(dat, probs = probs)
 }
-

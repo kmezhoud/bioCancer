@@ -78,7 +78,9 @@ library(radiant)
       set_class <- bioCancer::set_class
 		}
 	} else {
+
 	  copy_from(bioCancer, state_init, state_single, state_multiple)
+
 	}
 
 	## source data & analysis tools

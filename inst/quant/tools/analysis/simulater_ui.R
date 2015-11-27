@@ -76,20 +76,20 @@ sim_vars <- reactive({
   if (is_empty(input$sim_name)) character(0) else colnames(getdata(input$sim_name))
 })
 
-cleaner <- function(x) x %>% gsub("[ ]{2,}"," ",.) %>%
-    gsub("[ ]*[\n;]+[ ]*",";",.) %>%
-    gsub("[;]{2,}",";",.) %>%
-    gsub(";$","",.)
+# sim_cleaner <- function(x) x %>% gsub("[ ]{2,}"," ",.) %>%
+#     gsub("[ ]*[\n;]+[ ]*",";",.) %>%
+#     gsub("[;]{2,}",";",.) %>%
+#     gsub(";$","",.)
 
-spliter <- function(x, symbol = " ") x %>% strsplit(., ";") %>% extract2(1) %>% strsplit(.,symbol)
+# sim_splitter <- function(x, symbol = " ") x %>% strsplit(., ";") %>% extract2(1) %>% strsplit(.,symbol)
 
 output$ui_rep_vars <- renderUI({
   vars <- sim_vars()
   if (is_empty(vars)) return()
 
-  form <- input$sim_form %>% cleaner
+  form <- input$sim_form %>% sim_cleaner
   if (!is_empty(form)) {
-    s <- form %>% gsub(" ","",.) %>% spliter("=")
+    s <- form %>% gsub(" ","",.) %>% sim_splitter("=")
     svars <- c()
     for (i in 1:length(s)) {
       if (grepl("^#",s[[i]][1])) next
@@ -116,9 +116,9 @@ output$ui_rep_vars <- renderUI({
 
 output$ui_rep_grid_vars <- renderUI({
 
-  const <- input$sim_const %>% cleaner
+  const <- input$sim_const %>% sim_cleaner
   if (const != "") {
-    s <- const %>% spliter
+    s <- const %>% sim_splitter
     vars <- c()
     for (i in 1:length(s))
       vars <- c(vars, s[[i]][1])
@@ -160,7 +160,8 @@ output$ui_rep_byvar <- renderUI({
 
 output$ui_rep_fun <- renderUI({
   choices <-
-    list("sum" = "sum_rm", "mean" = "mean_rm", "median" = "median_rm", "min" = "min_rm", "max" = "max_rm")
+    list("sum" = "sum_rm", "mean" = "mean_rm", "median" = "median_rm",
+         "min" = "min_rm", "max" = "max_rm", "none" = "none")
     # sel <- if (is_empty(input$rep_fun)) state_single("rep_fun", choices, "sum_rm")
            # else input$rep_fun
 
@@ -355,7 +356,9 @@ output$ui_simulater <- renderUI({
         with(tags, table(
           td(textInput("sim_name", "Simulated data:", state_init("sim_name", "simdat"))),
           td(actionButton("runSim", "Simulate"), style="padding-top:30px;")
-        ))
+        )),
+        numericInput("sim_dec", label = "Decimals:",
+                     value = state_init("sim_dec", 4), min = 0)
       ),
       help_and_report(modal_title = "Simulate", fun_name = "simulater",
         help_file = inclMD(file.path(r_path,"quant/tools/help/simulater.md")))
@@ -372,11 +375,14 @@ output$ui_simulater <- renderUI({
             td(numericInput("rep_grid_max", "Max:", value = state_init("rep_grid_max"))),
             td(numericInput("rep_grid_step", "Step:", value = state_init("rep_grid_step")))
         )),
-        textinput_maker("grid","",pre = "rep_"),
-        # textInput("rep_grid", "Grid search:", value = state_init("rep_grid", "")),
+        textinput_maker("grid","",pre = "rep_")
+      ),
+      wellPanel(
         uiOutput("ui_rep_sum_vars"),
         uiOutput("ui_rep_byvar"),
-        uiOutput("ui_rep_fun"),
+        uiOutput("ui_rep_fun")
+      ),
+      wellPanel(
         with(tags, table(
           td(textInput("rep_seed", "Set random seed:",
                        value = state_init('rep_seed'))),
@@ -387,7 +393,9 @@ output$ui_simulater <- renderUI({
         with(tags, table(
           td(textInput("rep_name", "Repeat data:", state_init("rep_name", "simdat_repeat"))),
           td(actionButton("runRepeat", "Repeat"), style="padding-top:30px;")
-        ))
+        )),
+        numericInput("rep_dec", label = "Decimals:",
+                     value = state_init("rep_dec", 4), min = 0)
       ),
       help_and_report(modal_title = "Repeat simulation", fun_name = "repeater",
                       help_file = inclMD(file.path(r_path,"quant/tools/help/simulater.md")))
@@ -442,8 +450,10 @@ output$simulater <- renderUI({
   })
 })
 
-.summary_simulate <- reactive({
-  .simulater() %>% { if (is.null(.)) invisible() else summary(.) }
+.summary_simulate <- eventReactive(input$runSim, {
+  isolate({
+    .simulater() %>% { if (is.null(.)) invisible() else summary(., dec = input$sim_dec) }
+  })
 })
 
 sim_plot_width <- function() 650
@@ -482,16 +492,31 @@ sim_plot_height <- function() {
   })
 })
 
-rep_plot <- eventReactive(input$runRepeat, {
-  isolate({
-    nrPlots <- length(input$rep_fun) * length(input$rep_sum_vars) + length(strsplit(input$rep_form,"\n") %>% unlist)
-    if (nrPlots == 0) 300 else ceiling(nrPlots/2) * 300
-  })
-})
+# rep_plot <- eventReactive(input$runRepeat, {
+#   isolate({
+#     nrPlots <- length(input$rep_fun) * length(input$rep_sum_vars) + length(strsplit(input$rep_form,"\n") %>% unlist)
+#     if (nrPlots == 0) 300 else ceiling(nrPlots/2) * 300
+#   })
+# })
 
 rep_plot_width <- function() 650
 rep_plot_height <- function() {
-  rep_plot()
+  # rep_plot()
+  rp <- .repeater()
+  if (is.character(rp)) {
+    if (rp[1] == "error") return(200)
+    if (length(input$rep_fun) == 0) return(200)
+    rp_name <- paste0(rp,"_",gsub("_rm$","",input$rep_fun))
+    if (!rp_name %in% r_data[["datasetlist"]]) return(200)
+    rp <- getdata(rp_name)
+    if (dim(rp)[1] == 0) {
+      200
+    } else {
+      ceiling(sum(sapply(rp, does_vary)) / 2) * 200
+    }
+  } else {
+    200
+  }
 }
 
 .plot_repeat <- eventReactive(input$runRepeat, {
@@ -507,8 +532,9 @@ report_cleaner <- function(x) x %>% gsub("\n",";",.) %>% gsub("[;]{2,}",";",.)
 
 observeEvent(input$simulater_report, {
   isolate({
+    sim_dec <- input$sim_dec %>% {ifelse(is.na(.), 3, .)}
     update_report(inp_main = clean_args(sim_inputs(), sim_args) %>% lapply(report_cleaner),
-                  fun_name = "simulater", inp_out = list("",""),
+                  fun_name = "simulater", inp_out = list(list(dec = sim_dec),""),
                   outputs = c("summary","plot"), figs = TRUE,
                   fig.width = round(7 * sim_plot_width()/650,2),
                   fig.height = round(7 * (sim_plot_height()/650),2))

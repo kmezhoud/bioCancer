@@ -30,6 +30,10 @@ regression <- function(dataset, dep_var, indep_var,
   dat <- getdata(dataset, c(dep_var, indep_var), filt = data_filter)
   if (!is_string(dataset)) dataset <- "-----"
 
+  if (any(summarise_each(dat, funs(does_vary)) == FALSE))
+    return("One or more selected variables show no variation. Please select other variables." %>%
+           set_class(c("regression",class(.))))
+
   vars <- ""
   var_check(indep_var, colnames(dat)[-1], int_var) %>%
     { vars <<- .$vars; indep_var <<- .$iv; int_var <<- .$intv }
@@ -114,6 +118,8 @@ summary.regression <- function(object,
                                test_var = "",
                                ...) {
 
+
+  if (is.character(object)) return(object)
   if (class(object$model)[1] != 'lm') return(object)
 
   dec <- object$dec
@@ -213,10 +219,10 @@ summary.regression <- function(object,
       confint(object$model, level = conf_lev) %>%
         as.data.frame %>%
         set_colnames(c("Low","High")) %>%
-        cbind(select(object$reg_coeff,2),.) %>%
+        { .$`+/-` <- (.$High - .$Low)/2; . } %>%
         round(dec) %>%
-        set_rownames(object$reg_coeff$`  `) %T>%
-        { .$`+/-` <- (.$High - .$coefficient) } %>%
+        cbind(object$reg_coeff[[2]],.) %>%
+        set_rownames(object$reg_coeff$`  `) %>%
         set_colnames(c("coefficient", cl_low, cl_high, "+/-")) %>%
         print
       cat("\n")
@@ -295,6 +301,7 @@ plot.regression <- function(x,
                             ...) {
 
   object <- x; rm(x)
+  if (is.character(object)) return(object)
 
   dec <- object$dec
 
@@ -415,7 +422,7 @@ plot.regression <- function(x,
            layout = c(ceiling(length(indep_var)/2),2)))
 
   if (exists("plot_list")) {
-    sshhr( do.call(arrangeGrob, c(plot_list, list(ncol = 2))) ) %>%
+    sshhr( do.call(gridExtra::arrangeGrob, c(plot_list, list(ncol = 2))) ) %>%
         {if (shiny) . else print(.)}
   }
 }
@@ -453,6 +460,8 @@ predict.regression <- function(object,
                                conf_lev = 0.95,
                                prn = TRUE,
                                ...) {
+
+  if (is.character(object)) return(object)
 
   # used http://www.r-tutor.com/elementary-statistics/simple-linear-regression/prediction-interval-linear-regression as starting point
   pred_count <- sum(c(pred_vars == "", pred_cmd == "", pred_data == ""))
@@ -605,6 +614,7 @@ plot.reg_predict <- function(x,
   if (is.null(xvar) || xvar == "") return(invisible())
 
   object <- x; rm(x)
+  if (is.character(object)) return(object)
 
   cn <- colnames(object)
   cn[which(cn == "Prediction") + 1] <- "ymin"
