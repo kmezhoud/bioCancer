@@ -301,18 +301,19 @@ SaveMetabologram_All <- reactive({
 #   content= getmetabologram()
 # )
 
-output$metabologram_All <- renderMetabologram({
+# output$metabologram_All <- renderMetabologram({
+#
+#   CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
+#
+#   ### get Legend for static coffewheel
+#   #devtools::install_github("armish/metabologram")
+#   #library("metabologram")
+#   title<- paste("Wheel with selected Studies")
+#   metabologram(CoffeewheelTreeData, width=600, height=600, main=title,
+#                showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
+#                legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+# })
 
-  CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
-
-  ### get Legend for static coffewheel
-  #devtools::install_github("armish/metabologram")
-  #library("metabologram")
-  title<- paste("Wheel with selected Studies")
-  metabologram(CoffeewheelTreeData, width=600, height=600, main=title,
-               showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
-               legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-})
 ## CNA, mRNA, methylation HM450/HM27, miRNA, RPPPA, Mutation
 checkDimensions<- function(panel){
 
