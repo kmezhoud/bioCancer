@@ -16,14 +16,14 @@ output$ui_fileUploadManage <- renderUI({
   } else if (input$dataType == "url_rda") {
     with(tags, table(
       tr(
-        td(textInput("url_rda", NULL, "")),
+        td(textInput("url_rda", NULL, "https://wiki.ubuntu.com/kmezhoud/bioCancer?action=AttachFile&do=get&target=Input.rda")),
         td(actionButton("url_rda_load", "Load"), style="padding-top:5px;")
       )
     ))
   } else if (input$dataType == "url_csv") {
     with(tags, table(
       tr(
-        td(textInput("url_csv", NULL, "")),
+        td(textInput("url_csv", NULL, "https://wiki.ubuntu.com/kmezhoud/bioCancer?action=AttachFile&do=get&target=xmRNA.csv")),
         td(actionButton("url_csv_load", "Load"), style="padding-top:5px;")
       )
     ))

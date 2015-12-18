@@ -1,6 +1,6 @@
 output$ReactomeHowto <- renderPrint({
   cat("
-       1 - Select Gene list
+       1 - Select Gene list from `Portal/Profiles`
        2 - Set Edges attributes
        3 - Set GeneSet enrichment from ReactomeFI
        4 - Set Nodes attributes from Classifier panel

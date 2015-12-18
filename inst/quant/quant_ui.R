@@ -18,10 +18,10 @@ quant_ui <- tagList(
     tabPanel("Correlation", uiOutput("correlation")),
     tabPanel("Linear (OLS)", uiOutput("regression")),
     tabPanel("GLM", uiOutput("glm_reg"))
-  ),
-
-  navbarMenu("Decide",
-    tabPanel("Decision tree", uiOutput("dtree")),
-    tabPanel("Simulate", uiOutput("simulater"))
   )
+
+#  , navbarMenu("Decide",
+#     tabPanel("Decision tree", uiOutput("dtree")),
+#     tabPanel("Simulate", uiOutput("simulater"))
+#   )
 )

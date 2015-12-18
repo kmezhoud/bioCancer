@@ -1,5 +1,5 @@
 Package: bioCancer
-Title: Multi-Omics Cancers Genomics Data Visualisation
+Title: Multi-Omics Cancers Genomics Data Visualization
 Version: 0.99.0
 Date: 2015-19
 Authors@R: person("Karim", "Mezhoud", role=c("aut", "cre"), email="kmezhoud@gmail.com")
