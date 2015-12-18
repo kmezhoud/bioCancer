@@ -74,12 +74,13 @@ saveStateOnRefresh <- function(session = session) {
       if (not_pressed(input$refresh_bioCancer) && not_pressed(input$stop_bioCancer) &&
           is.null(input$uploadState)) {
         saveSession(session)
-        if (r_local) sshh( rm(r_env, envir = .GlobalEnv) )
+        # if (r_local) sshh( rm(r_env, envir = .GlobalEnv) )
       } else {
         if (is.null(input$uploadState)) {
-          if (exists("r_sessions"))
-            try(r_sessions[[r_ssuid]] <- NULL, silent = TRUE)
-            try(r_ssuid <- NULL, silent = TRUE)
+          if (exists("r_sessions")) {
+            sshhr(try(r_sessions[[r_ssuid]] <- NULL, silent = TRUE))
+            sshhr(try(rm(r_ssuid), silent = TRUE))
+          }
         }
       }
     })
@@ -134,6 +135,15 @@ groupable_vars <- reactive({
     {which(. == TRUE)} %>%
     varnames()[.]
 })
+
+groupable_vars_nonum <- reactive({
+  .getdata() %>%
+    summarise_each(funs(is.factor(.) || lubridate::is.Date(.) || is.integer(.))) %>%
+                        # ((n_distinct(., na_rm = TRUE)/n()) < .30 && !is.numeric(.)))) %>%
+    {which(. == TRUE)} %>%
+    varnames()[.]
+})
+
 
 ## used in compare proportions
 two_level_vars <- reactive({

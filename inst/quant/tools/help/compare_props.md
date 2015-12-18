@@ -39,7 +39,7 @@ There are three approaches we can use to evaluate the null hypothesis. We will c
 
 #### p.value
 
-<<<<<<< HEAD
+
 Because the p.values are **smaller** than the significance level for each pair-wise comparison we can reject the null hypothesis that the proportions are equal based on the available sample of data. The results suggest that all `diff` marked by `*` or more are significant. Indeed, the proportion of recurred patients are more in advanced tumor stage.
 
 #### confidence interval
@@ -67,6 +67,7 @@ This is a **comparison of proportions** test of the null hypothesis that the tru
 The p.value for the test of differences in the survival proportion for 1st versus 2nd class passengers is **< .001**. This is the probability of observing a sample **difference in proportions** that is as or more extreme than the sample **difference in proportion** from the data if the null hypothesis is true. In this case, it is the probability of observing a sample **difference in proportions** that is less than **-0.194** or greater than **0.194** if the true population **difference in proportions** is **0**.
 
 The 95% confidence interval is **0.112** to **0.277**. If repeated samples were taken and the 95% confidence interval computed for each one, the true **difference in population proportions** would fall inside the confidence interval in 95% of the samples
+<<<<<<< HEAD
 <<<<<<< HEAD
 -->
 <!--

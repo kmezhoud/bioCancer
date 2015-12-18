@@ -118,15 +118,11 @@ getdata <- function(dataset,
                     rows = NULL,
                     na.rm = TRUE) {
 
-
-  # print(search())
-  # print(parent.frame())
-
   # filt %<>% gsub("\\s","", .) %>% gsub("\"","\'",.)
   filt %<>% gsub("\\n","", .) %>% gsub("\"","\'",.)
   { if (!is_string(dataset)) {
       dataset
-    } else if (exists("r_env")) {
+    } else if (exists("r_env") && !is.null(r_env$r_data[[dataset]])) {
       r_env$r_data[[dataset]]
     } else if (exists("r_data") && !is.null(r_data[[dataset]])) {
       if (exists("r_local")) { if (r_local) message("Dataset ", dataset, " loaded from r_data list\n") }
@@ -142,7 +138,7 @@ getdata <- function(dataset,
   } %>% { if ("grouped_df" %in% class(.)) ungroup(.) else . } %>%     # ungroup data if needed
         # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
         { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
-        { if (is.null(rows)) . else slice(., rows) } %>%
+        { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
         { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
         { if (na.rm) na.omit(.) else . }
         ## line below may cause an error https://github.com/hadley/dplyr/issues/219
@@ -363,7 +359,7 @@ changedata <- function(dataset,
 #' @param dataset Name of the dataframe to change
 #' @param vars Variables to show (default is all)
 #' @param filt Filter to apply to the specified dataset. For example "price > 10000" if dataset is "diamonds" (default is "")
-#' @param rows dplyr::select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
+#' @param rows Select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
 #' @param na.rm Remove rows with missing values (default is FALSE)
 #'
 #' @examples
@@ -383,9 +379,7 @@ viewdata <- function(dataset,
   ## based on http://rstudio.github.io/DT/server.html
   dat <- getdata(dataset, vars, filt = filt, rows = rows, na.rm = FALSE)
   title <- if (is_string(dataset)) paste0("DT:", dataset) else "DT"
-
-  if (nrow(dat) > 100000)  filt <- 'none'
-  else filt <- list(position = "top", clear = FALSE, plain = FALSE)
+  fbox <- if (nrow(dat) > 100000) 'none' else list(position = "top", clear = FALSE, plain = FALSE)
 
   shinyApp(
     ui = fluidPage(title = title,
@@ -398,9 +392,7 @@ viewdata <- function(dataset,
     server = function(input, output, session) {
       widget <- DT::datatable(dat, selection = "none",
         rownames = FALSE, style = "bootstrap",
-        filter = filt,
-        # filter = alist(position = "top", clear = FALSE, plain = FALSE),
-        escape = FALSE,
+        filter = fbox, escape = FALSE,
         # extensions = 'KeyTable'# ,
         options = list(
           search = list(regex = TRUE),
@@ -544,7 +536,7 @@ win_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
     Sys.chmod(fn1, mode = "0755")
 
     fn2 <- file.path(pt, "update_radiant.bat")
-    launch_string <- paste0("\"", Sys.which('R'), "\" -e \"install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary')\"\npause(1000)")
+    launch_string <- paste0("\"", Sys.which('R'), "\" -e \"unlink('~/r_sessions/*.rds', force = TRUE); install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary')\"\npause(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
@@ -595,7 +587,7 @@ mac_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
     Sys.chmod(fn1, mode = "0755")
 
     fn2 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/update_radiant.command")
-    launch_string <- paste0("#!/usr/bin/env Rscript\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary')\nSys.sleep(1000)")
+    launch_string <- paste0("#!/usr/bin/env Rscript\nunlink('~/r_sessions/*.rds', force = TRUE)\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary')\nSys.sleep(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
@@ -647,7 +639,7 @@ lin_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
     Sys.chmod(fn1, mode = "0755")
 
     fn2 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/update_radiant.sh")
-    launch_string <- paste0("#!/usr/bin/env Rscript\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\nsleep(1000)")
+    launch_string <- paste0("#!/usr/bin/env Rscript\nunlink('~/r_sessions/*.rds', force = TRUE)\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\nsleep(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
@@ -814,7 +806,8 @@ copy_all <- function(.from) {
 #' @export
 state_init <- function(inputvar, init = "") {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
-  if (is.null(r_state[[inputvar]])) init else r_state[[inputvar]]
+  # if (is.null(r_state[[inputvar]])) init else r_state[[inputvar]]
+  if (is_empty(r_state[[inputvar]])) init else r_state[[inputvar]]
 }
 
 # state_init <- function(inputvar, init = "", pf = parent.frame()) {
@@ -848,7 +841,8 @@ state_init <- function(inputvar, init = "") {
 #' @export
 state_single <- function(inputvar, vals, init = character(0)) {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
-  r_state %>% { if (is.null(.[[inputvar]])) init else vals[vals == .[[inputvar]]] }
+  # r_state %>% { if (is.null(.[[inputvar]])) init else vals[vals == .[[inputvar]]] }
+  r_state %>% { if (is_empty(.[[inputvar]])) init else vals[vals == .[[inputvar]]] }
 }
 
 #' Set initial values for shiny input from a list of values
@@ -881,7 +875,8 @@ state_single <- function(inputvar, vals, init = character(0)) {
 state_multiple <- function(inputvar, vals, init = character(0)) {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
   r_state %>%
-    { if (is.null(.[[inputvar]]))
+    # { if (is.null(.[[inputvar]]))
+    { if (is_empty(.[[inputvar]]))
         ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
         vals[vals %in% init]
       else

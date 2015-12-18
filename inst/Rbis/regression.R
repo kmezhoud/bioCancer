@@ -162,6 +162,9 @@ summary.regression <- function(object,
   cat(paste0("\nNr obs: ", reg_fit$df + reg_fit$df.residual))
   cat("\n\n")
 
+  if (anyNA(object$model$coeff))
+    cat("The set of explanatory variables exhibit perfect multicollinearity.\nOne or more variables were dropped from the estimation.\n")
+
   if ("rmse" %in% sum_check) {
     mean(object$model$residuals^2, na.rm=TRUE) %>% sqrt %>% round(dec) %>%
     cat("Prediction error (RMSE): ", ., "\n\n")
@@ -189,7 +192,8 @@ summary.regression <- function(object,
 
   if ("vif" %in% sum_check) {
     if (anyNA(object$model$coeff)) {
-      cat("The set of explanatory variables exhibit perfect multicollinearity.\nOne or more variables were dropped from the estimation.\nmulticollinearity diagnostics were not calculated.\n")
+      # cat("The set of explanatory variables exhibit perfect multicollinearity.\nOne or more variables were dropped from the estimation.\nMulticollinearity diagnostics were not calculated.\n")
+      cat("Multicollinearity diagnostics were not calculated.")
     } else {
       if (length(object$indep_var) > 1) {
         cat("Variance Inflation Factors\n")
@@ -209,7 +213,8 @@ summary.regression <- function(object,
 
   if ("confint" %in% sum_check) {
     if (anyNA(object$model$coeff)) {
-      cat("There is perfect multicollineary in the set of explanatory variables.\nOne or more variables were dropped from the estimation. Confidence\nintervals were not calculated.\n")
+      # cat("There is perfect multicollineary in the set of explanatory variables.\nOne or more variables were dropped from the estimation. Confidence\nintervals were not calculated.\n")
+      cat("Confidence intervals were not calculated.\n")
     } else {
 
       cl_split <- function(x) 100*(1-x)/2
@@ -311,7 +316,7 @@ plot.regression <- function(x,
     return(cat("Please select a regression plot from the drop-down menu"))
 
   # no plots if aliased coefficients present
-  if (anyNA(object$model$coeff)) plots <- return("")
+  if (anyNA(object$model$coeff)) plots <- return("The set of explanatory variables exhibit perfect multicollinearity.\nOne or more variables were dropped from the estimation.\nRegression plots will not be shown")
 
   # object_size(object$model, model)
   model <- ggplot2::fortify(object$model)
