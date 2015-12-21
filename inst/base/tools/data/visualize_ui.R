@@ -258,6 +258,10 @@ output$ui_Visualize <- renderUI({
                            value = state_init("viz_plot_width", r_data$plot_width)))
       )
     ),
+    ## for server
+    # help_modal('Visualize','VisualizeHelp',inclMD(file.path(r_path,"base/tools/help/visualize.md")))
+
+    ## for package
     help_and_report(modal_title = "Visualize",
                     fun_name = "visualize",
                     help_file = inclRmd(file.path(r_path,"base/tools/help/visualize.md")))
