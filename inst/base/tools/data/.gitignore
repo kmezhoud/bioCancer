@@ -1,1 +1,6 @@
 testing.R
+._combine_ui.R
+._explore_ui.R
+._pivotr_ui.R
+._transform_ui.R
+._visualize_ui.R

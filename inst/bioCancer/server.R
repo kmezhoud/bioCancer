@@ -7,7 +7,7 @@ shinyServer(function(input, output, session) {
   library(magrittr)
   library(coffeewheel)
   library(htmlwidgets)
-  library(metabologram)
+  #library(metabologram)
   library(DiagrammeR)
   #library(dplyr)
 
@@ -28,7 +28,7 @@ shinyServer(function(input, output, session) {
   library(gridExtra)
   library(psych)
   library(broom)
-  library(radiant)
+  #library(radiant)
   library(car)
   library(scales)
 

@@ -1,11 +1,15 @@
 ## SERVER FOR SHINY APP DEPLOY
 ## rsync -avz -e "ssh" bioCancer kmezhoud@46.101.227.144:/srv/shiny-server/
+##
+## ssh kmezhoud@46.101.227.144
+## pass
 ## sudo R
 ## .libPaths(.libPaths()[3])
 ##  install.packages("devtools", lib="/usr/lib/R/library")
 ##  install_github("armish/coffewheel", lib="/usr/lib/R/library")
 ## sources("http://bioconductor.org/biocLite.R")
 ## biocLite("geNetClassifier, lib="/usr/lib/R/library")
+## install.packages("AnnotationFuncs", repos = "http://www.bioconductor.org/packages/3.2/bioc", lib="/usr/local/share/R/bioconductor")
 
 shinyServer(function(input, output, session) {
 
@@ -41,6 +45,8 @@ library(XML)
   library(car)
   library(scales)
   library(ggplot2)
+  library(covr)
+  #library(hwriter)
 
 
   #   library(grDevices)

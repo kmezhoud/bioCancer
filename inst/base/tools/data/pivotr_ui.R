@@ -99,9 +99,12 @@ output$ui_Pivotr <- renderUI({
         checkboxInput("pvt_flip", "Flip", value = state_init("pvt_flip", FALSE))
       )
     ),
-    help_and_report(modal_title = "Pivotr",
-                    fun_name = "pivotr",
-                    help_file = inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
+    ## for Server
+    help_modal('Pivot','PivotHelp',inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
+    ### Only for package
+   # help_and_report(modal_title = "Pivotr",
+     #               fun_name = "pivotr",
+    #                help_file = inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
   )
 })
 

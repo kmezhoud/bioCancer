@@ -406,7 +406,7 @@ help_modal_km <- function(modal_title, link, help_file) {
           <h4 class='modal-title' id='%s_label'>%s</h4>
           </div>
           <div class='modal-body'>%s<br>
-          &copy; Karim Mezhoud (2015) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a>
+          &copy; K. Mezhoud & V. Nijs (2015) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a>
           </div>
           </div>
           </div>

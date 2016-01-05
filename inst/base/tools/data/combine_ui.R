@@ -65,9 +65,12 @@ output$ui_Combine <- renderUI({
         tags$td(actionButton("cmb_store", "Combine"), style="padding-top:30px;")
       )
     ),
-    help_and_report(modal_title = "Combine",
-                    fun_name = "combine",
-                    help_file = inclMD(file.path(r_path, "base/tools/help/combine.md")))
+    ## for server
+    help_modal('Combine','CombineHelp',inclMD(file.path(r_path,"base/tools/help/combine.md")))
+    ## for package
+    #help_and_report(modal_title = "Combine",
+    #                fun_name = "combine",
+    #                help_file = inclMD(file.path(r_path, "base/tools/help/combine.md")))
   )
 })
 
