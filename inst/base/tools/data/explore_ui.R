@@ -2,6 +2,8 @@
 ## Explore datasets
 #######################################
 
+# default_funs <- c("length", "n_missing", "n_distinct", "mean_rm", "sd_rm", "min_rm", "max_rm")
+
 default_funs <- c("length", "n_distinct", "mean_rm", "sd_rm", "min_rm", "max_rm")
 expl_args <- as.list(formals(explore))
 
@@ -16,12 +18,23 @@ expl_inputs <- reactive({
   expl_args
 })
 
+expl_sum_args <- as.list(if (exists("summary.explore")) formals(summary.explore)
+                         else formals(radiant:::summary.explore))
+
+## list of function inputs selected by user
+expl_sum_inputs <- reactive({
+  ## loop needed because reactive values don't allow single bracket indexing
+  for (i in names(expl_sum_args))
+    expl_sum_args[[i]] <- input[[paste0("expl_",i)]]
+  expl_sum_args
+})
+
 ## UI-elements for explore
 output$ui_expl_vars <- renderUI({
-  isNum <- "numeric" == .getclass() | "integer" == .getclass()
+  # isNum <- "numeric" == .getclass() | "integer" == .getclass()
+  isNum <- .getclass() %in% c("integer","numeric","factor")
   vars <- varnames()[isNum]
   if (not_available(vars)) return()
-
 
   selectInput("expl_vars", label = "Select variable(s):", choices = vars,
     selected = state_multiple("expl_vars",vars), multiple = TRUE,
@@ -68,7 +81,7 @@ output$ui_expl_top  <- renderUI({
   if (is_empty(input$expl_vars)) return()
   top_var = c("Function" = "fun", "Variables" = "var", "Group by" = "byvar")
   if (is_empty(input$expl_byvar)) top_var <- top_var[1:2]
-  selectizeInput("expl_top", label = "Column variable:",
+  selectizeInput("expl_top", label = "Column header:",
                  choices = top_var,
                  selected = state_single("expl_top", top_var, top_var[1]),
                  multiple = FALSE)
@@ -85,6 +98,8 @@ output$ui_Explore <- renderUI({
       uiOutput("ui_expl_byvar"),
       uiOutput("ui_expl_fun"),
       uiOutput("ui_expl_top"),
+      numericInput("expl_dec", label = "Decimals:",
+                   value = state_init("expl_dec", 3), min = 0),
       with(tags, table(
         tr(
           td(textInput("expl_dat", "Store filtered data as:", "explore_dat")),
@@ -156,8 +171,11 @@ output$explorer <- DT::renderDataTable({
   })
 
   top <- ifelse (input$expl_top == "", "fun", input$expl_top)
-  make_expl(expl, top = top, search = search,
-            searchCols = searchCols, order = order)
+
+  withProgress(message = 'Generating explore table', value = 0,
+    make_expl(expl, top = top, dec = input$expl_dec, search = search,
+              searchCols = searchCols, order = order)
+  )
 })
 
 output$dl_explore_tab <- downloadHandler(
@@ -191,8 +209,12 @@ observeEvent(input$expl_store, {
     env <- if (exists("r_env")) r_env else pryr::where("r_data")
     env$r_data[[name]] <- tab
     cat(paste0("Dataset r_data$", name, " created in ", environmentName(env), " environment\n"))
-    env$r_data[['datasetlist']] <- c(name, env$r_data[['datasetlist']]) %>% unique
 
+    # r_state$expl_byvar <<- r_state$expl_vars <<- NULL
+    # updateSelectizeInput(session, "expl_byvar", selected = "")
+    # updateSelectInput(session, "expl_vars", selected = "")
+
+    env$r_data[['datasetlist']] <- c(name, env$r_data[['datasetlist']]) %>% unique
     updateSelectInput(session, "dataset", selected = name)
   })
 })
@@ -209,9 +231,24 @@ observeEvent(input$explore_report, {
     ## add command to store data and/or download it
     # xcmd <-
     #     paste0("# store_reg(result, data = '", input$dataset, "', type = 'prediction', name = '", input$reg_store_pred_name,"')\n") %>%
+    #     paste0("# write.csv(result, data = '", input$dataset, "', type = 'prediction', name = '", input$reg_store_pred_name,"')\n") %>%
+
+    # if (input$expl_top != "fun")
+    #   inp_out <- list(list(top = input$expl_top))
+    # else
+    #   inp_out <- list("")
+
+    inp_out <- list(clean_args(expl_sum_inputs(), expl_sum_args[-1]))
+
+    # print(expl_args)
+    # print(sapply(expl_args, class))
+    # ll <- c(clean_args(expl_inputs(), expl_args))
+    # print(ll)
+    # print(sapply(ll, class))
+
     update_report(inp_main = c(clean_args(expl_inputs(), expl_args), tabsort = "", tabfilt = ""),
                   fun_name = "explore",
-                  inp_out = list(list(top = input$expl_top)),
+                  inp_out = inp_out,
                   outputs = c("summary"),
                   figs = FALSE)
   })

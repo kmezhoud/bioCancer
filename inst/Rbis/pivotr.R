@@ -6,7 +6,7 @@
 #' @param cvars Categorical variables
 #' @param nvar Numerical variable
 #' @param fun Function to apply to numerical variable
-#' @param normalize Normalize the table by "row" total,"colum" totals, or overall "total"
+#' @param normalize Normalize the table by "row" total,"column" totals, or overall "total"
 #' @param tabfilt Expression used to filter the table. This should be a string (e.g., "Total > 10000")
 #' @param tabsort Expression used to sort the table (e.g., "-Total")
 #' @param data_filter Expression used to filter the dataset. This should be a string (e.g., "price > 10000")
@@ -16,12 +16,13 @@
 #' result <- pivotr("diamonds", cvars = "cut")$tab
 #' result <- pivotr("diamonds", cvars = c("cut","clarity","color"))$tab
 #' result <- pivotr("diamonds", cvars = "cut:clarity", nvar = "price")$tab
+#' result <- pivotr("diamonds", cvars = "cut", normalize = "total")$tab
 #'
 #' @export
 pivotr <- function(dataset,
                    cvars = "",
                    nvar = "None",
-                   fun = "mean",
+                   fun = "mean_rm",
                    normalize = "None",
                    tabfilt = "",
                    tabsort = "",
@@ -52,7 +53,22 @@ pivotr <- function(dataset,
     }
   }
 
+
+  # empty_level <- function(x) {
+  #   if (!is.factor(x)) x %<>% as.factor
+  #   levs <- levels(x)
+  #   if ("" %in% levs) {
+  #     levs[levs == ""] <- "[EMPTY]"
+  #     x <- factor(x, levels = levs)
+  #     x[is.na(x)] <- "[EMPTY]"
+  #   }
+  #   x
+  # }
+
+  # dat[,cv] <- select_(dat, .dots = cv) %>% mutate_each(funs(empty_level(.)))
+
   sel <- function(x, nvar) if (nvar == "n") x else dplyr::select_(x, .dots = nvar)
+
   sfun <- function(x, nvar, cvars = "", fun = fun) {
     if (nvar == "n")
       if (all(cvars == "")) count_(x) else count_(x, cvars)
@@ -119,33 +135,32 @@ pivotr <- function(dataset,
 
   isNum <- -which(names(tab) %in% cvars)
   if (normalize == "total") {
-    tab[,isNum] %<>% {. / total[[1]]} %>% round(3)
+    tab[,isNum] %<>% {. / total[[1]]} #%>% round(dec)
   } else if (normalize == "row") {
     if (!is.null(tab[["Total"]]))
-      tab[,isNum] %<>% {. / dplyr::select(., Total)[[1]]} %>% round(3)
-  } else if (normalize == "column") {
-    tab[,isNum] %<>% apply(2, function(.) . / .[which(tab[,1] == "Total")]) %>% round(3)
+
+      tab[,isNum] %<>% {. / dplyr::select(., Total)[[1]]} #%>% round(dec)
+  } else if (length(cvars) > 1 && normalize == "column") {
+    tab[,isNum] %<>% apply(2, function(.) . / .[which(tab[,1] == "Total")]) # %>% round(dec)
+
     ## mutate_each has issues for spaces in variable names
     # tab[,isNum] %<>% mutate_each_(funs(h = . / .[which(tab[,1] == "Total")]), vars = colnames(.)) %>% round(3)
   }
 
   ## filtering the table if desired
-  if (tabfilt != "") {
-    tab <- filterdata(tab, tabfilt)
-  }
+  if (tabfilt != "")
+    tab <- filterdata(tab, tabfilt) %>% droplevels
 
   ## sorting the table if desired
-  if (tabsort != "") {
-    ## only one variable for now
-    tabsort <- tabsort[1]
-    if (substring(tabsort,1) == "-") {
-      tab %<>% arrange(., plyr::desc(.[[substring(tabsort,2)]]))
-    } else {
-      tab %<>% arrange_(tabsort)
-    }
 
-    for (i in cvars)
-      tab[[i]] %<>% factor(., levels = unique(.))
+  if (!identical(tabsort, "")) {
+
+    if (grepl(",", tabsort))
+      tabsort <- strsplit(tabsort,",")[[1]] %>% gsub(" ", "", .)
+    tab[-nrow(tab),] %<>% arrange_(.dots = tabsort)
+
+    # for (i in cvars)
+    #   tab[[i]] %<>% factor(., levels = unique(.))
   }
 
   if (!shiny) tab <- as.data.frame(tab, as.is = TRUE)
@@ -160,36 +175,44 @@ pivotr <- function(dataset,
 #' @details See \url{http://vnijs.github.io/radiant/base/pivotr.html} for an example in Radiant
 #'
 #' @param object Return value from \code{\link{pivotr}}
+#' @param perc Display numbers as percentages (TRUE or FALSE)
+#' @param dec Number of decimals to show
 #' @param chi2 If TRUE calculate the chi-square statistic for the (pivot) table
 #' @param shiny Did the function call originate inside a shiny app
 #' @param ... further arguments passed to or from other methods
 #'
 #' @examples
 #' pivotr("diamonds", cvars = "cut") %>% summary
-#' pivotr("diamonds", cvars = "cut") %>% summary
+#' pivotr("diamonds", cvars = "cut", tabsort = "-n") %>% summary
+#' pivotr("diamonds", cvars = "cut", tabfilt = "n > 700") %>% summary
 #' pivotr("diamonds", cvars = "cut:clarity", nvar = "price") %>% summary
 #'
 #' @seealso \code{\link{pivotr}} to create the pivot-table using dplyr
 #'
 #' @export
 summary.pivotr <- function(object,
+                           perc = FALSE,
+                           dec = 3,
                            chi2 = FALSE,
                            shiny = FALSE,
                            ...) {
 
   if (!shiny) {
     cat("Pivot table\n")
-    cat("Data       :", object$dataset, "\n")
+    cat("Data        :", object$dataset, "\n")
     if (object$data_filter %>% gsub("\\s","",.) != "")
-      cat("Filter     :", gsub("\\n","", object$data_filter), "\n")
-    cat("Categorical:", object$cvars, "\n")
+      cat("Filter      :", gsub("\\n","", object$data_filter), "\n")
+    cat("Categorical :", object$cvars, "\n")
+
+    if (object$normalize != "None")
+      cat("Normalize by:", object$normalize, "\n")
 
     if (object$nvar != "n") {
-      cat("Numeric    :", object$nvar, "\n")
-      cat("Function   :", object$fun, "\n")
+      cat("Numeric     :", object$nvar, "\n")
+      cat("Function    :", object$fun, "\n")
     }
     cat("\n")
-    print(object$tab, row.names = FALSE)
+    print(dfprint(object$tab, dec, perc), row.names = FALSE)
     cat("\n")
   }
 
@@ -214,6 +237,7 @@ summary.pivotr <- function(object,
 #' @param pvt Return value from \code{\link{pivotr}}
 #' @param format Show Color bar ("color_bar"),  Heat map ("heat"), or None ("none")
 #' @param perc Display numbers as percentages (TRUE or FALSE)
+#' @param dec Number of decimals to show
 #' @param search Global search. Used to save and restore state
 #' @param searchCols Column search and filter. Used to save and restore state
 #' @param order Column sorting. Used to save and restore state
@@ -231,6 +255,7 @@ summary.pivotr <- function(object,
 make_dt <- function(pvt,
                     format = "none",
                     perc = FALSE,
+                    dec = 3,
                     search = "",
                     searchCols = NULL,
                     order = NULL) {
@@ -240,43 +265,29 @@ make_dt <- function(pvt,
   cvars <- pvt$cvars %>% {if (length(.) > 1) .[-1] else .}
   cn <- colnames(tab) %>% {.[-which(cvars %in% .)]}
 
-  #############################################################
-  ## workaround for https://github.com/rstudio/DT/issues/150
-  # tab[,cn] <- tab[,cn] %>% round(3)
-  #############################################################
-
   ## column names without total
   cn_nt <- if ("Total" %in% cn) cn[-which(cn == "Total")] else cn
 
   tot <- tail(tab,1)[-(1:length(cvars))]
   if (perc)
-    tot <- sprintf("%.2f%%", tot*100)
+    # tot <- nrprint(tot * 100, dec = dec, perc = perc)
+    tot <- sprintf(paste0("%.", dec ,"f%%"), tot * 100)
   else
-    tot <- round(tot, 3)
+    tot <- round(tot, dec)
 
   if (length(cvars) == 1 && cvar == cvars) {
     sketch = shiny::withTags(table(
-      thead(
-        tr(lapply(c(cvars,cn), th))
-      ),
-      tfoot(
-        tr(lapply(c("Total",tot), th))
-      )
+      thead(tr(lapply(c(cvars,cn), th))),
+      tfoot(tr(lapply(c("Total",tot), th)))
     ))
   } else {
     sketch = shiny::withTags(table(
       thead(
-        tr(
-          th(colspan = length(c(cvars,cn)), cvar, class = "text-center")
-        ),
-        tr(
-          lapply(c(cvars,cn), th)
-        )
+        tr(th(colspan = length(c(cvars,cn)), cvar, class = "text-center")),
+        tr(lapply(c(cvars,cn), th))
       ),
       tfoot(
-        tr(
-          th(colspan = length(cvars), "Total"), lapply(tot, th)
-        )
+        tr(th(colspan = length(cvars), "Total"), lapply(tot, th))
       )
     ))
   }
@@ -286,14 +297,25 @@ make_dt <- function(pvt,
   ## and for external calls to pivotr
   tab <- filter(tab, tab[,1] != "Total")
 
-  dt_tab <- tab %>%
-  DT::datatable(container = sketch, selection = "none",
-    rownames = FALSE,
-    filter = list(position = "top"),
+  if (nrow(tab) > 5000000) {
+    fbox <- "none"
+  } else {
+    fbox <- list(position = "top")
+    dc <- getclass(tab)
+    if ("factor" %in% dc) {
+      toChar <- sapply(dplyr::select(tab, which(dc == "factor")), function(x) length(levels(x))) > 100
+      if (any(toChar))
+        tab <- mutate_each_(tab, funs(as.character), vars = names(toChar)[toChar])
+    }
+  }
+
+  # dt_tab <- tab %>% dfround(dec) %>%
+  dt_tab <- tab %>% {if (!perc) dfround(.,dec) else .} %>%
+  DT::datatable(container = sketch, selection = "none", rownames = FALSE,
+    filter = fbox,
     # filter = list(position = "top", clear = FALSE, plain = TRUE),
     style = ifelse (pvt$shiny, "bootstrap", "default"),
     options = list(
-      # search = list(regex = TRUE),
       stateSave = TRUE,
       search = list(search = search, regex = TRUE),
       searchCols = searchCols,
@@ -324,7 +346,7 @@ make_dt <- function(pvt,
   }
 
   ## show percentage
-  if (perc) dt_tab %<>% DT::formatPercentage(cn, 2)
+  if (perc) dt_tab %<>% DT::formatPercentage(cn, dec)
 
   dt_tab
 
@@ -341,6 +363,7 @@ make_dt <- function(pvt,
 #' @param perc Use percentage on the y-axis
 #' @param flip Flip the axes in a plot (FALSE or TRUE)
 #' @param shiny Did the function call originate inside a shiny app
+#' @param custom Logical (TRUE, FALSE) to indicate if ggplot object (or list of ggplot objects) should be returned. This opion can be used to customize plots (e.g., add a title, change x and y labels, etc.). See examples and \url{http://docs.ggplot2.org/} for options.
 #' @param ... further arguments passed to or from other methods
 #'
 #' @examples
@@ -354,7 +377,13 @@ make_dt <- function(pvt,
 #' @importFrom scales percent
 #'
 #' @export
-plot.pivotr <- function(x, type = "dodge", perc = FALSE, flip = FALSE, shiny = FALSE, ...) {
+plot.pivotr <- function(x,
+                        type = "dodge",
+                        perc = FALSE,
+                        flip = FALSE,
+                        shiny = FALSE,
+                        custom = FALSE,
+                        ...) {
 
   object <- x; rm(x)
   cvars <- object$cvars
@@ -374,6 +403,7 @@ plot.pivotr <- function(x, type = "dodge", perc = FALSE, flip = FALSE, shiny = F
       tab %>% tidyr::gather_(cvars[1], nvar, setdiff(colnames(.),cvars[2])) %>% na.omit %>%
         ggplot(aes_string(x = cvars[1], y = nvar, fill = cvars[2])) +
           geom_bar(stat="identity", position = type, alpha=.7)
+
   } else if (length(cvars) == 3) {
     ctot <- which(colnames(tab) == "Total")
     if (length(ctot) > 0) tab %<>% dplyr::select(-matches("Total"))
@@ -390,6 +420,15 @@ plot.pivotr <- function(x, type = "dodge", perc = FALSE, flip = FALSE, shiny = F
 
   if (flip) plot_list[[1]] <- plot_list[[1]] + coord_flip()
   if (perc) plot_list[[1]] <- plot_list[[1]] + scale_y_continuous(labels = percent)
+  if (nvar == "n") {
+    if (!is_empty(object$normalize, "None"))
+      plot_list[[1]] <- plot_list[[1]] + ylab(ifelse (perc, "Percentage", "Proportion"))
+  } else {
+    plot_list[[1]] <- plot_list[[1]] + ylab(paste0(nvar, " (",names(make_funs(object$fun)),")"))
+  }
+
+ if (custom)
+   if (length(plot_list) == 1) return(plot_list[[1]]) else return(plot_list)
 
   sshhr( do.call(gridExtra::arrangeGrob, c(plot_list, list(ncol = 1))) ) %>%
     { if (shiny) . else print(.) }

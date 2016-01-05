@@ -1,5 +1,6 @@
 > Manage data and state: Load data into bioCancer, Save data to disk, Remove a dataset from memory, or Save/Load the full state of the app
 
+
 ### Datasets
 
 When you first start bioCancer a dataset (`epiGenomics`) with information on how it was formatted is shown in `Handle` panel.
@@ -34,7 +35,7 @@ Getting data from bioCancer into a spreadsheet can be achieved in two ways. Firs
 
 You can save and load the state of the bioCancer app just as you would a data file. The state file (extension rda) will contain (1) the data loaded in bioCancer, (2) settings for the analyses you were working on, (3) and any reports or code from the R-menu. Save the state-file to your hard-disk and when you are ready to continue simply load it by selecting the state radio button and clicking the `Choose file` button.
 
-To save your analyses save the state of the app to a file by clicking on the <i title='Save' class='fa fa-save'></i> icon in the navbar and then on `Save state`. Similar functionality is available in `Data > Manage` tab.
+The best way to save your analyses is to save the state of the app to a file by clicking on the <i title='Save' class='fa fa-save'></i> icon in the navbar and then on `Save state`. Similar functionality is available in `Data > Manage` tab.
 
 This is convenient if you want to save your work to be completed at another time, perhaps on another computer, or to review any assignments you completed using bioCancer. You can also share the file with others that would like to replicate your analyses. As an example, download and then load the state_file [`RadiantState.rda`](https://vnijs.github.io/radiant/examples/RadiantState.rda). Go to `Data > View`, `Data > Visualize` to see some of the settings loaded from the statefile. There is also a report in `R > Report` created using the Radiant interface. The html file <a href="https://vnijs.github.io/radiant/examples/RadiantState.html" target="_blank">`RadiantState.html`</a> contains the output.
 
@@ -45,3 +46,7 @@ Loading and saving state also works with Rstudio. If you start bioCancer from Rs
 ### Remove data from memory
 
 If data are loaded that you no longer need access to in the current session check the `Remove data from memory` box. Then select the data to remove and click the `Remove data` button. One datafile will always remain open.
+
+### Using commands to load and save data
+
+The `loadr` command can be used to load data from a file directly into a Radiant session and add it to the `Datasets` dropdown. The `saver` command can be used to exact data from Radiant and save it to disk. Data can be loaded or saved as `rda` or `rds` format depending on the file extension chosen. These commands can be used both inside or without the Radiant browser interface. See `?loadr` and `?saver` for details.

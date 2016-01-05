@@ -42,9 +42,12 @@ output$ui_viz_yvar <- renderUI({
   vars <- varying_vars()
   if (not_available(vars)) return()
   vars <- vars["date" != .getclass()[vars]]
-  if (input$viz_type %in% c("line","bar","scatter")) {
-    vars <- vars["factor" != .getclass()[vars]]
+  if (input$viz_type %in% c("line","bar","scatter","box")) {
     vars <- vars["character" != .getclass()[vars]]
+  }
+  if (input$viz_type %in% c("line","scatter","box")) {
+    ## allow factors in yvars for bar plots
+    vars <- vars["factor" != .getclass()[vars]]
   }
 
   isolate({
@@ -130,6 +133,14 @@ observeEvent(input$viz_comby, {
   })
 })
 
+# observeEvent(!is_empty(input$viz_check) && "loess" %in% input$viz_check, {
+observeEvent(input$viz_check, {
+  isolate({
+    if (!"loess" %in% input$viz_check && input$viz_smooth != 1)
+      updateSliderInput(session, "viz_smooth", value = 1)
+  })
+})
+
 output$ui_viz_facet_row <- renderUI({
   # vars <- c("None" = ".", groupable_vars())
   vars <- c("None" = ".", groupable_vars_nonum())
@@ -206,13 +217,16 @@ output$ui_Visualize <- renderUI({
       uiOutput("ui_viz_type"),
       conditionalPanel(condition = "input.viz_type != 'hist' & input.viz_type != 'density'",
         uiOutput("ui_viz_yvar"),
-        conditionalPanel(condition = "input.viz_yvar && input.viz_yvar.length > 1",
+        # conditionalPanel("(typeof input.viz_yvar !== 'undefined') &&
+        conditionalPanel("input.viz_yvar != null && input.viz_yvar.length > 1",
           uiOutput("ui_viz_comby")
         )
       ),
       uiOutput("ui_viz_xvar"),
-      conditionalPanel(condition = "input.viz_type == 'hist' | input.viz_type == 'density'",
-        conditionalPanel(condition = "input.viz_xvar && input.viz_xvar.length > 1",
+      conditionalPanel("input.viz_type == 'hist' | input.viz_type == 'density'",
+        # conditionalPanel("(typeof input.viz_xvar !== 'undefined') &&
+        conditionalPanel("input.viz_xvar != null && input.viz_xvar.length > 1",
+                          # (input.viz_xvar !== null) && input.viz_xvar.length > 1",
           uiOutput("ui_viz_combx")
         )
       ),
@@ -352,8 +366,12 @@ observeEvent(input$visualize_report, {
     ## this seems to work (mostly) as intended - compare to observeEvent above
     vi <- viz_inputs()
     if (input$viz_type != "hist") vi$bins <- viz_args$bins
-    if (!input$viz_type %in% c("density","scatter")) vi$smooth <- viz_args$smooth
-    update_report(inp_main = clean_args(vi, viz_args),
+    if (!input$viz_type %in% c("density","scatter") ||
+        !"loess" %in% input$viz_check) vi$smooth <- viz_args$smooth
+    inp_main <- clean_args(vi, viz_args)
+    inp_main[["custom"]] <- FALSE
+    # update_report(inp_main = clean_args(vi, viz_args),
+    update_report(inp_main = inp_main,
                   fun_name = "visualize", outputs = character(0),
                   pre_cmd = "", figs = TRUE,
                   fig.width = round(7 * viz_plot_width()/600,2),

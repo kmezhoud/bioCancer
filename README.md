@@ -64,7 +64,6 @@ bioCancer is under development:
 ```
 
 
-
 When bioCancer starts you will see a table of available Cancer Studies.  To close the application click on `Quit` in the Navigation bar and then click the `Quit` button on the left of the screen. The bioCancer process will stop and the browser window will close (or gray-out).
 
 

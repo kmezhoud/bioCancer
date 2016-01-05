@@ -6,8 +6,8 @@
 ## sudo R
 ## .libPaths(.libPaths()[3])
 ##  install.packages("devtools", lib="/usr/lib/R/library")
-##  install_github("armish/coffewheel", lib="/usr/lib/R/library")
-## sources("http://bioconductor.org/biocLite.R")
+##  install_github("armish/coffeewheel", lib="/usr/lib/R/library")
+## source("http://bioconductor.org/biocLite.R")
 ## biocLite("geNetClassifier, lib="/usr/lib/R/library")
 ## install.packages("AnnotationFuncs", repos = "http://www.bioconductor.org/packages/3.2/bioc", lib="/usr/local/share/R/bioconductor")
 

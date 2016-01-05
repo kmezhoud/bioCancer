@@ -55,13 +55,14 @@ bioCancer focuses on Cancer Genomics data visualisation and Genes Classification
 - Recommended: [Rstudio](http://www.rstudio.com/products/rstudio/download/)
 
 
+To install the latest version for Windows of Mac with complete documentation for off-line access open R(studio) and copy-and-paste the command below:
+
+
 bioCancer is under development:
 ```r
  devtools::install_github("kmezhoud/bioCancer")
  library("bioCancer")
 ```
-
-
 
 When bioCancer starts you will see a table of available Cancer Studies.  To close the application click on `Quit` in the Navigation bar and then click the `Quit` button on the left of the screen. The bioCancer process will stop and the browser window will close (or gray-out).
 
@@ -97,4 +98,7 @@ The `Handle` panel of bioCancer is adapted from [radiant](https://github.com/vni
 bioCancer is licensed under the <a href="http://www.tldrlegal.com/l/AGPL3" target="\_blank">AGPLv3</a>. The documentation and videos on this site and the bioCancer help files are licensed under the creative commons attribution, non-commercial, share-alike license <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC-NC-SA</a>.
 
 As a summary, the AGPLv3 license requires, attribution, including copyright and license information in copies of the software, stating changes if the code is modified, and disclosure of all source code.
+
+
+&copy; Karim Mezhoud (2016) <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="https://kmezhoud.github.io/bioCancer/base/images/80x15.png" /></a>
 

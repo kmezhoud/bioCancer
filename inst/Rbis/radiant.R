@@ -88,7 +88,7 @@ filterdata <- function(dat, filt = "") {
     if (is(seldat, 'try-error')) {
       message(paste0("Invalid filter: \"", attr(seldat,"condition")$message,"\". Update or remove the expression"))
     } else {
-      return(seldat)
+      return(droplevels(seldat))
     }
   }
   dat
@@ -121,28 +121,28 @@ getdata <- function(dataset,
   # filt %<>% gsub("\\s","", .) %>% gsub("\"","\'",.)
   filt %<>% gsub("\\n","", .) %>% gsub("\"","\'",.)
   { if (!is_string(dataset)) {
-      dataset
-    } else if (exists("r_env") && !is.null(r_env$r_data[[dataset]])) {
-      r_env$r_data[[dataset]]
-    } else if (exists("r_data") && !is.null(r_data[[dataset]])) {
-      if (exists("r_local")) { if (r_local) message("Dataset ", dataset, " loaded from r_data list\n") }
-      r_data[[dataset]]
-    } else if (exists(dataset)) {
-      d_env <- pryr::where(dataset)
-      # message("Dataset ", dataset, " loaded from ", environmentName(d_env), " environment\n")
-      d_env[[dataset]]
-    } else {
-      message("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call") %>%
-        stop %>% return
-    }
+    dataset
+  } else if (exists("r_env") && !is.null(r_env$r_data[[dataset]])) {
+    r_env$r_data[[dataset]]
+  } else if (exists("r_data") && !is.null(r_data[[dataset]])) {
+    if (exists("r_local")) { if (r_local) message("Dataset ", dataset, " loaded from r_data list\n") }
+    r_data[[dataset]]
+  } else if (exists(dataset)) {
+    d_env <- pryr::where(dataset)
+    # message("Dataset ", dataset, " loaded from ", environmentName(d_env), " environment\n")
+    d_env[[dataset]]
+  } else {
+    # stop(message("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call"))
+    stop(paste("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call"))
+  }
   } %>% { if ("grouped_df" %in% class(.)) ungroup(.) else . } %>%     # ungroup data if needed
-        # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
-        { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
-        { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
-        { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
-        { if (na.rm) na.omit(.) else . }
-        ## line below may cause an error https://github.com/hadley/dplyr/issues/219
-        # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
+    # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
+  { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
+  { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
+  { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
+  { if (na.rm) na.omit(.) else . }
+  ## line below may cause an error https://github.com/hadley/dplyr/issues/219
+  # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
 
   # use the below when all data is setup as tbl_df
   # } %>% { if (is.na(groups(.))) . else ungroup(.) } %>%     # ungroup data if needed
@@ -159,18 +159,11 @@ getdata <- function(dataset,
 factorizer <- function(dat, safx = 20) {
   isChar <- sapply(dat, is.character)
   if (sum(isChar) == 0) return(dat)
-    toFct <-
-      dplyr::select(dat, which(isChar)) %>%
-      summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
-      dplyr::select(which(. == TRUE)) %>% names
+  toFct <-
+    dplyr::select(dat, which(isChar)) %>%
+    summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
+    dplyr::select(which(. == TRUE)) %>% names
   if (length(toFct) == 0) return(dat)
-
-
-  ## workaround for https://github.com/hadley/dplyr/issues/1238
-  # for (i in toFct)
-  #   dat[[i]] %<>% ifelse (is.na(.), "[Empty]", .) %>% ifelse (. == "", "[Empty]", .) %>% as.factor
-
-  # return(dat)
 
   ## not using due to https://github.com/hadley/dplyr/issues/1238
   ## Seems fixed in dev version of dplyr
@@ -179,38 +172,74 @@ factorizer <- function(dat, safx = 20) {
   mutate_each_(dat, funs(as.factor), vars = toFct)
 }
 
-#' Load an rda file and add it to the radiant data list (r_data)
+#' Load an rda or rds file and add it to the radiant data list (r_data) if available
 #'
-#' @param fn File name string
-#' @param ext File extension ("rda" is the default)
+#' @param fn File name and path as a string. Extension must be either rda or rds
+#' @param objname Name to use for the data.frame. Defaults to the file name
+#'
+#' @return Data.frame in r_data or in the calling enviroment
+#'
+#' @export
+loadr <- function(fn, objname = "") {
+
+  filename <- basename(fn)
+  ext <- tolower(tools::file_ext(filename))
+  if (!ext %in% c("rda","rds")) {
+    message("File must have extension rda or rds")
+    return()
+  }
+
+  ## objname is used as the name of the data.frame
+  if (objname == "")
+    objname <- sub(paste0(".",ext,"$"),"", filename)
+
+  if (ext == "rds") {
+    loadfun <- readRDS
+  } else {
+    loadfun <- function(fn) load(fn) %>% get
+  }
+
+  if (exists("r_env") || exists("r_data")) {
+    if (exists("r_env")) {
+      env <- r_env
+    } else if (exists("r_data")) {
+      env <- pryr::where("r_data")
+    }
+
+    env$r_data[[objname]] <- loadfun(fn)
+    env$r_data[[paste0(objname,"_descr")]] <- attr(env$r_data[[objname]], "description")
+    env$r_data[['datasetlist']] <- c(objname, env$r_data[['datasetlist']]) %>% unique
+
+  } else {
+    assign(objname, loadfun(fn), envir = parent.frame())
+  }
+}
+
+#' Save data.frame as an rda or rds file from Radiant
+#'
+#' @param objname Name of the data.frame
+#' @param file File name and path as a string. Extension must be either rda or rds
 #'
 #' @return Data.frame in r_data
 #'
 #' @export
-loadrda <- function(fn, ext = "rda") {
+saver <- function(objname, file) {
 
-  # filename <- basename(fn)
-  # ## objname is used as the name of the data.frame
-  # objname <- sub(paste0(".",ext,"$"),"", filename)
+  filename <- basename(file)
+  ext <- tolower(tools::file_ext(filename))
+  if (!ext %in% c("rda","rds")) {
+    message("File must have extension rda or rds")
+    return()
+  }
 
-  # ## if ext isn't in the filename nothing was replaced and so ...
-  # if (objname == filename) {
-  #   fext <- tools::file_ext(filename) %>% tolower
-  #   message(paste0("### The filename extension (",fext,") does not match the one expected (",ext,"). Please specify the file extension used for the r-data file"))
-  #   return()
-  # }
+  dat <- getdata(objname)
 
-  # ## objname will hold the name of the object(s) inside the R datafile
-  # robjname <- try(load(fn), silent = TRUE)
-  # if (is(robjname, 'try-error')) {
-  #   message("### There was an error loading the data. Please make sure the data are in r-data format and the correct file extension has been specified.")
-  # } else {
-  #   if (exists("r_data") && length(robjname == 1)) {
-  #     r_data[[objname]] <<- as.data.frame(get(robjname))
-  #     r_data[[paste0(objname,"_descr")]] <<- attr(r_data[[objname]], "description")
-  #     r_data[['datasetlist']] <<- c(objname, r_data[['datasetlist']]) %>% unique
-  #   }
-  # }
+  if (ext == "rds") {
+    saveRDS(dat, file = file)
+  } else {
+    assign(objname, dat)
+    save(list = objname, file = file)
+  }
 }
 
 #' Load a csv file with read.csv and read_csv
@@ -230,13 +259,13 @@ loadcsv <- function(fn, header = TRUE, sep = ",", dec = ".", saf = TRUE, safx = 
   cn <- try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE, nrows = 1), silent = TRUE)
   # dat <- try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
   try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
-    {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
-       try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
-     else . } %>%
+  {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
+    try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
+    else . } %>%
     {if (is(., 'try-error'))
-       return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
-     else .} %>%
-    {if (saf) factorizer(., safx) else . } %>% as.data.frame
+      return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
+      else .} %>%
+      {if (saf) factorizer(., safx) else . } %>% as.data.frame
 
   ## workaround for https://github.com/rstudio/DT/issues/161
   # isDate <- sapply(dat, is.Date)
@@ -269,8 +298,8 @@ loadcsv_url <- function(csv_url, header = TRUE, sep = ",", dec = ".", saf = TRUE
     return("### There was an error loading the csv file from the provided url.")
   } else {
     dat <- try(read.table(con, header = header, comment.char = "",
-               quote = "\"", fill = TRUE, stringsAsFactors = saf,
-               sep = sep, dec = dec), silent = TRUE)
+                          quote = "\"", fill = TRUE, stringsAsFactors = saf,
+                          sep = sep, dec = dec), silent = TRUE)
     close(con)
 
     if (is(dat, 'try-error'))
@@ -379,29 +408,40 @@ viewdata <- function(dataset,
   ## based on http://rstudio.github.io/DT/server.html
   dat <- getdata(dataset, vars, filt = filt, rows = rows, na.rm = FALSE)
   title <- if (is_string(dataset)) paste0("DT:", dataset) else "DT"
-  fbox <- if (nrow(dat) > 100000) 'none' else list(position = "top", clear = FALSE, plain = FALSE)
+
+  if (nrow(dat) > 5000000) {
+    fbox <- "none"
+  } else {
+    fbox <- list(position = "top")
+    dc <- getclass(dat)
+    if ("factor" %in% dc) {
+      toChar <- sapply(dplyr::select(dat, which(dc == "factor")), function(x) length(levels(x))) > 100
+      if (any(toChar))
+        dat <- mutate_each_(dat, funs(as.character), vars = names(toChar)[toChar])
+    }
+  }
 
   shinyApp(
     ui = fluidPage(title = title,
-      includeCSS(file.path(system.file(package = "radiant"),"base/www/style.css")),
-      fluidRow(DT::dataTableOutput("tbl")),
-      tags$button(id = "stop", type = "button",
-                  class = "btn btn-danger action-button shiny-bound-input",
-                  onclick = "window.close();", "Stop")
+                   includeCSS(file.path(system.file(package = "radiant"),"base/www/style.css")),
+                   fluidRow(DT::dataTableOutput("tbl")),
+                   tags$button(id = "stop", type = "button",
+                               class = "btn btn-danger action-button shiny-bound-input",
+                               onclick = "window.close();", "Stop")
     ),
     server = function(input, output, session) {
       widget <- DT::datatable(dat, selection = "none",
-        rownames = FALSE, style = "bootstrap",
-        filter = fbox, escape = FALSE,
-        # extensions = 'KeyTable'# ,
-        options = list(
-          search = list(regex = TRUE),
-          columnDefs = list(list(className = 'dt-center', targets = "_all")),
-          autoWidth = TRUE,
-          processing = FALSE,
-          pageLength = 10,
-          lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-        )
+                              rownames = FALSE, style = "bootstrap",
+                              filter = fbox, escape = FALSE,
+                              # extensions = 'KeyTable'# ,
+                              options = list(
+                                search = list(regex = TRUE),
+                                columnDefs = list(list(className = 'dt-center', targets = "_all")),
+                                autoWidth = TRUE,
+                                processing = FALSE,
+                                pageLength = 10,
+                                lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
+                              )
       )
       output$tbl <- DT::renderDataTable(widget)
       observeEvent(input$stop, {stopApp("Stopped viewdata")})
@@ -481,8 +521,12 @@ is_string <- function(x)
 iterms <- function(vars, nway, sep = ":") {
   if (!nway %in% c(2,3)) return(character(0))
   it <- c()
-  for (i in 2:nway)
+  for (i in 2:nway) {
     it %<>% {c(., combn(vars, i) %>% apply(2, paste, collapse = sep))}
+    ## lm doesn't evaluate a:a
+    # if (i == 2) it <- c(it, paste(vars, vars, sep = "*"))
+    # if (i == 3) it <- c(it, paste(vars, vars, vars, sep = "*"))
+  }
   it
 }
 
@@ -696,7 +740,7 @@ copy_from <- function(.from, ...) {
   dots <- eval(substitute(alist(...)), parent.frame(), parent.frame())
   names <- names(dots)
   unnamed <- if (is.null(names)) 1:length(dots)
-             else which(names == "")
+  else which(names == "")
   dots <- vapply(dots, as.character, character(1))
   names(dots)[unnamed] <- dots[unnamed]
 
@@ -719,29 +763,30 @@ copy_from <- function(.from, ...) {
 #' @param .from The package to pull the function from
 #'
 #' @examples
-#'
+#' \donttest{
 #' copy_imported(radiant)
-#'
+#' }
 #' @export
 copy_imported <- function(.from) {
 
-  from <- as.character(substitute(.from))
+  ## not yet working as intended
+  # from <- as.character(substitute(.from))
 
-  import_list <- getNamespaceImports(from)
-  parent  <- parent.frame()
-  import_names <- names(import_list)
+  # import_list <- getNamespaceImports(from)
+  # parent  <- parent.frame()
+  # import_names <- names(import_list)
 
-  for (i in unique(import_names)) {
-    if (i %in% c("base","shiny","magrittr")) next
+  # for (i in unique(import_names)) {
+  #   if (i %in% c("base","shiny","magrittr")) next
 
-    symbols <- unlist(import_list[which(i == import_names)])
+  #   symbols <- unlist(import_list[which(i == import_names)])
 
-    for (j in symbols) {
-      # do.call(import::from, list(i = as.symbol(i), j = as.symbol(j)))
-      fn <- get(j, envir = asNamespace(i), inherits = TRUE)
-      assign(j, eval.parent(call("function", formals(fn), body(fn))), parent)
-    }
-  }
+  #   for (j in symbols) {
+  #     # do.call(import::from, list(i = as.symbol(i), j = as.symbol(j)))
+  #     fn <- get(j, envir = asNamespace(i), inherits = TRUE)
+  #     assign(j, eval.parent(call("function", formals(fn), body(fn))), parent)
+  #   }
+  # }
 
   invisible(NULL)
 }
@@ -876,12 +921,12 @@ state_multiple <- function(inputvar, vals, init = character(0)) {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
   r_state %>%
     # { if (is.null(.[[inputvar]]))
-    { if (is_empty(.[[inputvar]]))
-        ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
-        vals[vals %in% init]
-      else
-        vals[vals %in% .[[inputvar]]]
-    }
+  { if (is_empty(.[[inputvar]]))
+    ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
+    vals[vals %in% init]
+    else
+      vals[vals %in% .[[inputvar]]]
+  }
 }
 
 #' Print/draw method for grobs produced by gridExtra
@@ -912,7 +957,7 @@ print.gtable <- function(x, ...) {
 #' ci_label("greater",.9)
 #'
 #' @export
-ci_label <- function(alt, cl) {
+ci_label <- function(alt = "two.sided", cl = .95) {
   if (alt == "less") {
     c("0%", paste0(100*cl,"%"))
   } else if (alt == "greater") {
@@ -939,7 +984,7 @@ ci_label <- function(alt, cl) {
 #' ci_perc(0:100, "two.sided",.80)
 #'
 #' @export
-ci_perc <- function(dat, alt, cl) {
+ci_perc <- function(dat, alt = "two.sided", cl = .95) {
   probs <- if (alt == 'two.sided') {
     ((1-cl)/2) %>% c(., 1 - .)
   } else if (alt == 'less') {
@@ -948,4 +993,75 @@ ci_perc <- function(dat, alt, cl) {
     cl
   }
   quantile(dat, probs = probs)
+}
+
+#' Print a data.frame with a specified number of decimal places
+#'
+#' @param tbl Data.frame
+#' @param dec Number of decimal places
+#' @param perc Display numbers as percentages (TRUE or FALSE)
+#'
+#' @return Data.frame for printing
+#'
+#' @examples
+#' data.frame(x = c("a","b"), y = c(1L, 2L), z = c(-0.0005, 3)) %>%
+#'   dfprint(dec = 3)
+#' @export
+dfprint <- function(tbl, dec = 3, perc = FALSE) {
+  if (perc) {
+    tbl %<>% mutate_each(
+      funs(if (is.numeric(.)) . * 100L else .)
+    )
+  }
+
+  frm <- if (perc) "f%%" else "f"
+  tbl %>%
+    mutate_each(
+      funs(if (is.double(.)) sprintf(paste0("%.", dec ,frm), .) else .)
+    )
+
+}
+
+#' Print a number with a specified number of decimal places, thousand sep, and a symbol
+#'
+#' @param x Number or vector
+#' @param dec Number of decimal places
+#' @param sym Symbol to use
+#' @param perc Display number as a percentage
+#'
+#' @return Character (vector) in the desired format
+#'
+#' @examples
+#' nrprint(2000, "$")
+#' nrprint(2000, dec = 4)
+#' nrprint(.05, perc = TRUE)
+#' nrprint(c(.1, .99), perc = TRUE)
+#' nrprint(data.frame(a = c(.1, .99)), perc = TRUE)
+#' nrprint(data.frame(a = 1000), sym = "$", dec = 0)
+#'
+#' @export
+nrprint <- function(x, sym = "", dec = 2, perc = FALSE) {
+  if ("data.frame" %in% class(x)) x <- x[[1]]
+  if (perc)
+    paste0(sym, formatC(100 * x, digits = dec, big.mark = ",", format = "f"), "%")
+  else
+    paste0(sym, formatC(x, digits = dec, big.mark = ",", format = "f"))
+}
+
+#' Round double in a data.frame to a specified number of decimal places
+#'
+#' @param tbl Data.frame
+#' @param dec Number of decimal places
+#'
+#' @return Data.frame for viewing
+#'
+#' @examples
+#' data.frame(x = c("a","b"), y = c(1L, 2L), z = c(-0.0005, 3.1)) %>%
+#'   dfround(dec = 3)
+#' @export
+dfround <- function(tbl, dec = 3) {
+  tbl %>%
+    mutate_each(
+      funs(if (is.double(.)) round(., dec) else .)
+    )
 }

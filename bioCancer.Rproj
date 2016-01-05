@@ -11,6 +11,7 @@ Encoding: UTF-8
 
 RnwWeave: Sweave
 LaTeX: pdfLaTeX
+RootDocument: vignettes/bioCancer_vignette.tex
 
 AutoAppendNewline: Yes
 StripTrailingWhitespace: Yes

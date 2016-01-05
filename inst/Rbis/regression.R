@@ -3,8 +3,8 @@
 #' @details See \url{http://vnijs.github.io/radiant/quant/regression.html} for an example in Radiant
 #'
 #' @param dataset Dataset name (string). This can be a dataframe in the global environment or an element in an r_data list from Radiant
-#' @param dep_var The response variable in the regression
-#' @param indep_var Explanatory variables in the regression
+#' @param rvar The response variable in the regression
+#' @param evar Explanatory variables in the regression
 #' @param int_var Interaction terms to include in the model
 #' @param check "standardize" to see standardized coefficient estimates. "stepwise" to apply step-wise selection of variables in estimation
 #' @param dec Number of decimals to show
@@ -21,13 +21,13 @@
 #' @seealso \code{\link{predict.regression}} to generate predictions
 #'
 #' @export
-regression <- function(dataset, dep_var, indep_var,
+regression <- function(dataset, rvar, evar,
                        int_var = "",
                        check = "",
                        dec = 3,
                        data_filter = "") {
 
-  dat <- getdata(dataset, c(dep_var, indep_var), filt = data_filter)
+  dat <- getdata(dataset, c(rvar, evar), filt = data_filter)
   if (!is_string(dataset)) dataset <- "-----"
 
   if (any(summarise_each(dat, funs(does_vary)) == FALSE))
@@ -35,52 +35,37 @@ regression <- function(dataset, dep_var, indep_var,
            set_class(c("regression",class(.))))
 
   vars <- ""
-  var_check(indep_var, colnames(dat)[-1], int_var) %>%
-    { vars <<- .$vars; indep_var <<- .$iv; int_var <<- .$intv }
+  var_check(evar, colnames(dat)[-1], int_var) %>%
+    { vars <<- .$vars; evar <<- .$ev; int_var <<- .$intv }
 
   if ("standardize" %in% check) {
     isNum <- sapply(dat, is.numeric)
     if (sum(isNum > 0)) dat[,isNum] %<>% data.frame %>% dplyr::mutate_each(funs(scale))
   }
 
-  formula <- paste(dep_var, "~", paste(vars, collapse = " + ")) %>% as.formula
+  form <- paste(rvar, "~", paste(vars, collapse = " + ")) %>% as.formula
 
   if ("stepwise" %in% check) {
-    # use k = 2 for AIC, use k = log(nrow(dat)) for BIC
-    model <- lm(paste(dep_var, "~ 1") %>% as.formula, data = dat) %>%
-      step(., k = 2, scope = list(upper = formula), direction = 'both')
+    ## use k = 2 for AIC, use k = log(nrow(dat)) for BIC
+    model <- lm(paste(rvar, "~ 1") %>% as.formula, data = dat) %>%
+      step(., k = 2, scope = list(upper = form), direction = 'both')
   } else {
-    model <- lm(formula, data = dat)
+    model <- lm(form, data = dat)
   }
 
-  reg_coeff <- tidy(model)
-  reg_coeff$` ` <- sig_stars(reg_coeff$p.value)
-  reg_coeff[,c(2:5)] %<>% round(dec)
 
-  ## print -0 when needed
-  if (!"standardize" %in% check) {
-    cz <- reg_coeff[[2]] == 0
-    if (length(cz) > 0 && sum(cz) > 0) {
-      tz <- reg_coeff[[4]] < 0
-      ## added to 0.000 isn't rounded to 0
-      reg_coeff[[2]][cz] <- paste0("0.",paste0(rep(0,dec),collapse = ""))
-      ## print -0 when needed
-      reg_coeff[[2]][cz & tz] <- paste0("-0.",paste0(rep(0,dec),collapse = ""))
-    }
-  }
-
-  reg_coeff$p.value[reg_coeff$p.value < .001] <- "< .001"
-  colnames(reg_coeff) <- c("  ","coefficient","std.error","t.value","p.value"," ")
-
+  coeff <- tidy(model)
+  coeff$` ` <- sig_stars(coeff$p.value) %>% format(justify = "left")
+  colnames(coeff) <- c("  ","coefficient","std.error","t.value","p.value"," ")
   isFct <- sapply(dplyr::select(dat,-1), is.factor)
   if (sum(isFct) > 0) {
-
-    for (i in names(dplyr::select(dat,-1)[isFct]))
-      reg_coeff$`  ` %<>% sub(i, paste0(i," > "), .)
+    for (i in names(isFct[isFct]))
+      coeff$`  ` %<>% sub(i, paste0(i,"|"), .)
 
 
     rm(i, isFct)
   }
+  coeff$`  ` %<>% format(justify = "left")
 
   ## dat is not needed elsewhere and is already in "model" anyway
   rm(dat)
@@ -93,7 +78,7 @@ regression <- function(dataset, dep_var, indep_var,
 #' @details See \url{http://vnijs.github.io/radiant/quant/regression.html} for an example in Radiant
 #'
 #' @param object Return value from \code{\link{regression}}
-#' @param sum_check Optional output or estimation parameters. "rsme" to show the root mean squared error. "sumsquares" to show the sum of squares table. "vif" to show multicollinearity diagnostics. "confint" to show coefficient confidence interval estimates.
+#' @param sum_check Optional output or estimation parameters. "rsme" to show the root mean squared error and the standard deviation of the residuals. "sumsquares" to show the sum of squares table. "vif" to show multicollinearity diagnostics. "confint" to show coefficient confidence interval estimates.
 #' @param conf_lev Confidence level used to estimate confidence intervals (.95 is the default)
 #' @param test_var Variables to evaluate in model comparison (i.e., a competing models F-test)
 #' @param ... further arguments passed to or from other methods
@@ -124,31 +109,37 @@ summary.regression <- function(object,
 
   dec <- object$dec
 
-  if ("stepwise" %in% object$check) cat("\n-----------------------------------------------\n\n")
+  if ("stepwise" %in% object$check) cat("-----------------------------------------------\n")
 
-  # cat("Time",now(),"\n")
   cat("Linear regression (OLS)\n")
   cat("Data     :", object$dataset, "\n")
   if (object$data_filter %>% gsub("\\s","",.) != "")
     cat("Filter   :", gsub("\\n","", object$data_filter), "\n")
-  cat("Response variable    :", object$dep_var, "\n")
-  cat("Explanatory variables:", paste0(object$indep_var, collapse=", "), "\n")
-  expl_var <- if (length(object$indep_var) == 1) object$indep_var else "x"
-  cat(paste0("Null hyp.: the effect of ", expl_var, " on ", object$dep_var, " is zero\n"))
-  cat(paste0("Alt. hyp.: the effect of ", expl_var, " on ", object$dep_var, " is not zero\n"))
+  cat("Response variable    :", object$rvar, "\n")
+  cat("Explanatory variables:", paste0(object$evar, collapse=", "), "\n")
+  expl_var <- if (length(object$evar) == 1) object$evar else "x"
+  cat(paste0("Null hyp.: the effect of ", expl_var, " on ", object$rvar, " is zero\n"))
+  cat(paste0("Alt. hyp.: the effect of ", expl_var, " on ", object$rvar, " is not zero\n"))
   if ("standardize" %in% object$check)
-    cat("Standardized coefficients shown\n")
+    cat("**Standardized coefficients shown**\n")
 
+  coeff <- object$coeff
+  # object$coeff$p.value <- "NaN"
   cat("\n")
-  if (all(object$reg_coeff$p.value == "NaN")) {
-    print(object$reg_coeff[,1:2], row.names=FALSE)
+  if (all(object$coeff$p.value == "NaN")) {
+    coeff[,2] %<>% {sprintf(paste0("%.",dec,"f"),.)}
+    print(coeff[,1:2], row.names=FALSE)
     cat("\nInsufficient variation in explanatory variable(s) to report additional statistics")
     return()
   } else {
-    print(object$reg_coeff, row.names=FALSE)
+    p.small <- coeff$p.value < .001
+    # coeff[,2:5] %<>% mutate_each(funs(sprintf(paste0("%.",dec,"f"),.)))
+    coeff[,2:5] %<>% dfprint(dec)
+    coeff$p.value[p.small] <- "< .001"
+    print(coeff, row.names=FALSE)
   }
 
-  if (nrow(object$model$model) <= (length(object$indep_var) + 1))
+  if (nrow(object$model$model) <= (length(object$evar) + 1))
     return("\nInsufficient observations to estimate model")
 
   ## adjusting df for included intercept term
@@ -159,15 +150,15 @@ summary.regression <- function(object,
   cat("\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n")
   cat("R-squared:", paste0(reg_fit$r.squared, ", "), "Adjusted R-squared:", reg_fit$adj.r.squared, "\n")
   cat("F-statistic:", reg_fit$statistic, paste0("df(", reg_fit$df - df_int, ",", reg_fit$df.residual, "), p.value"), reg_fit$p.value)
-  cat(paste0("\nNr obs: ", reg_fit$df + reg_fit$df.residual))
-  cat("\n\n")
+  cat("\nNr obs:", reg_fit$df + reg_fit$df.residual, "\n\n")
 
   if (anyNA(object$model$coeff))
     cat("The set of explanatory variables exhibit perfect multicollinearity.\nOne or more variables were dropped from the estimation.\n")
 
   if ("rmse" %in% sum_check) {
     mean(object$model$residuals^2, na.rm=TRUE) %>% sqrt %>% round(dec) %>%
-    cat("Prediction error (RMSE): ", ., "\n\n")
+    cat("Prediction error (RMSE): ", ., "\n")
+    cat("Residual st.dev   (RSD): ", reg_fit$sigma, "\n\n")
   }
 
   if ("sumsquares" %in% sum_check) {
@@ -187,6 +178,7 @@ summary.regression <- function(object,
     ss_tab$SS <- c(ss_reg,ss_err,ss_tot)
     cat("Sum of squares:\n")
     format(ss_tab, scientific = FALSE) %>% print
+    # dfprint(ss_tab, dec) %>% print(row.names = FALSE)
     cat("\n")
   }
 
@@ -195,12 +187,12 @@ summary.regression <- function(object,
       # cat("The set of explanatory variables exhibit perfect multicollinearity.\nOne or more variables were dropped from the estimation.\nMulticollinearity diagnostics were not calculated.\n")
       cat("Multicollinearity diagnostics were not calculated.")
     } else {
-      if (length(object$indep_var) > 1) {
+      if (length(object$evar) > 1) {
         cat("Variance Inflation Factors\n")
-        vif (object$model) %>%
+        vif(object$model) %>%
           { if (!dim(.) %>% is.null) .[,"GVIF"] else . } %>% ## needed when factors are included
           data.frame("VIF" = ., "Rsq" = 1 - 1/.) %>%
-          round(2) %>%
+          round(dec) %>%
           .[order(.$VIF, decreasing=T),] %>%
           { if (nrow(.) < 8) t(.) else . } %>%
           print
@@ -217,18 +209,15 @@ summary.regression <- function(object,
       cat("Confidence intervals were not calculated.\n")
     } else {
 
-      cl_split <- function(x) 100*(1-x)/2
-      cl_split(conf_lev) %>% round(1) %>% as.character %>% paste0(.,"%") -> cl_low
-      (100 - cl_split(conf_lev)) %>% round(1) %>% as.character %>% paste0(.,"%") -> cl_high
-
+      ci_perc <- ci_label(cl = conf_lev)
       confint(object$model, level = conf_lev) %>%
         as.data.frame %>%
         set_colnames(c("Low","High")) %>%
         { .$`+/-` <- (.$High - .$Low)/2; . } %>%
-        round(dec) %>%
-        cbind(object$reg_coeff[[2]],.) %>%
-        set_rownames(object$reg_coeff$`  `) %>%
-        set_colnames(c("coefficient", cl_low, cl_high, "+/-")) %>%
+        mutate_each(funs(sprintf(paste0("%.",dec,"f"),.))) %>%
+        cbind(coeff[[2]],.) %>%
+        set_rownames(object$coeff$`  `) %>%
+        set_colnames(c("coefficient", ci_perc[1], ci_perc[2], "+/-")) %T>%
         print
       cat("\n")
     }
@@ -238,9 +227,9 @@ summary.regression <- function(object,
     if ("stepwise" %in% object$check) {
       cat("Model comparisons are not conducted when Stepwise has been selected.\n")
     } else {
-      sub_formula <- ". ~ 1"
+      sub_form <- ". ~ 1"
 
-      vars <- object$indep_var
+      vars <- object$evar
       if (object$int_var != "" && length(vars) > 1) {
         ## updating test_var if needed
         test_var <- test_specs(test_var, object$int_var)
@@ -248,8 +237,8 @@ summary.regression <- function(object,
       }
 
       not_selected <- setdiff(vars,test_var)
-      if (length(not_selected) > 0) sub_formula <- paste(". ~", paste(not_selected, collapse = " + "))
-      sub_mod <- update(object$model, sub_formula, data = object$model$model) %>%
+      if (length(not_selected) > 0) sub_form <- paste(". ~", paste(not_selected, collapse = " + "))
+      sub_mod <- update(object$model, sub_form, data = object$model$model) %>%
                    anova(object$model, test='F')
 
       if (sub_mod[,"Pr(>F)"][2] %>% is.na) return(cat(""))
@@ -321,9 +310,9 @@ plot.regression <- function(x,
   # object_size(object$model, model)
   model <- ggplot2::fortify(object$model)
 
-  dep_var <- object$dep_var
-  indep_var <- object$indep_var
-  vars <- c(dep_var, indep_var)
+  rvar <- object$rvar
+  evar <- object$evar
+  vars <- c(rvar, evar)
 
   flines <- sub("loess","",lines) %>% sub("line","",.)
   nlines <- sub("jitter","",lines)
@@ -333,13 +322,12 @@ plot.regression <- function(x,
     for (i in vars) {
       plot_list[[paste0("hist",i)]] <-
         visualize(select_(model, .dots = i), xvar = i, bins = 10, custom = TRUE)
-        # ggplot(model[,vars], aes_string(x = i)) + geom_histogram(alpha = 0.5)
     }
 
   if ("dashboard" %in% plots) {
 
     plot_list[[1]] <-
-      visualize(model, xvar = ".fitted", yvar = dep_var, type = "scatter", custom = TRUE) +
+      visualize(model, xvar = ".fitted", yvar = rvar, type = "scatter", custom = TRUE) +
       labs(list(title = "Actual vs Fitted values", x = "Fitted", y = "Actual"))
 
     plot_list[[2]] <-
@@ -372,20 +360,20 @@ plot.regression <- function(x,
   }
 
   if ("scatter" %in% plots) {
-    for (i in indep_var) {
-      if ('factor' %in% class(model[,i])) {
+    for (i in evar) {
+      if ("factor" %in% class(model[,i])) {
         plot_list[[paste0("scatter",i)]] <-
-          visualize(select_(model, .dots = c(i,dep_var)), xvar = i, yvar = dep_var, type = "scatter", check = flines, alpha = .2, custom = TRUE)
+          visualize(select_(model, .dots = c(i,rvar)), xvar = i, yvar = rvar, type = "scatter", check = flines, alpha = .2, custom = TRUE)
       } else {
         plot_list[[paste0("scatter",i)]] <-
-          visualize(select_(model, .dots = c(i,dep_var)), xvar = i, yvar = dep_var, type = "scatter", check = nlines, custom = TRUE)
+          visualize(select_(model, .dots = c(i,rvar)), xvar = i, yvar = rvar, type = "scatter", check = nlines, custom = TRUE)
       }
     }
   }
 
   if ("resid_pred" %in% plots) {
-    for (i in indep_var) {
-      if ('factor' %in% class(model[,i])) {
+    for (i in evar) {
+      if ("factor" %in% class(model[,i])) {
         plot_list[[i]] <-
           visualize(select_(model, .dots = c(i,".resid")), xvar = i, yvar = ".resid", type = "scatter", check = flines, alpha = .2, custom = TRUE) +
           ylab("residuals")
@@ -399,16 +387,11 @@ plot.regression <- function(x,
 
   if ("coef" %in% plots) {
     if (!anyNA(object$model$coeff)) {
-      cl_split <- function(x) 100*(1-x)/2
-      cl_split(conf_lev) %>% round(1) %>% as.character %>% paste0(.,"%") -> cl_low
-      (100 - cl_split(conf_lev)) %>% round(1) %>% as.character %>% paste0(.,"%") -> cl_high
-
       confint(object$model, level = conf_lev) %>%
         data.frame %>%
         set_colnames(c("Low","High")) %>%
-        cbind(select(object$reg_coeff,2),.) %>%
-        round(dec) %>%
-        set_rownames(object$reg_coeff$`  `) %>%
+        cbind(select(object$coeff,2),.) %>%
+        set_rownames(object$coeff$`  `) %>%
         { if (!intercept) .[-1,] else . } %>%
         mutate(variable = rownames(.)) %>%
           ggplot() +
@@ -424,7 +407,7 @@ plot.regression <- function(x,
 
   if ("leverage" %in% plots)
     return(leveragePlots(object$model, main = "", ask=FALSE, id.n = 1,
-           layout = c(ceiling(length(indep_var)/2),2)))
+           layout = c(ceiling(length(evar)/2),2)))
 
   if (exists("plot_list")) {
     sshhr( do.call(gridExtra::arrangeGrob, c(plot_list, list(ncol = 2))) ) %>%
@@ -466,6 +449,8 @@ predict.regression <- function(object,
                                prn = TRUE,
                                ...) {
 
+                               # pred_filt = "",
+
   if (is.character(object)) return(object)
 
   # used http://www.r-tutor.com/elementary-statistics/simple-linear-regression/prediction-interval-linear-regression as starting point
@@ -473,7 +458,7 @@ predict.regression <- function(object,
   if ("standardize" %in% object$check) {
     return(cat("Currently you cannot use standardized coefficients for prediction.\nPlease uncheck the standardized coefficients box and try again"))
   } else if (pred_count == 3) {
-    return(cat("Please select variables, data, or specify a command to generate predictions. For example,\ncarat = seq(.5, 1.5, .1) would produce predictions for values of\ncarat starting at .5, increasing to 1.5 in increments of .1. Make\nsure to press return after you finish entering the command.\nIf no results are shown the command was likely invalid. Alternatively,\nspecify a dataset to generate predictions. You could create this in\nExcel and use the paste feature in Data > Manage to bring it into\nRadiant"))
+    return(cat("Please select variables, data, or specify a command to generate predictions.\nFor example, carat = seq(.5, 1.5, .1) would produce predictions for values\n of carat starting at .5, increasing to 1.5 in increments of .1. Make sure\nto press return after you finish entering the command.\n\nAlternatively, specify a dataset to generate predictions. You could create\nthis in a spread sheet and use the paste feature in Data > Manage to bring\nit into Radiant"))
   }
 
   if (pred_count < 2) {
@@ -484,7 +469,7 @@ predict.regression <- function(object,
   }
 
   pred_type <- "cmd"
-  vars <- object$indep_var
+  vars <- object$evar
   if (pred_cmd != "") {
     pred_cmd %<>% gsub("\"","\'", .) %>% gsub(";",",", .)
     pred <- try(eval(parse(text = paste0("with(object$model$model, expand.grid(", pred_cmd ,"))"))), silent = TRUE)
@@ -522,7 +507,8 @@ predict.regression <- function(object,
     }
   } else {
     ## generate predictions for all observations in the dataset
-    pred <- getdata(pred_data, filt = "", na.rm = FALSE)
+    # pred <- getdata(pred_data, filt = pred_filt, na.rm = FALSE)
+    pred <- getdata(pred_data, na.rm = FALSE)
     pred_names <- names(pred)
     pred <- try(dplyr::select_(pred, .dots = vars), silent = TRUE)
     if (is(pred, 'try-error')) {
@@ -539,20 +525,20 @@ predict.regression <- function(object,
   pred_val <- try(predict(object$model, pred, interval = 'prediction', level = conf_lev), silent = TRUE)
   if (!is(pred_val, 'try-error')) {
     pred_val %<>% data.frame %>% mutate(diff = .[,3] - .[,1])
-    cl_split <- function(x) 100*(1-x)/2
-    cl_split(conf_lev) %>% round(1) %>% as.character %>% paste0(.,"%") -> cl_low
-    (100 - cl_split(conf_lev)) %>% round(1) %>% as.character %>% paste0(.,"%") -> cl_high
-    colnames(pred_val) <- c("Prediction",cl_low,cl_high,"+/-")
+    ci_perc <- ci_label(cl = conf_lev)
 
+    colnames(pred_val) <- c("Prediction",ci_perc[1],ci_perc[2],"+/-")
     pred <- data.frame(pred, pred_val, check.names = FALSE)
 
     if (prn) {
       cat("Linear regression (OLS)\n")
-      cat("Data     :", object$dataset, "\n")
+      cat("Data       :", object$dataset, "\n")
       if (object$data_filter %>% gsub("\\s","",.) != "")
-        cat("Filter   :", gsub("\\n","", object$data_filter), "\n")
-      cat("Response variable    :", object$dep_var, "\n")
-      cat("Explanatory variables:", paste0(object$indep_var, collapse=", "), "\n\n")
+        cat("Filter     :", gsub("\\n","", object$data_filter), "\n")
+      # if (pred_filt %>% gsub("\\s","",.) != "")
+      #   cat("Pred filter:", gsub("\\n","", pred_filt), "\n")
+      cat("Response variable    :", object$rvar, "\n")
+      cat("Explanatory variables:", paste0(object$evar, collapse=", "), "\n\n")
 
       if (pred_type == "cmd") {
         cat("Predicted values for:\n")
@@ -626,37 +612,41 @@ plot.reg_predict <- function(x,
   cn[which(cn == "Prediction") + 2] <- "ymax"
   colnames(object) <- cn
 
-  # if (facet_row != ".") {
-  #   byvar <- facet_row
-  # }
-  # if (facet_col != ".") {
-  #   byvar <- if (is.null(byvar)) facet_col else c(byvar, facet_col)
-  # }
-  # if (fill != "none") {
-  #   vars %<>% c(., fill)
-  #   if (type == "bar")
-  #     byvar <- if (is.null(byvar)) fill else c(byvar, fill)
+  # if (color == "none") {
+  #   p <- ggplot(object, aes_string(x=xvar, y="Prediction")) +
+  #          geom_line()
+  #          # geom_line(aes(group=1))
+  # } else {
+  #   p <- ggplot(object, aes_string(x = xvar, y = "Prediction", color = color, group = color)) +
+  #          geom_line()
+  #               # geom_line(aes_string(group=color))
   # }
 
-  # tbv <- if (is.null(byvar)) i else c(i, byvar)
-  # tmp <- dat %>% group_by_(.dots = tbv) %>% select_(j) %>% summarise_each(funs(mean))
-  # print(getclass(object))
+  byvar <- NULL
+  if (color != "none") byvar <- color
+  if (facet_row != ".")
+    byvar <- if (is.null(byvar)) facet_row else unique(c(byvar, facet_row))
 
+  if (facet_col != ".")
+    byvar <- if (is.null(byvar)) facet_col else unique(c(byvar, facet_col))
 
-  if (color == "none") {
-    p <- ggplot(object, aes_string(x=xvar, y="Prediction")) +
-           geom_line()
-           # geom_line(aes(group=1))
+  tbv <- if (is.null(byvar)) xvar else c(xvar, byvar)
+  tmp <- object %>% group_by_(.dots = tbv) %>% select_(.dots = c("Prediction","ymin","ymax")) %>% summarise_each(funs(mean))
+  if (color == 'none') {
+    p <- ggplot(tmp, aes_string(x=xvar, y="Prediction")) + geom_line(aes(group = 1))
   } else {
-    p <- ggplot(object, aes_string(x = xvar, y = "Prediction", color = color, group = color)) +
-           geom_line()
-                # geom_line(aes_string(group=color))
+    # p <- sshhr( ggplot(tmp, aes_string(x=xvar, y="Prediction", color = color, group = color)) + geom_line() )
+    p <- ggplot(tmp, aes_string(x=xvar, y="Prediction", color = color, group = color)) + geom_line()
   }
 
-  facets <- paste(facet_row, "~", facet_col)
-  if (facets != ". ~ .") p <- p + facet_grid(facets)
+  if (facet_row != "." || facet_col != ".") {
+    facets <- if (facet_row == ".")  paste("~", facet_col)
+              else paste(facet_row, '~', facet_col)
+    facet_fun <- if (facet_row == ".") facet_wrap else facet_grid
+    p <- p + facet_fun(as.formula(facets))
+  }
 
-  if (length(unique(object[[xvar]])) < 10)
+  if (is.factor(tmp[[xvar]]) || length(unique(tmp[[xvar]])) < 10)
     p <- p + geom_pointrange(aes_string(ymin = "ymin", ymax = "ymax"), size=.3)
   else
     p <- p + geom_smooth(aes_string(ymin = "ymin", ymax = "ymax"), stat="identity")
@@ -681,7 +671,8 @@ plot.reg_predict <- function(x,
 #' @export
 store_reg <- function(object, data = object$dataset,
                       type = "residuals", name = paste0(type, "_reg")) {
-  if (!is.null(object$data_filter) && object$data_filter != "")
+  # if (!is.null(object$data_filter) && object$data_filter != "")
+  if (!is_empty(object$data_filter))
     return(message("Please deactivate data filters before trying to store predictions or residuals"))
 
   ## fix empty name input
@@ -705,10 +696,10 @@ store_reg <- function(object, data = object$dataset,
 }
 
 #' Check if main effects for all interaction effects are included in the model
-#' If ':' is used to select a range _indep_var_ is updated
+#' If ':' is used to select a range _evar_ is updated
 #' @details See \url{http://vnijs.github.io/radiant/quant/regression.html} for an example in Radiant
 #'
-#' @param iv List of explanatory variables provided to _regression_ or _glm_
+#' @param ev List of explanatory variables provided to _regression_ or _glm_
 #' @param cn Column names for all explanatory variables in _dat_
 #' @param intv Interaction terms specified
 #'
@@ -719,11 +710,11 @@ store_reg <- function(object, data = object$dataset,
 #' var_check(c("a", "b"), c("a", "b"), "a:c")
 #'
 #' @export
-var_check <- function(iv, cn, intv = "") {
+var_check <- function(ev, cn, intv = "") {
 
-  ## if : is used to select a range of variables indep_var is updated
-  vars <- iv
-  if (length(vars) < length(cn)) vars <- iv <- cn
+  ## if : is used to select a range of variables evar is updated
+  vars <- ev
+  if (length(vars) < length(cn)) vars <- ev <- cn
 
   if (intv != "" && length(vars) > 1) {
     if ({intv %>% strsplit(":") %>% unlist} %in% vars %>% all) {
@@ -734,7 +725,7 @@ var_check <- function(iv, cn, intv = "") {
     }
   }
 
-  list(vars = vars, iv = iv, intv = intv)
+  list(vars = vars, ev = ev, intv = intv)
 }
 
 #' Add interaction terms to list of test variables if needed

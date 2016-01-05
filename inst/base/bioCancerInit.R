@@ -96,6 +96,7 @@ saveStateOnRefresh <- function(session = session) {
 
   if (is.null(input$dataset)) return()
 
+
   # selcom <- input$data_filter %>% gsub("\\s","", .) %>% gsub("\"","\'",.)
   selcom <- input$data_filter %>% gsub("\\n","", .) %>% gsub("\"","\'",.)
   if (is_empty(selcom) || input$show_filter == FALSE) {
@@ -108,15 +109,26 @@ saveStateOnRefresh <- function(session = session) {
       isolate(r_data$filter_error <- paste0("Invalid filter: \"", attr(seldat,"condition")$message,"\". Update or remove the expression"))
     } else {
       isolate(r_data$filter_error <- "")
-      return(seldat)
+      if (!(input$nav_radiant == "Data" && input$tabs_data == "Transform")) {
+        if ("grouped_df" %in% class(seldat)) {
+          return(droplevels(ungroup(seldat)))
+        } else {
+          return(droplevels(seldat))
+        }
+      }
     }
   }
 
-  r_data[[input$dataset]]
+  if ("grouped_df" %in% class(r_data[[input$dataset]])) {
+    return(ungroup(r_data[[input$dataset]]))
+  } else {
+    return(r_data[[input$dataset]])
+  }
 })
 
 .getclass <- reactive({
-  head(r_data[[input$dataset]]) %>% getclass
+  # head(r_data[[input$dataset]]) %>% getclass
+  getclass(.getdata())
 })
 
 ## used for group_by and facet row/column
@@ -138,7 +150,8 @@ groupable_vars <- reactive({
 
 groupable_vars_nonum <- reactive({
   .getdata() %>%
-    summarise_each(funs(is.factor(.) || lubridate::is.Date(.) || is.integer(.))) %>%
+    summarise_each(funs(is.factor(.) || lubridate::is.Date(.) || is.integer(.) ||
+                   is.character(.))) %>%
                         # ((n_distinct(., na_rm = TRUE)/n()) < .30 && !is.numeric(.)))) %>%
     {which(. == TRUE)} %>%
     varnames()[.]
@@ -195,8 +208,6 @@ clean_args <- function(rep_args, rep_default = list()) {
   rep_args
 }
 
-is.symbol
-
 ## check if a variable is null or not in the selected data.frame
 not_available <- function(x)
   if (any(is.null(x)) || (sum(x %in% varnames()) < length(x))) TRUE else FALSE
@@ -233,7 +244,8 @@ trunc_char <- function(x) if (is.character(x)) strtrim(x,40) else x
 show_data_snippet <- function(dat = input$dataset, nshow = 7, title = "") {
 
   n <- 0
-  {if (is.character(dat) && length(dat) == 1) r_data[[dat]] else dat} %>%
+  # {if (is.character(dat) && length(dat) == 1) r_data[[dat]] else dat} %>%
+  {if (is.character(dat) && length(dat) == 1) getdata(dat) else dat} %>%
     { n <<- nrow(.); . } %>%
     dplyr::slice(1:min(nshow,n)) %>%
     mutate_each(funs(d2c)) %>%
@@ -346,8 +358,11 @@ plot_downloader <- function(plot_name, width = plot_width(),
         # if (fext(file) == "pdf") pdf(file=file, width = psize(width), height = psize(height))
 
         ## needed to get the image quality at the same level as shiny
-        pr <- session$clientData$pixelratio
-        if (is.null(pr) || pr < 1) pr <- 1
+        # pr <- session$clientData$pixelratio
+        # if (is.null(pr) || pr < 1) pr <- 1
+
+        ## download graphs in higher resolution than shown in GUI (504 dpi)
+        pr <- 7
         png(file=file, width = width*pr, height = height*pr, res=72*pr)
           print(get(paste0(pre, plot_name))())
         dev.off()

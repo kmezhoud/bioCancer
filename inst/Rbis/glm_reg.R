@@ -3,8 +3,8 @@
 #' @details See \url{http://vnijs.github.io/radiant/quant/glm_reg.html} for an example in Radiant
 #'
 #' @param dataset Dataset name (string). This can be a dataframe in the global environment or an element in an r_data list from Radiant
-#' @param dep_var The response variable in the logit (probit) model
-#' @param indep_var Explanatory variables in the model
+#' @param rvar The response variable in the logit (probit) model
+#' @param evar Explanatory variables in the model
 #' @param lev The level in the response variable defined as _success_
 #' @param link Link function for _glm_ ('logit' or 'probit'). 'logit' is the default
 #' @param int_var Interaction term to include in the model (not implement)
@@ -24,7 +24,7 @@
 #' @seealso \code{\link{plot.glm_predict}} to plot prediction output
 #'
 #' @export
-glm_reg <- function(dataset, dep_var, indep_var,
+glm_reg <- function(dataset, rvar, evar,
                     lev = "",
                     link = "logit",
                     int_var = "",
@@ -32,14 +32,14 @@ glm_reg <- function(dataset, dep_var, indep_var,
                     dec = 3,
                     data_filter = "") {
 
-  dat <- getdata(dataset, c(dep_var, indep_var), filt = data_filter)
+  dat <- getdata(dataset, c(rvar, evar), filt = data_filter)
   if (!is_string(dataset)) dataset <- "-----"
 
   if (any(summarise_each(dat, funs(does_vary)) == FALSE))
     return("One or more selected variables show no variation. Please select other variables." %>%
            set_class(c("glm_reg",class(.))))
 
-  glm_dv <- dat[[dep_var]]
+  glm_dv <- dat[[rvar]]
   if (lev == "") {
     if (is.factor(glm_dv))
       lev <- levels(glm_dv)[1]
@@ -48,52 +48,41 @@ glm_reg <- function(dataset, dep_var, indep_var,
   }
 
   ## transformation to TRUE/FALSE depending on the selected level (lev)
-  dat[[dep_var]] <- dat[[dep_var]] == lev
+  dat[[rvar]] <- dat[[rvar]] == lev
 
   vars <- ""
-  var_check(indep_var, colnames(dat)[-1], int_var) %>%
-    { vars <<- .$vars; indep_var <<- .$iv; int_var <<- .$intv }
+  var_check(evar, colnames(dat)[-1], int_var) %>%
+    { vars <<- .$vars; evar <<- .$ev; int_var <<- .$intv }
 
   if ("standardize" %in% check) {
     isNum <- sapply(dat, is.numeric)
     if (sum(isNum > 0)) dat[,isNum] %<>% data.frame %>% mutate_each(funs(scale))
   }
 
-  formula <- paste(dep_var, "~", paste(vars, collapse = " + ")) %>% as.formula
+  form <- paste(rvar, "~", paste(vars, collapse = " + ")) %>% as.formula
 
   if ("stepwise" %in% check) {
     # use k = 2 for AIC, use k = log(nrow(dat)) for BIC
-    model <- glm(paste(dep_var, "~ 1") %>% as.formula,
+    model <- glm(paste(rvar, "~ 1") %>% as.formula,
                  family = binomial(link = link), data = dat) %>%
-             step(k = 2, scope = list(upper = formula), direction = 'both')
+             step(k = 2, scope = list(upper = form), direction = 'both')
   } else {
-    model <- glm(formula, family = binomial(link = link), data = dat)
+    model <- glm(form, family = binomial(link = link), data = dat)
   }
 
-  glm_coeff <- tidy(model)
-  glm_coeff$` ` <- sig_stars(glm_coeff$p.value)
-  glm_coeff[,c(2:5)] %<>% round(dec)
-
-  ## print -0 when needed
-  cz <- glm_coeff[[2]] == 0
-  if (length(cz) > 0 && sum(cz) > 0) {
-    tz <- glm_coeff[[4]] < 0
-    glm_coeff[[2]][cz] <- paste0("0.",paste0(rep(0,dec),collapse = ""))
-    glm_coeff[[2]][tz] <- paste0("-0.",paste0(rep(0,dec),collapse = ""))
-  }
-
-  glm_coeff$p.value[glm_coeff$p.value < .001] <- "< .001"
-  colnames(glm_coeff) <- c("  ","coefficient","std.error","z.value","p.value"," ")
+  coeff <- tidy(model)
+  coeff$` ` <- sig_stars(coeff$p.value) %>% format(justify = "left")
+  colnames(coeff) <- c("  ","coefficient","std.error","z.value","p.value"," ")
 
   isFct <- sapply(dplyr::select(dat,-1), is.factor)
   if (sum(isFct) > 0) {
 
-    for (i in names(dplyr::select(dat,-1)[isFct]))
-      glm_coeff$`  ` %<>% sub(i, paste0(i," > "), .)
-
+    for (i in names(isFct[isFct]))
+      coeff$`  ` %<>% sub(i, paste0(i,"|"), .)
 
     rm(i, isFct)
   }
+  coeff$`  ` %<>% format(justify = "left")
 
   ## dat not needed elsewhere
   rm(dat)
@@ -137,22 +126,32 @@ summary.glm_reg <- function(object,
 
   dec <- object$dec
 
-  cat("Generalized linear model (glm)")
+  if ("stepwise" %in% object$check) cat("-----------------------------------------------\n")
+  cat("Generalized linear model (GLM)")
   cat("\nLink function:", object$link)
   cat("\nData         :", object$dataset)
   if (object$data_filter %>% gsub("\\s","",.) != "")
     cat("\nFilter       :", gsub("\\n","", object$data_filter))
-  cat("\nResponse variable    :", object$dep_var)
-  cat("\nLevel                :", object$lev, "in", object$dep_var)
-  cat("\nExplanatory variables:", paste0(object$indep_var, collapse=", "))
+  cat("\nResponse variable    :", object$rvar)
+  cat("\nLevel                :", object$lev, "in", object$rvar)
+  cat("\nExplanatory variables:", paste0(object$evar, collapse=", "),"\n")
+
+  expl_var <- if (length(object$evar) == 1) object$evar else "x"
+  cat(paste0("Null hyp.: the effect of ", expl_var, " on ", object$rvar, " is zero\n"))
+  cat(paste0("Alt. hyp.: the effect of ", expl_var, " on ", object$rvar, " is not zero\n"))
   if ("standardize" %in% object$check)
-    cat("\nStandardized coefficients shown")
-  cat("\n\n")
-  print(object$glm_coeff, row.names=FALSE)
+    cat("**Standardized coefficients shown**\n")
+  cat("\n")
+
+  coeff <- object$coeff
+  p.small <- coeff$p.value < .001
+  # coeff[,2:5] %<>% mutate_each(funs(sprintf(paste0("%.",dec,"f"),.)))
+  coeff[,2:5] %<>% dfprint(dec)
+  coeff$p.value[p.small] <- "< .001"
+  print(coeff, row.names=FALSE)
+  cat("\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n")
 
   glm_fit <- glance(object$model)
-
-  cat("\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n")
 
   ## pseudo R2 (likelihood ratio) - http://en.wikipedia.org/wiki/Logistic_regression
   glm_fit %<>% mutate(r2 = (null.deviance - deviance) / null.deviance) %>% round(dec)
@@ -164,21 +163,22 @@ summary.glm_reg <- function(object,
   cat("\nPseudo R-squared:", glm_fit$r2)
   cat(paste0("\nLog-likelihood: ", glm_fit$logLik, ", AIC: ", glm_fit$AIC, ", BIC: ", glm_fit$BIC))
   cat(paste0("\nChi-squared: ", with(glm_fit, null.deviance - deviance) %>% round(dec), " df(",
-         with(glm_fit, df.null - df.residual), "), p.value ", chi_pval), "\n")
-  cat("Nr obs: ", glm_fit$df.null + 1, "\n\n")
+               with(glm_fit, df.null - df.residual), "), p.value ", chi_pval), "\n")
+  cat("Nr obs:", glm_fit$df.null + 1, "\n\n")
 
   if ("vif" %in% sum_check) {
     if (anyNA(object$model$coeff)) {
       cat("The set of explanatory variables exhibit perfect multicollinearity.\nOne or more variables were dropped from the estimation.\nmulticollinearity diagnostics were not calculated.\n")
     } else {
-      if (length(object$indep_var) > 1) {
+      if (length(object$evar) > 1) {
         cat("Variance Inflation Factors\n")
-        vif (object$model) %>%
+        vif(object$model) %>%
           { if (!dim(.) %>% is.null) .[,"GVIF"] else . } %>% ## needed when factors are included
           data.frame("VIF" = ., "Rsq" = 1 - 1/.) %>%
           round(dec) %>%
           .[order(.$VIF, decreasing=T),] %>%
-          { if (nrow(.) < 8) t(.) else . } %>% print
+          { if (nrow(.) < 8) t(.) else . } %>%
+          print
       } else {
         cat("Insufficient number of explanatory variables selected to calculate\nmulticollinearity diagnostics")
       }
@@ -190,21 +190,22 @@ summary.glm_reg <- function(object,
     if (object$model$coeff %>% is.na %>% any) {
       cat("There is perfect multicollineary in the set of explanatory variables.\nOne or more variables were dropped from the estimation.\nmulticollinearity diagnostics were not calculated.\n")
     } else {
-      cl_split <- function(x) 100*(1-x)/2
-      cl_split(conf_lev) %>% round(1) %>% as.character %>% paste0(.,"%") -> cl_low
-      (100 - cl_split(conf_lev)) %>% round(1) %>% as.character %>% paste0(.,"%") -> cl_high
+      ci_perc <- ci_label(cl = conf_lev)
 
-      confint.default(object$model, level = conf_lev) %>%
+      ci_tab <-
+        confint.default(object$model, level = conf_lev) %>%
         as.data.frame %>%
         set_colnames(c("Low","High")) %>%
-        cbind(dplyr::select(object$glm_coeff,2),.) %>%
-        set_rownames(object$glm_coeff$`  `) -> ci_tab
+
+        cbind(select(object$coeff,2),.)
 
       if ("confint" %in% sum_check) {
-        ci_tab %>% round(dec) %T>%
-        # set_rownames(object$glm_coeff$`  `) %T>%
+        ci_tab %T>%
         { .$`+/-` <- (.$High - .$coefficient) } %>%
-        set_colnames(c("coefficient", cl_low, cl_high, "+/-")) %>%
+        # mutate_each(funs(sprintf(paste0("%.",dec,"f"),.))) %>%
+        dfprint(dec) %>%
+        set_colnames(c("coefficient", ci_perc[1], ci_perc[2], "+/-")) %>%
+        set_rownames(object$coeff$`  `) %>%
         print
         cat("\n")
       }
@@ -212,19 +213,16 @@ summary.glm_reg <- function(object,
   }
 
   if ("odds" %in% sum_check) {
-    if (object$model$coeff %>% is.na %>% any) {
+    if (any(is.na(object$model$coeff))) {
       cat("There is perfect multicollinearity in the set of selected explanatory variables.\nOne or more variables were dropped from the estimation.\nmulticollinearity diagnostics were not calculated.\n")
     } else {
       if (object$link == "logit") {
-        exp(ci_tab[-1,]) %>% round(dec) %>%
-          set_colnames(c("odds ratio", cl_low, cl_high)) %>% print
-          # .[-1, ] %>% print
-
-        # odds_tab <- exp(ci_tab) %>% round(3)
-        # odds_tab$`+/-` <- (odds_tab$High - odds_tab$Low)
-          # odds_tab %>%
-          # set_colnames(c("odds ratio", cl_low, cl_high, "+/-")) %>%
-          # .[-1, ] %>% print
+        exp(ci_tab[-1,]) %>%
+          # mutate_each(funs(sprintf(paste0("%.",dec,"f"),.))) %>%
+          dfprint(dec) %>%
+          set_colnames(c("odds ratio", ci_perc[1], ci_perc[2])) %>%
+          set_rownames(object$coeff$`  `[-1]) %>%
+          print
         cat("\n")
       } else if (object$link == "probit") {
         cat("Odds ratios are not calculated for Probit models\n\n")
@@ -236,10 +234,10 @@ summary.glm_reg <- function(object,
     if ("stepwise" %in% object$check) {
       cat("Model comparisons are not conducted when Stepwise has been selected.\n")
     } else {
-      # sub_formula <- ". ~ 1"
-      sub_formula <- paste(object$dep_var, "~ 1")
+      # sub_form <- ". ~ 1"
+      sub_form <- paste(object$rvar, "~ 1")
 
-      vars <- object$indep_var
+      vars <- object$evar
       if (object$int_var != "" && length(vars) > 1) {
         ## updating test_var if needed
         test_var <- test_specs(test_var, object$int_var)
@@ -247,10 +245,10 @@ summary.glm_reg <- function(object,
       }
 
       not_selected <- setdiff(vars, test_var)
-      if (length(not_selected) > 0) sub_formula <- paste(object$dep_var, "~", paste(not_selected, collapse = " + "))
+      if (length(not_selected) > 0) sub_form <- paste(object$rvar, "~", paste(not_selected, collapse = " + "))
       ## update with glm_sub NOT working when called from radiant - strange
-      # glm_sub <- update(object$model, sub_formula, data = object$model$model)
-      glm_sub <- glm(sub_formula, family = binomial(link = object$link), data = object$model$model)
+      # glm_sub <- update(object$model, sub_form, data = object$model$model)
+      glm_sub <- glm(sub_form, family = binomial(link = object$link), data = object$model$model)
       glm_sub_fit <- glance(glm_sub)
       glm_sub <- anova(glm_sub, object$model, test='Chi')
 
@@ -308,22 +306,30 @@ plot.glm_reg <- function(x,
   model$.actual <- as.numeric(object$glm_dv)
   model$.actual <- model$.actual - max(model$.actual) + 1   # adjustment in case max > 1
 
-  dep_var <- object$dep_var
-  indep_var <- object$indep_var
-  vars <- c(object$dep_var, object$indep_var)
+  rvar <- object$rvar
+  evar <- object$evar
+  vars <- c(object$rvar, object$evar)
   nrCol <- 2
   plot_list <- list()
 
-  if ("hist" %in% plots)
-    for (i in vars) plot_list[[i]] <- ggplot(model, aes_string(x = i)) + geom_histogram()
+  ## use orginal data rather than the logical used for estimation
+  model[[rvar]] <- object$glm_dv
+
+  if ("hist" %in% plots) {
+    for (i in vars)
+      plot_list[[i]] <- visualize(select_(model, .dots = i), xvar = i, bins = 10, custom = TRUE)
+      # plot_list[[i]] <- ggplot(model, aes_string(x = i)) + geom_histogram()
+  }
 
   if ("coef" %in% plots) {
     nrCol <- 1
     plot_list[["coef"]] <- confint.default(object$model, level = conf_lev) %>%
           data.frame %>%
           set_colnames(c("Low","High")) %>%
-          cbind(dplyr::select(object$glm_coeff,2),.) %>%
-          set_rownames(object$glm_coeff$`  `) %>%
+
+          cbind(select(object$coeff,2),.) %>%
+          set_rownames(object$coeff$`  `) %>%
+
           { if (!intercept) .[-1,] else . } %>%
           mutate(variable = rownames(.)) %>%
           ggplot() +
@@ -333,30 +339,43 @@ plot.glm_reg <- function(x,
   }
 
   if (plots == "scatter") {
-    for (i in indep_var) {
-      if ('factor' %in% class(model[,i])) {
-        plot_list[[i]] <- ggplot(model, aes_string(x=i, fill=dep_var)) +
-                        geom_bar(position = "fill", alpha=.7) +
+    for (i in evar) {
+      if ("factor" %in% class(model[,i])) {
+        plot_list[[i]] <- ggplot(model, aes_string(x=i, fill=rvar)) +
+                        geom_bar(position = "fill", alpha=.5) +
                         labs(list(y = ""))
       } else {
-        plot_list[[i]] <- ggplot(model, aes_string(x=dep_var, y=i, fill=dep_var)) +
-                        geom_boxplot(alpha = .7) + theme(legend.position = "none")
+        plot_list[[i]] <-
+          visualize(select_(model, .dots = c(i,rvar)), xvar = rvar, yvar = i, check = "jitter", type = "scatter", custom = TRUE)
       }
     }
     nrCol <- 1
   }
 
   if (plots == "dashboard") {
-    plot_list[[1]] <- ggplot(model, aes_string(x=".fitted", y=".actual")) + geom_point(alpha = .25) +
-           stat_smooth(method="glm", family="binomial", se=TRUE) +
-           geom_jitter(position = position_jitter(height = .05)) +
-           labs(list(title = "Actual vs Fitted values", x = "Fitted values", y = "Actual"))
 
-    plot_list[[2]] <- ggplot(model, aes_string(x=".fitted", y=".resid")) + geom_point(alpha = .25) +
-           geom_hline(yintercept = 0) + geom_smooth(size = .75, linetype = "dotdash", se = TRUE) +
-           labs(list(title = "Residuals vs Fitted values", x = "Fitted", y = "Residuals"))
+    plot_list[[1]] <-
+      visualize(model, xvar = ".fitted", yvar = ".actual", type = "scatter", check = "jitter", custom = TRUE) +
+      stat_smooth(method="glm", method.args = list(family = "binomial"), se=TRUE) +
+      labs(list(title = "Actual vs Fitted values", x = "Fitted", y = "Actual"))
 
-    plot_list[[3]] <- ggplot(model, aes_string(x = ".resid")) + geom_histogram(binwidth = .5) +
+    # plot_list[[1]] <- ggplot(model, aes_string(x=".fitted", y=".actual")) + geom_point(alpha = .25) +
+    #        stat_smooth(method="glm", method.args = list(family = "binomial"), se=TRUE) +
+    #        geom_jitter(position = position_jitter(height = .05)) +
+    #        labs(list(title = "Actual vs Fitted values", x = "Fitted values", y = "Actual"))
+
+    # plot_list[[2]] <- ggplot(model, aes_string(x=".fitted", y=".resid")) + geom_point(alpha = .25) +
+    #        geom_hline(yintercept = 0) + geom_smooth(size = .75, linetype = "dotdash", se = TRUE) +
+    #        labs(list(title = "Residuals vs Fitted values", x = "Fitted", y = "Residuals"))
+
+    plot_list[[2]] <-
+      visualize(model, xvar = ".fitted", yvar = ".resid", type = "scatter", custom = TRUE) +
+      labs(list(title = "Residuals vs Fitted", x = "Fitted values", y = "Residuals")) +
+      geom_hline(yintercept = 0)
+      # + geom_smooth(size = .75, linetype = "dotdash", se = TRUE)
+
+    plot_list[[3]] <-
+      visualize(model, xvar = ".resid", custom = TRUE) +
       labs(list(title = "Histogram of residuals", x = "Residuals"))
 
     plot_list[[4]] <- ggplot(model, aes_string(x=".resid")) + geom_density(alpha=.3, fill = "green") +
@@ -421,7 +440,7 @@ predict.glm_reg <- function(object,
   }
 
   pred_type <- "cmd"
-  vars <- object$indep_var
+  vars <- object$evar
   if (pred_cmd != "") {
     pred_cmd %<>% gsub("\"","\'", .) %>% gsub(";",",", .)
     pred <- try(eval(parse(text = paste0("with(object$model$model, expand.grid(", pred_cmd ,"))"))), silent = TRUE)
@@ -480,14 +499,14 @@ predict.glm_reg <- function(object,
     pred <- data.frame(pred, pred_val, check.names = FALSE)
 
     if (prn) {
-      cat("Generalized linear model (glm)")
+      cat("Generalized linear model (GLM)")
       cat("\nLink function:", object$link)
       cat("\nData         :", object$dataset)
       if (object$data_filter %>% gsub("\\s","",.) != "")
         cat("\nFilter       :", gsub("\\n","", object$data_filter))
-      cat("\nResponse variable   :", object$dep_var)
-      cat("\nLevel                :", object$lev, "in", object$dep_var)
-      cat("\nExplanatory variables:", paste0(object$indep_var, collapse=", "),"\n\n")
+      cat("\nResponse variable    :", object$rvar)
+      cat("\nLevel                :", object$lev, "in", object$rvar)
+      cat("\nExplanatory variables:", paste0(object$evar, collapse=", "),"\n\n")
 
       if (pred_type == "cmd") {
         cat("Predicted values for:\n")
@@ -496,8 +515,8 @@ predict.glm_reg <- function(object,
       }
 
       isNum <- c("Prediction", "std.error")
-      pred %>% {.[, isNum] <- round(.[, isNum],dec); .} %>%
-        print(row.names = FALSE)
+      # pred %>% {.[, isNum] <- round(.[, isNum],dec); .} %>%
+      pred %>% dfprint(dec) %>% print(row.names = FALSE)
     }
 
     return(pred %>% set_class(c("glm_predict",class(.))))
@@ -560,20 +579,30 @@ plot.glm_predict <- function(x,
   object$ymin <- object$Prediction - qnorm(.5 + conf_lev/2)*object$std.error
   object$ymax <- object$Prediction + qnorm(.5 + conf_lev/2)*object$std.error
 
+  byvar <- NULL
+  if (color != "none") byvar <- color
+  if (facet_row != ".")
+    byvar <- if (is.null(byvar)) facet_row else unique(c(byvar, facet_row))
+
+  if (facet_col != ".")
+    byvar <- if (is.null(byvar)) facet_col else unique(c(byvar, facet_col))
+
+  tbv <- if (is.null(byvar)) xvar else c(xvar, byvar)
+  tmp <- object %>% group_by_(.dots = tbv) %>% select_(.dots = c("Prediction","ymin","ymax")) %>% summarise_each(funs(mean))
   if (color == 'none') {
-    p <- ggplot(object, aes_string(x = xvar, y = "Prediction")) + geom_line()
-           # geom_line(aes(group=1))
+    p <- ggplot(tmp, aes_string(x=xvar, y="Prediction")) + geom_line(aes(group = 1))
   } else {
-    # p <- ggplot(object, aes_string(x = xvar, y = "Prediction", color = color)) +
-    p <- ggplot(object, aes_string(x = xvar, y = "Prediction", color = color, group = color)) +
-                geom_line()
-                # geom_line(aes_string(group=color))
+    p <- ggplot(tmp, aes_string(x=xvar, y="Prediction", color = color, group = color)) + geom_line()
   }
 
-  facets <- paste(facet_row, '~', facet_col)
-  if (facets != '. ~ .') p <- p + facet_grid(facets)
+  if (facet_row != "." || facet_col != ".") {
+    facets <- if (facet_row == ".")  paste("~", facet_col)
+              else paste(facet_row, '~', facet_col)
+    facet_fun <- if (facet_row == ".") facet_wrap else facet_grid
+    p <- p + facet_fun(as.formula(facets))
+  }
 
-  if (length(unique(object[[xvar]])) < 10)
+  if (is.factor(tmp[[xvar]]) || length(unique(tmp[[xvar]])) < 10)
     p <- p + geom_pointrange(aes_string(ymin = "ymin", ymax = "ymax"), size=.3)
   else
     p <- p + geom_smooth(aes_string(ymin = "ymin", ymax = "ymax"), stat="identity")
@@ -601,7 +630,8 @@ store_glm <- function(object,
                       type = "residuals",
                       name = paste0(type, "_glm")) {
 
-  if (!is.null(object$data_filter) && object$data_filter != "")
+  # if (!is.null(object$data_filter) && object$data_filter != "")
+  if (!is_empty(object$data_filter))
     return(message("Please deactivate data filters before trying to store predictions or residuals"))
 
   ## fix empty name input

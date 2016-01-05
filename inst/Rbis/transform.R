@@ -12,27 +12,6 @@ center <- function(x)
 standardize <- function(x)
 	if (is.numeric(x)) { center(x) / sd_rm(x) } else x
 
-#' Median split
-#' @param x Input variable
-#' @return Factor variable deciles
-
-#' @export
-median_split <- function(x) {
-  cut(x, breaks = quantile(x,c(0,.5,1)),
-      include.lowest = TRUE,
-      labels = c("Below", "Above"))
-}
-
-#' Create deciles
-#' @param x Input variable
-#' @return Factor variable
-#' @export
-decile_split <- function(x) {
-  ## avoid non-unique breaks
-  df <- data.frame(breaks = quantile(x, seq(0,1,.1))) %>% set_rownames(0:10) %>% unique
-  cut(x, df$breaks, rownames(df)[-1], include.lowest = TRUE)
-}
-
 #' Calculate square of a variable
 #' @param x Input variable
 #' @return x^2
@@ -43,14 +22,20 @@ square <- function(x) x^2
 #' @param x Input variable
 #' @return 1/x
 #' @export
-inverse <- function(x) 1/x
+inverse <- function(x) {
+  stopifnot(y != 0)
+  1/x
+}
 
 #' Normalize a variable x by a variable y
 #' @param x Input variable
 #' @param y Normalizing variable
 #' @return x/y
 #' @export
-normalize <- function(x,y) x/y
+normalize <- function(x,y) {
+  stopifnot(y != 0)
+  x/y
+}
 
 #' Convert input in month-day-year format to date
 #' @details Use as.character if x is a factor
@@ -298,16 +283,33 @@ mutate_each <- function(tbl, funs, ..., ext = "") {
     if (is.null(vars)) vars <- colnames(tbl)
 
     new <- paste0(vars, ext)
-    # tbl[,new] <- tbl %>% select_(.dots = vars) %>% mutate_each_(funs, vars = vars) %>%
-    tbl[,new] <- tbl %>% mutate_each_(funs, vars = vars) %>% select_(.dots = vars) %>%
+    tbl[,new] <-
+      tbl %>% mutate_each_(funs, vars = vars) %>% select_(.dots = vars) %>%
 
       set_colnames(new)
-
     tbl
-
-    # tbl %>% select_(.dots = vars) %>% mutate_each_(funs, vars = vars) %>%
-    #   set_colnames(paste0(vars, ext)) %>% bind_cols(tbl, .)
   }
+}
+
+#' Create a quintile (or decile) index
+#'
+#' @details Same as stata
+#'
+#' @param x Numeric variable
+#' @param n number of bins to create
+#' @param rev Reverse the order of the xtiles
+#'
+#' @examples
+#' xtile(1:10,5)
+#' xtile(1:10,5, rev = TRUE)
+#'
+#' @export
+xtile <- function(x, n, rev = FALSE) {
+  stopifnot(is.numeric(n), is.numeric(x), n > 1, length(x) > n)
+  breaks <- quantile(x, prob = seq(0, 1, length = n+1), type = 2)
+  if (length(breaks) < 2) stop(paste("Insufficient variation in x to construct",n,"breaks"))
+  .bincode(x, breaks, include.lowest = TRUE) %>%
+  { if (rev) as.integer((n+1) - .) else .}
 }
 
 #' Show all rows with duplicated values (not just the first or last)
@@ -366,12 +368,13 @@ getsummary <- function(dat, dc = getclass(dat)) {
       group_by_("variable") %>%
       summarise_each(funs(n = length, n_missing = n_missing, n_distinct = n_distinct,
                      mean = mean_rm, median = median_rm, min = min_rm, max = max_rm,
-                     `25%` = p25, `75%` = p75, sd = sd_rm, se = serr, cv = sd/mean)) %>%
+                     `25%` = p25, `75%` = p75, sd = sd_rm, se = serr)) %>%
       data.frame(check.names = FALSE) %>%
       { .[,-1] %<>% round(.,3); colnames(.)[1] <- ""; . } %>%
       print(row.names = FALSE)
     cat("\n")
   }
+
   if (sum(isFct) > 0) {
     cat("Summarize factors:\n")
     dplyr::select(dat, which(isFct)) %>% summary(maxsum = 20) %>% print
