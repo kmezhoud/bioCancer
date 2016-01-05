@@ -17,6 +17,7 @@ Imports:
     shinythemes,
     cgdsr,
     coffeewheel,
+    metabologram,
     Biobase,
     geNetClassifier,
     AnnotationFuncs,
