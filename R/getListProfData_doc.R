@@ -1,6 +1,6 @@
 #' search and get genetic profiles (CNA,mRNA, Methylation, Mutation...)
 #'
-#' @details See \url{https://github.com/kmezhoud/CancerPortal/wiki}
+#' @details See \url{https://github.com/kmezhoud/bioCancer/wiki}
 #'
 #' @param regex1 Case id (cancer_study_id_[mutations, cna, methylation, mrna ]).
 #' @param listRef1 A list of cases for one study.
@@ -122,7 +122,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 
 #' get list of data frame with profiles data (CNA,mRNA, Methylation, Mutation...)
 #'
-#' @details See \url{https://github.com/kmezhoud/CancerPortal/wiki}
+#' @details See \url{https://github.com/kmezhoud/bioCancer/wiki}
 #'
 #' @param panel Panel name (string) in which Studies are selected. There are two panels ("Circomics" or "Reactome")
 #' @return A LIST of a list data frame. Each LIST is related to profiles data (CNA, mRNA, Methylation, Mutation, miRNA, RPPA).

@@ -8,21 +8,9 @@ output:
     number_sections: yes
     theme: flatly
     toc: yes
-vignette: >
-  %\VignetteIndexEntry{ShiShi}
-  %\usepackage[utf8]{inputenc}
-  %\VignetteEngine{knitr::rmarkdown}
 ---
-
-
-```{r style, echo=FALSE, results="asis", message=FALSE}
-BiocStyle::markdown()
-knitr::opts_chunk$set(tidy = FALSE,
-                      warning = FALSE,
-                      message = FALSE)
-```
   
-#Protal Panel
+#Portal Panel
 
 ## Display available Cancer Studies in Table
 
