@@ -26,7 +26,7 @@ A data frame with Genetic profile
 search and get genetic profiles (CNA,mRNA, Methylation, Mutation...)
 }
 \details{
-See \url{https://github.com/kmezhoud/CancerPortal/wiki}
+See \url{https://github.com/kmezhoud/bioCancer/wiki}
 }
 \examples{
 \dontrun{

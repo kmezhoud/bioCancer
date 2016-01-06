@@ -17,7 +17,7 @@ A LIST of a list data frame. Each LIST is related to profiles data (CNA, mRNA, M
 get list of data frame with profiles data (CNA,mRNA, Methylation, Mutation...)
 }
 \details{
-See \url{https://github.com/kmezhoud/CancerPortal/wiki}
+See \url{https://github.com/kmezhoud/bioCancer/wiki}
 }
 \examples{
 \dontrun{
