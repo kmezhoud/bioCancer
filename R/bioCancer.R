@@ -43,6 +43,8 @@
 #'@import htmlwidgets
 #'@import car
 #'@import scales
+#'@ggplot2
+#'@covr
 
 bioCancer <- function(){
   if ("package:bioCancer" %in% search()){
