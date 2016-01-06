@@ -51,8 +51,6 @@ Imports:
     curl(>= 0.9.1),
     stringr (>= 1.0)
 Remotes:
-    armish/coffeewheel,
-    armish/metabologram,
     rstudio/DT,
     trestletech/shinyAce,
     vnijs/MathJaxR
