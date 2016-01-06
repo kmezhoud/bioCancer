@@ -50,10 +50,6 @@ Imports:
     scales(>= 0.2.5),
     curl(>= 0.9.1),
     stringr (>= 1.0)
-Remotes:
-    rstudio/DT,
-    trestletech/shinyAce,
-    vnijs/MathJaxR
 Suggests:
     rmarkdown (>= 0.4.2),
     devtools (>= 1.8.0),
