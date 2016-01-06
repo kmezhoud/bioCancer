@@ -1,3 +1,8 @@
+---
+output: 
+  html_document: 
+    fig_caption: yes
+---
 > Combine two datasets
 
 There are six _join_ (or _merge_) options available in bioCancer from the [dplyr](http://www.rdocumentation.org/packages/dplyr) package developed by Hadley Wickham and Romain Francois on [GitHub](https://github.com/hadley/dplyr).
@@ -163,7 +168,7 @@ In the table above we lose _Hellboy_ because, although this hero does appear in 
 
 ![inner_join](figures/inner_join.png)
 
-The R(adiant) commands are:
+The bioCancer commands are:
 
 ```r
 # bioCancer
@@ -246,7 +251,7 @@ The join result contains `superheroes` with variable `yr_founded` from `publishe
 
 ![left_join](figures/left_join.png)
 
-The R(adiant) commands are:
+The bioCancer commands are:
 
 ```r
 # bioCancer
@@ -329,7 +334,7 @@ The join result contains all rows and columns from `publishers` and all variable
 
 ![right_join](figures/right_join.png)
 
-The R(adiant) commands are:
+The bioCancer commands are:
 
 ```r
 # bioCancer
@@ -419,7 +424,7 @@ In this table we keep _Hellboy_ (even though _Dark Horse Comics_ is not in `publ
 
 ![full_join](figures/full_join.png)
 
-The R(adiant) commands are:
+The bioCancer commands are:
 
 ```r
 # bioCancer
@@ -482,7 +487,7 @@ full_join(superheroes, publishers, by = "publisher")
 </tbody>
 </table>
 
-We get a similar table as with `inner_join` but it contains only the variables in `superheroes`. The R(adiant) commands are:
+We get a similar table as with `inner_join` but it contains only the variables in `superheroes`. The bioCancer commands are:
 
 ```r
 # bioCancer
@@ -762,7 +767,7 @@ In the screen-shot of the Data > Combine tab below we see the two datasets. Ther
 
 If the `avengers` dataset were meant to extend the list of superheroes we could just stack the two datasets, one below the other. The new datasets has 14 rows and 4 columns. Due to a coding error in the `avengers` dataset (i.e.., _Magneto_ is *not* an _Avenger_) there is a duplicate row in the new combined dataset. Something we probably don't want.
 
-The R(adiant) commands are:
+The bioCancer commands are:
 
 ```r
 # bioCancer
@@ -879,7 +884,7 @@ If the dataset had different columns for the same superheroes we could combine t
 
 A good way to check if two datasets with the same columns have duplicate rows is to choose `intersect` from the `Combine type` dropdown. There is indeed one row that is identical in the `avengers` and `superheroes` data (i.e., _Magneto_).
 
-The R(adiant) commands are the same as shown above, except you will need to replace `bind_rows` by `intersect`.
+The bioCancer commands are the same as shown above, except you will need to replace `bind_rows` by `intersect`.
 
 <br>
 
@@ -962,7 +967,7 @@ The R(adiant) commands are the same as shown above, except you will need to repl
 
 A `union` of `avengers` and `superheroes` will combine the datasets but will omit duplicate rows (i.e., it will keep only one _copy_ of the row for _Magneto_). Likely what we want here.
 
-The R(adiant) commands are the same as shown above, except you will need to replace `bind_rows` by `union`.
+The bioCancer commands are the same as shown above, except you will need to replace `bind_rows` by `union`.
 
 <br>
 
@@ -1025,7 +1030,7 @@ The R(adiant) commands are the same as shown above, except you will need to repl
 
 Finally, a `setdiff` will keep rows from `avengers` that are not in `superheroes`. If we reverse the inputs (i.e., choose `superheroes` from the `Datasets` dropdown and `superheroes` from the `Combine with` dropdown) we will end up with all rows from `superheroes` that are not in `avengers`. In both cases the entry for _Magneto_ will be omitted.
 
-The R(adiant) commands are the same as shown above, except you will need to replace `bind_rows` by `setdiff`.
+The bioCancer commands are the same as shown above, except you will need to replace `bind_rows` by `setdiff`.
 
 <br>
 

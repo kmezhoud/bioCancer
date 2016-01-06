@@ -49,4 +49,4 @@ If data are loaded that you no longer need access to in the current session chec
 
 ### Using commands to load and save data
 
-The `loadr` command can be used to load data from a file directly into a Radiant session and add it to the `Datasets` dropdown. The `saver` command can be used to exact data from Radiant and save it to disk. Data can be loaded or saved as `rda` or `rds` format depending on the file extension chosen. These commands can be used both inside or without the Radiant browser interface. See `?loadr` and `?saver` for details.
+The `loadr` command can be used to load data from a file directly into a bioCancer session and add it to the `Datasets` dropdown. The `saver` command can be used to exact data from bioCancer and save it to disk. Data can be loaded or saved as `rda` or `rds` format depending on the file extension chosen. These commands can be used both inside or without the bioCancer browser interface. See `?loadr` and `?saver` for details.
