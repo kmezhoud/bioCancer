@@ -15,7 +15,7 @@
 
 \title{bioCancer: Multi-Omics Cancers data Visualisation}
 \author{Karim Mezhoud}
-\date{July 12, 2015}
+\date{January 12, 2016}
 \maketitle
 
 

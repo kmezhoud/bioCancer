@@ -1,5 +1,5 @@
 
 library(testthat)
-#library(bioCancer)
+library(bioCancer)
 
-#test_check("bioCancer")
+test_check("bioCancer")

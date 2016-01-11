@@ -16,37 +16,37 @@ shinyServer(function(input, output, session) {
 #   #library(networkD3)
 #
 
-  library(shinythemes)
-  library(cgdsr)
-  library(magrittr)
-  library(coffeewheel)
-  library(htmlwidgets)
- # library(metabologram)
-  library(DiagrammeR)
-  library(dplyr)
-  library(geNetClassifier)
-  library(RCurl)
-  library(clusterProfiler)
-  library(AnnotationFuncs)
-#### masked
-  library(plyr)
-
-##library(DT)
-library(Biobase)
-library(DOSE)
-library("org.Hs.eg.db")
-library(XML)
-  #
-### package in NAMESSPACE not imported
-  library(gridExtra)
-  library(psych)
-  library(broom)
-
-  library(car)
-  library(scales)
-  library(ggplot2)
-  library(covr)
-  #library(hwriter)
+#   library(shinythemes)
+#   library(cgdsr)
+#   library(magrittr)
+#   library(coffeewheel)
+#   library(htmlwidgets)
+#  # library(metabologram)
+#   library(DiagrammeR)
+#   library(dplyr)
+#   library(geNetClassifier)
+#   library(RCurl)
+#   library(clusterProfiler)
+#   library(AnnotationFuncs)
+# #### masked
+#   library(plyr)
+#
+# ##library(DT)
+# library(Biobase)
+# library(DOSE)
+# library("org.Hs.eg.db")
+# library(XML)
+#   #
+# ### package in NAMESSPACE not imported
+#   library(gridExtra)
+#   library(psych)
+#   library(broom)
+#
+#   library(car)
+#   library(scales)
+#   library(ggplot2)
+#   library(covr)
+#   #library(hwriter)
 
 
   #   library(grDevices)
