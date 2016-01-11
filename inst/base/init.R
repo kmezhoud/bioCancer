@@ -428,7 +428,7 @@ if (!is.null(r_state$nav_radiant)) {
 }
 
 ## 'sourcing' radiant's package functions in the server.R environment
-if (!"package:radiant" %in% search()) {
+if (!"package:bioCancer" %in% search()) {
   ## for shiny-server
   if (r_path == "..") {
     for (file in list.files("../../R",
@@ -439,13 +439,13 @@ if (!"package:radiant" %in% search()) {
     }
   } else {
     ## for shinyapps.io
-    radiant::copy_all(radiant)
-    set_class <- radiant::set_class         ## needed but not clear why
+    copy_all(bioCancer)
+    set_class <- set_class         ## needed but not clear why
     environment(set_class) <- environment() ## needed but not clear why
   }
 } else {
   ## for use with launcher
-  radiant::copy_all(radiant)
-  set_class <- radiant::set_class         ## needed but not clear why
+  copy_all(bioCancer)
+  set_class <- set_class         ## needed but not clear why
   environment(set_class) <- environment() ## needed but not clear why
 }

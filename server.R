@@ -8,7 +8,7 @@
 ##  install.packages("devtools", lib="/usr/lib/R/library")
 ##  install_github("armish/coffeewheel", lib="/usr/lib/R/library")
 ## source("http://bioconductor.org/biocLite.R")
-## biocLite("geNetClassifier, lib="/usr/lib/R/library")
+## biocLite("geNetClassifier", lib="/usr/lib/R/library")
 ## install.packages("AnnotationFuncs", repos = "http://www.bioconductor.org/packages/3.2/bioc", lib="/usr/local/share/R/bioconductor")
 
 shinyServer(function(input, output, session) {
@@ -63,9 +63,16 @@ library(XML)
 #   }
   #source("../base/global.R", encoding = "UTF-8", local = TRUE)
 
+  for (file in list.files("inst/Rbis",
+                          pattern="\\.(r|R)$",
+                          full.names = TRUE)) {
 
-  source("inst/base/init.R", encoding = r_encoding, local = TRUE)
-  source("inst/base/bioCancerInit.R", encoding = r_encoding, local = TRUE)
+    source(file, encoding = r_encoding, local = TRUE)
+  }
+  source(file.path("inst/base/init.R"), encoding = r_encoding, local = TRUE)
+  source(file.path("inst/base/bioCancerInit.R"), encoding = r_encoding, local = TRUE)
+  #source("inst/base/init.R", encoding = r_encoding, local = TRUE)
+  #source("inst/base/bioCancerInit.R", encoding = r_encoding, local = TRUE)
 
   ##################
   # for cgdsr
@@ -119,10 +126,10 @@ library(XML)
       source(file, encoding = r_encoding, local = TRUE)
     }
   }
-#  else {
-#     radiant::copy_all(radiant)
-#     set_class <- radiant::set_class
-#   }
+ # else {
+#     copy_all(bioCancer)
+ #    set_class <- set_class
+  # }
 #     } else {
 #       copy_from(bioCancer, state_init, state_single, state_multiple)
 #     }

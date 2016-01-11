@@ -71,7 +71,12 @@ shinyServer(function(input, output, session) {
 
 
   ## source shared functions
+  for (file in list.files(paste0(system.file(package ="bioCancer"),"/Rbis"),
+                          pattern="\\.(r|R)$",
+                          full.names = TRUE)) {
 
+    source(file, encoding = r_encoding, local = TRUE)
+  }
   source(file.path(r_path,"base/init.R"), encoding = r_encoding, local = TRUE)
   source(file.path(r_path,"base/bioCancerInit.R"), encoding = r_encoding, local = TRUE)
 
