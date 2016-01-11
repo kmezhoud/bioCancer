@@ -50,6 +50,6 @@ bioCancer <- function(){
   if ("package:bioCancer" %in% search()){
     runApp(paste0(system.file(package = "bioCancer", "/bioCancer", sep="")), launch.browser = TRUE)
   }else{
-    stop("Calling bioCancer start function but bioCancer is not installed.")
+    stop("Install and load bioCancer package before to run it.")
   }
 }
