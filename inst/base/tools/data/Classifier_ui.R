@@ -57,7 +57,7 @@ output$ui_Classifier <- renderUI({
     ),
     conditionalPanel("input.ClassID=='Classifier'",
                      selectizeInput('ClusterPlotsID', 'Plot Clusters',
-                                    choices=c("None","GeneList/Diseases","Disease Onthology","Pathway","GO","KEGG"),
+                                    choices=c("None","GeneList/Diseases","Disease Onthology","Pathway","GO","KEGG", "Cellular Component"),
                                     multiple= FALSE)
     ),
 

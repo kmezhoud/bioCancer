@@ -29,11 +29,11 @@ output$ui_data <- renderUI({
 
         #### Include selectize prompt Studies, Clinical data and Profile data
         conditionalPanel("input.tabs_data== 'Portal'",
-#                          conditionalPanel("input.tabs_portal=='Studies'",
-#                                           #h5("Welcome to bioCancer!", align="center"),
-#                                           uiOutput("Welcome")
-#                                           #p("Documentation and tutorials are available in each panel <i title='Help' class='fa fa-question'></i>  or 'Help' menu.", align ="center")
-#                          ),
+                         conditionalPanel("input.tabs_portal=='Studies'",
+                                          #h5("Welcome to bioCancer!", align="center"),
+                                          uiOutput("Welcome")
+                                          #p("Documentation and tutorials are available in each panel <i title='Help' class='fa fa-question'></i>  or 'Help' menu.", align ="center")
+                         ),
                          selectizeInput(
                            'StudiesID', 'Studies', choices = NULL, multiple = FALSE
                          ),
@@ -66,12 +66,12 @@ output$ui_data <- renderUI({
                                           uiOutput("ui_Reactome")
                          )),
 
-        conditionalPanel("input.tabs_data== 'Handle'",
-
-                         conditionalPanel("input.tabs_Handle=='Manage'",
-                                          uiOutput("Welcome")
-
-                         ),
+         conditionalPanel("input.tabs_data== 'Handle'",
+#
+#                          conditionalPanel("input.tabs_Handle=='Manage'",
+#                                           uiOutput("Welcome")
+#
+#                          ),
 
 
                          uiOutput("ui_datasets"),
@@ -108,9 +108,9 @@ output$ui_data <- renderUI({
         tabsetPanel(
           id = "tabs_data",
 
-          tabPanel("Handle", uiOutput("Handle")),
           tabPanel("Portal", uiOutput("Portal")),
-          tabPanel("Enrich", uiOutput("Enrich"))
+          tabPanel("Enrich", uiOutput("Enrich")),
+          tabPanel("Handle", uiOutput("Handle"))
 
 
 
@@ -276,7 +276,13 @@ output$Enrich <- renderUI({
                                                          h4("KEGG Pathway Enrichment", align='center'),
                                                          plot_downloader("compareClusterKEGG", pre=""),
                                                          plotOutput("compareClusterKEGG")
-                                        ))
+                                        ),
+                                        conditionalPanel("input.ClusterPlotsID=='Cellular Component'",
+                                                         h4("Cellular Component Enrichment", align='center'),
+                                                         plot_downloader("compareClusterCC", pre=""),
+                                                         plotOutput("compareClusterCC")
+                                        )
+                                        )
                        #)
               ),
               tabPanel("Reactome",

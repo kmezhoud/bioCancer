@@ -116,6 +116,9 @@ output$Plot_enricher <- renderPlot({
     ## downloaded from http://www.disgenet.org/ds/DisGeNET/results/all_gene_disease_associations.tar.gz
     if ("package:bioCancer" %in% search()) {
       gda <- read.delim(paste0(system.file(package = "bioCancer"),"/extdata/all_gene_disease_associations.txt"))
+      #gdafile <- read.delim(system.file("extdata", "all_gene_disease_associations.txt", package="bioCancer"))
+      #gdafile <- system.file("extdata", "c5.cc.v5.0.entrez.gmt", package="clusterProfiler")
+
     }else{
       gda <- read.delim(file.path(paste(r_path,"/extdata/all_gene_disease_associations.txt", sep="")))
     }
@@ -159,7 +162,7 @@ output$compareClusterDO <- renderPlot({
 })
 
 compareClusterDO <- function(){
-  plot(r_data$cdo)
+  plot(r_data$cdo, type="dot", title="Disease Onthology Enrichment Comparison")
 
 }
 
@@ -170,6 +173,7 @@ output$compareClusterPathway <- renderPlot({
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
+    genesGroups <<- genesGroups
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
 
     if (inherits(try(cdp <- compareCluster(GroupsID, fun="enrichPathway"), silent=TRUE),"try-error"))
@@ -187,7 +191,7 @@ output$compareClusterPathway <- renderPlot({
 })
 
 compareClusterPathway <- function(){
-  plot(r_data$cdp)
+  plot(r_data$cdp, type="dot", title="Pathway Enrichment Comparison")
 }
 ## Gene Onthology Studies Associations
 output$compareClusterGO <- renderPlot({
@@ -196,19 +200,20 @@ output$compareClusterGO <- renderPlot({
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
-    if (inherits(try(cgo <- compareCluster(GroupsID, fun="enrichGO")),"try-error"))
+    if (inherits(try(cgo <- compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')),"try-error"))
     {
       stop("No GO enrichment found with actual Gene List...")
     }else{
-      cgo <- compareCluster(GroupsID, fun="enrichGO")
+      cgo <- compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')
       r_data[['cgo']] <- cgo
-      plot(cgo)
+      plot(r_data$cgo)
     }
   })
 })
 
 compareClusterGO <- function(){
-  plot(r_data$cgo)
+
+  plot(r_data$cgo, type="dot", title="GO Enrichment Comparison")
 }
 ## KEGG Pathway Enrichment
 output$compareClusterKEGG <- renderPlot({
@@ -228,5 +233,26 @@ output$compareClusterKEGG <- renderPlot({
   })
 })
 compareClusterKEGG <- function(){
-  plot(r_data$ckegg)
+  plot(r_data$ckegg, type="dot", title="KEGG Enrichment Comparison")
+}
+
+## Cellular Component  Enrichment
+output$compareClusterCC<- renderPlot({
+  withProgress(message = 'Cellular Component enrichment...', value = 0.1, {
+    Sys.sleep(0.25)
+
+    genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
+    GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
+    if (inherits(try(cgo <- compareCluster(GroupsID, fun="groupGO", OrgDb='org.Hs.eg.db')),"try-error"))
+    {
+      stop("No Cellular Component enrichment found with actual Gene List...")
+    }else{
+      cCC <- compareCluster(GroupsID, fun="groupGO", OrgDb='org.Hs.eg.db')
+      r_data[['cCC']] <- cCC
+      plot(cCC)
+    }
+  })
+})
+compareClusterCC <- function(){
+  plot(r_data$cCC, type="dot", title="Cellular Component Enrichment Comparison")
 }
