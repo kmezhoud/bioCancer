@@ -34,6 +34,8 @@ shinyServer(function(input, output, session) {
 # ##library(DT)
 # library(Biobase)
 # library(DOSE)
+# library(reactome.db)
+# library(ReactomePA)
 # library("org.Hs.eg.db")
 # library(XML)
 #   #

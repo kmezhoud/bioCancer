@@ -262,10 +262,10 @@ output$Enrich <- renderUI({
                                                          plot_downloader("compareClusterDO", pre=""),
                                                          plotOutput("compareClusterDO")
                                         ),
-                                        conditionalPanel("input.ClusterPlotsID=='Pathway'",
-                                                         h4("Pathway cluster Enrichment", align='center'),
-                                                         plot_downloader("compareClusterPathway", pre=""),
-                                                         plotOutput("compareClusterPathway")
+                                        conditionalPanel("input.ClusterPlotsID=='Reactome'",
+                                                         h4("Reactome Pathway cluster Enrichment", align='center'),
+                                                         plot_downloader("compareClusterReactome", pre=""),
+                                                         plotOutput("compareClusterReactome")
                                         ),
                                         conditionalPanel("input.ClusterPlotsID=='GO'",
                                                          h4("Gene Ontholgy Studies associations", align='center'),

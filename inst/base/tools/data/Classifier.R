@@ -167,33 +167,34 @@ compareClusterDO <- function(){
 }
 
 
-## Pathway Cluster Enrichment
-output$compareClusterPathway <- renderPlot({
-  withProgress(message = 'Cluster Pathway enrich...', value = 0.1, {
+## Reactome Pathway Cluster Enrichment
+output$compareClusterReactome <- renderPlot({
+  withProgress(message = 'Reactome Pathway enrich...', value = 0.1, {
     Sys.sleep(0.25)
-
+      require(reactome.db)
+      require(ReactomePA)
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     genesGroups <<- genesGroups
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
 
     if (inherits(try(cdp <- compareCluster(GroupsID, fun="enrichPathway"), silent=TRUE),"try-error"))
-    { print("No enrichment found in any of gene cluster, please check your input...")
-      text(x = 0.5, y = 0.5, paste("No Pathway enrichment found\n",
+    { print("No Reactome enrichment found in any of gene cluster, please check your input...")
+      text(x = 0.5, y = 0.5, paste("No Reactome Pathway enrichment found\n",
                                    "in any of gene cluster, \n",
                                    "Please check your input..."),
            cex = 1, col = "red")
     }else{
-      cdp <- compareCluster(GroupsID, fun="enrichPathway")
-      r_data[['cdp']] <- cdp
-      plot(cdp)
+      cdReactome <- compareCluster(GroupsID, fun="enrichPathway")
+      r_data[['cdReactome']] <- cdReactome
+      plot(cdReactome)
     }
   })
 })
 
-compareClusterPathway <- function(){
-  plot(r_data$cdp, type="dot", title="Pathway Enrichment Comparison")
+compareClusterReactome <- function(){
+  plot(r_data$cdReactome, type="dot", title="Reactome Pathway Enrichment Comparison")
 }
-## Gene Onthology Studies Associations
+## Gene Onthology (GO) Studies Associations
 output$compareClusterGO <- renderPlot({
   withProgress(message = 'Gene Onthology Enrich...', value = 0.1, {
     Sys.sleep(0.25)
