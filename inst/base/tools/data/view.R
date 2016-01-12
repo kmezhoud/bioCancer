@@ -72,7 +72,7 @@ output$dataviewer <- DT::renderDataTable({
     fbox <- list(position = "top")
     dc <- getclass(dat)
     if ("factor" %in% dc) {
-      toChar <- sapply(select(dat, which(dc == "factor")), function(x) length(levels(x))) > 100
+      toChar <- sapply(dplyr::select(dat, which(dc == "factor")), function(x) length(levels(x))) > 100
       if (any(toChar))
         dat <- mutate_each_(dat, funs(as.character), vars = names(toChar)[toChar])
     }
