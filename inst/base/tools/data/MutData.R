@@ -12,12 +12,12 @@ output$MutDataTable <- DT::renderDataTable({
     if(length(GeneList)>500){
       dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="MutData")
     } else{
-      if (inherits(try(dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList), silent=FALSE),"try-error")){
+      if (inherits(try(dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList), silent=FALSE),"try-error")){
 
         stop("There are some Gene Symbols not supported by cbioportal server")
 
       }else{
-        dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
+        dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
       }
     }
     ## change rownames in the first column

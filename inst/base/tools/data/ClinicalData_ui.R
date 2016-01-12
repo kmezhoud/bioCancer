@@ -15,7 +15,7 @@ output$ui_clipboard_load_Clinical <- renderUI({
 
 output$ui_Clinical_vars <- renderUI({
   ##### get Clinical Data for selected Case
-  dat <- getClinicalData(cgds, input$CasesID)
+  dat <- cgdsr::getClinicalData(cgds, input$CasesID)
   ## change rownames in the first column
   dat <- dat %>% add_rownames("Patients")
 

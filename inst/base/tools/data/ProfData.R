@@ -41,11 +41,11 @@ GeneList <- whichGeneList()
   if(length(GeneList)>500){
     dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="ProfData")
   } else{
-    dat <- getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
+    dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
   }
 
 
-  #dat <- getProfileData(cgds, GeneList, input$GenProfID,input$CasesID)
+  #dat <- cgdsr::getProfileData(cgds, GeneList, input$GenProfID,input$CasesID)
 
 
   if(is.numeric(dat[2,2])){

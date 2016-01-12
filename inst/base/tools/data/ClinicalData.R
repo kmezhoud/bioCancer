@@ -37,7 +37,7 @@ output$ClinicalDataTable <- DT::renderDataTable({
 
   #if (not_available(r_data$Clinical_vars)) return()
   ##### get Clinical Data for selected Case
-  dat <- getClinicalData(cgds, input$CasesID)
+  dat <- cgdsr::getClinicalData(cgds, input$CasesID)
   ## change rownames in the first column
   dat <- dat %>% add_rownames("Patients")
 

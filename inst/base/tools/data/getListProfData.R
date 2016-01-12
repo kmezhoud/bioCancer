@@ -15,7 +15,7 @@ getListProfData <- function(panel){
       if(length(grep(regex2,listRef2))!= 0){
         if(Mut== 0){
           #print(paste("Getting Profile Data of ",regex2,"...",sep=""))
-          ProfData_X <- getProfileData(cgds,GeneList, regex2,regex1)
+          ProfData_X <- cgdsr::getProfileData(cgds,GeneList, regex2,regex1)
           ########################
           #ProfData_X <- ProfData_X[,as.factor(GeneList)]
           #ProfData_X <- ProfData_X[GeneList,,drop=FALSE]

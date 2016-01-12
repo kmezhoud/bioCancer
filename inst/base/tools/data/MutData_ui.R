@@ -16,7 +16,7 @@ output$ui_Mut_vars <- renderUI({
 
   GeneList <- whichGeneList()
 
-  dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
+  dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
   ## change rownames in the first column
   dat <- as.data.frame(dat %>% add_rownames("Patients"))
 
