@@ -178,7 +178,7 @@ loadUserData <- function(fname, uFile, ext,
     fext <- tools::file_ext(filename) %>% tolower
 
     if (fext %in% c("xls","xlsx")) {
-      ret <- "### Radiant does not load xls files directly. Please save the data as a csv file and try again."
+      ret <- "### bioCancer does not load xls files directly. Please save the data as a csv file and try again."
     } else {
       ret <- paste0("### The filename extension (",fext,") does not match the specified file-type (",ext,"). Please specify the file type you are trying to upload (i.e., csv or rda).")
     }

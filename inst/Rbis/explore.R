@@ -26,14 +26,21 @@
 explore <- function(dataset,
                     vars = "",
                     byvar = "",
-                    fun = "mean_rm",
+                    fun = c("mean_rm","sd_rm"),
                     tabfilt = "",
                     tabsort = "",
                     data_filter = "",
                     shiny = FALSE) {
 
+  # vars <- "mpg"
+  # byvar <- "mpg"
+  # dataset <- "mtcars"
+  # data_filter <-  ""
+  # fun <- c("length","mean")
+  # library(radiant)
+
   tvars <- vars
-  if (!is_empty(byvar)) tvars %<>% c(byvar)
+  if (!is_empty(byvar)) tvars %<>% c(byvar) %>% unique
 
   dat <- getdata(dataset, tvars, filt = data_filter)
   if (!is_string(dataset)) dataset <- "-----"
@@ -41,8 +48,18 @@ explore <- function(dataset,
   ## in case : was used
   vars <- colnames(head(dat) %>% dplyr::select_(.dots = vars))
 
+  ## converting factors for interger (1st level)
+  ## see also R/visualize.R
+  dc <- getclass(dat)
+  isFctNum <- "factor" == dc & names(dc) %in% setdiff(vars,byvar)
+  if (sum(isFctNum)) {
+    dat[,isFctNum] <- dplyr::select(dat, which(isFctNum)) %>% mutate_each(funs(as.integer(. == levels(.)[1])))
+    dc[isFctNum] <- "integer"
+  }
+
   ## summaries only for numeric variables
-  isNum <- getclass(dat) %>% {which("numeric" == . | "integer" == .)}
+  # isNum <- getclass(dat) %>% {which("numeric" == . | "integer" == .)}
+  isNum <- dc %>% {which("numeric" == . | "integer" == .)}
 
   ## avoid using .._rm as function name
   pfun <- make_funs(fun)
@@ -55,16 +72,36 @@ explore <- function(dataset,
   } else {
 
     ## needed to deal with empty/missing values
-    for (bv in byvar) {
-      if (!is.factor(dat[[bv]])) dat[[bv]] %<>% as.factor
+    # for (bv in byvar) {
+    #   if (!is.factor(dat[[bv]])) dat[[bv]] %<>% as.factor
 
-      levs <- levels(dat[[bv]])
+    #   levs <- levels(dat[[bv]])
+    #   if ("" %in% levs) {
+    #     levs[levs == ""] <- "[EMPTY]"
+    #     dat[[bv]] <- factor(dat[[bv]], levels = levs)
+    #     dat[[bv]][is.na(dat[[bv]])] <- "[EMPTY]"
+    #   }
+    # }
+
+    # if (identical(vars, byvar)) {
+    #   dat <- bind_cols(dat,dat) %>% set_colnames(c("byvar",vars))
+    #   byvar <- "byvar"
+    # }
+
+    ## needed to deal with empty/missing values
+    ## function and mutate_each should replace previous block
+    empty_level <- function(x) {
+      if (!is.factor(x)) x %<>% as.factor
+      levs <- levels(x)
       if ("" %in% levs) {
         levs[levs == ""] <- "[EMPTY]"
-        dat[[bv]] <- factor(dat[[bv]], levels = levs)
-        dat[[bv]][is.na(dat[[bv]])] <- "[EMPTY]"
+        x <- factor(x, levels = levs)
+        x[is.na(x)] <- "[EMPTY]"
       }
+      x
     }
+
+    dat[,byvar] <- dplyr::select_(dat, .dots = byvar) %>% mutate_each(funs(empty_level(.)))
 
     ## avoiding issues with n_missing and n_distinct in dplyr
     ## have to reverse this later
@@ -86,12 +123,29 @@ explore <- function(dataset,
 
     ## for median issue in dplyr < .5
     ## https://github.com/hadley/dplyr/issues/893
+    # getclass(dat)
+
     tab <-
       dat %>% group_by_(.dots = byvar) %>%
       summarise_each(pfun)
 
+    # library(dplyr)
+    # mtcars %>% dplyr::select(mpg) %>% group_by(mpg) %>% summarize(nr = n(), perc = n()/nrow(.))
+    # dat %>% dplyr::select(mpg) %>% group_by(mpg) %>% summarize(nr = n(), perc = n()/nrow(.))
+    # dat %>% group_by(mpg) %>% summarize(n())
+    # dat %>% bind_cols(dat) %>% group_by(mpg) %>%
+
+    # dd <- bind_cols(dat, dat)
+    # colnames(dd) <- c(".byvar","mpg")
+
+    #   dd %>% group_by_(.dots = byvar) %>%
+    #   summarise_each(pfun)
+    #   warnings()
+
     ## avoiding issues with n_missing and n_distinct
     names(pfun) %<>% sub("n.","n_",.)
+    # length(fun)
+    # length(vars)
 
     if (length(vars) > 1 && length(fun) > 1) {
       ## useful answer and comments: http://stackoverflow.com/a/27880388/1974918
@@ -111,24 +165,19 @@ explore <- function(dataset,
     }
   }
 
-  ## filtering the table if desired
-  if (tabfilt != "") {
-    tab <- filterdata(tab, tabfilt)
-  }
+  ## filtering the table if desired from R > Report
+  if (tabfilt != "")
+    tab <- filterdata(tab, tabfilt) %>% droplevels
 
-  ## sorting the table if desired
-  if (tabsort != "") {
-    ## only one variable for now
-    tabsort <- tabsort[1]
-    if (substring(tabsort,1) == "-") {
-      tab %<>% arrange(., desc(.[[substring(tabsort,2)]]))
-    } else {
-      tab %<>% arrange_(tabsort)
-    }
+  ## sorting the table if desired from R > Report
+  if (!identical(tabsort, "")) {
+    if (grepl(",", tabsort))
+      tabsort <- strsplit(tabsort,",")[[1]] %>% gsub(" ", "", .)
+    tab[-nrow(tab),] %<>% arrange_(.dots = tabsort)
 
-    isFct <- tab %>% getclass %>% {.[. == "factor"]} %>% names
-    for (i in isFct)
-      tab[[i]] %<>% factor(., levels = unique(.))
+    # isFct <- tab %>% getclass %>% {.[. == "factor"]} %>% names
+    # for (i in isFct)
+    #   tab[[i]] %<>% factor(., levels = unique(.))
   }
 
   ## dat no longer needed
@@ -143,6 +192,7 @@ explore <- function(dataset,
 #'
 #' @param object Return value from \code{\link{explore}}
 #' @param top The variable (type) to display at the top of the table
+#' @param dec Number of decimals to show
 #' @param ... further arguments passed to or from other methods
 #'
 #' @examples
@@ -156,23 +206,24 @@ explore <- function(dataset,
 #' @seealso \code{\link{explore}} to generate summaries
 #'
 #' @export
-summary.explore <- function(object, top = "fun", ...) {
+summary.explore <- function(object, top = "fun", dec = 3, ...) {
 
+  cat("Explore\n")
   cat("Data      :", object$dataset, "\n")
   if (object$data_filter %>% gsub("\\s","",.) != "")
     cat("Filter    :", gsub("\\n","", object$data_filter), "\n")
   if (object$byvar[1] != "")
-    cat("Grouped by: ", object$byvar, "\n")
-  cat("Functions : ", names(object$pfun), "\n")
-  cat("Top       : ", c("fun" = "Function", "var" = "Variables", "byvar" = "Group by")[top], "\n")
+    cat("Grouped by:", object$byvar, "\n")
+  cat("Functions :", names(object$pfun), "\n")
+  cat("Top       :", c("fun" = "Function", "var" = "Variables", "byvar" = "Group by")[top], "\n")
   cat("\n")
 
   tab <- object %>% flip(top) %>% as.data.frame
-  cn_all <- colnames(tab)
-  cn_num <- cn_all[sapply(tab, is.numeric)]
-  tab[,cn_num] %<>% round(3)
+  # cn_all <- colnames(tab)
+  # cn_num <- cn_all[sapply(tab, is.numeric)]
+  # tab[,cn_num] %<>% round(dec)
 
-  print(tab, row.names = FALSE)
+  print(dfprint(tab, dec), row.names = FALSE)
 
   invisible()
 }
@@ -248,22 +299,34 @@ make_expl <- function(expl,
     )
   ))
 
-  dt_tab <- tab %>% {.[,cn_num] <- round(.[,cn_num], dec); .} %>%
+  if (nrow(tab) > 5000000) {
+    fbox <- "none"
+  } else {
+    fbox <- list(position = "top")
+    dc <- getclass(tab)
+    if ("factor" %in% dc) {
+      toChar <- sapply(dplyr::select(tab, which(dc == "factor")), function(x) length(levels(x))) > 100
+      if (any(toChar))
+        tab <- mutate_each_(tab, funs(as.character), vars = names(toChar)[toChar])
+    }
+  }
+
+  dt_tab <- tab %>% dfround(dec) %>%
     DT::datatable(container = sketch, selection = "none",
-      rownames = FALSE,
-      filter = list(position = "top"),
-      style = ifelse (expl$shiny, "bootstrap", "default"),
-      options = list(
-        # search = list(regex = TRUE),
-        stateSave = TRUE,
-        search = list(search = search, regex = TRUE),
-        searchCols = searchCols,
-        order = order,
-        processing = FALSE,
-        pageLength = 10,
-        lengthMenu = list(c(10, 25, 50, -1), c("10","25","50","All"))
-      )
-      , callback = DT::JS("$(window).unload(function() { table.state.clear(); })")
+                  rownames = FALSE,
+                  # filter = if (nrow(.) > 100) "none" else list(position = "top"),
+                  filter = fbox,
+                  style = ifelse (expl$shiny, "bootstrap", "default"),
+                  options = list(
+                    stateSave = TRUE,
+                    search = list(search = search, regex = TRUE),
+                    searchCols = searchCols,
+                    order = order,
+                    processing = FALSE,
+                    pageLength = 10,
+                    lengthMenu = list(c(10, 25, 50, -1), c("10","25","50","All"))
+                  )
+                  , callback = DT::JS("$(window).unload(function() { table.state.clear(); })")
     ) %>% DT::formatStyle(., cn_cat,  color = "white", backgroundColor = "grey")
 
   dt_tab
@@ -345,16 +408,6 @@ p90 <- function(x, na.rm = TRUE) quantile(x,.90, na.rm = na.rm)
 #' @export
 p95 <- function(x, na.rm = TRUE) quantile(x,.95, na.rm = na.rm)
 
-#' Standard error
-#' @param x Input variable
-#' @param na.rm If TRUE missing values are removed before calculation
-#' @return Standard error
-#' @examples
-#' serr(rnorm(100))
-#'
-#' @export
-serr <- function(x, na.rm = TRUE) sd(x, na.rm = na.rm) / sqrt(length(na.omit(x)))
-
 #' Coefficient of variation
 #' @param x Input variable
 #' @param na.rm If TRUE missing values are removed before calculation
@@ -363,7 +416,15 @@ serr <- function(x, na.rm = TRUE) sd(x, na.rm = na.rm) / sqrt(length(na.omit(x))
 #' cv(runif (100))
 #'
 #' @export
-cv <- function(x, na.rm = TRUE) sd(x, na.rm = na.rm) / mean(x, na.rm = na.rm)
+cv <- function(x, na.rm = TRUE) {
+  m <- mean(x, na.rm = na.rm)
+  if (m == 0) {
+    message("Mean should be greater than 0")
+    NA
+  } else {
+    sd(x, na.rm = na.rm) / m
+  }
+}
 
 #' Mean with na.rm = TRUE
 #' @param x Input variable
@@ -426,12 +487,27 @@ max_rm <- function(x) max(x, na.rm = TRUE)
 
 #' Standard deviation with na.rm = TRUE
 #' @param x Input variable
+#' @param na.rm Remove NAs (TRUE or FALSE)
 #' @return Standard deviation
 #' @examples
 #' sd_rm(rnorm(100))
 #'
 #' @export
-sd_rm <- function(x) sd(x, na.rm = TRUE)
+sd_rm <- function(x, na.rm = TRUE) {
+  # ret <- sd(x, na.rm = na.rm)
+  # if (ret == "NaN") NA else ret
+  sd(x, na.rm = na.rm)
+}
+
+#' Standard error
+#' @param x Input variable
+#' @param na.rm If TRUE missing values are removed before calculation
+#' @return Standard error
+#' @examples
+#' serr(rnorm(100))
+#'
+#' @export
+serr <- function(x, na.rm = TRUE) sd_rm(x, na.rm) / sqrt(length(na.omit(x)))
 
 #' Variance with na.rm = TRUE
 #' @param x Input variable
@@ -513,6 +589,6 @@ does_vary <- function(x) {
 #' @export
 make_funs <- function(x) {
   xclean <- gsub("_rm$","",x) %>% sub("length","n",.)
-  env <- if (exists("radiant")) environment(radiant::radiant) else parent.frame()
+  env <- if (exists("bioCancer")) environment(bioCancer::bioCancer) else parent.frame()
   dplyr::funs_(lapply(paste0(xclean, " = ~", x), as.formula, env = env) %>% setNames(xclean))
 }
