@@ -273,11 +273,11 @@ output$ui_Visualize <- renderUI({
       )
     ),
     ## for Server
-    help_modal('Visualize','VisualizeHelp',inclMD(file.path(r_path,"base/tools/help/visualize.md")))
+    #help_modal('Visualize','VisualizeHelp',inclMD(file.path(r_path,"base/tools/help/visualize.md")))
     ## for package
-    #help_and_report(modal_title = "Visualize",
-    #               fun_name = "visualize",
-    #              help_file = inclRmd(file.path(r_path,"base/tools/help/visualize.md")))
+    help_and_report(modal_title = "Visualize",
+                  fun_name = "visualize",
+                 help_file = inclRmd(file.path(r_path,"base/tools/help/visualize.md")))
   )
 })
 

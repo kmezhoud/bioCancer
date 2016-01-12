@@ -19,7 +19,7 @@ expl_inputs <- reactive({
 })
 
 expl_sum_args <- as.list(if (exists("summary.explore")) formals(summary.explore)
-                         else formals(radiant:::summary.explore))
+                         else formals(summary.explore))
 
 ## list of function inputs selected by user
 expl_sum_inputs <- reactive({
@@ -108,11 +108,11 @@ output$ui_Explore <- renderUI({
       ))
     ),
     ## for Server
-    help_modal('Explore','ExploreHelp',inclMD(file.path(r_path,"base/tools/help/explore.md")))
+    #help_modal('Explore','ExploreHelp',inclMD(file.path(r_path,"base/tools/help/explore.md")))
     ## for package
-    #help_and_report(modal_title = "Explore",
-    #                fun_name = "explore",
-    #                help_file = inclMD(file.path(r_path,"base/tools/help/explore.md")))
+    help_and_report(modal_title = "Explore",
+                   fun_name = "explore",
+                   help_file = inclMD(file.path(r_path,"base/tools/help/explore.md")))
   )
 })
 

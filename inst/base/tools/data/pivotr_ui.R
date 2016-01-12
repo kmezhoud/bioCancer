@@ -104,11 +104,11 @@ output$ui_Pivotr <- renderUI({
       )
     ),
     ## for Server
-    help_modal('Pivot','PivotHelp',inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
+    #help_modal('Pivot','PivotHelp',inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
     ### Only for package
-   # help_and_report(modal_title = "Pivotr",
-     #               fun_name = "pivotr",
-    #                help_file = inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
+   help_and_report(modal_title = "Pivotr",
+                   fun_name = "pivotr",
+                   help_file = inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
   )
 })
 
@@ -134,7 +134,7 @@ pvt_inputs <- reactive({
 })
 
 pvt_sum_args <- as.list(if (exists("summary.pivotr")) formals(summary.pivotr)
-                        else formals(radiant:::summary.pivotr))
+                        else formals(summary.pivotr))
 
 ## list of function inputs selected by user
 pvt_sum_inputs <- reactive({
@@ -145,7 +145,7 @@ pvt_sum_inputs <- reactive({
 })
 
 pvt_plot_args <- as.list(if (exists("plot.pivotr")) formals(plot.pivotr)
-                         else formals(radiant:::plot.pivotr))
+                         else formals(plot.pivotr))
 
 ## list of function inputs selected by user
 pvt_plot_inputs <- reactive({

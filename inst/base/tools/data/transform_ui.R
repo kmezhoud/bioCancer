@@ -213,11 +213,11 @@ output$ui_Transform <- renderUI({
                      uiOutput("ui_tr_dataset")
     )),
     ## for server
-    help_modal('Transform','TransformHelp',inclMD(file.path(r_path,"base/tools/help/transform.md")))
+    #help_modal('Transform','TransformHelp',inclMD(file.path(r_path,"base/tools/help/transform.md")))
     ## for package
-    #help_and_report(modal_title = "Transform",
-    #                fun_name = "transform",
-    #                help_file = inclMD(file.path(r_path, "base/tools/help/transform.md")))
+    help_and_report(modal_title = "Transform",
+                   fun_name = "transform",
+                   help_file = inclMD(file.path(r_path, "base/tools/help/transform.md")))
   )
 })
 
@@ -279,7 +279,7 @@ observeEvent(input$tr_change_type, {
                     store = TRUE) {
 
 
-  # library(radiant)
+  # library(bioCancer)
   # bbb <- mutate(bbb, rec_q = xtile(last,5))
   # bbb <- group_by(bbb, rec_q) %>% mutate(freq_q = xtile(purch, 5, rev = TRUE)) %>% ungroup
   # bbb <- group_by(bbb, rec_q, freq_q) %>% mutate(mon_q = xtile(total_,5, rev = TRUE)) %>% ungroup
@@ -690,9 +690,9 @@ observeEvent(input$tr_change_type, {
       } else {
         cpdat <- try(read.table(header = TRUE, comment.char = "", fill = TRUE, sep = "\t", as.is = TRUE, text = input$tr_paste), silent = TRUE)
         if (is(cpdat, 'try-error')) {
-          return("The pasted data was not well formated. Please make sure the number of rows **\n** in the data in Radiant and in the spreadsheet are the same and try again.")
+          return("The pasted data was not well formated. Please make sure the number of rows **\n** in the data in bioCancer and in the spreadsheet are the same and try again.")
         } else if (nrow(cpdat) != nrow(dat)) {
-          return("The pasted data does not have the correct number of rows. Please make sure **\n** the number of rows in the data in Radiant and in the spreadsheet are the **\n** same and try again.")
+          return("The pasted data does not have the correct number of rows. Please make sure **\n** the number of rows in the data in bioCancer and in the spreadsheet are the **\n** same and try again.")
         } else {
           return(cpdat)
         }
