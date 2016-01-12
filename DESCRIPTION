@@ -26,6 +26,8 @@ Imports:
     org.Hs.eg.db,
     DOSE,
     clusterProfiler,
+    reactome.db,
+    ReactomePA,
     plyr,
     DiagrammeR(>= 0.7),
     car (>= 2.0.22),
