@@ -174,7 +174,6 @@ output$compareClusterReactome <- renderPlot({
       require(reactome.db)
       require(ReactomePA)
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
-    genesGroups <<- genesGroups
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(translate(x, org.Hs.egSYMBOL2EG))))
 
     if (inherits(try(cdp <- compareCluster(GroupsID, fun="enrichPathway"), silent=TRUE),"try-error"))

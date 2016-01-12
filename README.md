@@ -1,4 +1,4 @@
-# bioCancer - Interactive Multi-Assay Cancer Genomics Data Visualisation
+# bioCancer - Interactive Multi-OMICS Cancers Data Visualization and Analysis
 
 [![Travis-CI Build Status](https://travis-ci.org/kmezhoud/bioCancer.svg?branch=master)](https://travis-ci.org/kmezhoud/bioCancer) by Karim Mezhoud
 <!--

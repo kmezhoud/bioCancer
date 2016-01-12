@@ -21,7 +21,6 @@
 #'@importFrom clusterProfiler compareCluster
 #'@importFrom clusterProfiler enrichGO
 #'@importFrom clusterProfiler enrichKEGG
-#'@importFrom clusterProfiler enrichPathway
 #'@import reactome.db
 #'@import ReactomePA
 #'
