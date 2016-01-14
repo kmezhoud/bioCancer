@@ -8,7 +8,7 @@
 # })
 
 ####### Attribute Color to Value in Vector
-#' Attribute colorto a vector of numeric values
+#' Attribute color to a vector of numeric values
 #'
 #' @param Value numeric
 #' @param vector A vector of numeric data

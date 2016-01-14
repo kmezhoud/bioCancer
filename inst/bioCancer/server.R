@@ -5,7 +5,7 @@ shinyServer(function(input, output, session) {
   library(shinythemes)
   library(cgdsr)
   library(magrittr)
-  library(coffeewheel)
+  #library(coffeewheel)
   library(htmlwidgets)
   #library(metabologram)
   library(DiagrammeR)

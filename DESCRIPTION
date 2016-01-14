@@ -50,7 +50,6 @@ Imports:
     curl(>= 0.9.1),
     stringr (>= 1.0)
 Remotes:
-    github::armish/coffeewheel,
     github::armish/metabologram,
     github::vnijs/MathJaxR (>= 0.11)
 Suggests:
