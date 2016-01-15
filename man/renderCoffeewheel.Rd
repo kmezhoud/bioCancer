@@ -4,9 +4,23 @@
 \alias{renderCoffeewheel}
 \title{Widget render function for use in Shiny}
 \usage{
-renderCoffeewheel(expr, env = parent.frame(), quoted = FALSE)
+coffeewheel(treeData = sampleWheelData)
+}
+\arguments{
+\item{env}{parent.frame()}
+
+\item{quoted}{FALSE}
+}
+\value{
+A circular layout with genetic profile in Shiny App.
 }
 \description{
 Widget render function for use in Shiny
+}
+\examples{
+\dontrun{
+library(bioCancer)
+bioCancer::coffeewheel(treeData = sampleWheelData)
+}
 }
 

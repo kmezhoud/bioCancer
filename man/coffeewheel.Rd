@@ -2,12 +2,31 @@
 % Please edit documentation in R/coffeewheel.R
 \name{coffeewheel}
 \alias{coffeewheel}
-\title{<Add Title>}
+\title{This is an htmlwidgets-based visualization tool for hierarchical data.It is zoomable, meaning that you can interact with the hierarchy and zoom in/out accordingly.}
 \usage{
-coffeewheel(treeData, width = 1000, height = 1000, main = "",
-  partitionAttribute = "value")
+coffeewheel(treeData = sampleWheelData)
+}
+\arguments{
+\item{treeData}{A hierarchical tree data as in example}
+
+\item{width}{600}
+
+\item{height}{600}
+
+\item{main}{Title}
+
+\item{partitionAttribute}{"value"}
+}
+\value{
+A circular layout with genetic profile.
 }
 \description{
-<Add Description>
+This is an htmlwidgets-based visualization tool for hierarchical data.It is zoomable, meaning that you can interact with the hierarchy and zoom in/out accordingly.
+}
+\examples{
+\dontrun{
+library(bioCancer)
+coffeewheel(treeData = sampleWheelData)
+}
 }
 

@@ -265,7 +265,7 @@ attriShape2Gene <- function(gene, genelist){
 }
 
 
-#' Attribute interaction number to node size
+#' Attribute interaction frequency to node size
 #'
 #' @param GeneList A list of gene symbol
 #'
@@ -294,7 +294,7 @@ Node_obj_FreqIn <- function(GeneList){
 
 }
 
-#' Atrribute genes exprssion to color nodes
+#' Atrribute genes expression to color nodes
 #'
 #' @param GeneList A gene list.
 #' @param GenesClassDetails A dataframe with genes classes and genes expression.
@@ -395,7 +395,7 @@ Node_obj_CNA_ProfData <- function(list){
   return(MostFreqCNA_Df)
 }
 
-#' Title
+#' Attribute gene Methylation to Nodes
 #'
 #' @param list a list of data frame with methylation data
 #' @param type HM450 or HM27

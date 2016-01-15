@@ -4,9 +4,25 @@
 \alias{coffeewheelOutput}
 \title{Widget output function for use in Shiny}
 \usage{
-coffeewheelOutput(outputId, width = 1000, height = 1000)
+coffeewheel(treeData = sampleWheelData)
+}
+\arguments{
+\item{width}{600}
+
+\item{height}{600}
+
+\item{output}{id}
+}
+\value{
+A circular layout with genetic profile in Shiny App.
 }
 \description{
 Widget output function for use in Shiny
+}
+\examples{
+\dontrun{
+library(bioCancer)
+bioCancer::coffeewheel(treeData = sampleWheelData)
+}
 }
 

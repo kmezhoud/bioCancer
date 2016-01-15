@@ -1,40 +1,74 @@
-var initializeCoffeeWheel = function(data, el, width, height, partitionAttribute, mainTitle) {
-	  var minSize = Math.min(width, height)-20;
+var initializeMetabologram = function(data, el, width, height, mainTitle, fontSize, showLegend, legendColors, legendBreaks, legendText) {
+    el.innerHTML = "";
+
+    var legendWidth = 100;
+
+    var orgWidth = width;
+    if(showLegend) {
+      width -= legendWidth;
+    }
+
+	  var minSize = Math.min(width, height);
+    minSize -= minSize/20;
 
     var div = d3.select(el);
     if(mainTitle.length > 0) {
       var mainTitleEl = div.append("h1")
         .attr("id", "main")
+        .style("text-align", "center")
         .text(mainTitle);
 
       minSize -= 50;
-    } 
+    }
 
-    height = width = minSize;
+	  height = width = Math.max(minSize, 0);
 
-    var radius = width / 2,
+    var radius = (width/2),
         x = d3.scale.linear().range([0, 2 * Math.PI]),
-        y = d3.scale.pow().exponent(1.3).domain([0, 1]).range([0, radius]),
+        y = d3.scale.pow().exponent(1.3).domain([0.3, 1]).range([0, radius*.99]),
         padding = 0,
         duration = 1000;
 
-    var vis = div.append("svg")
-        .attr("width", width + padding * 2)
-        .attr("height", height + padding * 2)
-        .append("g")
-        .attr("transform", "translate(" + [radius + padding, radius + padding] + ")");
+        var svg = div.append("svg")
+        .attr("width", (showLegend ? orgWidth : width))
+        .attr("height", height);
+
+        var vis = svg.append("g").attr("transform", "translate(" + [radius + padding, radius + padding] + ")");
 
     var partition = d3.layout.partition()
         .sort(null)
-        .value(function(d) {
-	        return d[partitionAttribute];
-        });
+    ;
 
     var arc = d3.svg.arc()
         .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
         .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
         .innerRadius(function(d) { return Math.max(0, d.y ? y(d.y) : d.y); })
-        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)) - (d.depth == 1 ? radius/10 : 0); });
+
+
+    function extractProperties(d) {
+      var hideProperties = ["x", "y", "dx", "dy", "parent", "value", "colour", "depth", "children"];
+      var keys = Object.keys(d);
+
+      var content = "";
+      for(var i=0; i < keys.length; i++) {
+        var aKey = keys[i];
+
+        var show = true;
+        for(var j=0; j < hideProperties.length; j++) {
+          if(hideProperties[j] == aKey) {
+            show = false;
+            break;
+          }
+        }
+
+        if(show) {
+          content += "<b>" + aKey + "</b>: " + d[aKey] + "<br>";
+        }
+      }
+
+      return content;
+    }
 
     function isParentOf(p, c) {
       if (p === c) return true;
@@ -47,7 +81,7 @@ var initializeCoffeeWheel = function(data, el, width, height, partitionAttribute
     }
 
     function colour(d) {
-      if (d.colour == undefined && d.children) {
+      if (d.depth != 0 && d.colour == undefined && d.children) {
         // There is a maximum of two children!
         var colours = d.children.map(colour);
         var sum = { r: 0, g: 0, b: 0 };
@@ -109,7 +143,9 @@ var initializeCoffeeWheel = function(data, el, width, height, partitionAttribute
           .attr("d", arc)
           .attr("fill-rule", "evenodd")
           .style("fill", colour)
-          .on("click", click);
+          .style("stroke", "#000000")
+          .style("stroke-width", 1.5)
+          ;
 
       var text = vis.selectAll("text").data(nodes);
       var textEnter = text.enter().append("text")
@@ -126,10 +162,59 @@ var initializeCoffeeWheel = function(data, el, width, height, partitionAttribute
                 rotate = angle;
             return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
           })
-          .on("click", click);
+          .style("font-size", function(d) { return fontSize + "px"; })
+          .attr("title", "Something something...")
+          .each(function(d, i) {
+            var content = extractProperties(d);
+            $(this).tooltipster({ content: $(content) });
+          })
+          ;
       textEnter.append("tspan")
-          .attr("x", 0)
-          .text(function(d) { return d.depth ? d.name.split(" ")[0] : ""; });
+          .attr("x", function(d) { return x(d.x + d.dx / 2) > Math.PI ? -5 : 5 })
+          .text(function(d) { return d.depth ? d.name : ""; });
+
+
+      if(showLegend && legendBreaks && legendColors) {
+          var ly = d3.scale.linear().domain([0, legendBreaks.length-1]).range([0+height/20, height-height/20]);
+          var rects = vis.selectAll("rect").data(legendBreaks);
+          var lx = (orgWidth-legendWidth) + legendWidth/5;
+
+          var lviz = svg.append("g");
+
+          var colorBoxes = lviz.selectAll("rect").data(legendColors);
+          colorBoxes.enter().append("rect")
+            .attr("x", lx)
+            .attr("y", function(d, i) { return ly(i); })
+            .attr("width", 30)
+            .attr("height", function(d, i) { return ly(i) - ly(i-1); })
+            .style("fill", function(d) { return d; })
+            .style("stroke", "#000")
+            .style("stroke-width", 1.5)
+          ;
+
+          var breakTxt = lviz.append("g").selectAll("text").data(legendBreaks);
+          breakTxt.enter().append("text")
+            .attr("dx", lx + 30 + fontSize)
+            .attr("dy", function(d, i) { return ly(i) + fontSize/3; })
+            .style("font-size", fontSize + "px")
+            .style("font-weight", "bold")
+            .style("color", "#000")
+            .text(function(d) { return d; });
+
+          var legX = lx - fontSize;
+          var legY = ly((legendBreaks.length-1)/2);
+          var legendTitle = lviz.append("g").selectAll("text").data([legendText]);
+          legendTitle.enter().append("text")
+            .attr("dx", legX)
+            .attr("dy", legY)
+            .attr("transform", "rotate(-90 " + legX + "," + legY + ")")
+            .style("text-anchor", "middle")
+            .style("font-size", fontSize + "px")
+            .style("font-weight", "bold")
+            .style("color", "#000")
+            .text(function(d) { return d; })
+          ;
+      }
 
       function click(d) {
         path.transition()
@@ -148,7 +233,8 @@ var initializeCoffeeWheel = function(data, el, width, height, partitionAttribute
               };
             })
             .attrTween("transform", function(d) {
-              var multiline = (d.name || "").split(" ").length > 1;
+              //var multiline = (d.name || "").split(" ").length > 1;
+              var multiline = false;
               return function() {
                 var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
                     rotate = angle + (multiline ? -.5 : 0);

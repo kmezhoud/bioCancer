@@ -2,7 +2,7 @@
 % Please edit documentation in R/Reactome_doc.R
 \name{attriColorVector}
 \alias{attriColorVector}
-\title{Attribute colorto a vector of numeric values}
+\title{Attribute color to a vector of numeric values}
 \usage{
 attriColorVector(Value, vector, colors = c(a, b, c), feet)
 }
@@ -19,7 +19,7 @@ attriColorVector(Value, vector, colors = c(a, b, c), feet)
 A vetor of colors
 }
 \description{
-Attribute colorto a vector of numeric values
+Attribute color to a vector of numeric values
 }
 \examples{
 \dontrun{

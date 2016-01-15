@@ -103,7 +103,7 @@ reStrDimension <- function(LIST){
 
 
 ## get Wheel for Profiles Data
-output$getCoffeeWheel_All <- coffeewheel::renderCoffeewheel({
+output$getCoffeeWheel_All <- renderCoffeewheel({
   withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
@@ -117,66 +117,66 @@ output$getCoffeeWheel_All <- coffeewheel::renderCoffeewheel({
 })
 
 ## get Wheel for Methylation
-output$getCoffeeWheel_Met <- coffeewheel::renderCoffeewheel({
+output$getCoffeeWheel_Met <- renderCoffeewheel({
   withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData()
     CoffeewheelTreeMetData <- reStrDimension(r_data$ListMetData)
     title<- paste("Methylations: HM450 and HM27")
-    coffeewheel::coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main=title)
+    coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main=title)
   })
 
 })
 
 ## get Wheel for CNA
-output$getCoffeeWheel_CNA <- coffeewheel::renderCoffeewheel({
+output$getCoffeeWheel_CNA <- renderCoffeewheel({
   withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData()
     CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$CNA)
     title<- paste("Copy Number Alteration [-2, +2]")
-    coffeewheel::coffeewheel(CoffeewheelTreeMetData, width=600, height=600,main=title)
+    coffeewheel(CoffeewheelTreeMetData, width=600, height=600,main=title)
   })
 
 })
 
 ## get Wheel for mRNA
-output$getCoffeeWheel_mRNA <- coffeewheel::renderCoffeewheel({
+output$getCoffeeWheel_mRNA <- renderCoffeewheel({
   withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData()
     CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$Expression)
     title<- paste("mRNA expression")
-    coffeewheel::coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main=title)
+    coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main=title)
   })
 
 })
 
 ## get Wheel for miRNA
-output$getCoffeeWheel_miRNA <- coffeewheel::renderCoffeewheel({
+output$getCoffeeWheel_miRNA <- renderCoffeewheel({
   withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData()
     CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$miRNA)
     title<- paste("miRNA Expression")
-    coffeewheel::coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main= title)
+    coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main= title)
   })
 
 })
 
 ## get Wheel for RPPA
-output$getCoffeeWheel_RPPA <- coffeewheel::renderCoffeewheel({
+output$getCoffeeWheel_RPPA <- renderCoffeewheel({
   withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData()
     CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$RPPA)
     title<- paste("Reverse Phase Protein Arrays")
-    coffeewheel::coffeewheel(CoffeewheelTreeMetData, width=600, height=600,main=title)
+    coffeewheel(CoffeewheelTreeMetData, width=600, height=600,main=title)
   })
 
 })
@@ -239,7 +239,7 @@ getFreqMutData <- function(list){
 
 
 ## get Wheel for Mutation
-output$getCoffeeWheel_Mut <- coffeewheel::renderCoffeewheel({
+output$getCoffeeWheel_Mut <- renderCoffeewheel({
   withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
@@ -249,41 +249,91 @@ output$getCoffeeWheel_Mut <- coffeewheel::renderCoffeewheel({
     print("End getting Mutation Frequency...")
     listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
     TreeMutData <- reStrDisease(listMut_df)
-    coffeewheel::coffeewheel(TreeMutData, width=600, height=600, main="Mutation Frequency: (Min,Max)")
+    coffeewheel(TreeMutData, width=600, height=600, main="Mutation Frequency: (Min,Max)")
   })
 
 })
 
 
-output$Save_Metabologram_All <- downloadHandler(
-  filename = function() {
-    paste(getwd(),"Metabologram_All.pdf", sep="/")
-  },
-  content = function(file) {
-    #png(file)
-    saveWidget(
-    #file.copy(
-   # pdf(file=file, width=12, height=8)
-    #SaveMetabologram_All()
-    #dev.off()
-      #metabologramOutput('metabologram_All')
-      CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData),
-      title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA"),
-      #coffeewheel(CoffeewheelTreeProfData, width=600, height=600, partitionAttribute="value", main=title)
-      metabologram::metabologram(CoffeewheelTreeProfData, width=600, height=600, main=title,
-                   showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
-                   legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-      , file)
-      #dev.off()
-  }
-)
+# output$Save_Metabologram_All <- downloadHandler(
+#   filename = function() {
+#     paste(getwd(),"Metabologram_All.pdf", sep="/")
+#   },
+#   content = function(file) {
+#     #png(file)
+#     saveWidget(
+#     #file.copy(
+#    # pdf(file=file, width=12, height=8)
+#     #SaveMetabologram_All()
+#     #dev.off()
+#       #metabologramOutput('metabologram_All')
+#       CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData),
+#       title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA"),
+#       #coffeewheel(CoffeewheelTreeProfData, width=600, height=600, partitionAttribute="value", main=title)
+#       metabologram(CoffeewheelTreeProfData, width=600, height=600, main=title,
+#                    showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
+#                    legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+#       , file)
+#       #dev.off()
+#   }
+# )
 
+#### Save circular layouts
+
+SaveMetabologram_CNA <- reactive({
+  CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData$CNA)
+  title<- paste("Copy Number Alateration")
+  metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+
+})
+
+SaveMetabologram_Met <- reactive({
+  CoffeewheelTreeProfData <- reStrDimension(r_data$ListMetData)
+  title<- paste("DNA Methylation")
+  metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+
+})
+
+
+# SaveMetabologram_mRNA <- reactive({
+#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData$Expression)
+#   title<- paste("mRNA expression")
+#   metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+#
+# })
+#
+#
+# SaveMetabologram_RPPA <- reactive({
+#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData$RPPA)
+#   title<- paste("Reverse Phase Protein Arrays")
+#   metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+#
+# })
+#
+# SaveMetabologram_RPPA <- reactive({
+#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData$miRNA)
+#   title<- paste("miRNA Expression")
+#   metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+#
+# })
+#
 SaveMetabologram_All <- reactive({
   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData)
   title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA")
-  metabologram::metabologram(CoffeewheelTreeProfData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+  metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
 
 })
+
+# SaveMetabologram_Mut <- reactive({
+#   Freq_DfMutData <- getFreqMutData(list = r_data$ListMutData)
+#   print("End getting Mutation Frequency...")
+#   listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
+#   TreeMutData <- reStrDisease(listMut_df)
+#   #coffeewheel(TreeMutData, width=600, height=600, main="Mutation Frequency: (Min,Max)")
+#   title<- paste("Mutation")
+#   metabologram(TreeMutData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+#
+# })
 
 # output$dl_metabologram <- downloadHandler(
 #   filename='plot.png',

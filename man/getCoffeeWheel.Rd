@@ -17,7 +17,7 @@ get Coffe Wheel for Profiles Data
 }
 \examples{
 \dontrun{
-library(CoffeeWheel)
+
 
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 getCoffeeWhel(ListPorofData_bkp)

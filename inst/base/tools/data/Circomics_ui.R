@@ -63,16 +63,16 @@ output$ui_Circomics <- renderUI({
                    ),
 
                    conditionalPanel("input.getlistProfDataCircosID==true",
-                                    actionButton('loadListProfData', 'Load Profiles in Datasets', style="float:center"),
+                                    actionButton('loadListProfData', 'Load Profiles in Handle Panel', style="float:center"),
                                     uiOutput("ui_CircosDimension")
                                     #uiOutput("ui_SaveCircos")
                    ),
 
-                   conditionalPanel("input.CircosDimensionID == 'All'",
-                                    plot_downloader("SaveMetabologram_All", pre = ""),
-                                    downloadButton('Save_Metabologram_All', 'All')
-
-                   ),
+#                    conditionalPanel("input.CircosDimensionID == 'All'",
+#                                     #plot_downloader("SaveMetabologram_All", pre = ""),
+#                                     downloadButton('Save_Metabologram_All', 'All')
+#
+#                    ),
 
                    checkboxInput("CircosLegendID", "Legend", value=FALSE),
                    #                    radioButtons(inputId = "WheelID", label = "Wheel Style:",

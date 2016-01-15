@@ -143,39 +143,55 @@ output$Enrich <- renderUI({
   tabsetPanel(id = "tabs_Enrich",
 
               tabPanel("Circomics",
-
+#                        if('CNA' %in% input$CircosDimensionID ){
+#                          plot_downloader("SaveMetabologram_CNA", pre = "")
+#                        },
                        if('CNA' %in% input$CircosDimensionID ){
-
                          coffeewheelOutput('getCoffeeWheel_CNA', width = 600, height = 600)
                        },
-
+                       if('Methylation' %in% input$CircosDimensionID ){
+                         plot_downloader("SaveMetabologram_Met", pre = "")
+                       },
                        if('Methylation' %in% input$CircosDimensionID ){
                          #  h3("Correlation of silencing gene by Methylation: (0:1)")
                          coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
                        },
-
+#                        if('mRNA' %in% input$CircosDimensionID ){
+#                          plot_downloader("SaveMetabologram_mRNA", pre = "")
+#                        },
                        if('mRNA' %in% input$CircosDimensionID ){
                          # h3("Gene Expression")
                          coffeewheelOutput('getCoffeeWheel_mRNA', width = 600, height = 600)
                        },
-
+#                        if('Mutation' %in% input$CircosDimensionID ){
+#                          plot_downloader("SaveMetabologram_Mut", pre = "")
+#                        },
                        if('Mutation' %in% input$CircosDimensionID ){
                          # h3("Mutation Frequency: (Min,Max)")
                          coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
                        },
+#                        if('miRNA' %in% input$CircosDimensionID ){
+#                          plot_downloader("SaveMetabologram_miRNA", pre = "")
+#                        },
 
                        if('miRNA' %in% input$CircosDimensionID ){
                          #h3("Protein phosphorylation:")
                          coffeewheelOutput('getCoffeeWheel_miRNA', width = 600, height = 600)
                        },
+#                        if('RPPA' %in% input$CircosDimensionID ){
+#                          plot_downloader("SaveMetabologram_RPPA", pre = "")
+#                        },
 
                        if('RPPA' %in% input$CircosDimensionID ){
                          #h3("Protein phosphorylation:")
                          coffeewheelOutput('getCoffeeWheel_RPPA', width = 600, height = 600)
                        },
                        if('All' %in% input$CircosDimensionID ){
+                         plot_downloader("SaveMetabologram_All", pre = "")
+                       },
+                       if('All' %in% input$CircosDimensionID ){
                          #h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)")
-                         coffeewheelOutput('getCoffeeWheel_All', width = 600, height = 600)
+                         coffeewheelOutput('getCoffeeWheel_All', width = 800, height = 800)
 
                        },
                        conditionalPanel(condition = "input.getlistProfDataCircosID ==true",

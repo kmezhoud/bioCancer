@@ -1,29 +1,29 @@
-
-#'This is an htmlwidgets-based visualization tool for hierarchical data.It is zoomable, meaning that you can interact with the hierarchy and zoom in/out accordingly.
+#' This is an htmlwidgets-based visualization tool for hierarchical data.It is zoomable, meaning that you can interact with the hierarchy and zoom in/out accordingly.
 #'
-#'@return  A circular layout with genetic profile.
+#' @return  A circular layout with genetic profile.
+#'
+#'
+#' @import htmlwidgets
+#' @export
 #'
 #' @param treeData A hierarchical tree data as in example
 #' @param width 600
 #' @param height 600
 #' @param main Title
 #' @param partitionAttribute "value"
+#' @usage coffeewheel(treeData = sampleWheelData)
+#'
 #' @examples
 #' \dontrun{
 #' library(bioCancer)
-#' bioCancer::coffeewheel(treeData = sampleWheelData)
+#' coffeewheel(treeData = sampleWheelData)
 #' }
-#'
-#'
-#' @import htmlwidgets
-#'
-#' @export
 coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttribute="value") {
   x <- list(
     treeData = treeData,
     main = main,
     partitionAttribute = partitionAttribute
-  );
+  )
 
   # create widget
   htmlwidgets::createWidget(
@@ -31,8 +31,8 @@ coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttri
     x,
     width = width,
     height = height,
-    package = 'coffeewheel'
-  );
+    package = 'bioCancer'
+  )
 }
 
 #' Widget output function for use in Shiny
@@ -41,6 +41,8 @@ coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttri
 #' @param output id
 #' @param width 600
 #' @param height 600
+#'
+#' @usage  coffeewheel(treeData = sampleWheelData)
 #' @examples
 #' \dontrun{
 #' library(bioCancer)
@@ -48,7 +50,7 @@ coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttri
 #' }
 #' @export
 coffeewheelOutput <- function(outputId, width=700, height=700) {
-  shinyWidgetOutput(outputId, 'coffeewheel', width, height, package = 'coffeewheel');
+  shinyWidgetOutput(outputId, 'coffeewheel', width, height, package = 'bioCancer')
 }
 
 #' Widget render function for use in Shiny
@@ -57,7 +59,7 @@ coffeewheelOutput <- function(outputId, width=700, height=700) {
 #' @param expr
 #' @param env parent.frame()
 #' @param quoted FALSE
-#'
+#' @usage coffeewheel(treeData = sampleWheelData)
 #' @examples
 #' \dontrun{
 #' library(bioCancer)
@@ -66,10 +68,11 @@ coffeewheelOutput <- function(outputId, width=700, height=700) {
 #' @export
 renderCoffeewheel <- function(expr, env = parent.frame(), quoted = FALSE) {
   if (!quoted) { expr <- substitute(expr) } # force quoted
-  shinyRenderWidget(expr, coffeewheelOutput, env, quoted = TRUE);
+  shinyRenderWidget(expr, coffeewheelOutput, env, quoted = TRUE)
 }
 
 #' Sample data for wheel initialization
+#' @usage coffeewheel(treeData = sampleWheelData)
 #' @examples
 #' \dontrun{
 #' library(bioCancer)

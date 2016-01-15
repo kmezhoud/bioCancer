@@ -2,7 +2,7 @@
 % Please edit documentation in R/Reactome_doc.R
 \name{Node_obj_Met_ProfData}
 \alias{Node_obj_Met_ProfData}
-\title{Title}
+\title{Attribute gene Methylation to Nodes}
 \usage{
 Node_obj_Met_ProfData(list, type, Threshold)
 }
@@ -17,7 +17,7 @@ Node_obj_Met_ProfData(list, type, Threshold)
 a data frame with node shape attributes
 }
 \description{
-Title
+Attribute gene Methylation to Nodes
 }
 \examples{
 \dontrun{

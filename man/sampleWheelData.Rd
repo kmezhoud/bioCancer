@@ -6,10 +6,16 @@
 \title{Sample data for wheel initialization}
 \format{An object of class \code{list} of length 3.}
 \usage{
-sampleWheelData
+coffeewheel(treeData = sampleWheelData)
 }
 \description{
 Sample data for wheel initialization
+}
+\examples{
+\dontrun{
+library(bioCancer)
+bioCancer::coffeewheel(treeData = sampleWheelData)
+}
 }
 \keyword{datasets}
 

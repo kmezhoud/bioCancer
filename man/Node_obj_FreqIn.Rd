@@ -2,7 +2,7 @@
 % Please edit documentation in R/Reactome_doc.R
 \name{Node_obj_FreqIn}
 \alias{Node_obj_FreqIn}
-\title{Attribute interaction number to node size}
+\title{Attribute interaction frequency to node size}
 \usage{
 Node_obj_FreqIn(GeneList)
 }
@@ -13,7 +13,7 @@ Node_obj_FreqIn(GeneList)
 A data frame with node attributes
 }
 \description{
-Attribute interaction number to node size
+Attribute interaction frequency to node size
 }
 \examples{
 \dontrun{

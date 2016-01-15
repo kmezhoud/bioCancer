@@ -2,7 +2,7 @@
 % Please edit documentation in R/Reactome_doc.R
 \name{Node_obj_mRNA_Classifier}
 \alias{Node_obj_mRNA_Classifier}
-\title{Atrribute genes exprssion to color nodes}
+\title{Atrribute genes expression to color nodes}
 \usage{
 Node_obj_mRNA_Classifier(GeneList, GenesClassDetails = df)
 }
@@ -15,7 +15,7 @@ Node_obj_mRNA_Classifier(GeneList, GenesClassDetails = df)
 A data frame with node color attributes
 }
 \description{
-Atrribute genes exprssion to color nodes
+Atrribute genes expression to color nodes
 }
 \examples{
 \dontrun{
