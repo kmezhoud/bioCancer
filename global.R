@@ -128,9 +128,9 @@ addResourcePath("figures_quant", file.path(r_path,"quant/tools/help/figures/"))
 ## using local mathjax if available to avoid shiny bug
 ## https://github.com/rstudio/shiny/issues/692
 ## however, only use for local due to problems with mathjax rendering in IE
-if (r_local && "MathJaxR" %in% installed.packages()[,"Package"]) {
-  addResourcePath("MathJax", file.path(system.file(package = "MathJaxR"), "MathJax/"))
-  withMathJax <- MathJaxR::withMathJaxR
+if (r_local) {
+  addResourcePath("MathJax", file.path(system.file(package = "bioCancer"), "MathJax/"))
+  withMathJax <- bioCancer::withMathJax
 }
 
 

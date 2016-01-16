@@ -1,5 +1,8 @@
 FIRST RELEASE
     o Package released
+      withMathJaxR (>= 0.11)
+      coffeewheel (>=0.1)
+      metabologram (>=0.1)
 
 PERSPECTIVE
     o clusterProfiler GMT file:

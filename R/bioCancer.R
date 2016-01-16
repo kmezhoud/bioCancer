@@ -1,4 +1,3 @@
-
 #' Launch bioCancer with default browser
 #'
 #' @return  web page of bioCancer Shiny App
@@ -19,7 +18,6 @@
 #'@import lubridate
 #'@importFrom stringr str_match
 #'@import magrittr
-#'@importFrom MathJaxR withMathJaxR
 #'@import psych
 #'@import tidyr
 #'@importFrom yaml yaml.load
@@ -43,8 +41,8 @@
 #'@import htmlwidgets
 #'@import car
 #'@import scales
-#'@ggplot2
-#'@covr
+#'@import ggplot2
+#'@import covr
 
 bioCancer <- function(){
   if ("package:bioCancer" %in% search()){

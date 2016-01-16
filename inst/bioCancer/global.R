@@ -16,5 +16,12 @@ if (file.exists("../base") && file.exists("../quant")){
   source("inst/base/global.R", encoding = "UTF-8", local = TRUE)
 }
 
+for (file in list.files(paste0(system.file(package ="bioCancer"),"/Rbis"),
+                        pattern="\\.(r|R)$",
+                        full.names = TRUE)) {
+
+  source(file, encoding = r_encoding, local = TRUE)
+}
+
 addResourcePath("figures_marketing", file.path(r_path,"bioCancer/tools/help/figures/"))
 addResourcePath("figures_quant", file.path(r_path,"quant/tools/help/figures/"))
