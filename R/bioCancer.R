@@ -39,6 +39,7 @@
 #'@import readr
 #'@import scales
 #'@import htmlwidgets
+#'@importFrom htmlwidgets shinyRenderWidget
 #'@import car
 #'@import scales
 #'@import ggplot2

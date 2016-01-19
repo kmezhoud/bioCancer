@@ -8,3 +8,4 @@ PERSPECTIVE
     o clusterProfiler GMT file:
     http://www.r-bloggers.com/go-analysis-using-clusterprofiler/
     o gene classification using rpart,ggplot2, ggtree: http://guangchuangyu.github.io/2016/01/annotate-a-phylogenetic-tree-with-insets/
+    o Specify the range of mutation frequency in circos plot [Min, Max]

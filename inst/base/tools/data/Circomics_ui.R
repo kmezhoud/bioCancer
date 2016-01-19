@@ -63,7 +63,7 @@ output$ui_Circomics <- renderUI({
                    ),
 
                    conditionalPanel("input.getlistProfDataCircosID==true",
-                                    actionButton('loadListProfData', 'Load Profiles in Handle Panel', style="float:center"),
+                                    actionButton('loadListProfData', 'Load Profiles to Handle Panel', style="float:center"),
                                     uiOutput("ui_CircosDimension")
                                     #uiOutput("ui_SaveCircos")
                    ),
