@@ -229,7 +229,8 @@ output$ui_Transform <- renderUI({
 
   if (!store || !is.character(dataset)) {
     fun <- get(fun)
-    if (ext == "") {
+    # if (ext == "") {
+    if (is_empty(ext)) {
       mutate_each_(dataset, funs(fun), vars)
     } else {
       mutate_each_(dataset, funs(fun), vars) %>% set_colnames(paste0(vars, ext))
@@ -237,10 +238,12 @@ output$ui_Transform <- renderUI({
     # return(mutate_each_(dataset, funs(fun), vars))
   } else {
     if (store_dat == "") store_dat <- dataset
-    if (ext == "")
+    # if (ext == "")
+    if (is_empty(ext)) {
       paste0("## change variable type\nr_data[[\"",store_dat,"\"]] <- mutate_each(r_data[[\"",dataset,"\"]], funs(", fun, "), ", paste0(vars, collapse = ", "),")\n")
-    else
+    } else {
       paste0("## change variable type\nr_data[[\"",store_dat,"\"]] <- mutate_each(r_data[[\"",dataset,"\"]], funs(", fun, "), ext = \"", ext, "\", ", paste0(vars, collapse = ", "), ")\n")
+    }
   }
 }
 
@@ -252,7 +255,8 @@ output$ui_Transform <- renderUI({
 
   if (!store && !is.character(dataset)) {
     fun <- get(fun)
-    if (ext == "") {
+    # if (ext == "") {
+    if (is_empty(ext)) {
       mutate_each_(dataset, funs(fun), vars)
     } else {
       mutate_each_(dataset, funs(fun), vars) %>% set_colnames(paste0(vars, ext))
@@ -260,10 +264,12 @@ output$ui_Transform <- renderUI({
   } else {
 
     if (store_dat == "") store_dat <- dataset
-    if (ext == "")
+    # if (ext == "")
+    if (is_empty(ext)) {
       paste0("## transform variable\nr_data[[\"",store_dat,"\"]] <- mutate_each(r_data[[\"",dataset,"\"]], funs(", fun, "), ", paste0(vars, collapse = ", "), ")\n")
-    else
+    } else {
       paste0("## transform variable\nr_data[[\"",store_dat,"\"]] <- mutate_each(r_data[[\"",dataset,"\"]], funs(", fun, "), ext = \"", ext, "\", ", paste0(vars, collapse = ", "), ")\n")
+    }
   }
 }
 
@@ -400,7 +406,6 @@ observeEvent(input$tr_change_type, {
       if (store_dat == "") store_dat <- dataset
 
       paste0("## replace variable(s)\nr_data[[\"",store_dat,"\"]] <- mutate(r_data[[\"",dataset,"\"]], ", paste(var, rpl, sep = " = ", collapse = ", "), ") %>% select(", paste0("-",rpl, collapse = ", "),")\n")
-
     }
   }
 

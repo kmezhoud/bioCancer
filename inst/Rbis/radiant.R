@@ -121,28 +121,28 @@ getdata <- function(dataset,
   # filt %<>% gsub("\\s","", .) %>% gsub("\"","\'",.)
   filt %<>% gsub("\\n","", .) %>% gsub("\"","\'",.)
   { if (!is_string(dataset)) {
-    dataset
-  } else if (exists("r_env") && !is.null(r_env$r_data[[dataset]])) {
-    r_env$r_data[[dataset]]
-  } else if (exists("r_data") && !is.null(r_data[[dataset]])) {
-    if (exists("r_local")) { if (r_local) message("Dataset ", dataset, " loaded from r_data list\n") }
-    r_data[[dataset]]
-  } else if (exists(dataset)) {
-    d_env <- pryr::where(dataset)
-    # message("Dataset ", dataset, " loaded from ", environmentName(d_env), " environment\n")
-    d_env[[dataset]]
-  } else {
-    # stop(message("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call"))
-    stop(paste("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call"))
-  }
+      dataset
+    } else if (exists("r_env") && !is.null(r_env$r_data[[dataset]])) {
+      r_env$r_data[[dataset]]
+    } else if (exists("r_data") && !is.null(r_data[[dataset]])) {
+      if (exists("r_local")) { if (r_local) message("Dataset ", dataset, " loaded from r_data list\n") }
+      r_data[[dataset]]
+    } else if (exists(dataset)) {
+      d_env <- pryr::where(dataset)
+      # message("Dataset ", dataset, " loaded from ", environmentName(d_env), " environment\n")
+      d_env[[dataset]]
+    } else {
+      # stop(message("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call"))
+      stop(paste("Dataset ", dataset, " is not available. Please load the dataset and use the name in the function call"))
+    }
   } %>% { if ("grouped_df" %in% class(.)) ungroup(.) else . } %>%     # ungroup data if needed
-    # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
-  { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
-  { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
-  { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
-  { if (na.rm) na.omit(.) else . }
-  ## line below may cause an error https://github.com/hadley/dplyr/issues/219
-  # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
+        # { if (filt == "") . else filter_(., filt) } %>%     # apply data_filter
+        { if (filt == "") . else filterdata(., filt) } %>%     # apply data_filter
+        { if (is.null(rows)) . else dplyr::slice(., rows) } %>%
+        { if (vars[1] == "" || is.null(vars)) . else dplyr::select_(., .dots = vars) } %>%
+        { if (na.rm) na.omit(.) else . }
+        ## line below may cause an error https://github.com/hadley/dplyr/issues/219
+        # { if (na.rm) { if (anyNA(.)) na.omit(.) else . } else . }
 
   # use the below when all data is setup as tbl_df
   # } %>% { if (is.na(groups(.))) . else ungroup(.) } %>%     # ungroup data if needed
@@ -159,10 +159,10 @@ getdata <- function(dataset,
 factorizer <- function(dat, safx = 20) {
   isChar <- sapply(dat, is.character)
   if (sum(isChar) == 0) return(dat)
-  toFct <-
-    dplyr::select(dat, which(isChar)) %>%
-    summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
-    dplyr::select(which(. == TRUE)) %>% names
+    toFct <-
+      dplyr::select(dat, which(isChar)) %>%
+      summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
+      dplyr::select(which(. == TRUE)) %>% names
   if (length(toFct) == 0) return(dat)
 
   ## not using due to https://github.com/hadley/dplyr/issues/1238
@@ -232,7 +232,12 @@ saver <- function(objname, file) {
     return()
   }
 
-  dat <- getdata(objname)
+  if (!is.character(objname)) {
+    dat <- objname
+    objname <- deparse(substitute(objname))
+  } else {
+    dat <- getdata(objname)
+  }
 
   if (ext == "rds") {
     saveRDS(dat, file = file)
@@ -259,13 +264,13 @@ loadcsv <- function(fn, header = TRUE, sep = ",", dec = ".", saf = TRUE, safx = 
   cn <- try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE, nrows = 1), silent = TRUE)
   # dat <- try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
   try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
-  {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
-    try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
-    else . } %>%
+    {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
+       try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
+     else . } %>%
     {if (is(., 'try-error'))
-      return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
-      else .} %>%
-      {if (saf) factorizer(., safx) else . } %>% as.data.frame
+       return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
+     else .} %>%
+    {if (saf) factorizer(., safx) else . } %>% as.data.frame
 
   ## workaround for https://github.com/rstudio/DT/issues/161
   # isDate <- sapply(dat, is.Date)
@@ -298,8 +303,8 @@ loadcsv_url <- function(csv_url, header = TRUE, sep = ",", dec = ".", saf = TRUE
     return("### There was an error loading the csv file from the provided url.")
   } else {
     dat <- try(read.table(con, header = header, comment.char = "",
-                          quote = "\"", fill = TRUE, stringsAsFactors = saf,
-                          sep = sep, dec = dec), silent = TRUE)
+               quote = "\"", fill = TRUE, stringsAsFactors = saf,
+               sep = sep, dec = dec), silent = TRUE)
     close(con)
 
     if (is(dat, 'try-error'))
@@ -388,7 +393,7 @@ changedata <- function(dataset,
 #' @param dataset Name of the dataframe to change
 #' @param vars Variables to show (default is all)
 #' @param filt Filter to apply to the specified dataset. For example "price > 10000" if dataset is "diamonds" (default is "")
-#' @param rows Select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
+#' @param rows dplyr::select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
 #' @param na.rm Remove rows with missing values (default is FALSE)
 #'
 #' @examples
@@ -423,25 +428,25 @@ viewdata <- function(dataset,
 
   shinyApp(
     ui = fluidPage(title = title,
-                   includeCSS(file.path(system.file(package = "radiant"),"base/www/style.css")),
-                   fluidRow(DT::dataTableOutput("tbl")),
-                   tags$button(id = "stop", type = "button",
-                               class = "btn btn-danger action-button shiny-bound-input",
-                               onclick = "window.close();", "Stop")
+      includeCSS(file.path(system.file(package = "radiant"),"base/www/style.css")),
+      fluidRow(DT::dataTableOutput("tbl")),
+      tags$button(id = "stop", type = "button",
+                  class = "btn btn-danger action-button shiny-bound-input",
+                  onclick = "window.close();", "Stop")
     ),
     server = function(input, output, session) {
       widget <- DT::datatable(dat, selection = "none",
-                              rownames = FALSE, style = "bootstrap",
-                              filter = fbox, escape = FALSE,
-                              # extensions = 'KeyTable'# ,
-                              options = list(
-                                search = list(regex = TRUE),
-                                columnDefs = list(list(className = 'dt-center', targets = "_all")),
-                                autoWidth = TRUE,
-                                processing = FALSE,
-                                pageLength = 10,
-                                lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-                              )
+        rownames = FALSE, style = "bootstrap",
+        filter = fbox, escape = FALSE,
+        # extensions = 'KeyTable'# ,
+        options = list(
+          search = list(regex = TRUE),
+          columnDefs = list(list(className = 'dt-center', targets = "_all")),
+          autoWidth = TRUE,
+          processing = FALSE,
+          pageLength = 10,
+          lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
+        )
       )
       output$tbl <- DT::renderDataTable(widget)
       observeEvent(input$stop, {stopApp("Stopped viewdata")})
@@ -740,7 +745,7 @@ copy_from <- function(.from, ...) {
   dots <- eval(substitute(alist(...)), parent.frame(), parent.frame())
   names <- names(dots)
   unnamed <- if (is.null(names)) 1:length(dots)
-  else which(names == "")
+             else which(names == "")
   dots <- vapply(dots, as.character, character(1))
   names(dots)[unnamed] <- dots[unnamed]
 
@@ -851,13 +856,8 @@ copy_all <- function(.from) {
 #' @export
 state_init <- function(inputvar, init = "") {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
-  # if (is.null(r_state[[inputvar]])) init else r_state[[inputvar]]
   if (is_empty(r_state[[inputvar]])) init else r_state[[inputvar]]
 }
-
-# state_init <- function(inputvar, init = "", pf = parent.frame()) {
-# print(parent.frame())
-# r_state %>% { if (is.null(.[[inputvar]])) init else .[[inputvar]] }
 
 #' Set initial value for shiny input from a list of values
 #'
@@ -886,7 +886,6 @@ state_init <- function(inputvar, init = "") {
 #' @export
 state_single <- function(inputvar, vals, init = character(0)) {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
-  # r_state %>% { if (is.null(.[[inputvar]])) init else vals[vals == .[[inputvar]]] }
   r_state %>% { if (is_empty(.[[inputvar]])) init else vals[vals == .[[inputvar]]] }
 }
 
@@ -920,13 +919,12 @@ state_single <- function(inputvar, vals, init = character(0)) {
 state_multiple <- function(inputvar, vals, init = character(0)) {
   if (!exists("r_state")) stop("Make sure to use copy_from inside shinyServer for the state_* functions")
   r_state %>%
-    # { if (is.null(.[[inputvar]]))
-  { if (is_empty(.[[inputvar]]))
-    ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
-    vals[vals %in% init]
-    else
-      vals[vals %in% .[[inputvar]]]
-  }
+    { if (is_empty(.[[inputvar]]))
+        ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
+        vals[vals %in% init]
+      else
+        vals[vals %in% .[[inputvar]]]
+    }
 }
 
 #' Print/draw method for grobs produced by gridExtra
@@ -1006,6 +1004,7 @@ ci_perc <- function(dat, alt = "two.sided", cl = .95) {
 #' @examples
 #' data.frame(x = c("a","b"), y = c(1L, 2L), z = c(-0.0005, 3)) %>%
 #'   dfprint(dec = 3)
+#'
 #' @export
 dfprint <- function(tbl, dec = 3, perc = FALSE) {
   if (perc) {
@@ -1016,9 +1015,9 @@ dfprint <- function(tbl, dec = 3, perc = FALSE) {
 
   frm <- if (perc) "f%%" else "f"
   tbl %>%
-    mutate_each(
-      funs(if (is.double(.)) sprintf(paste0("%.", dec ,frm), .) else .)
-    )
+  mutate_each(
+    funs(if (is.double(.)) sprintf(paste0("%.", dec ,frm), .) else .)
+  )
 
 }
 
@@ -1061,7 +1060,36 @@ nrprint <- function(x, sym = "", dec = 2, perc = FALSE) {
 #' @export
 dfround <- function(tbl, dec = 3) {
   tbl %>%
-    mutate_each(
-      funs(if (is.double(.)) round(., dec) else .)
-    )
+  mutate_each(
+    funs(if (is.double(.)) round(., dec) else .)
+  )
+}
+
+#' Find a users dropbox directory
+#'
+#' @param folder If multiple folders are present select which one to use. The first folder listed is used by default.
+#'
+#' @return Path to users personal dropbox directory
+#'
+#' @importFrom jsonlite fromJSON
+#'
+#' @export
+find_dropbox <- function(folder = 1) {
+  if (file.exists("~/.dropbox/info.json")) {
+    fp <- normalizePath("~/.dropbox/info.json", winslash = "/")
+    dbinfo <- jsonlite::fromJSON(fp)
+    ldb <- length(dbinom)
+    if (ldb > 1)
+      message("Multiple dropbox folders found. By default the first folder is used.\nTo select, for example, the third folder use 'find_dropbox(3)'")
+    if (folder > ldb) stop(paste0("Invalid folder number. Choose a folder number between 1 and ", ldb))
+    normalizePath(jsonlite::fromJSON(fp)[[folder]]$path)
+  } else if (file.exists("~/Dropbox")) {
+    normalizePath("~/Dropbox", winslash = "/")
+  } else if (file.exists("~/../Dropbox")) {
+    normalizePath("~/../Dropbox", winslash = "/")
+  } else if (file.exists("~/../gmail/Dropbox")) {
+    normalizePath("~/../gmail/Dropbox", winslash = "/")
+  } else {
+    stop("Could not find a Drobox folder")
+  }
 }

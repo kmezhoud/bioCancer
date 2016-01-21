@@ -57,6 +57,12 @@ explore <- function(dataset,
     dc[isFctNum] <- "integer"
   }
 
+  isLogNum <- "logical" == dc & names(dc) %in% setdiff(vars,byvar)
+  if (sum(isLogNum)) {
+    dat[,isLogNum] <- dplyr::select(dat, which(isLogNum)) %>% mutate_each(funs(as.integer))
+    dc[isLogNum] <- "integer"
+  }
+
   ## summaries only for numeric variables
   # isNum <- getclass(dat) %>% {which("numeric" == . | "integer" == .)}
   isNum <- dc %>% {which("numeric" == . | "integer" == .)}
@@ -313,20 +319,20 @@ make_expl <- function(expl,
 
   dt_tab <- tab %>% dfround(dec) %>%
     DT::datatable(container = sketch, selection = "none",
-                  rownames = FALSE,
-                  # filter = if (nrow(.) > 100) "none" else list(position = "top"),
-                  filter = fbox,
-                  style = ifelse (expl$shiny, "bootstrap", "default"),
-                  options = list(
-                    stateSave = TRUE,
-                    search = list(search = search, regex = TRUE),
-                    searchCols = searchCols,
-                    order = order,
-                    processing = FALSE,
-                    pageLength = 10,
-                    lengthMenu = list(c(10, 25, 50, -1), c("10","25","50","All"))
-                  )
-                  , callback = DT::JS("$(window).unload(function() { table.state.clear(); })")
+      rownames = FALSE,
+      # filter = if (nrow(.) > 100) "none" else list(position = "top"),
+      filter = fbox,
+      style = ifelse (expl$shiny, "bootstrap", "default"),
+      options = list(
+        stateSave = TRUE,
+        search = list(search = search, regex = TRUE),
+        searchCols = searchCols,
+        order = order,
+        processing = FALSE,
+        pageLength = 10,
+        lengthMenu = list(c(10, 25, 50, -1), c("10","25","50","All"))
+      )
+      , callback = DT::JS("$(window).unload(function() { table.state.clear(); })")
     ) %>% DT::formatStyle(., cn_cat,  color = "white", backgroundColor = "grey")
 
   dt_tab
@@ -589,6 +595,6 @@ does_vary <- function(x) {
 #' @export
 make_funs <- function(x) {
   xclean <- gsub("_rm$","",x) %>% sub("length","n",.)
-  env <- if (exists("bioCancer")) environment(bioCancer::bioCancer) else parent.frame()
+  env <- if (exists("radiant")) environment(radiant::radiant) else parent.frame()
   dplyr::funs_(lapply(paste0(xclean, " = ~", x), as.formula, env = env) %>% setNames(xclean))
 }

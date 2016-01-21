@@ -170,12 +170,19 @@ loadUserData <- function(fname, uFile, ext,
                          dec = ".") {
 
   filename <- basename(fname)
+
+  fext <- tools::file_ext(filename) %>% tolower
+
+  ## switch extension if needed
+  if (fext == "rds" && ext == "rda") ext <- "rds"
+  if (fext == "rda" && ext == "rds") ext <- "rda"
+
   ## objname is used as the name of the data.frame
   objname <- sub(paste0(".",ext,"$"),"", filename)
 
   ## if ext isn't in the filename nothing was replaced and so ...
   if (objname == filename) {
-    fext <- tools::file_ext(filename) %>% tolower
+    # fext <- tools::file_ext(filename) %>% tolower
 
     if (fext %in% c("xls","xlsx")) {
       ret <- "### bioCancer does not load xls files directly. Please save the data as a csv file and try again."
@@ -217,9 +224,9 @@ loadUserData <- function(fname, uFile, ext,
     r_data[[objname]] <- loadcsv(uFile, header = header, sep = sep, saf = man_str_as_factor) %>%
     {if (is.character(.)) upload_error_handler(objname, mess) else .}
 
-    ##########
-    r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
-    ##########
+  } else {
+    ret <- paste0("### The selected filetype is not currently supported (",fext,").")
+    upload_error_handler(objname,ret)
   }
   ############################
   if (ext == 'txt') {
