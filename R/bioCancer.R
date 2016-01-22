@@ -5,7 +5,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' bioCancer()
+#' bioCancer::bioCancer()
 #' }
 #'@import shiny
 #'@importFrom shinyAce aceEditor
@@ -44,6 +44,7 @@
 #'@import scales
 #'@import ggplot2
 #'@import covr
+#'@import jsonlite
 
 bioCancer <- function(){
   if ("package:bioCancer" %in% search()){

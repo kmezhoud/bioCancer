@@ -1,21 +1,21 @@
-#' Launch Radiant in the default browser
+#' Launch bioCancer in the default browser
 #'
-#' @details See \url{http://vnijs.github.io/radiant} for documentation and tutorials
+#' @details See \url{http://kmezhoud.github.io/bioCancer} for documentation and tutorials
 #'
 #' @param app Choose the app to run. One of "base", "quant", "analytics", "marketing". "analytics" is the default
 #'
 #' @examples
 #' if (interactive()) {
-#'   radiant("base")
-#'   radiant("quant")
-#'   radiant("marketing")
-#'   radiant("analytics")
+#'   bioCancer("base")
+#'   bioCancer("quant")
+#'   bioCancer("marketing")
+#'   bioCancer("analytics")
 #' }
 #' @export
-radiant <- function(app = c("analytics", "marketing", "quant", "base")) {
-  if (!"package:radiant" %in% search())
-    if (!require(radiant)) stop("Calling radiant start function but radiant is not installed.")
-  runApp(system.file(app[1], package = "radiant"), launch.browser = TRUE)
+bioCancer <- function(app = c("analytics", "marketing", "quant", "base")) {
+  if (!"package:bioCancer" %in% search())
+    if (!require(bioCancer)) stop("Calling bioCancer start function but bioCancer is not installed.")
+  runApp(system.file(app[1], package = "bioCancer"), launch.browser = TRUE)
 }
 
 #' Alias used to set the class for analysis function return
@@ -172,7 +172,7 @@ factorizer <- function(dat, safx = 20) {
   mutate_each_(dat, funs(as.factor), vars = toFct)
 }
 
-#' Load an rda or rds file and add it to the radiant data list (r_data) if available
+#' Load an rda or rds file and add it to the bioCancer data list (r_data) if available
 #'
 #' @param fn File name and path as a string. Extension must be either rda or rds
 #' @param objname Name to use for the data.frame. Defaults to the file name
@@ -215,7 +215,7 @@ loadr <- function(fn, objname = "") {
   }
 }
 
-#' Save data.frame as an rda or rds file from Radiant
+#' Save data.frame as an rda or rds file from bioCancer
 #'
 #' @param objname Name of the data.frame
 #' @param file File name and path as a string. Extension must be either rda or rds
@@ -428,7 +428,7 @@ viewdata <- function(dataset,
 
   shinyApp(
     ui = fluidPage(title = title,
-      includeCSS(file.path(system.file(package = "radiant"),"base/www/style.css")),
+      includeCSS(file.path(system.file(package = "bioCancer"),"base/www/style.css")),
       fluidRow(DT::dataTableOutput("tbl")),
       tags$button(id = "stop", type = "button",
                   class = "btn btn-danger action-button shiny-bound-input",
@@ -537,7 +537,7 @@ iterms <- function(vars, nway, sep = ":") {
 
 #' Create a launcher and updater for Windows (.bat)
 #'
-#' @details On Windows a file named 'radiant.bat' and one named 'update_radiant.bat' will be put on the desktop. Double-click the file to launch the specified Radiant app or update Radiant to the latest version
+#' @details On Windows a file named 'bioCancer.bat' and one named 'update_bioCancer.bat' will be put on the desktop. Double-click the file to launch the specified bioCancer app or update bioCancer to the latest version
 #'
 #' @param app App to run when the desktop icon is double-clicked ("analytics", "marketing", "quant", or "base"). Default is "analytics"
 #'
@@ -545,7 +545,7 @@ iterms <- function(vars, nway, sep = ":") {
 #' if (interactive()) {
 #'   if (Sys.info()["sysname"] == "Windows") {
 #'     win_launcher()
-#'     fn <- paste0(Sys.getenv("USERPROFILE") ,"/Desktop/radiant.bat")
+#'     fn <- paste0(Sys.getenv("USERPROFILE") ,"/Desktop/bioCancer.bat")
 #'     if (!file.exists(fn))
 #'       stop("Windows launcher not created")
 #'     else
@@ -561,7 +561,7 @@ win_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
   if (Sys.info()["sysname"] != "Windows")
     return(message("This function is for Windows only. For Mac use the mac_launcher() function"))
 
-  answ <- readline("Do you want to create shortcuts for Radiant on your Desktop? (y/n) ")
+  answ <- readline("Do you want to create shortcuts for bioCancer on your Desktop? (y/n) ")
   if (substr(answ, 1, 1) %in% c("y","Y")) {
 
     local_dir <- Sys.getenv("R_LIBS_USER")
@@ -579,18 +579,18 @@ win_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 
     pt <- normalizePath(pt, winslash='/')
 
-    fn1 <- file.path(pt, "radiant.bat")
-    launch_string <- paste0("\"",Sys.which('R'), "\" -e \"if (!require(radiant)) { install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary') }; library(radiant); shiny::runApp(system.file(\'", app[1], "\', package='radiant'), port = 4444, launch.browser = TRUE)\"")
+    fn1 <- file.path(pt, "bioCancer.bat")
+    launch_string <- paste0("\"",Sys.which('R'), "\" -e \"if (!require(bioCancer)) { install.packages('bioCancer', repos = 'http://kmezhoud.github.io/bioCancer/', type = 'binary') }; library(bioCancer); shiny::runApp(system.file(\'", app[1], "\', package='bioCancer'), port = 4444, launch.browser = TRUE)\"")
     cat(launch_string, file=fn1, sep="\n")
     Sys.chmod(fn1, mode = "0755")
 
-    fn2 <- file.path(pt, "update_radiant.bat")
-    launch_string <- paste0("\"", Sys.which('R'), "\" -e \"unlink('~/r_sessions/*.rds', force = TRUE); install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary')\"\npause(1000)")
+    fn2 <- file.path(pt, "update_bioCancer.bat")
+    launch_string <- paste0("\"", Sys.which('R'), "\" -e \"unlink('~/r_sessions/*.rds', force = TRUE); install.packages('bioCancer', repos = 'http://vnijs.github.io/bioCancer_miniCRAN/', type = 'binary')\"\npause(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
     if (file.exists(fn1) && file.exists(fn2))
-      message("Done! Look for a file named radiant.bat on your desktop. Double-click it to start Radiant in your default browser. There is also a file called update_radiant.bat you can double click to update the version of Radiant on your computer.\n")
+      message("Done! Look for a file named bioCancer.bat on your desktop. Double-click it to start bioCancer in your default browser. There is also a file called update_bioCancer.bat you can double click to update the version of bioCancer on your computer.\n")
     else
       message("Something went wrong. No shortcuts were created.")
   } else {
@@ -600,7 +600,7 @@ win_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 
 #' Create a launcher and updater for Mac (.command)
 #'
-#' @details On Mac a file named 'radiant.command' and one named 'update_radiant.command' will be put on the desktop. Double-click the file to launch the specified Radiant app or update Radiant to the latest version
+#' @details On Mac a file named 'bioCancer.command' and one named 'update_bioCancer.command' will be put on the desktop. Double-click the file to launch the specified bioCancer app or update bioCancer to the latest version
 #'
 #' @param app App to run when the desktop icon is double-clicked ("analytics", "marketing", "quant", or "base"). Default is "analytics"
 #'
@@ -608,7 +608,7 @@ win_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 #' if (interactive()) {
 #'   if (Sys.info()["sysname"] == "Darwin") {
 #'     mac_launcher()
-#'     fn <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/radiant.command")
+#'     fn <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/bioCancer.command")
 #'     if (!file.exists(fn))
 #'       stop("Mac launcher not created")
 #'     else
@@ -624,24 +624,24 @@ mac_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
   if (Sys.info()["sysname"] != "Darwin")
     return(message("This function is for Mac only. For windows use the win_launcher() function"))
 
-  answ <- readline("Do you want to create shortcuts for Radiant on your Desktop? (y/n) ")
+  answ <- readline("Do you want to create shortcuts for bioCancer on your Desktop? (y/n) ")
   if (substr(answ, 1, 1) %in% c("y","Y")) {
 
     local_dir <- Sys.getenv("R_LIBS_USER")
     if (!file.exists(local_dir)) dir.create(local_dir, recursive = TRUE)
 
-    fn1 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/radiant.command")
-    launch_string <- paste0("#!/usr/bin/env Rscript\nif (!require(radiant)) {\n  install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary')\n}\n\nlibrary(radiant)\nshiny::runApp(system.file(\'", app[1], "\', package='radiant'), port = 4444, launch.browser = TRUE)\n")
+    fn1 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/bioCancer.command")
+    launch_string <- paste0("#!/usr/bin/env Rscript\nif (!require(bioCancer)) {\n  install.packages('bioCancer', repos = 'http://kmezhoud.github.io/bioCancer_miniCRAN/', type = 'binary')\n}\n\nlibrary(bioCancer)\nshiny::runApp(system.file(\'", app[1], "\', package='bioCancer'), port = 4444, launch.browser = TRUE)\n")
     cat(launch_string,file=fn1,sep="\n")
     Sys.chmod(fn1, mode = "0755")
 
-    fn2 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/update_radiant.command")
-    launch_string <- paste0("#!/usr/bin/env Rscript\nunlink('~/r_sessions/*.rds', force = TRUE)\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/', type = 'binary')\nSys.sleep(1000)")
+    fn2 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/update_bioCancer.command")
+    launch_string <- paste0("#!/usr/bin/env Rscript\nunlink('~/r_sessions/*.rds', force = TRUE)\ninstall.packages('bioCancer', repos = 'http://kmezhoud.github.io/bioCancer_miniCRAN/', type = 'binary')\nSys.sleep(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
     if (file.exists(fn1) && file.exists(fn2))
-      message("Done! Look for a file named radiant.command  on your desktop. Double-click it to start Radiant in your default browser. There is also a file called update_radiant.command you can double click to update the version of Radiant on your computer.\n")
+      message("Done! Look for a file named bioCancer.command  on your desktop. Double-click it to start bioCancer in your default browser. There is also a file called update_bioCancer.command you can double click to update the version of bioCancer on your computer.\n")
     else
       message("Something went wrong. No shortcuts were created.")
 
@@ -652,7 +652,7 @@ mac_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 
 #' Create a launcher and updater for Linux (.sh)
 #'
-#' @details On Linux a file named 'radiant.sh' and one named 'update_radiant.sh' will be put on the desktop. Double-click the file to launch the specified Radiant app or update Radiant to the latest version
+#' @details On Linux a file named 'bioCancer.sh' and one named 'update_bioCancer.sh' will be put on the desktop. Double-click the file to launch the specified bioCancer app or update bioCancer to the latest version
 #'
 #' @param app App to run when the desktop icon is double-clicked ("analytics", "marketing", "quant", or "base"). Default is "analytics"
 #'
@@ -660,7 +660,7 @@ mac_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 #' if (interactive()) {
 #'   if (Sys.info()["sysname"] == "Linux") {
 #'     lin_launcher()
-#'     fn <- paste0("/home/",Sys.getenv("USER"),"/Desktop/radiant.sh")
+#'     fn <- paste0("/home/",Sys.getenv("USER"),"/Desktop/bioCancer.sh")
 #'     if (!file.exists(fn))
 #'       stop("Linux launcher not created")
 #'     else
@@ -676,24 +676,24 @@ lin_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
   if (Sys.info()["sysname"] != "Linux")
     return(message("This function is for Linux only. For windows use the win_launcher() function and for mac use the mac_launcher() function"))
 
-  answ <- readline("Do you want to create shortcuts for Radiant on your Desktop? (y/n) ")
+  answ <- readline("Do you want to create shortcuts for bioCancer on your Desktop? (y/n) ")
   if (substr(answ, 1, 1) %in% c("y","Y")) {
 
     local_dir <- Sys.getenv("R_LIBS_USER")
     if (!file.exists(local_dir)) dir.create(local_dir, recursive = TRUE)
 
-    fn1 <- paste0("/home/",Sys.getenv("USER"),"/Desktop/radiant.sh")
-    launch_string <- paste0("#!/usr/bin/env Rscript\nif (!require(radiant)) {\n  install.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\n}\n\nlibrary(radiant)\nshiny::runApp(system.file(\'", app[1], "\', package='radiant'), port = 4444, launch.browser = TRUE)\n")
+    fn1 <- paste0("/home/",Sys.getenv("USER"),"/Desktop/bioCancer.sh")
+    launch_string <- paste0("#!/usr/bin/env Rscript\nif (!require(bioCancer)) {\n  install.packages('bioCancer', repos = 'http://kmezhoud.github.io/bioCancer/')\n}\n\nlibrary(bioCancer)\nshiny::runApp(system.file(\'", app[1], "\', package='bioCancer'), port = 4444, launch.browser = TRUE)\n")
     cat(launch_string,file=fn1,sep="\n")
     Sys.chmod(fn1, mode = "0755")
 
-    fn2 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/update_radiant.sh")
-    launch_string <- paste0("#!/usr/bin/env Rscript\nunlink('~/r_sessions/*.rds', force = TRUE)\ninstall.packages('radiant', repos = 'http://vnijs.github.io/radiant_miniCRAN/')\nsleep(1000)")
+    fn2 <- paste0("/Users/",Sys.getenv("USER"),"/Desktop/update_bioCancer.sh")
+    launch_string <- paste0("#!/usr/bin/env Rscript\nunlink('~/r_sessions/*.rds', force = TRUE)\ninstall.packages('bioCancer', repos = 'http://kmezhoud.github.io/bioCancer/')\nsleep(1000)")
     cat(launch_string,file=fn2,sep="\n")
     Sys.chmod(fn2, mode = "0755")
 
     if (file.exists(fn1) && file.exists(fn2))
-      message("Done! Look for a file named radiant.sh on your desktop. Double-click it to start Radiant in your default browser. There is also a file called update_radiant.sh you can double click to update the version of Radiant on your computer.\n")
+      message("Done! Look for a file named bioCancer.sh on your desktop. Double-click it to start bioCancer in your default browser. There is also a file called update_bioCancer.sh you can double click to update the version of bioCancer on your computer.\n")
     else
       message("Something went wrong. No shortcuts were created.")
 
@@ -704,7 +704,7 @@ lin_launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 
 #' Create a launcher on the desktop for Windows (.bat), Mac (.command), or Linux (.sh)
 #'
-#' @details On Windows/Mac/Linux a file named radiant.bat/radiant.command/radiant.sh will be put on the desktop. Double-click the file to launch the specified Radiant app
+#' @details On Windows/Mac/Linux a file named bioCancer.bat/bioCancer.command/bioCancer.sh will be put on the desktop. Double-click the file to launch the specified bioCancer app
 #'
 #' @seealso \code{\link{win_launcher}} to create a shortcut on Windows
 #' @seealso \code{\link{mac_launcher}} to create a shortcut on Mac
@@ -736,7 +736,7 @@ launcher <- function(app = c("analytics", "marketing", "quant", "base")) {
 #'
 #' @examples
 #'
-#' copy_from(radiant, state_init)
+#' copy_from(bioCancer, state_init)
 #'
 #' @export
 copy_from <- function(.from, ...) {
@@ -769,7 +769,7 @@ copy_from <- function(.from, ...) {
 #'
 #' @examples
 #' \donttest{
-#' copy_imported(radiant)
+#' copy_imported(bioCancer)
 #' }
 #' @export
 copy_imported <- function(.from) {
@@ -804,7 +804,7 @@ copy_imported <- function(.from) {
 #'
 #' @examples
 #'
-#' copy_all(radiant)
+#' copy_all(bioCancer)
 #'
 #' @export
 copy_all <- function(.from) {
@@ -891,7 +891,7 @@ state_single <- function(inputvar, vals, init = character(0)) {
 
 #' Set initial values for shiny input from a list of values
 #'
-#' @details Useful for select input with multiple = TRUE and when you want to use inputs selected for another tool (e.g., pre_factor and full_factor or hier_clus and kmeans_clus in Radiant)
+#' @details Useful for select input with multiple = TRUE and when you want to use inputs selected for another tool (e.g., pre_factor and full_factor or hier_clus and kmeans_clus in bioCancer)
 #'
 #' @param inputvar Name shiny input
 #' @param vals Possible values for inputvar

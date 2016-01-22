@@ -6,7 +6,6 @@
 #'
 #' @return Processed HTML
 #'
-#' @import shiny
 #
 #' @examples
 #' \dontrun{

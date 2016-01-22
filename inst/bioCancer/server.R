@@ -2,7 +2,7 @@
 shinyServer(function(input, output, session) {
   #library(networkD3)
 
-  library(shinythemes)
+  #library(shinythemes)
   library(cgdsr)
   library(magrittr)
   #library(coffeewheel)

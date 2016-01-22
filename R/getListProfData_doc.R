@@ -140,8 +140,6 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #' ListProfData <- getListProfData(panel= "Circomics")
 #'}
 #'
-#'@import shiny
-#'@import shinythemes
 #'
 getListProfData <- function(panel){
 

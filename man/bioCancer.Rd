@@ -14,7 +14,7 @@ Launch bioCancer with default browser
 }
 \examples{
 \dontrun{
-bioCancer()
+bioCancer::bioCancer()
 }
 }
 

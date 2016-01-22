@@ -595,6 +595,6 @@ does_vary <- function(x) {
 #' @export
 make_funs <- function(x) {
   xclean <- gsub("_rm$","",x) %>% sub("length","n",.)
-  env <- if (exists("radiant")) environment(radiant::radiant) else parent.frame()
+  env <- if (exists("bioCancer")) environment(radiant) else parent.frame()
   dplyr::funs_(lapply(paste0(xclean, " = ~", x), as.formula, env = env) %>% setNames(xclean))
 }

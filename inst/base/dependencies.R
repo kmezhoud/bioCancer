@@ -7,8 +7,8 @@ if (!file.exists(local_dir)) dir.create(local_dir, recursive = TRUE)
 repos <- options()$repos
 if (is.null(repos)) repos <- "http://cran.r-project.org"
 
-# setting the url for the miniCRAN, as in yihui/xran
-options(repos = "http://vnijs.github.io/radiant_miniCRAN/")
+# setting the url for
+options(repos = "http://kmezhoud.github.io/kmezhoud/")
 
 # update old-packages
 update.packages(lib.loc = local_dir, ask = FALSE)

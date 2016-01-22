@@ -133,9 +133,9 @@ if (r_local) {
   withMathJax <- bioCancer::withMathJax
 }
 
-
+#,theme= shinythemes::shinytheme("cerulean")
 nav_ui <-
-  list(windowTitle = "bioCancer",theme= shinythemes::shinytheme("cerulean"), id = "nav_radiant", inverse = TRUE,
+  list(windowTitle = "bioCancer", id = "nav_radiant", inverse = TRUE,
        collapsible = TRUE, tabPanel("Data", withMathJax(), uiOutput("ui_data")))
 
 r_help <- "help_base"
