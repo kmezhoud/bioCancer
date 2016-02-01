@@ -95,8 +95,8 @@ output$ui_Pivotr <- renderUI({
       with(tags, table(
         tr(
           td(checkboxInput("pvt_tab", "Show table  ", value = state_init("pvt_tab", TRUE))),
-          td(HTML("&nbsp;&nbsp;")),
-          td(checkboxInput("pvt_plot", "Show plot  ", value = state_init("pvt_plot", FALSE)))
+          td(HTML("&nbsp;&nbsp;"))
+          #,td(checkboxInput("pvt_plot", "Show plot  ", value = state_init("pvt_plot", FALSE)))
         ),
         tr(
           td(checkboxInput("pvt_perc", "Percentage", value = state_init("pvt_perc", FALSE))),
@@ -115,11 +115,11 @@ output$ui_Pivotr <- renderUI({
       )
     ),
     ## for Server
-    #help_modal('Pivot','PivotHelp',inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
+    help_modal('Pivot','PivotHelp',inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
     ### Only for package
-   help_and_report(modal_title = "Pivotr",
-                   fun_name = "pivotr",
-                   help_file = inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
+   #help_and_report(modal_title = "Pivotr",
+  #                 fun_name = "pivotr",
+   #                help_file = inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
   )
 })
 

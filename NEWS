@@ -1,8 +1,11 @@
 FIRST RELEASE
     o Package released
-      withMathJaxR (>= 0.11)
-      coffeewheel (>=0.1)
-      metabologram (>=0.1)
+    o Omit R/code menu: request shiyAce (>=0.2.1)
+      - Omit help_and_report function
+    o Various issues request DT (>=0.1.39)
+      - Omit Show Plot in Pivot sidebar menu
+
+
 
 PERSPECTIVE
     o clusterProfiler GMT file:

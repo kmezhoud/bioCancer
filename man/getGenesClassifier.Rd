@@ -13,10 +13,9 @@ A data frame with ranking genes.
 Classify genes by Studies using gene expression
 }
 \examples{
-\dontrun{
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 getGenesClassifier()
-}
+
 
 }
 

@@ -16,10 +16,10 @@ A data frame with node attributes
 Attribute interaction frequency to node size
 }
 \examples{
-\dontrun{
+
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 Node_obj_FreqIn(GeneList)
-}
+
 
 }
 

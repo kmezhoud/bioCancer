@@ -8,14 +8,16 @@
 \usage{
 coffeewheel(treeData = sampleWheelData)
 }
+\value{
+A list of hierarchical data
+}
 \description{
 Sample data for wheel initialization
 }
 \examples{
-\dontrun{
-library(bioCancer)
+
 bioCancer::coffeewheel(treeData = sampleWheelData)
-}
+
 }
 \keyword{datasets}
 

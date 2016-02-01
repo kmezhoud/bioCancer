@@ -16,9 +16,9 @@ A data frame with node border attributes
 Attribute CNA data to node border
 }
 \examples{
-\dontrun{
+
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 CNA_obj <- Node_obj_CNA_ProfData(ListCNAData_bkp)
-}
+
 }
 

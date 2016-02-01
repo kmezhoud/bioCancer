@@ -213,11 +213,11 @@ output$ui_Transform <- renderUI({
                      uiOutput("ui_tr_dataset")
     )),
     ## for server
-    #help_modal('Transform','TransformHelp',inclMD(file.path(r_path,"base/tools/help/transform.md")))
+    help_modal('Transform','TransformHelp',inclMD(file.path(r_path,"base/tools/help/transform.md")))
     ## for package
-    help_and_report(modal_title = "Transform",
-                   fun_name = "transform",
-                   help_file = inclMD(file.path(r_path, "base/tools/help/transform.md")))
+    #help_and_report(modal_title = "Transform",
+     #              fun_name = "transform",
+      #             help_file = inclMD(file.path(r_path, "base/tools/help/transform.md")))
   )
 })
 

@@ -37,7 +37,6 @@ explore <- function(dataset,
   # dataset <- "mtcars"
   # data_filter <-  ""
   # fun <- c("length","mean")
-  # library(radiant)
 
   tvars <- vars
   if (!is_empty(byvar)) tvars %<>% c(byvar) %>% unique
@@ -595,6 +594,6 @@ does_vary <- function(x) {
 #' @export
 make_funs <- function(x) {
   xclean <- gsub("_rm$","",x) %>% sub("length","n",.)
-  env <- if (exists("bioCancer")) environment(radiant) else parent.frame()
+  env <- if (exists("bioCancer")) environment(bioCancer) else parent.frame()
   dplyr::funs_(lapply(paste0(xclean, " = ~", x), as.formula, env = env) %>% setNames(xclean))
 }

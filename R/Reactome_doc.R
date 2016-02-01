@@ -19,10 +19,13 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
-#' sapply(GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
-#' }
+#' sapply(GenesClassDetails$exprsMeanDiff,
+#' function(x) as.character(attriColorVector(x,
+#' GenesClassDetails$exprsMeanDiff ,
+#' colors=c("blue","white","red"),
+#'  feet=1)))
+#'
 attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 
   vector <- round(vector, digits = 0)
@@ -46,10 +49,10 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#'
 #' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 #' Ed_obj <- Edges_obj()
-#' }
+#'
 #'
 #' @importFrom RCurl basicTextGatherer
 #' @importFrom XML xmlInternalTreeParse
@@ -155,10 +158,10 @@ Edges_obj <- function(){
 #' @export
 #'
 #' @examples
-#' \dontrun{
+
 #' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 #' Sd_obj <- Studies_obj(GenesClassDetails)
-#' }
+
 Studies_obj <- function(df= df){
   #df <- GenesClassDetails_bkp
   if(is.null(df)){
@@ -199,10 +202,10 @@ Studies_obj <- function(df= df){
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#'
 #' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 #' Mut_obj <- Mutation_obj(ListMutData_bkp, 0.2)
-#' }
+#'
 Mutation_obj <- function(list,threshold){
 
   df <- getFreqMutData(list = ListMutData_bkp)
@@ -250,10 +253,10 @@ Mutation_obj <- function(list,threshold){
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#'
 #' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 #' Shape_object <- attriShape2Gene("BRCA1", GeneList)
-#' }
+#'
 attriShape2Gene <- function(gene, genelist){
 
   if(gene %in% genelist){
@@ -273,10 +276,10 @@ attriShape2Gene <- function(gene, genelist){
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#'
 #'load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 #' Node_obj_FreqIn(GeneList)
-#' }
+#'
 #'
 Node_obj_FreqIn <- function(GeneList){
 
@@ -303,10 +306,10 @@ Node_obj_FreqIn <- function(GeneList){
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#'
 #'load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 #' Node_obj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
-#' }
+#'
 Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= df){
   if(is.null(GenesClassDetails)){
     msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
@@ -367,10 +370,10 @@ Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= df){
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#'
 #' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 #' CNA_obj <- Node_obj_CNA_ProfData(ListCNAData_bkp)
-#' }
+#'
 Node_obj_CNA_ProfData <- function(list){
 
   ListDf <-lapply(list, function(x) apply(x, 2, function(y) as.data.frame(table(y[order(y)]))))
@@ -405,10 +408,10 @@ Node_obj_CNA_ProfData <- function(list){
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#'
 #' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 #' Met_obj <- Node_obj_Met_ProfData(ListMetData_bkp$HM450,type="HM450",0.8)
-#' }
+#'
 Node_obj_Met_ProfData <- function(list, type, Threshold){
   #dfMeansOrCNA<-apply(df,2,function(x) mean(x, na.rm=TRUE))
   #dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
@@ -451,10 +454,10 @@ Node_obj_Met_ProfData <- function(list, type, Threshold){
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#'
 #' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 #' gr_obj <- graph_obj('Freq. Interaction', 'mRNA', 'Met_HM450')
-#' }
+#'
 #'
 #' @importFrom RCurl basicTextGatherer
 #'
@@ -556,9 +559,9 @@ graph_obj <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#'
 #' diagrammeR('Freq. Interaction', 'mRNA', 'Met_HM450')
-#' }
+#'
 #' @import DiagrammeR
 #' @importFrom DiagrammeR grViz
 #' @importFrom DiagrammeR renderGrViz

@@ -16,12 +16,9 @@ A tree structure of listes:  dimensions > Studies > genes > colors
 get Coffe Wheel for Profiles Data
 }
 \examples{
-\dontrun{
-
-
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
-getCoffeeWhel(ListPorofData_bkp)
-}
+getCoffeeWhel(ListPorofData)
+
 
 }
 

@@ -22,9 +22,12 @@ A vetor of colors
 Attribute color to a vector of numeric values
 }
 \examples{
-\dontrun{
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
-sapply(GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
-}
+sapply(GenesClassDetails$exprsMeanDiff,
+function(x) as.character(attriColorVector(x,
+GenesClassDetails$exprsMeanDiff ,
+colors=c("blue","white","red"),
+ feet=1)))
+
 }
 

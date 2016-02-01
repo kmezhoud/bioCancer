@@ -20,9 +20,9 @@ a data frame with node shape attributes
 Attribute gene Methylation to Nodes
 }
 \examples{
-\dontrun{
+
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 Met_obj <- Node_obj_Met_ProfData(ListMetData_bkp$HM450,type="HM450",0.8)
-}
+
 }
 

@@ -105,12 +105,8 @@ addResourcePath("rmarkdown", file.path(r_path,"base/www/rmarkdown/"))
 # however, only use for local due to problems with mathjax rendering in IE
 if (r_local) {
   addResourcePath("MathJax", file.path(system.file(package = "bioCancer"), "MathJax/"))
-  withMathJax <- bioCancer::withMathJax
+  withMathJax <- bioCancer::withMathJaxR
 }
-# if (r_local && "MathJaxR" %in% installed.packages()[,"Package"]) {
-#   addResourcePath("MathJax", file.path(system.file(package = "MathJaxR"), "MathJax/"))
-#   withMathJax <- MathJaxR::withMathJaxR
-# }
 
 #,theme= shinythemes::shinytheme("cerulean")
 nav_ui <-
@@ -121,10 +117,10 @@ r_help <- "help_base"
 
 shared_ui <-
   tagList(
-    navbarMenu("R",
-               tabPanel("Report", uiOutput("report"), icon = icon("edit")),
-               tabPanel("Code", uiOutput("rcode"), icon = icon("code"))
-    ),
+#     navbarMenu("R",
+#               tabPanel("Report", uiOutput("report"), icon = icon("edit")),
+#               tabPanel("Code", uiOutput("rcode"), icon = icon("code"))
+#    ),
 
     navbarMenu(title = "", id = "State", icon = icon("save"),
                tabPanel(downloadLink("saveStateNav", " Save state", class = "fa fa-download")),

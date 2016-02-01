@@ -14,10 +14,9 @@
 #' @usage coffeewheel(treeData = sampleWheelData)
 #'
 #' @examples
-#' \dontrun{
-#' library(bioCancer)
+#'
 #' coffeewheel(treeData = sampleWheelData)
-#' }
+#'
 coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttribute="value") {
   x <- list(
     treeData = treeData,
@@ -44,10 +43,9 @@ coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttri
 #'
 #' @usage  coffeewheel(treeData = sampleWheelData)
 #' @examples
-#' \dontrun{
-#' library(bioCancer)
+#'
 #' bioCancer::coffeewheel(treeData = sampleWheelData)
-#' }
+#'
 #' @export
 coffeewheelOutput <- function(outputId, width=700, height=700) {
   shinyWidgetOutput(outputId, 'coffeewheel', width, height, package = 'bioCancer')
@@ -61,10 +59,9 @@ coffeewheelOutput <- function(outputId, width=700, height=700) {
 #' @param quoted FALSE
 #' @usage coffeewheel(treeData = sampleWheelData)
 #' @examples
-#' \dontrun{
-#' library(bioCancer)
+#'
 #' bioCancer::coffeewheel(treeData = sampleWheelData)
-#' }
+#'
 #' @export
 renderCoffeewheel <- function(expr, env = parent.frame(), quoted = FALSE) {
   if (!quoted) { expr <- substitute(expr) } # force quoted
@@ -73,11 +70,11 @@ renderCoffeewheel <- function(expr, env = parent.frame(), quoted = FALSE) {
 
 #' Sample data for wheel initialization
 #' @usage coffeewheel(treeData = sampleWheelData)
+#' @return A list of hierarchical data
 #' @examples
-#' \dontrun{
-#' library(bioCancer)
+#'
 #' bioCancer::coffeewheel(treeData = sampleWheelData)
-#' }
+#'
 #' @export
 sampleWheelData <- list(
   list(

@@ -13,10 +13,10 @@ A data frame with egdes attributes
 get Edges object for grVis function
 }
 \examples{
-\dontrun{
+
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 Ed_obj <- Edges_obj()
-}
+
 
 }
 

@@ -24,9 +24,8 @@ A circular layout with genetic profile.
 This is an htmlwidgets-based visualization tool for hierarchical data.It is zoomable, meaning that you can interact with the hierarchy and zoom in/out accordingly.
 }
 \examples{
-\dontrun{
-library(bioCancer)
+
 coffeewheel(treeData = sampleWheelData)
-}
+
 }
 

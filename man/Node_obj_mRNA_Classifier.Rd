@@ -18,9 +18,9 @@ A data frame with node color attributes
 Atrribute genes expression to color nodes
 }
 \examples{
-\dontrun{
+
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 Node_obj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
-}
+
 }
 

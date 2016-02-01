@@ -20,12 +20,11 @@ get list of data frame with profiles data (CNA,mRNA, Methylation, Mutation...)
 See \url{https://github.com/kmezhoud/bioCancer/wiki}
 }
 \examples{
-\dontrun{
 
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 StudiesIDCircos <- c("luad_tcga_pub","blca_tcga_pub")
 ListProfData <- getListProfData(panel= "Circomics")
-}
+
 
 
 }

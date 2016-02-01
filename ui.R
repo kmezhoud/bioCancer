@@ -42,7 +42,7 @@ modeling_ui <-
 
 
 
-## ui for base radiant
+## ui for base
 shinyUI(
   do.call(navbarPage, c("bioCancer", nav_ui,quant_ui,modeling_ui,shared_ui, help_menu))
 )

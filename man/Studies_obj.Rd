@@ -16,9 +16,7 @@ grViz object. a data frame with Study attributes
 get object for grViz. Link Studies to genes
 }
 \examples{
-\dontrun{
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 Sd_obj <- Studies_obj(GenesClassDetails)
-}
 }
 

@@ -20,9 +20,8 @@ A circular layout with genetic profile in Shiny App.
 Widget output function for use in Shiny
 }
 \examples{
-\dontrun{
-library(bioCancer)
+
 bioCancer::coffeewheel(treeData = sampleWheelData)
-}
+
 }
 

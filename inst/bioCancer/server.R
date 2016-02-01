@@ -2,36 +2,35 @@
 shinyServer(function(input, output, session) {
   #library(networkD3)
 
-  #library(shinythemes)
-  library(cgdsr)
-  library(magrittr)
-  #library(coffeewheel)
-  library(htmlwidgets)
-  #library(metabologram)
-  library(DiagrammeR)
-  #library(dplyr)
-
-  library(geNetClassifier)
-  library(Biobase)
-  library(clusterProfiler)
-  library(DOSE)
-  library(reactome.db)
-  library(ReactomePA)
-  library("org.Hs.eg.db")
-  library(AnnotationFuncs)
-  #### masked
-  library(plyr)
-  library(DT)
-  library(XML)
-  library(RCurl)
-
-  ### package in NAMESSPACE not imported
-  library(gridExtra)
-  library(psych)
-  library(broom)
-  #library(radiant)
-  library(car)
-  library(scales)
+#   #library(shinythemes)
+#   library(cgdsr)
+#   library(magrittr)
+#   #library(coffeewheel)
+#   library(htmlwidgets)
+#   #library(metabologram)
+#   library(DiagrammeR)
+#   #library(dplyr)
+#
+#   library(geNetClassifier)
+#   library(Biobase)
+#   library(clusterProfiler)
+#   library(DOSE)
+#   library(reactome.db)
+#   library(ReactomePA)
+#   library("org.Hs.eg.db")
+#   library(AnnotationFuncs)
+#   #### masked
+#   library(plyr)
+#   library(DT)
+#   library(XML)
+#   library(RCurl)
+#
+#   ### package in NAMESSPACE not imported
+#   library(gridExtra)
+#   library(psych)
+#   library(broom)
+#   library(car)
+#   library(scales)
 
   #   library(grDevices)
   #library(S4Vectors)
@@ -70,7 +69,6 @@ shinyServer(function(input, output, session) {
   })
 
 
-
   ## source shared functions
   for (file in list.files(paste0(system.file(package ="bioCancer"),"/Rbis"),
                           pattern="\\.(r|R)$",
@@ -98,8 +96,8 @@ shinyServer(function(input, output, session) {
       source(file, encoding = r_encoding, local = TRUE)
     }
   } else {
-    bioCancer::copy_all(bioCancer)
-    set_class <- bioCancer::set_class
+    copy_all(bioCancer)
+    set_class <- set_class
   }
   #   } else {
   #     copy_from(radiant, state_init, state_single, state_multiple)

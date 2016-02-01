@@ -13,9 +13,8 @@ gene list
 Identify which gene list in input
 }
 \examples{
-\dontrun{
 load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
 GeneList <- whichGeneList()
-}
+
 }
 

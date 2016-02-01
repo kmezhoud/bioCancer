@@ -20,8 +20,8 @@ plot
 Plot network with nodes and edges attributes
 }
 \examples{
-\dontrun{
+
 diagrammeR('Freq. Interaction', 'mRNA', 'Met_HM450')
-}
+
 }
 

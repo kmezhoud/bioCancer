@@ -1,7 +1,7 @@
 \documentclass[a4paper]{article}
 %\usepackage[OT1]{fontenc}
 \usepackage{zi4}
-\usepackage{Sweave}
+%\usepackage{Sweave}
 \usepackage{url}
 \usepackage[pdftex,plainpages=true,pdfpagelabels, colorlinks=true ,urlcolor= blue, linkcolor= red, citecolor=magenta]{hyperref}
 \usepackage{graphicx}
@@ -9,7 +9,7 @@
 \usepackage[margin=1in]{geometry}
 \setkeys{Gin}{width=0.9\textwidth} % set figures width (this is the default)
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+%\SweaveOpts{concordance=TRUE}
 %\SweaveOpts{concordance=TRUE}
 
 
