@@ -6,7 +6,6 @@ Authors@R: person("Karim", "Mezhoud", role=c("aut", "cre"), email="kmezhoud@gmai
 Description: bioCancer is a Shiny App to visualize and analyse interactively
     Multi-Assays of Cancer Genomic Data.
 Depends:
-    R (>= 3.3.0),
     magrittr (>= 1.5),
     ggplot2 (>= 1.0.0),
     lubridate (>= 1.3.3),
