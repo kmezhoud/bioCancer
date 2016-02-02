@@ -23,10 +23,10 @@ queryBuildNetwork <- function(version, genes){
 }
 
 extractFIs <- function(doc) {
-  interactions <- xpathApply(doc, "//interaction", function(x) {
-    info <- xmlChildren(x)
-    first.protein <- xmlValue(xmlChildren(info$firstProtein)$name)
-    second.protein <- xmlValue(xmlChildren(info$secondProtein)$name)
+  interactions <- XML::xpathApply(doc, "//interaction", function(x) {
+    info <- XML::xmlChildren(x)
+    first.protein <- xmlValue(XML::xmlChildren(info$firstProtein)$name)
+    second.protein <- xmlValue(XML::xmlChildren(info$secondProtein)$name)
     data.frame(first.protein = first.protein,
                second.protein = second.protein, stringsAsFactors = FALSE)
   })
@@ -36,12 +36,12 @@ extractFIs <- function(doc) {
 }
 
 getPostXML <- function(url, body) {
-  text.gatherer <- basicTextGatherer()
+  text.gatherer <- RCurl::basicTextGatherer()
   opts <- list(httpheader = c("Content-Type" = "text/plain;charset=UTF-8",
                               "Accept" = "application/xml"))
-  curlPerform(postfields = body, url = url, .opts = opts,
+  RCurl::curlPerform(postfields = body, url = url, .opts = opts,
               .encoding = "UTF-8", writefunction = text.gatherer$update)
-  xml <- xmlInternalTreeParse(text.gatherer$value())
+  xml <- XML::xmlInternalTreeParse(text.gatherer$value())
   return(xml)
 }
 
@@ -93,8 +93,8 @@ queryCluster<-  function(version, fis) {
   service.url <- paste0(serviceURL(object), "cluster")
   fis.str <- fis2str(fis)
   doc <- getPostXML(service.url, fis.str)
-  modules <- xpathApply(doc, "//geneClusterPairs", function(x) {
-    info <- xmlChildren(x)
+  modules <- XML::xpathApply(doc, "//geneClusterPairs", function(x) {
+    info <- XML::xmlChildren(x)
     module <- xmlValue(info$cluster)
     gene <- xmlValue(info$geneId)
     data.frame(gene = gene, module = module, stringsAsFactors = FALSE)
@@ -108,8 +108,8 @@ queryCluster<-  function(version, fis) {
 ####################  Get ANNOTATION #############
 
 extractAnnotations <- function(xml.node) {
-  annotations <- xpathApply(xml.node, "./annotations", function(x) {
-    info <- xmlChildren(x)
+  annotations <- XML::xpathApply(xml.node, "./annotations", function(x) {
+    info <- XML::xmlChildren(x)
     data.frame(topic = xmlValue(info$topic),
                hit.num = xmlValue(info$hitNumber),
                number.in.topic = xmlValue(info$numberInTopic),
@@ -137,8 +137,8 @@ queryAnnotateGeneSet <-  function(object, genes, type = c("Pathway", "BP", "CC",
   service.url <- paste0(serviceURL(object), "annotateGeneSet/", type)
   genes.str <- paste(genes, collapse = "\n")
   doc <- getPostXML(service.url, genes.str)
-  annot.node <- xmlChildren(doc)$moduleGeneSetAnnotations
-  annot.node <- xmlChildren(annot.node)$moduleGeneSetAnnotation
+  annot.node <- XML::xmlChildren(doc)$moduleGeneSetAnnotations
+  annot.node <- XML::xmlChildren(annot.node)$moduleGeneSetAnnotation
   annotations <- extractAnnotations(annot.node)
   return(annotations)
 }
@@ -183,9 +183,9 @@ queryAnnotateModules <- function(object, module.nodes,type = c("Pathway", "BP", 
   service.url <- paste0(serviceURL(object), "annotateModules/", type)
   query <- df2tsv(module.nodes)
   doc <- getPostXML(service.url, query)
-  module.annotations <- xpathApply(doc, "//moduleGeneSetAnnotation",
+  module.annotations <- XML::xpathApply(doc, "//moduleGeneSetAnnotation",
                                    function(x) {
-                                     module <- xmlValue(xmlChildren(x)$module)
+                                     module <- xmlValue(XML::xmlChildren(x)$module)
                                      annotations <- extractAnnotations(x)
                                      if (all(is.na(annotations))) return(annotations)
                                      cbind(data.frame(module = module), annotations)
@@ -221,11 +221,11 @@ queryFIsBetween <- function(object, fis) {
 #' @return data.frame Data frame where each row corresponds to a protein and
 #'  the columns contain the information mentioned above.
 extractProteinInfo <- function(protein.node) {
-  accession <- xmlValue(xmlChildren(protein.node)$accession)
-  db.name <- xmlValue(xmlChildren(protein.node)$dbName)
-  name <- xmlValue(xmlChildren(protein.node)$name)
-  short.name <- xmlValue(xmlChildren(protein.node)$shortName)
-  prot.seq <- xmlValue(xmlChildren(protein.node)$sequence)
+  accession <- xmlValue(XML::xmlChildren(protein.node)$accession)
+  db.name <- xmlValue(XML::xmlChildren(protein.node)$dbName)
+  name <- xmlValue(XML::xmlChildren(protein.node)$name)
+  short.name <- xmlValue(XML::xmlChildren(protein.node)$shortName)
+  prot.seq <- xmlValue(XML::xmlChildren(protein.node)$sequence)
   info <- data.frame(accession = accession,
                      db.name = db.name,
                      short.name = short.name,

@@ -1,6 +1,6 @@
 FIRST RELEASE
     o Package released
-    o Omit R/code menu: request shiyAce (>=0.2.1)
+    o Omit R/code menu: request shinyAce (>=0.2.1)
       - Omit help_and_report function
     o Various issues request DT (>=0.1.39)
       - Omit Show Plot in Pivot sidebar menu
@@ -8,6 +8,7 @@ FIRST RELEASE
 
 
 PERSPECTIVE
+    o visNetwork
     o clusterProfiler GMT file:
     http://www.r-bloggers.com/go-analysis-using-clusterprofiler/
     o gene classification using rpart,ggplot2, ggtree: http://guangchuangyu.github.io/2016/01/annotate-a-phylogenetic-tree-with-insets/

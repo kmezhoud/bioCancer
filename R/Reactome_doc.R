@@ -566,6 +566,9 @@ graph_obj <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData
 #' @importFrom DiagrammeR grViz
 #' @importFrom DiagrammeR renderGrViz
 #' @importFrom DiagrammeR grVizOutput
+#' @importFrom RCurl basicTextGatherer
+#' @importFrom RCurl curlPerform
+#' @importFrom XML xmlInternalTreeParse
 diagrammeR <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData){
   DiagrammeR::grViz(
     #   digraph{
