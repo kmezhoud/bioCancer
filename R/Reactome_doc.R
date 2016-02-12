@@ -19,13 +19,14 @@
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' sapply(GenesClassDetails$exprsMeanDiff,
 #' function(x) as.character(attriColorVector(x,
 #' GenesClassDetails$exprsMeanDiff ,
 #' colors=c("blue","white","red"),
 #'  feet=1)))
 #'
+#'@importFrom grDevices colorRampPalette
 attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 
   vector <- round(vector, digits = 0)
@@ -49,14 +50,14 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 #' @export
 #'
 #' @examples
-#'
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Ed_obj <- Edges_obj()
 #'
 #'
 #' @importFrom RCurl basicTextGatherer
 #' @importFrom XML xmlInternalTreeParse
-#'
+#' @importFrom utils capture.output read.delim read.table tail
+#' @importFrom dplyr add_rownames
 #'
 Edges_obj <- function(){
 
@@ -159,7 +160,7 @@ Edges_obj <- function(){
 #'
 #' @examples
 
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Sd_obj <- Studies_obj(GenesClassDetails)
 
 Studies_obj <- function(df= df){
@@ -203,7 +204,7 @@ Studies_obj <- function(df= df){
 #'
 #' @examples
 #'
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Mut_obj <- Mutation_obj(ListMutData_bkp, 0.2)
 #'
 Mutation_obj <- function(list,threshold){
@@ -254,7 +255,7 @@ Mutation_obj <- function(list,threshold){
 #'
 #' @examples
 #'
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Shape_object <- attriShape2Gene("BRCA1", GeneList)
 #'
 attriShape2Gene <- function(gene, genelist){
@@ -277,7 +278,7 @@ attriShape2Gene <- function(gene, genelist){
 #'
 #' @examples
 #'
-#'load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#'load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Node_obj_FreqIn(GeneList)
 #'
 #'
@@ -307,8 +308,9 @@ Node_obj_FreqIn <- function(GeneList){
 #'
 #' @examples
 #'
-#'load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#'load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Node_obj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
+#'
 #'
 Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= df){
   if(is.null(GenesClassDetails)){
@@ -321,7 +323,7 @@ Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= df){
 
     ## geneDiseaseClass_obj
     # GenesClassDetails_ls <- lapply(r_data$GenesClassDetails, function(x) x %>% add_rownames("Genes")
-    #GenesClassDetails_df <- ldply(GenesClassDetails_ls)
+    #GenesClassDetails_df <- plyr::ldply(GenesClassDetails_ls)
     #GenesClassDetails_df <- GenesClassDetails_df[,-1]
     #GenesClassDetails <- r_data$GenesClassDetails
     ## identify Gene List
@@ -350,7 +352,9 @@ Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= df){
     #     }
     GenesClassDetails$postProb <- "style = filled, fillcolor ='"
 
-    GenesClassDetails$exprsMeanDiff <- sapply(GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
+    GenesClassDetails$exprsMeanDiff <- sapply(GenesClassDetails$exprsMeanDiff,
+                                              function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff,
+                                                                                        colors=c("blue","white","red"), feet=1)))
 
     GenesClassDetails$FreqSum <- paste0("',fixedsize = TRUE, width =",GenesClassDetails$FreqSum,", alpha_fillcolor =",GenesClassDetails$FreqSum,"]")
 
@@ -371,15 +375,15 @@ Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= df){
 #'
 #' @examples
 #'
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' CNA_obj <- Node_obj_CNA_ProfData(ListCNAData_bkp)
 #'
 Node_obj_CNA_ProfData <- function(list){
 
   ListDf <-lapply(list, function(x) apply(x, 2, function(y) as.data.frame(table(y[order(y)]))))
   ListDf2 <-   lapply(ListDf, function(x) lapply(x, function(y) y[,1][which(y[,2]== max(y[,2]))]))
-  ListDf3 <- ldply(ListDf2, data.frame)
-  MostFreqCNA_Df <- ldply(apply(ListDf3,2,function(x) names(which(max(table(x))==table(x))))[-1],data.frame)
+  ListDf3 <- plyr::ldply(ListDf2, data.frame)
+  MostFreqCNA_Df <- plyr::ldply(apply(ListDf3,2,function(x) names(which(max(table(x))==table(x))))[-1],data.frame)
 
   #MostFreqCNA_Df$arrowsize <- paste(MostFreqCNA_Df[,1], MostFreqCNA_Df[,2], sep=":")
   MostFreqCNA_Df[,2] <- gsub("-1", "1, style=dashed", MostFreqCNA_Df[,2] )
@@ -409,7 +413,7 @@ Node_obj_CNA_ProfData <- function(list){
 #'
 #' @examples
 #'
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Met_obj <- Node_obj_Met_ProfData(ListMetData_bkp$HM450,type="HM450",0.8)
 #'
 Node_obj_Met_ProfData <- function(list, type, Threshold){
@@ -418,9 +422,9 @@ Node_obj_Met_ProfData <- function(list, type, Threshold){
 
   Met_Obj <- lapply(list, function(x) apply(x,2,function(y) mean(y, na.rm=TRUE)))
   Met_Obj <- lapply(Met_Obj, function(x) round(x, digits = 2))
-  Met_Obj <- ldply(Met_Obj)[,-1]
+  Met_Obj <- plyr::ldply(Met_Obj)[,-1]
 
-  Met_Obj <- ldply(Met_Obj,function(x) (max(x, na.rm = TRUE)))
+  Met_Obj <- plyr::ldply(Met_Obj,function(x) (max(x, na.rm = TRUE)))
 
   if(type == "HM450"){
     Met_Obj <- subset(Met_Obj, V1 > Threshold)
@@ -455,7 +459,7 @@ Node_obj_Met_ProfData <- function(list, type, Threshold){
 #'
 #' @examples
 #'
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' gr_obj <- graph_obj('Freq. Interaction', 'mRNA', 'Met_HM450')
 #'
 #'

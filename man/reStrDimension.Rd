@@ -16,7 +16,7 @@ Hierarchical structure of: Study > dimensions > gene > color
 Restructure the list of color attributed to the genes in every study for every dimensions
 }
 \examples{
-load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Parent <- reStrDimension(ListProfData)
 
 }

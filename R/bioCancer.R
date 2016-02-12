@@ -4,15 +4,12 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' bioCancer::bioCancer()
-#' }
-#'
-#' bioCancer
 #'
 #' @name bioCancer
 #' @docType package
-#' @import ggplot2 shiny dplyr DiagrammeR
+#' @import ggplot2
+#' @import DiagrammeR
 #' @importFrom knitr knit2html
 #' @importFrom pryr where
 #' @importFrom magrittr %<>% %T>% %$% set_rownames set_colnames set_names divide_by add extract2
@@ -24,12 +21,11 @@
 #' @importFrom shinyAce aceEditor updateAceEditor
 #' @importFrom readr read_delim write_csv
 #'@import shiny
-#'@import dplyr
-#'@importFrom plyr adply
+#'@import plyr
 #'@import ggdendro
 #'@import data.tree
 #'@importFrom stringr str_match
-#'@import psych
+#'@importFrom psych KMO corr.test cortest.bartlett fa.sort principal skew
 #'@importFrom yaml yaml.load
 #'@importFrom AlgDesign optFederov
 #'@importFrom MASS isoMDS
@@ -37,12 +33,16 @@
 #'@importFrom car leveragePlots recode vif
 #'@importFrom curl curl
 #'@import GPArotation
-#'@import DT
+#'@importFrom DT datatable dataTableOutput renderDataTable styleColorBar
+#'@importFrom DT styleInterval JS formatStyle formatPercentage
 #'@import scales
 #'@import htmlwidgets
 #'@importFrom htmlwidgets shinyRenderWidget
 #'@import covr
-#'@import jsonlite
+#'@importFrom jsonlite fromJSON
+#'@import stats
+#'
+
 NULL
 
 bioCancer <- function(){

@@ -21,7 +21,7 @@ See \url{https://github.com/kmezhoud/bioCancer/wiki}
 }
 \examples{
 
-load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 StudiesIDCircos <- c("luad_tcga_pub","blca_tcga_pub")
 ListProfData <- getListProfData(panel= "Circomics")
 

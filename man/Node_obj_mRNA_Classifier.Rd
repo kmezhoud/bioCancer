@@ -19,8 +19,9 @@ Atrribute genes expression to color nodes
 }
 \examples{
 
-load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Node_obj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
+
 
 }
 

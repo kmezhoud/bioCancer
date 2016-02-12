@@ -22,7 +22,7 @@ A vetor of colors
 Attribute color to a vector of numeric values
 }
 \examples{
-load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 sapply(GenesClassDetails$exprsMeanDiff,
 function(x) as.character(attriColorVector(x,
 GenesClassDetails$exprsMeanDiff ,

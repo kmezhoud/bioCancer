@@ -16,7 +16,7 @@ Hierarchy of dimensions in the same study: dimensions > gene > color
 Restructure the list of color attributed to the genes in every disease
 }
 \examples{
-load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Child <- reStrDisease(ListProfData$Expression)
 
 }

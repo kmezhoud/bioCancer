@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' colorRef <- attriColorValue(500, ListProfData$Expression$luad_tcga_pub, colors = c("blue", "white","yellow","red", "black"), feet=10)
 #'
 #'
@@ -42,7 +42,7 @@ attriColorValue <- function(Value, df, colors=c(a,b,c, d,e),feet){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' colorsls <- attriColorGene(ListProfData$Expression$luad_tcga_pub)
 #'
 attriColorGene <- function(df){
@@ -95,7 +95,7 @@ attriColorGene <- function(df){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Children <- reStrColorGene(ListProfData$Expression$luad_tcga_pub)
 #'
 reStrColorGene <- function(df){
@@ -116,7 +116,7 @@ reStrColorGene <- function(df){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Child <- reStrDisease(ListProfData$Expression)
 #'
 reStrDisease <- function(List){
@@ -138,7 +138,7 @@ reStrDisease <- function(List){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Parent <- reStrDimension(ListProfData)
 #'
 reStrDimension <- function(LIST){
@@ -161,7 +161,7 @@ reStrDimension <- function(LIST){
 #'
 #'@usage  getCoffeeWheel(ListProfData)
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' getCoffeeWhel(ListPorofData)
 #'
 #'
@@ -247,8 +247,8 @@ getCoffeeWheel <- function(ListProfData){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
-#' Freq_Mut <- UnifyRowNames(ListMutData$luad_tcga_pub, GeneList = GeneList)
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' Freq_Mut <- UnifyRowNames(ListMutData_bkp$luad_tcga_pub, GeneList = GeneList)
 #'
 UnifyRowNames <- function(x, GeneList){
   df_MutData <-as.data.frame(table(x$gene_symbol)/sum(table(x$gene_symbol))*100)
@@ -269,7 +269,7 @@ UnifyRowNames <- function(x, GeneList){
 #'
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' GeneList <- whichGeneList()
 #'
 whichGeneList <- function(){
@@ -278,7 +278,7 @@ whichGeneList <- function(){
   }else if(GeneListID == "Reactome_GeneList"){
     GeneList <- "Reactome_GeneList"
   }else{
-    GeneList <- t(unique(read.table(paste0(path.package("bioCancer"),"/inst/base/data/GeneList/",GeneListID,".txt" ,sep=""))))
+    GeneList <- t(unique(read.table(paste0(path.package("bioCancer"),"/base/data/GeneList/",GeneListID,".txt" ,sep=""))))
   }
   return(GeneList)
 
@@ -292,19 +292,19 @@ whichGeneList <- function(){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
-#' Freq_DfMutData <- getFreqMutData(ListMutData)
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' Freq_DfMutData <- getFreqMutData(ListMutData_bkp)
 #'
 getFreqMutData <- function(list){
   #     if(input$GeneListID != "Genes"){
-  #       GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+  #       GeneList <- t(unique(read.table(paste0(getwd(),"/extdata/GeneList/",input$GeneListID,".txt" ,sep=""))))
   #     }
 
  # GeneList <- whichGeneList()
 
-  if(is.null(ListMutData)){stop("Select a less one Study.")}
+  if(is.null(ListMutData_bkp)){stop("Select a less one Study.")}
 
-  Freq_ListMutData <- lapply(ListMutData,function(x) UnifyRowNames(x, GeneList))
+  Freq_ListMutData <- lapply(ListMutData_bkp,function(x) UnifyRowNames(x, GeneList))
   #output1 <- adply(Freq_ListMutData,1)
 
 
@@ -390,7 +390,7 @@ getFreqMutData <- function(list){
 #'
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' df <- checkDimensions(panel='Reactome')
 #'
 checkDimensions<- function(panel){

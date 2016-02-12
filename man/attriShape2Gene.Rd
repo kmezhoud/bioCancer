@@ -19,7 +19,7 @@ Attribute shape to nodes
 }
 \examples{
 
-load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Shape_object <- attriShape2Gene("BRCA1", GeneList)
 
 }

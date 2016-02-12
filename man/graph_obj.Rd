@@ -21,7 +21,7 @@ get graph object for grViz
 }
 \examples{
 
-load(paste(path.package("bioCancer"),"/data/ListProfData.RData", sep=""))
+load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 gr_obj <- graph_obj('Freq. Interaction', 'mRNA', 'Met_HM450')
 
 

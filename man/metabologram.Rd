@@ -4,7 +4,11 @@
 \alias{metabologram}
 \title{Circular plot of hierarchital data of genetic profile.}
 \usage{
-metabologram(treeData = sampleMetabologramData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+metabologram(treeData = sampleMetabologramData, width=600, height=600,
+ main=title, showLegend = TRUE, fontSize = 10,
+ legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
+  legendColors=c("black","blue","cyan","white","yellow","red") ,
+  legendText="Legend")
 }
 \arguments{
 \item{treeData}{A hierarchical tree data as in example}
@@ -32,7 +36,11 @@ A circular layout with genetic profile.
 Circular plot of hierarchital data of genetic profile.
 }
 \examples{
-bioCancer::metabologram(treeData = sampleMetabologramData, width=600, height=600, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+bioCancer::metabologram(treeData = sampleMetabologramData, width=600,
+height=600, main=title, showLegend = TRUE, fontSize = 10,
+ legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
+ legendColors=c("black","blue","cyan","white","yellow","red") ,
+ legendText="Legend")
 
 
 }
