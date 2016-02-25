@@ -13,6 +13,8 @@ http://46.101.227.144:3838/bioCancer/
 <!--
 It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Dr. Vincent Nijs</a>. 
 -->
+## DiagrammeR
+<img src="inst/base/tools/help/figures/Reactome_Network.png">
 
 ## Key features
 
