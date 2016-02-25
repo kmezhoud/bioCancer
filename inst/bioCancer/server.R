@@ -1,7 +1,7 @@
 ## SERVER FOR bioCancer PACKAGE
 shinyServer(function(input, output, session) {
   #library(networkD3)
-
+#   library(visNetwork)
 #   #library(shinythemes)
 #   library(cgdsr)
 #   library(magrittr)
@@ -10,7 +10,6 @@ shinyServer(function(input, output, session) {
 #   #library(metabologram)
 #   library(DiagrammeR)
 #   #library(dplyr)
-#
 #   library(geNetClassifier)
 #   library(Biobase)
 #   library(clusterProfiler)

@@ -115,9 +115,9 @@ getGenesClassifier <- reactive({
 
     eSetClassifier <- Biobase::ExpressionSet(assayData=SamplingProfsData, phenoData=phenoData, annotation="GO")
     print("getting eSetClassifier...")
-    if(min(exprs(eSetClassifier), na.rm=TRUE)<0){
+    if(min(Biobase::exprs(eSetClassifier), na.rm=TRUE)<0){
       print("There are negative values. Translating values by adding the absolute of minimum value to all matrix")
-      Biobase::exprs(eSetClassifier) <- Biobase::exprs(eSetClassifier)+(abs(min(exprs(eSetClassifier), na.rm=TRUE)))
+      Biobase::exprs(eSetClassifier) <- Biobase::exprs(eSetClassifier)+(abs(min(Biobase::exprs(eSetClassifier), na.rm=TRUE)))
     }
 
     #r_data[['eSetClassifier']] <- eSetClassifier

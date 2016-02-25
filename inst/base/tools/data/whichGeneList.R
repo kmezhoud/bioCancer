@@ -2,10 +2,8 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' library(bioCancer)
 #' bioCancer()
-#' }
 #'
 #'
 whichGeneList <- function(){

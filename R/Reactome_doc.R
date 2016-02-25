@@ -26,7 +26,7 @@
 #' colors=c("blue","white","red"),
 #'  feet=1)))
 #'
-#'@importFrom grDevices colorRampPalette
+#'@importFrom grDevices colorRampPalette colors
 attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 
   vector <- round(vector, digits = 0)

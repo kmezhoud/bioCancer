@@ -2,25 +2,26 @@
 #' Circular plot of hierarchital data of genetic profile.
 #' @return  A circular layout with genetic profile.
 #'
+#'
+#' @seealso https://github.com/armish/metabologram
+#' @usage metabologram(treeData,width=600,height=600,main="",showLegend=FALSE,
+#'                      legendBreaks=NULL,
+#'                      legendColors=NULL,
+#'                       fontSize=12,
+#'                      legendText="Legend")
+#'
 #' @param treeData A hierarchical tree data as in example
 #' @param width 600
 #' @param height 600
 #' @param main Title
 #' @param showLegend FALSE
-#' @param legenBreacks NULL
+#' @param legendBreaks NULL
 #' @param legendColors NULL
 #' @param fontSize 12
 #' @param legendText Legend
-#'
-#' @seealso https://github.com/armish/metabologram
-#' @usage metabologram(treeData = sampleMetabologramData, width=600, height=600,
-#'  main=title, showLegend = TRUE, fontSize = 10,
-#'  legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
-#'   legendColors=c("black","blue","cyan","white","yellow","red") ,
-#'   legendText="Legend")
 #' @examples
 #' bioCancer::metabologram(treeData = sampleMetabologramData, width=600,
-#' height=600, main=title, showLegend = TRUE, fontSize = 10,
+#' height=600, main="title", showLegend = TRUE, fontSize = 10,
 #'  legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
 #'  legendColors=c("black","blue","cyan","white","yellow","red") ,
 #'  legendText="Legend")

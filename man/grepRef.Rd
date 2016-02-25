@@ -4,7 +4,7 @@
 \alias{grepRef}
 \title{search and get genetic profiles (CNA,mRNA, Methylation, Mutation...)}
 \usage{
-ProfData <- grepRef(regex1, listRef1,regex2, listRef2, GeneList,Mut)
+grepRef(regex1, listRef1,regex2, listRef2, GeneList,Mut)
 }
 \arguments{
 \item{regex1}{Case id (cancer_study_id_[mutations, cna, methylation, mrna ]).}

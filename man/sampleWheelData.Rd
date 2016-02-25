@@ -6,7 +6,7 @@
 \title{Sample data for wheel initialization}
 \format{An object of class \code{list} of length 3.}
 \usage{
-coffeewheel(treeData = sampleWheelData)
+sampleWheelData
 }
 \value{
 A list of hierarchical data
@@ -15,7 +15,7 @@ A list of hierarchical data
 Sample data for wheel initialization
 }
 \examples{
-
+load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 bioCancer::coffeewheel(treeData = sampleWheelData)
 
 }

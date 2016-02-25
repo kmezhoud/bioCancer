@@ -64,6 +64,7 @@ output$ui_NodeAttri_ProfData <- renderUI({
   selectizeInput("NodeAttri_ProfDataID", label= "Select Profiles Data:", choices= Dimension,
                  selected= "None", multiple=TRUE)
 })
+
 output$ui_Freq_MutSlider <- renderUI({
   #div(style="height: 27px;",
   sliderInput("FreqMutSliderID", "Mutation Percentage", 25, min = 1,
@@ -71,8 +72,6 @@ output$ui_Freq_MutSlider <- renderUI({
   #)
 
 })
-
-
 
 output$ui_MetSliderHM450 <- renderUI({
   sliderInput("ThresholdMetHM450ID", "Silencing gene rate HM450", 0.8, min =0,
@@ -173,10 +172,24 @@ output$ui_Reactome <- renderUI({
     #                  selected = "Samples", inline = TRUE),
     div(class="row",
         div(class="col-xs-4",
-            checkboxInput("ReacRunId", "Run" ,value = FALSE)),
+            checkboxInput("ReacRunId", "Plot" ,value = FALSE)),
         div(class="col-xs-4",
             checkboxInput("ReacLegendId", "Legend", value=FALSE))
     ),
+
+tagList(
+  h4("Dynamic Network:"),
+wellPanel(
+  uiOutput("ui_visPhysic")
+
+)
+),
+div(class="row",
+    div(class="col-xs-4",
+        checkboxInput("NetworkRunId", "Plot" ,value = FALSE)),
+    div(class="col-xs-4",
+        checkboxInput("ReacLegendId", "Legend", value=FALSE))
+),
     help_modal_km('Reactome','ReactomeHelp',inclMD(file.path(r_path,"base/tools/help/Reactome.md")))
 
     # with(tags, table(

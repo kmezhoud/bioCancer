@@ -1,4 +1,5 @@
-#' This is an htmlwidgets-based visualization tool for hierarchical data.It is zoomable, meaning that you can interact with the hierarchy and zoom in/out accordingly.
+#' This is an htmlwidgets-based visualization tool for hierarchical data.
+#' It is zoomable, meaning that you can interact with the hierarchy and zoom in/out accordingly.
 #'
 #' @return  A circular layout with genetic profile.
 #'
@@ -6,18 +7,19 @@
 #' @import htmlwidgets
 #' @export
 #'
+#'
+#' @usage coffeewheel(treeData, width=600, height=600, main="", partitionAttribute="value")
 #' @param treeData A hierarchical tree data as in example
 #' @param width 600
 #' @param height 600
 #' @param main Title
 #' @param partitionAttribute "value"
-#' @usage coffeewheel(treeData = sampleWheelData)
 #'
 #' @examples
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' bioCancer::bioCancer()
 #'
-#' coffeewheel(treeData = sampleWheelData)
-#'
-coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttribute="value") {
+coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttribute="value"){
   x <- list(
     treeData = treeData,
     main = main,
@@ -37,42 +39,44 @@ coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttri
 #' Widget output function for use in Shiny
 #'@return  A circular layout with genetic profile in Shiny App.
 #'
-#' @param output id
-#' @param width 600
-#' @param height 600
+#' @usage coffeewheelOutput(outputId, width=700, height=700)
+#' @param outputId id
+#' @param width 700
+#' @param height 700
 #'
-#' @usage  coffeewheel(treeData = sampleWheelData)
 #' @examples
-#'
-#' bioCancer::coffeewheel(treeData = sampleWheelData)
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' bioCancer::bioCancer()
 #'
 #' @export
 coffeewheelOutput <- function(outputId, width=700, height=700) {
-  shinyWidgetOutput(outputId, 'coffeewheel', width, height, package = 'bioCancer')
+  htmlwidgets::shinyWidgetOutput(outputId, 'coffeewheel', width, height, package = 'bioCancer')
 }
 
 #' Widget render function for use in Shiny
 #'@return  A circular layout with genetic profile in Shiny App.
 #'
-#' @param expr
-#' @param env parent.frame()
+#' @usage renderCoffeewheel(expr, env = parent.frame(), quoted = FALSE)
+#' @param expr id
+#' @param env parent.frame
 #' @param quoted FALSE
-#' @usage coffeewheel(treeData = sampleWheelData)
-#' @examples
 #'
+#' @examples
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' bioCancer::coffeewheel(treeData = sampleWheelData)
 #'
 #' @export
-renderCoffeewheel <- function(expr, env = parent.frame(), quoted = FALSE) {
+renderCoffeewheel <- function(expr, env = parent.frame(), quoted = FALSE){
   if (!quoted) { expr <- substitute(expr) } # force quoted
-  shinyRenderWidget(expr, coffeewheelOutput, env, quoted = TRUE)
+  htmlwidgets::shinyRenderWidget(expr, coffeewheelOutput, env, quoted = TRUE)
 }
 
 #' Sample data for wheel initialization
-#' @usage coffeewheel(treeData = sampleWheelData)
+#' @usage sampleWheelData
+#'
 #' @return A list of hierarchical data
 #' @examples
-#'
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' bioCancer::coffeewheel(treeData = sampleWheelData)
 #'
 #' @export

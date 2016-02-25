@@ -40,7 +40,6 @@ Edges_obj <- function(){
       if ("package:bioCancer" %in% search()) {
         r_data[['ReactomeFI']]  <- read.delim(paste0(system.file(package = "bioCancer"), "/extdata/FIsInGene_121514_with_annotations.txt", sep=""))
       }else{
-
         r_data[['ReactomeFI']]  <- read.delim(file.path(paste(r_path,"/extdata/FIsInGene_121514_with_annotations.txt", sep="")))
       }
 
@@ -63,6 +62,15 @@ Edges_obj <- function(){
     names(fis) <- c("Gene2", "Gene1")
     Edges_obj2 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))
     Edges_obj <- rbind(Edges_obj1,Edges_obj2)
+
+#     > head(Edges_obj)
+#     Gene1 Gene2                                    Annotation Direction Score
+#     1  EGR1  TP53 expression regulated by; expression regulates       <->  1.00
+#     2  EGR1   UBB                          expression regulates        ->  1.00
+#     3  MYO6   UBB                                     predicted         -  0.61
+#     4   PML  TP53       complex; expression regulated by; input        <-  1.00
+#     5  TP53   UBB                  catalyze; complex; predicted        ->  1.00
+#     6 BRCA1  EGR1                       expression regulated by        <-  1.00
 
     ## Filter Annotation interaction
     #  Edges_obj <- Edges_obj[- grep(c("predic",activat), Edges_obj$Annotation),]
@@ -139,6 +147,7 @@ getAnnoGeneSet_obj <- function(genelist,type){
 
   ## Filter significant annotation using FDR
   AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < input$GeneSetFDRID,]
+  #AnnoGeneSetbkp <<- AnnoGeneSet
 
   r_data[['AnnoGeneSet']] <- AnnoGeneSet
 
@@ -160,7 +169,7 @@ getAnnoGeneSet_obj <- function(genelist,type){
     ## from Martin Morgan  http://stackoverflow.com/questions/12837462/how-to-subset-data-with-advance-string-matching
 
     Index_Gene <- data.frame(index = rep(seq_along(key0), sapply(key0, length)),ID = unlist(key0))
-
+    #Index_Genebkp <<- Index_Gene
     ## Maybe useful add GeneList with index and genes
     #ref_GeneSet  <-  cbind(GeneSet = AnnoGeneSet_hits[subset[,1],2],subset)
 
@@ -181,7 +190,7 @@ getAnnoGeneSet_obj <- function(genelist,type){
     #   GeneSet_obj <- AnnoGeneSet[,1:6]
     #  names(GeneSet_obj)<- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
 
-    GeneSet_obj <- data.frame(Gene1 = Index_Gene[,1],
+    GeneSet_obj <- data.frame(Gene1 = paste(input$TypeGeneSetID,Index_Gene[,1], sep=""),
                               Gene2 = "->",
                               Direction = Index_Gene[,2],
                               Annotation = "[arrowhead=none,",
@@ -211,7 +220,8 @@ output$dl_GeneSet_Legend <- shiny::downloadHandler(
 
 output$GeneSet_Legend <- DT::renderDataTable({
   ## Attribute index to pathway
-  Legend_GeneSet <- cbind(Node = seq_len(nrow(r_data$AnnoGeneSet)), r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"])
+  Legend_GeneSet <- cbind(Node = paste(input$TypeGeneSetID,seq_len(nrow(r_data$AnnoGeneSet)), sep=""), r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"])
+  #Legend_GeneSet_bkp <<- Legend_GeneSet
   Legend_GeneSet[,4:7] <- round(Legend_GeneSet[,4:7], digits=2)
   colnames(Legend_GeneSet)[c(3,4,6)] <- c("nhit","nGenes","pval")
   dat <- Legend_GeneSet[,c(1,2,3,4,6,7)]
@@ -321,7 +331,6 @@ attriShape2Gene <- function(gene, genelist){
 
 }
 
-
 Node_obj_FreqIn <- function(GeneList){
 
   FreqIn <- r_data$FreqIn
@@ -350,7 +359,7 @@ Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= df){
 
     ## geneDiseaseClass_obj
     # GenesClassDetails_ls <- lapply(r_data$GenesClassDetails, function(x) x %>% add_rownames("Genes")
-    #GenesClassDetails_df <- ldply(GenesClassDetails_ls)
+    #GenesClassDetails_df <- plyr::ldply(GenesClassDetails_ls)
     #GenesClassDetails_df <- GenesClassDetails_df[,-1]
     #GenesClassDetails <- r_data$GenesClassDetails
     ## identify Gene List
@@ -360,14 +369,14 @@ Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= df){
     #     GeneList <- r_data$Reactome_GeneList
     #     print(GeneList)
     #   }else{
-    #     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+    #     GeneList <- t(unique(read.table(paste0(getwd(),"/extdata/GeneList/",input$GeneListID,".txt" ,sep=""))))
     #   }
 
     GenesClassDetails$Genes <- unname(sapply(GenesClassDetails$Genes,  function(x) attriShape2Gene(x, GeneList)))
 
     ###GenesClassDetails$ranking <- paste("peripheries=",GenesClassDetails$ranking,"," ,sep=" ")
     GenesClassDetails$ranking <- paste("peripheries=","1","," ,sep=" ")
-
+    GenesClassDetails_bkpbkp <<- GenesClassDetails
     V <- as.numeric(factor(GenesClassDetails$class))
     set.seed(17)
     C <- sample(colors(),length(table(GenesClassDetails$class)))
@@ -395,8 +404,8 @@ Node_obj_CNA_ProfData <- function(list){
 
   ListDf <-lapply(list, function(x) apply(x, 2, function(y) as.data.frame(table(y[order(y)]))))
   ListDf2 <-   lapply(ListDf, function(x) lapply(x, function(y) y[,1][which(y[,2]== max(y[,2]))]))
-  ListDf3 <- ldply(ListDf2, data.frame)
-  MostFreqCNA_Df <- ldply(apply(ListDf3,2,function(x) names(which(max(table(x))==table(x))))[-1],data.frame)
+  ListDf3 <- plyr::ldply(ListDf2, data.frame)
+  MostFreqCNA_Df <- plyr::ldply(apply(ListDf3,2,function(x) names(which(max(table(x))==table(x))))[-1],data.frame)
 
   #MostFreqCNA_Df$arrowsize <- paste(MostFreqCNA_Df[,1], MostFreqCNA_Df[,2], sep=":")
   MostFreqCNA_Df[,2] <- gsub("-1", "1, style=dashed", MostFreqCNA_Df[,2] )
@@ -421,9 +430,9 @@ Node_obj_Met_ProfData <- function(list, type){
 
   Met_Obj <- lapply(list, function(x) apply(x,2,function(y) mean(y, na.rm=TRUE)))
   Met_Obj <- lapply(Met_Obj, function(x) round(x, digits = 2))
-  Met_Obj <- ldply(Met_Obj)[,-1]
+  Met_Obj <- plyr::ldply(Met_Obj)[,-1]
 
-  Met_Obj <- ldply(Met_Obj,function(x) (max(x, na.rm = TRUE)))
+  Met_Obj <- plyr::ldply(Met_Obj,function(x) (max(x, na.rm = TRUE)))
 
   if(type == "HM450"){
     Met_Obj <- subset(Met_Obj, V1 > input$ThresholdMetHM450ID)
@@ -503,7 +512,7 @@ graph_obj <- function(){
 
   }
   if (input$NodeAttri_ClassifierID =='Studies'){
-
+    GenesClassDetails_bkp <<- r_data$GenesClassDetails
     Disease_Net <- Studies_obj(df=r_data$GenesClassDetails)
     Edges_obj<- rbind(Edges_obj, Disease_Net)
 

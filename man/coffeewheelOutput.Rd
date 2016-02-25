@@ -4,14 +4,14 @@
 \alias{coffeewheelOutput}
 \title{Widget output function for use in Shiny}
 \usage{
-coffeewheel(treeData = sampleWheelData)
+coffeewheelOutput(outputId, width=700, height=700)
 }
 \arguments{
-\item{width}{600}
+\item{outputId}{id}
 
-\item{height}{600}
+\item{width}{700}
 
-\item{output}{id}
+\item{height}{700}
 }
 \value{
 A circular layout with genetic profile in Shiny App.
@@ -20,8 +20,8 @@ A circular layout with genetic profile in Shiny App.
 Widget output function for use in Shiny
 }
 \examples{
-
-bioCancer::coffeewheel(treeData = sampleWheelData)
+load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+bioCancer::bioCancer()
 
 }
 

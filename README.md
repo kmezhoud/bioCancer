@@ -7,7 +7,7 @@
 
 [bioCancer](
 http://kmezhoud.github.io/bioCancer/
-) is a platform-independent browser-based interface for Cancer Genomics Data analytics in [R](http://www.r-project.org/), based on the [Shiny](http://www.rstudio.com/shiny/) package. bioCancer is hosted at 
+) is a browser-based interface for Cancer Genomics Data analytics in [R](http://www.r-project.org/), based on the [Shiny](http://www.rstudio.com/shiny/) package. bioCancer is hosted at 
 http://46.101.227.144:3838/bioCancer/
 
 <!--
@@ -24,15 +24,9 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 
 <iframe width="640" height="375" src="https://www.youtube.com/embed/ioHopyfD2f0" frameborder="0" allowfullscreen></iframe>
 
-#### Explore
+#### Interactivities
 
-bioCancer is interactive. Results update immediately when inputs are changed (i.e., no separate dialog boxes). This greatly facilitates exploration and understanding of the data.
-
-#### Cross-platform
-
-bioCancer works on Windows, Mac, or Linux. It can run without an Internet connection and no data will leave your computer. You can also run the app as a web application on a server.
-
-> **Note:** For Windows users with data that contain multibyte characters please make sure your data are in ANSI format so R(adiant) can load characters correctly.
+bioCancer is listening user setting. Results update immediately when inputs are changed (i.e., no separate dialog boxes).
 
 #### Reproducible
 

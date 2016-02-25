@@ -64,6 +64,9 @@ output$ui_data <- renderUI({
 
                          conditionalPanel("input.tabs_Enrich=='Reactome'",
                                           uiOutput("ui_Reactome")
+                         ),
+                         conditionalPanel("input.tabs_Enrich=='Network'",
+                                          uiOutput("ui_Network")
                          )),
 
          conditionalPanel("input.tabs_data== 'Handle'",
@@ -305,7 +308,7 @@ output$Enrich <- renderUI({
                        conditionalPanel(condition = "input.ReacRunId == false",
                                         verbatimTextOutput("ReactomeHowto")
                        ),
-                       conditionalPanel( condition = "input.ReacRunId== true",
+                       conditionalPanel(condition = "input.ReacRunId== true",
                                          #plot_downloader("ld_diagrammeR_plot", pre=""),
                                          downloadButton('Save_diagrammeR_plot', 'HTML'),
                                          #actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
@@ -335,6 +338,9 @@ output$Enrich <- renderUI({
                                         h3("Available Profiles data in select Studies", align="center"),
                                         DT::dataTableOutput(outputId ="ReactomeAvailability")
                        ),
+                       conditionalPanel( condition = "input.NetworkRunId== true",
+                                         visNetwork::visNetworkOutput("network",height = "600px")
+                       ),
                        conditionalPanel(condition = "input.getlistProfDataID ==true",
                                         h3("Loaded Profiles Data", align="center"),
                                         verbatimTextOutput("StrListProfData")
@@ -354,6 +360,11 @@ output$Enrich <- renderUI({
 
 
               )
+# tabPanel("Network",
+#          conditionalPanel( condition = "input.NetworkRunId== true",
+#          visNetworkOutput("network",height = "600px")
+#          )
+# )
 
   )
 

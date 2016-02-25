@@ -2,6 +2,11 @@
 #'
 #' @details See \url{https://github.com/kmezhoud/bioCancer/wiki}
 #'
+#'
+#'
+#' @return A data frame with Genetic profile
+#'
+#' @usage grepRef(regex1, listRef1,regex2, listRef2, GeneList,Mut)
 #' @param regex1 Case id (cancer_study_id_[mutations, cna, methylation, mrna ]).
 #' @param listRef1 A list of cases for one study.
 #' @param regex2 Genetic Profile id (cancer_study_id_[mutations, cna, methylation, mrna ]).
@@ -9,11 +14,6 @@
 #' @param GeneList A list of genes
 #' @param Mut Condition to set if the genetic profile is mutation or not (0,1)
 #'
-#'
-#' @return A data frame with Genetic profile
-#'
-#'@usage
-#'ProfData <- grepRef(regex1, listRef1,regex2, listRef2, GeneList,Mut)
 #' @examples
 #' GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
 #' cgds <- cgdsr::CGDS("http://www.cbioportal.org/public-portal/")
@@ -123,11 +123,11 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #'
 #' @details See \url{https://github.com/kmezhoud/bioCancer/wiki}
 #'
+#' @usage getListProfData(panel)
 #' @param panel Panel name (string) in which Studies are selected. There are two panels ("Circomics" or "Reactome")
+#'
 #' @return A LIST of a list data frame. Each LIST is related to profiles data (CNA, mRNA, Methylation, Mutation, miRNA, RPPA).
 #'         each list of data frame is related to studies.
-#'@usage
-#'result <- getListProfData(panel)
 #'
 #'@export
 #'
