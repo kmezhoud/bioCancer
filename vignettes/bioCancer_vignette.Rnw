@@ -13,10 +13,19 @@
 %\SweaveOpts{concordance=TRUE}
 
 
-\title{bioCancer: Multi-Omics Cancers data Visualisation}
+\title{bioCancer: Multi-Omics Cancers data Visualisation and Analysis}
 \author{Karim Mezhoud}
 \date{January 12, 2016}
 \maketitle
+
+\section{Portal Panel}
+\subsection{Display available Cancer Studies in Table}
+
+\subsubsection{Studies Panel}
+
+This panel displays in table all available cancer studies hosted and maintained by Memorial Sloan Kettering Cancer Center (\url{(https://www.mskcc.org)}). It provides access to data by The Cancer Genome Atlas as well as many carefully curated published data sets.
+
+Every row lists one study by `Identity`, `name` and `description`.
 
 
 

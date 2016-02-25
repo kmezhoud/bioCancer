@@ -1,4 +1,8 @@
 language: r
+
+install:
+./travis-tool.sh aptget_install r-cran-car
+
 bioc_required: true
 sudo: required
 
