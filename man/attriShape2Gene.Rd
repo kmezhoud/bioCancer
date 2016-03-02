@@ -18,9 +18,9 @@ A character "BRCA1[shape = 'circle', "
 Attribute shape to nodes
 }
 \examples{
-
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 Shape_object <- attriShape2Gene("BRCA1", GeneList)
-
+}
 }
 

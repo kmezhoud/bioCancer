@@ -82,29 +82,29 @@ loadInDatasets <- function(fname, header= TRUE){
     dat <- as.data.frame((getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)))
     r_data[[objname]] <- dat %>% add_rownames("Patients")
   } else if (fname=="xCNA"){
-    dat <- ldply(r_data$ListProfData$CNA)
+    dat <- plyr::ldply(r_data$ListProfData$CNA)
     r_data[[objname]] <- dat
   } else if(fname =="xmRNA"){
-    dat <- ldply(r_data$ListProfData$Expression)
+    dat <- plyr::ldply(r_data$ListProfData$Expression)
     r_data[[objname]] <- dat
   }else if(fname == "xMetHM450"){
-    dat <- ldply(r_data$ListProfData$Met_HM450)
+    dat <- plyr::ldply(r_data$ListProfData$Met_HM450)
     r_data[[objname]] <- dat
   }else if(fname== "xMetHM27"){
-    dat <- ldply(r_data$ListProfData$Met_HM27)
+    dat <- plyr::ldply(r_data$ListProfData$Met_HM27)
     r_data[[objname]] <- dat
   }else if (fname=="xMut"){
 
-    dat <- ldply(r_data$ListMutData)
+    dat <- plyr::ldply(r_data$ListMutData)
     r_data[[objname]] <- dat
   } else if(fname== "xFreqMut"){
     dat <- r_data$Freq_DfMutData
     r_data[[objname]] <- dat %>% add_rownames("Genes")
   }else if (fname== "xmiRNA"){
-    dat <- ldply(r_data$ListProfData$miRNA)
+    dat <- plyr::ldply(r_data$ListProfData$miRNA)
     r_data[[objname]] <- dat
   }else if (fname== "xRPPA"){
-    dat <- ldply(r_data$ListProfData$RPPA)
+    dat <- plyr::ldply(r_data$ListProfData$RPPA)
     r_data[[objname]] <- dat
   }
   r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")

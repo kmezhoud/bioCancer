@@ -4,7 +4,7 @@
 \alias{diagrammeR}
 \title{Plot network with nodes and edges attributes}
 \usage{
-diagrammeR(NodeAttri_Reactome, NodeAttri_Classifier, NodeAttri_ProfData)
+diagrammeR(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData)
 }
 \arguments{
 \item{NodeAttri_Reactome}{Node attribute from Reactome database ('Freq. Interaction')}
@@ -20,8 +20,8 @@ plot
 Plot network with nodes and edges attributes
 }
 \examples{
-
-diagrammeR('Freq. Interaction', 'mRNA', 'Met_HM450')
-
+\dontrun{
+bioCancer::bioCancer()
+}
 }
 

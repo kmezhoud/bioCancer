@@ -5,6 +5,9 @@
 \alias{bioCancer}
 \alias{bioCancer-package}
 \title{Launch bioCancer with default browser}
+\usage{
+bioCancer()
+}
 \value{
 web page of bioCancer Shiny App
 }
@@ -12,7 +15,8 @@ web page of bioCancer Shiny App
 Launch bioCancer with default browser
 }
 \examples{
+\dontrun{
 bioCancer::bioCancer()
-
+}
 }
 

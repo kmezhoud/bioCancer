@@ -19,8 +19,8 @@ Gene Set enrichment using Reactome FI methods
 }
 \examples{
 
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-GeneSet <- getAnnoGeneSet_df(genelist,"BP")
-
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+}
 }
 

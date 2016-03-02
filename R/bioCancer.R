@@ -2,10 +2,12 @@
 #'
 #' @return  web page of bioCancer Shiny App
 #' @export
+#' @usage bioCancer()
 #'
 #' @examples
+#' \dontrun{
 #' bioCancer::bioCancer()
-#'
+#'}
 #' @name bioCancer
 #' @docType package
 #' @import ggplot2

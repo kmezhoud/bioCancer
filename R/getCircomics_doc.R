@@ -11,9 +11,10 @@
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 #' colorRef <- attriColorValue(500, ListProfData$Expression$luad_tcga_pub, colors = c("blue", "white","yellow","red", "black"), feet=10)
-#'
+#'}
 #'
 attriColorValue <- function(Value, df, colors=c(a,b,c, d,e),feet){
 
@@ -42,9 +43,10 @@ attriColorValue <- function(Value, df, colors=c(a,b,c, d,e),feet){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 #' colorsls <- attriColorGene(ListProfData$Expression$luad_tcga_pub)
-#'
+#'}
 attriColorGene <- function(df){
   ## check Mutation df Old
   #if(any(df[1,]%%1==0, na.rm = TRUE)&& any(df[1,]>0, na.rm = TRUE)){
@@ -95,9 +97,10 @@ attriColorGene <- function(df){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 #' Children <- reStrColorGene(ListProfData$Expression$luad_tcga_pub)
-#'
+#'}
 reStrColorGene <- function(df){
   colorls <- attriColorGene(df)
   ## extract disease name
@@ -116,9 +119,10 @@ reStrColorGene <- function(df){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 #' Child <- reStrDisease(ListProfData$Expression)
-#'
+#'}
 reStrDisease <- function(List){
   print("restructuring Selected Diseases...")
   child<-lapply(List, function(x)reStrColorGene(x))
@@ -138,9 +142,10 @@ reStrDisease <- function(List){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' Parent <- reStrDimension(ListProfData)
-#'
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' Parent <- reStrDimension(ListProfData_bkp)
+#'}
 reStrDimension <- function(LIST){
   print("restructuring Dimensions...")
   Parent <- lapply(LIST, function(x)list(name="Dimension",children=reStrDisease(x)))
@@ -159,11 +164,13 @@ reStrDimension <- function(LIST){
 #'
 #' @return A tree structure of listes:  dimensions > Studies > genes > colors
 #'
-#'@usage  getCoffeeWheel(ListProfData)
-#' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' getCoffeeWhel(ListPorofData)
+#' @usage  getCoffeeWheel(ListProfData)
 #'
+#' @examples
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' getCoffeeWheel(ListProfData_bkp)
+#'}
 #'
 getCoffeeWheel <- function(ListProfData){
 
@@ -247,9 +254,10 @@ getCoffeeWheel <- function(ListProfData){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 #' Freq_Mut <- UnifyRowNames(ListMutData_bkp$luad_tcga_pub, GeneList = GeneList)
-#'
+#'}
 UnifyRowNames <- function(x, GeneList){
   df_MutData <-as.data.frame(table(x$gene_symbol)/sum(table(x$gene_symbol))*100)
   rownames(df_MutData) <- df_MutData$Var1
@@ -269,16 +277,17 @@ UnifyRowNames <- function(x, GeneList){
 #'
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 #' GeneList <- whichGeneList()
-#'
+#'}
 whichGeneList <- function(){
   if(GeneListID == "Genes"){
     GeneList <- "Genes"
   }else if(GeneListID == "Reactome_GeneList"){
     GeneList <- "Reactome_GeneList"
   }else{
-    GeneList <- t(unique(read.table(paste0(path.package("bioCancer"),"/base/data/GeneList/",GeneListID,".txt" ,sep=""))))
+    GeneList <- t(unique(read.table(paste0(.libPaths(),"/bioCancer/base/data/GeneList/",GeneListID,".txt" ,sep=""))))
   }
   return(GeneList)
 
@@ -292,9 +301,10 @@ whichGeneList <- function(){
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 #' Freq_DfMutData <- getFreqMutData(ListMutData_bkp)
-#'
+#'}
 getFreqMutData <- function(list){
   #     if(input$GeneListID != "Genes"){
   #       GeneList <- t(unique(read.table(paste0(getwd(),"/extdata/GeneList/",input$GeneListID,".txt" ,sep=""))))
@@ -390,9 +400,10 @@ getFreqMutData <- function(list){
 #'
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 #' df <- checkDimensions(panel='Reactome')
-#'
+#'}
 checkDimensions<- function(panel){
 
   if(panel == "Circomics"){

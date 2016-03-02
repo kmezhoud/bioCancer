@@ -4,12 +4,12 @@
 \alias{Node_obj_mRNA_Classifier}
 \title{Atrribute genes expression to color nodes}
 \usage{
-Node_obj_mRNA_Classifier(GeneList, GenesClassDetails = df)
+Node_obj_mRNA_Classifier(GeneList,genesclassdetails)
 }
 \arguments{
 \item{GeneList}{A gene list.}
 
-\item{GenesClassDetails}{A dataframe with genes classes and genes expression.}
+\item{genesclassdetails}{A dataframe with genes classes and genes expression.}
 }
 \value{
 A data frame with node color attributes
@@ -18,10 +18,10 @@ A data frame with node color attributes
 Atrribute genes expression to color nodes
 }
 \examples{
-
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 Node_obj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
-
+}
 
 }
 

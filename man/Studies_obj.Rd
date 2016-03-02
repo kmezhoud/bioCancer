@@ -4,7 +4,7 @@
 \alias{Studies_obj}
 \title{get object for grViz. Link Studies to genes}
 \usage{
-Studies_obj(df = df)
+Studies_obj(df)
 }
 \arguments{
 \item{df}{data frame with gene classes}
@@ -16,7 +16,9 @@ grViz object. a data frame with Study attributes
 get object for grViz. Link Studies to genes
 }
 \examples{
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 Sd_obj <- Studies_obj(GenesClassDetails)
+}
 }
 

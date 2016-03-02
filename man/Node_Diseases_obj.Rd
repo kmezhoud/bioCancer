@@ -16,9 +16,9 @@ A data frame with nodes Shapes and colors
 Attributes color and shape to Nodes of Diseases
 }
 \examples{
-
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-Node_Diseases_df <- Node_Diseases_obj(genesclassdetails)
-
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+Node_Diseases_df <- Node_Diseases_obj(genesclassdetails= GenesClassDetails)
+}
 }
 

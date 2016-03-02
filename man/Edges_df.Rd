@@ -14,9 +14,10 @@ get Edges dataframe for visNetwork function
 }
 \examples{
 
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-Ed_obj <- Edges_obj()
-
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+Edges_df()
+}
 
 }
 

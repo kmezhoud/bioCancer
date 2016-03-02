@@ -137,7 +137,7 @@ visualize <- function(dataset, xvar,
   if (type == "bar") {
     isFctY <- "factor" == dc & names(dc) %in% yvar
     if (sum(isFctY)) {
-      dat[,isFctY] <- select(dat, which(isFctY)) %>% mutate_each(funs(as.integer(. == levels(.)[1])))
+      dat[,isFctY] <- dplyr::select(dat, which(isFctY)) %>% mutate_each(funs(as.integer(. == levels(.)[1])))
       dc[isFctY] <- "integer"
     }
   }
@@ -155,14 +155,14 @@ visualize <- function(dataset, xvar,
     if (any(!dc[xvar] %in% c("integer","numeric")))
       return("'Log X' is only meaningful for X-variables of type integer or numeric")
     to_log <- (dc[xvar] %in% c("integer","numeric")) %>% xvar[.]
-    dat[, to_log] <- select_(dat, .dots = to_log) %>% mutate_each(funs(log_trans))
+    dat[, to_log] <- dplyr::select_(dat, .dots = to_log) %>% mutate_each(funs(log_trans))
   }
 
   if ("log_y" %in% axes) {
     if (any(!dc[yvar] %in% c("integer","numeric")))
       return("'Log Y' is only meaningful for Y-variables of type integer or numeric")
     to_log <- (dc[yvar] %in% c("integer","numeric")) %>% yvar[.]
-    dat[, to_log] <- select_(dat, .dots = to_log) %>% mutate_each(funs(log_trans))
+    dat[, to_log] <- dplyr::select_(dat, .dots = to_log) %>% mutate_each(funs(log_trans))
   }
 
   ## combining Y-variables if needed
@@ -184,7 +184,7 @@ visualize <- function(dataset, xvar,
   if (combx && length(xvar) > 1) {
     if (!is_empty(fill, "none")) return("Cannot use Fill when combining X-variables")
     if (facet_row %in% xvar || facet_col %in% xvar) return("Facet row or column variables cannot be part of\nX-variables when combining Y-variables")
-    if (any(!getclass(select_(dat, .dots = xvar)) %in% c("numeric","integer"))) return("Cannot combine plots for non-numeric variables")
+    if (any(!getclass(dplyr::select_(dat, .dots = xvar)) %in% c("numeric","integer"))) return("Cannot combine plots for non-numeric variables")
 
     dat <- gather_(dat, "xvar", "values", gather_cols = xvar)
     xvar <- "values"
@@ -216,7 +216,7 @@ visualize <- function(dataset, xvar,
         if ("log_x" %in% axes) axes <- sub("log_x","",axes)
       } else {
         plot_fun <- get("geom_histogram")
-        hist_par[["binwidth"]] <- select_(dat,i) %>% range %>% {diff(.)/bins}
+        hist_par[["binwidth"]] <- dplyr::select_(dat,i) %>% range %>% {diff(.)/bins}
       }
 
       # plot_list[[i]] <- plot_list[[i]] + do.call(geom_histogram, hist_par)

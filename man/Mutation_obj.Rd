@@ -4,7 +4,7 @@
 \alias{Mutation_obj}
 \title{Atribute mutation frequency to nodes}
 \usage{
-Mutation_obj(list, threshold)
+Mutation_obj(list,threshold)
 }
 \arguments{
 \item{list}{A list of data frame with mutation data. Each data frame to study}
@@ -18,9 +18,9 @@ A dat frame with mutation frequency. Ech column corresponds to a study.
 Atribute mutation frequency to nodes
 }
 \examples{
-
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ \dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 Mut_obj <- Mutation_obj(ListMutData_bkp, 0.2)
-
+}
 }
 

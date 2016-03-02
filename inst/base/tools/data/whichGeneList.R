@@ -2,9 +2,8 @@
 #' @export
 #'
 #' @examples
-#' library(bioCancer)
-#' bioCancer()
-#'
+#' \dontrun{
+#'}
 #'
 whichGeneList <- function(){
   if(input$GeneListID == "Genes"){
@@ -13,7 +12,7 @@ whichGeneList <- function(){
     GeneList <- t(r_data$Reactome_GeneList)
   }else{
     #GeneList <- t(unique(read.table(paste0(r_path,"/base/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
-    GeneList <- t(unique(read.table(paste0(system.file(package = "bioCancer"),"/base/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+    GeneList <- t(unique(read.table(paste0(.libPaths(),"/bioCancer/base/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
   }
   return(GeneList)
 

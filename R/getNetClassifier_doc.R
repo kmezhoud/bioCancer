@@ -4,9 +4,10 @@
 #' @export
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 #' getGenesClassifier()
-#'
+#'}
 #'
 #'@importFrom geNetClassifier calculateGenesRanking
 #'@importFrom geNetClassifier genesDetails

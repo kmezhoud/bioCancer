@@ -4,10 +4,12 @@
 \alias{Node_df}
 \title{Data frame with Nodes id}
 \usage{
-Node_df(genelist)
+Node_df(genelist, freqIn)
 }
 \arguments{
 \item{genelist}{a vector of genes}
+
+\item{freqIn}{dataframe with Node interaction frequencies}
 }
 \value{
 A data frame with nodes id
@@ -16,8 +18,11 @@ A data frame with nodes id
 Data frame with Nodes id
 }
 \examples{
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-GeneFreq <- Node_obj(GeneList)
+
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+bioCancer::bioCancer()
+}
 
 }
 

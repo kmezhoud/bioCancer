@@ -26,8 +26,9 @@ This is an htmlwidgets-based visualization tool for hierarchical data.
 It is zoomable, meaning that you can interact with the hierarchy and zoom in/out accordingly.
 }
 \examples{
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 bioCancer::bioCancer()
-
+}
 }
 

@@ -4,7 +4,7 @@
 \alias{attriColorVector}
 \title{Attribute color to a vector of numeric values}
 \usage{
-attriColorVector(Value, vector, colors = c(a, b, c), feet)
+attriColorVector(Value, vector, colors=c(a,b,c),feet)
 }
 \arguments{
 \item{Value}{numeric}
@@ -22,12 +22,13 @@ A vetor of colors
 Attribute color to a vector of numeric values
 }
 \examples{
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
 sapply(GenesClassDetails$exprsMeanDiff,
 function(x) as.character(attriColorVector(x,
 GenesClassDetails$exprsMeanDiff ,
 colors=c("blue","white","red"),
  feet=1)))
-
+}
 }
 

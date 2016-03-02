@@ -159,7 +159,7 @@ attriShape2Node <- function(gene, genelist){
 #'
 #' @examples
 #' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' GeneFreq <- Node_obj(GeneList)
+#' GeneFreq <- Node_df(GeneList, FreqIn)
 #'
 # FreqIn
 # Genes FreqSum
@@ -168,8 +168,8 @@ attriShape2Node <- function(gene, genelist){
 # 3 BRCA1       5
 # 4 BRCA2       3
 
-Node_df <- function(genelist){
-  FreqIn <- r_data$FreqIn
+Node_df <- function(genelist, freqIn){
+ # FreqIn <- r_data$FreqIn
   FreqIn[["shape"]]<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Node(x, GeneList)))
   FreqIn$FreqSum  <- FreqIn$FreqSum / 10
   names(FreqIn) <- c("id","FreqSum","shape")
@@ -201,11 +201,11 @@ Node_df <- function(genelist){
 #' @examples
 #'
 #' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' GeneFreq <- Node_obj_FreqIn(GeneList)
+#' GeneFreq <- Node_df_FreqIn(GeneList, FreqIn)
 #'
-Node_df_FreqIn <- function(genelist){
+Node_df_FreqIn <- function(genelist, freqIn){
 
-  FreqIn <- r_data$FreqIn
+  #FreqIn <- r_data$FreqIn
   #FreqIn[["shape"]]<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Node(x, GeneList)))
   FreqIn$FreqSum  <- FreqIn$FreqSum/10
   #names(FreqIn) <- c("id", "value","shape")
@@ -224,7 +224,7 @@ Node_df_FreqIn <- function(genelist){
 #' @examples
 #'
 #' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' Node_Diseases_df <- Node_Diseases_obj(genesclassdetails)
+#' Node_Diseases_df <- Node_Diseases_obj(genesclassdetails= GenesClassDetails)
 #'
 Node_Diseases_obj <- function(genesclassdetails){
   if(is.null(genesclassdetails)){
@@ -306,16 +306,16 @@ output$network <- visNetwork::renderVisNetwork({
   GeneList <- whichGeneList()
 
   edges <- Edges_df()
-  nodes <-  Node_df(genelist = GeneList)
+  nodes <-  Node_df(genelist = GeneList, freqIn = r_data$FreqIn)
 
   if(input$NodeAttri_ReactomeID == 'Freq. Interaction'){ #input$NodeAttri_NetworkID
     ## Nodes Frequncy interaction Attributes
-    value <- Node_df_FreqIn(genelist = GeneList)
+    value <- Node_df_FreqIn(genelist = GeneList, freqIn = r_data$FreqIn)
     nodes[['value']] <- value
   }
   if(input$NodeAttri_ReactomeID == 'FreqInt./GeneSet'||input$NodeAttri_ReactomeID == 'GeneSet'){ #input$NodeAttri_NetworkID
     ## Nodes Attributes
-    value <- Node_df_FreqIn(GeneList)
+    value <- Node_df_FreqIn(GeneList, freqIn = r_data$FreqIn)
      nodes[['value']] <- value
 
     if(input$TypeGeneSetID =="Pathway" ||

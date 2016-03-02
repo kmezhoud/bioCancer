@@ -1,13 +1,15 @@
 #' get Edges dataframe for visNetwork function
+#' @usage Edges_df()
 #'
 #' @return A data frame with egdes attributes
 #' @export
 #'
 #' @examples
 #'
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' Ed_obj <- Edges_obj()
-#'
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' Edges_df()
+#'}
 #'
 #' @importFrom RCurl basicTextGatherer
 #' @importFrom XML xmlInternalTreeParse
@@ -111,15 +113,14 @@ Edges_df <- function(){
 #' @return A data frame with egdes attributes
 #' @export
 #'
-#' @usage
-#' Edges_Diseases_obj(genesclassdetails)
-#' @param genesclassdetails  a dataframe from geNetClassifier function
+#' @usage Edges_Diseases_obj(genesclassdetails)
+#' @param genesclassdetails  a dataframe from geNetClassifier
 #'
 #' @examples
-#'
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' Ed_Diseases_obj <- Edges_Diseases_obj(GenesClassDetails)
-#'
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' Ed_Diseases_obj <- Edges_Diseases_obj(genesclassdetails=GenesClassDetails)
+#'}
 #'
 Edges_Diseases_obj <- function(genesclassdetails){
 
@@ -141,15 +142,13 @@ Edges_Diseases_obj <- function(genesclassdetails){
 #'
 #' @return A data frame with egdes attributes
 #' @export
-#' @usage
-#' attriShape2Node(gene, genelist)
+#' @usage attriShape2Node(gene, genelist)
 #' @param gene symbol "TP53"
 #' @param genelist a vector of gene symbol
 #'
 #' @examples
-#'
-#' genelist <- c("DKK3" , "NBN"  , "MYO6" , "TP53" , "PML"  , "IFI16" ,"BRCA1")
-#' NodeShape <- attriShape2Gene("DKK3", genelist)
+#' GeneList <- c("DKK3" , "NBN"  , "MYO6" , "TP53" , "PML"  , "IFI16" ,"BRCA1")
+#' NodeShape <- attriShape2Gene("DKK3", GeneList)
 #'
 
 attriShape2Node <- function(gene, genelist){
@@ -166,22 +165,20 @@ attriShape2Node <- function(gene, genelist){
 #'
 #' @return A data frame with nodes id
 #' @export
-#' @usage Node_df(genelist)
+#'
+#' @usage Node_df(genelist, freqIn)
 #' @param genelist a vector of genes
+#' @param freqIn dataframe with Node interaction frequencies
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' GeneFreq <- Node_obj(GeneList)
 #'
-# FreqIn
-# Genes FreqSum
-# 1   ATM       4
-# 2   ATR       5
-# 3 BRCA1       5
-# 4 BRCA2       3
-
-Node_df <- function(genelist){
-  FreqIn <- r_data$FreqIn
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' bioCancer::bioCancer()
+#'}
+#'
+Node_df <- function(genelist, freqIn){
+  #FreqIn <- r_data$FreqIn
   FreqIn[["shape"]]<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Node(x, GeneList)))
   FreqIn$FreqSum  <- FreqIn$FreqSum / 10
   names(FreqIn) <- c("id","FreqSum","shape")
@@ -210,19 +207,20 @@ Node_df <- function(genelist){
 #' @return A data frame with nodes size attributes
 #' @export
 #'
-#' @usage Node_df_FreqIn(genelist)
+#' @usage Node_df_FreqIn(genelist, freqIn)
 #' @param genelist a vector of genes
+#' @param freqIn dataframe with Node interaction frequencies
 #'
 #' @examples
-#'
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' GeneFreq <- Node_obj_FreqIn(GeneList)
-#'
-Node_df_FreqIn <- function(genelist){
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' GeneFreq <- Node_df_FreqIn(GeneList, FreqIn)
+#'}
+Node_df_FreqIn <- function(genelist, freqIn){
 
-  FreqIn <- r_data$FreqIn
+  #FreqIn <- r_data$FreqIn
   #FreqIn[["shape"]]<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Node(x, GeneList)))
-  FreqIn$FreqSum  <- FreqIn$FreqSum/10
+  FreqIn$FreqSum  <- freqIn$FreqSum/10
   #names(FreqIn) <- c("id", "value","shape")
   names(FreqIn) <- c("id", "value")
   #FreqIn[["label"]] <- FreqIn$id
@@ -236,15 +234,14 @@ Node_df_FreqIn <- function(genelist){
 #' @return A data frame with nodes Shapes and colors
 #' @export
 #'
-#' @usage
-#' Node_Diseases_obj(genesclassdetails)
+#' @usage Node_Diseases_obj(genesclassdetails)
 #' @param genesclassdetails  a dataframe from geNetClassifier function
 #'
 #' @examples
-#'
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' Node_Diseases_df <- Node_Diseases_obj(genesclassdetails)
-#'
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' Node_Diseases_df <- Node_Diseases_obj(genesclassdetails= GenesClassDetails)
+#' }
 Node_Diseases_obj <- function(genesclassdetails){
   if(is.null(genesclassdetails)){
     msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
@@ -276,9 +273,9 @@ Node_Diseases_obj <- function(genesclassdetails){
 #'
 #' @examples
 #'
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' GeneSet <- getAnnoGeneSet_df(genelist,"BP")
-#'
+#' \dontrun{
+#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#'}
 getAnnoGeneSet_df <- function(genelist,type){
   # type = c("Pathway", "BP", "CC", "MF")
   # type <- input$TypeGeneSetID

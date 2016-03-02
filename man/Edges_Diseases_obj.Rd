@@ -7,7 +7,7 @@
 Edges_Diseases_obj(genesclassdetails)
 }
 \arguments{
-\item{genesclassdetails}{a dataframe from geNetClassifier function}
+\item{genesclassdetails}{a dataframe from geNetClassifier}
 }
 \value{
 A data frame with egdes attributes
@@ -16,10 +16,10 @@ A data frame with egdes attributes
 get Edges dataframe for Gene/Disease association from geNetClassifier
 }
 \examples{
-
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-Ed_Diseases_obj <- Edges_Diseases_obj(GenesClassDetails)
-
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+Ed_Diseases_obj <- Edges_Diseases_obj(genesclassdetails=GenesClassDetails)
+}
 
 }
 

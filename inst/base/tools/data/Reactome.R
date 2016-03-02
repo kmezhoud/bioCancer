@@ -253,7 +253,7 @@ output$GeneSet_Legend <- DT::renderDataTable({
 # 2  MLH1       1  gbm_tcga  0.99703      256.3173        UP
 
 Studies_obj <- function(df= df){
-  #df <- GenesClassDetails_bkp
+
   if(is.null(df)){
     msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
     stop(msgNoClassifier)
@@ -348,12 +348,12 @@ Node_obj_FreqIn <- function(GeneList){
 
 }
 
-Node_obj_mRNA_Classifier <- function(GeneList,GenesClassDetails= df){
-  if(is.null(GenesClassDetails)){
+Node_obj_mRNA_Classifier <- function(GeneList,genesClassdetails){
+  if(is.null(genesclassdetails)){
     msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
     stop(msgNoClassifier)
   }else{
-    GenesClassDetails <- merge(GenesClassDetails, r_data$FreqIn, by="Genes")
+    GenesClassDetails <- merge(genesclassdetails, r_data$FreqIn, by="Genes")
     GenesClassDetails <- GenesClassDetails[,!(names(GenesClassDetails) %in% "exprsUpDw")]
     GenesClassDetails$FreqSum  <- GenesClassDetails$FreqSum / 10
 

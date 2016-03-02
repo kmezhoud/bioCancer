@@ -20,12 +20,13 @@
 #' @param fontSize 12
 #' @param legendText Legend
 #' @examples
+#' \dontrun{
 #' bioCancer::metabologram(treeData = sampleMetabologramData, width=600,
 #' height=600, main="title", showLegend = TRUE, fontSize = 10,
 #'  legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
 #'  legendColors=c("black","blue","cyan","white","yellow","red") ,
 #'  legendText="Legend")
-#'
+#'}
 #'
 #' @import htmlwidgets
 #'

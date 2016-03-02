@@ -16,9 +16,9 @@ A data frame with node attributes
 Attribute interaction frequency to node size
 }
 \examples{
-
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-Node_obj_FreqIn(GeneList)
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+}
 
 
 }

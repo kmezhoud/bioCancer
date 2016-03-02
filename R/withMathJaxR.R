@@ -8,8 +8,9 @@
 #'
 #
 #' @examples
+#' \dontrun{
 #' bioCancer::withMathJax("Some math here $$\\alpha+\\beta$$")
-#'
+#'}
 #' @export
 withMathJaxR <- function(...)  {
   path <- "MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"

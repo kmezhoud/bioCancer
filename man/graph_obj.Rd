@@ -4,7 +4,7 @@
 \alias{graph_obj}
 \title{get graph object for grViz}
 \usage{
-graph_obj(NodeAttri_Reactome, NodeAttri_Classifier, NodeAttri_ProfData)
+graph_obj(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData)
 }
 \arguments{
 \item{NodeAttri_Reactome}{Node attribute from Reactome database ('Freq. Interaction')}
@@ -20,10 +20,10 @@ Object graph for grViz with Nodes and Edges attributes
 get graph object for grViz
 }
 \examples{
-
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-gr_obj <- graph_obj('Freq. Interaction', 'mRNA', 'Met_HM450')
-
+\dontrun{
+load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+gr_obj <- graph_obj('Freq.Interaction', 'mRNA', 'Met_HM450')
+}
 
 }
 

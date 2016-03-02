@@ -26,7 +26,7 @@ doQuery = function(inputFile, entity, identifier){
 
   # read in all data
   GeneSymbol <- t(unique(read.table(inputFile, sep="")))
-  inFile <- data.frame(V1=unname(unlist(AnnotationFuncs::translate(GeneSymbol, org.Hs.egSYMBOL2EG))))
+  inFile <- data.frame(V1=unname(unlist(AnnotationFuncs::translate(GeneSymbol, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
   #inFile<- clusterProfiler::bitr(GeneSymbol, fromType="SYMBOL", toType="ENTREZID", annoDb="org.Hs.eg.db")[,2]
 
   #inFile = read.csv(file=paste(getwd(), inputFile, sep="/"), sep="\t", header=F)
@@ -112,12 +112,12 @@ doQuery = function(inputFile, entity, identifier){
 
 
 #  inputFile = paste("inst/base/data/GeneList/102.txt", sep="")
-#  outputFile = paste("GDA/output.txt", sep="")
+#  ##outputFile = paste("GDA/output.txt", sep="")
 # entity = "gene"
 # identifier = "entrez"
 #
 #
 # print("Querying the database ")
- #DGA <- doQuery(inputFile, entity, identifier)
+# DGA <- doQuery(inputFile, entity, identifier)
 # print("Finished")
 

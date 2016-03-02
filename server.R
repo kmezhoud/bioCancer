@@ -10,7 +10,7 @@
 ## source("http://bioconductor.org/biocLite.R")
 ## biocLite("geNetClassifier", lib="/usr/lib/R/library")
 ## install.packages("AnnotationFuncs", repos = "http://www.bioconductor.org/packages/3.2/bioc", lib="/usr/local/share/R/bioconductor")
-
+## sudo su - -c "R -e "install.packages('shiny', repos='http://cran.rstudio.com/')""
 ## to install ReactomePA , reactomedb, rappdirs
 
 shinyServer(function(input, output, session) {
