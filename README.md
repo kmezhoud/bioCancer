@@ -15,9 +15,9 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 -->
 ## Network modeling example
 
-<img src="./inst/extradata/imgs/demoReactome.gif">
+<img src="/inst/extradata/imgs/demoReactome.gif">
 
-![Zoomable Wheel](./inst/extradata/imgs/demoReactome.gif)
+![Zoomable Wheel](/inst/extradata/imgs/demoReactome.gif)
 
 
 ## Key features
