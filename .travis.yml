@@ -1,11 +1,12 @@
 language: r
 bioc_required: true
-
-before_install:
-./travis-tool.sh aptget_install r-cran-car
-
-bioc_required: true
 sudo: required
+
+#before_install:
+#./travis-tool.sh aptget_install r-cran-car
+
+
+
 
 #r_github_packages:
   #- trestletech/shinyAce
