@@ -2,6 +2,9 @@ language: r
 bioc_required: true
 sudo: required
 
+r_packages: car
+r_github_packages: visNetwork
+
 #before_install:
 #./travis-tool.sh aptget_install r-cran-car
 
