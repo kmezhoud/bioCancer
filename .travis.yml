@@ -1,6 +1,7 @@
 language: r
+bioc_required: true
 
-install:
+before_install:
 ./travis-tool.sh aptget_install r-cran-car
 
 bioc_required: true
