@@ -1,14 +1,13 @@
 # bioCancer - Interactive Multi-OMICS Cancers Data Visualization and Analysis
 
-[![Travis-CI Build Status](https://travis-ci.org/kmezhoud/bioCancer.svg?branch=master)](https://travis-ci.org/kmezhoud/bioCancer) by Karim Mezhoud
-<!--
+[![Travis-CI Build Status](https://travis-ci.org/kmezhoud/bioCancer.svg?branch=master)](https://travis-ci.org/kmezhoud/bioCancer)
+
 [![Coverage Status](https://img.shields.io/coveralls/kmezhoud/bioCancer.svg)](https://coveralls.io/r/kmezhoud/bioCancer?branch=master) 
--->
+
 
 [bioCancer](
 http://kmezhoud.github.io/bioCancer/
-) is a browser-based interface for Cancer Genomics Data analytics in [R](http://www.r-project.org/), based on the [Shiny](http://www.rstudio.com/shiny/) package. bioCancer is hosted at 
-http://46.101.227.144:3838/bioCancer/
+) is a browser-based interface for Cancer Genomics Data analysis and visualization developped by [R](http://www.r-project.org/), and based on the [Shiny](http://www.rstudio.com/shiny/) package. Example of bioCancer server is hosted at http://46.101.227.144:3838/bioCancer/
 
 <!--
 It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Dr. Vincent Nijs</a>. 
@@ -19,7 +18,7 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 -->
 <img src="./demoReactome.gif">
 
-
+<!--
 ## Key features
 
 - Explore: Quickly and easily summarize, visualize, and analyze your data
@@ -29,19 +28,23 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 - Context: Data and examples focus on business applications
 
 <iframe width="640" height="375" src="https://www.youtube.com/embed/ioHopyfD2f0" frameborder="0" allowfullscreen></iframe>
+-->
 
 #### Interactivities
 
 bioCancer is listening user setting. Results update immediately when inputs are changed (i.e., no separate dialog boxes).
 
+<!--
 #### Reproducible
 
 Simply saving output is not enough. You need the ability to recreate results for the same data and/or when new data become available. Moreover, others may want to review your analysis and results. Save and load the state of the application to continue your work at a later time or on another computer. Share state files with others and create reproducible reports using [Rmarkdown](http://rmarkdown.rstudio.com/). See also the section on `Saving and loading state` below
+-->
 
-
+<!--
 #### Programming
 
 Although bioCancer's web-interface can handle quite a few data and analysis tasks, at times you may prefer to write your own code. bioCancer provides a bridge to programming in R(studio) by exporting the functions used for analysis. For more information about programming, see Radiant [programming](http://vnijs.github.io/radiant/programming.html) page on the documentation site.
+-->
 
 #### Context
 
@@ -73,7 +76,7 @@ When bioCancer starts you will see a table of available Cancer Studies.  To clos
 
 Documentation and tutorials are available in the bioCancer web interface (the `?` icons and the `Help` menu).
 
-
+<!--
 ## Saving and loading state from bioCancer
 To save your analyses save the state of the app to a file by clicking on the <i title='Save' class='fa fa-save'></i> icon in the navbar and then on `Save state` (see also the `Data > Handle > Manage` tab). You can open this state file at a later time or on another computer to continue where you left off. You can also share the file with others that may want to replicate your analyses. As an example, load the state_file [`example.rda`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.rda?raw=true) through the Data > Manage tab. Go to `Handle > View`, `Handle > Visualize` to see some of the settings. There is also a report in `R > Report` that was created using the bioCancer interface. The html file [`ExampleState.html`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.html?raw=true) contains the output.
 
@@ -83,16 +86,17 @@ Loading and saving state also works with Rstudio. If you start bioCancer from Rs
 ```r
 numericInput("sm_comp_value", "Comparison value:", state_init('sm_comp_value',sm_args$comp_value))
 ```
-
+-->
 ## Acknowledgment
 
 
 bioCancer is a collaborative work . Handle panel is adapted from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
 
-
+<!--
 ## License
 
 bioCancer is licensed under the <a href="http://www.tldrlegal.com/l/AGPL3" target="\_blank">AGPLv3</a>. The documentation and videos on this site and the bioCancer help files are licensed under the creative commons attribution, non-commercial, share-alike license <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC-NC-SA</a>.
 
 As a summary, the AGPLv3 license requires, attribution, including copyright and license information in copies of the software, stating changes if the code is modified, and disclosure of all source code.
 
+-->
