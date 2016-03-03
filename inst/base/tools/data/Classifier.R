@@ -111,7 +111,7 @@ output$Plot_enricher <- renderPlot({
     ## clusterProfile package
     #GeneID = bitr(GeneList, fromType="SYMBOL", toType="ENTREZID", annoDb="org.Hs.eg.db")[,2]
     ## Symbol2GeneID
-    GeneID<- unname(unlist(AnnotationFuncs::translate(GeneList, org.Hs.egSYMBOL2EG)))
+    GeneID<- unname(unlist(AnnotationFuncs::translate(GeneList, org.Hs.eg.db::org.Hs.egSYMBOL2EG)))
 
     ## downloaded from http://www.disgenet.org/ds/DisGeNET/results/all_gene_disease_associations.tar.gz
     if ("package:bioCancer" %in% search()) {
@@ -143,7 +143,7 @@ output$compareClusterDO <- renderPlot({
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
-    GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.egSYMBOL2EG))))
+    GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
 
     if (inherits(try(cdo <- compareCluster(GroupsID, fun="enrichDO"), silent=TRUE),"try-error"))
     {print("No enrichment found in any of gene cluster, please check your input...")
@@ -174,7 +174,7 @@ output$compareClusterReactome <- renderPlot({
       require(reactome.db)
       require(ReactomePA)
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
-    GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.egSYMBOL2EG))))
+    GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
 
     if (inherits(try(cdp <- compareCluster(GroupsID, fun="enrichPathway"), silent=TRUE),"try-error"))
     { print("No Reactome enrichment found in any of gene cluster, please check your input...")
@@ -199,7 +199,7 @@ output$compareClusterGO <- renderPlot({
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
-    GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.egSYMBOL2EG))))
+    GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
     if (inherits(try(cgo <- compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')),"try-error"))
     {
       stop("No GO enrichment found with actual Gene List...")
@@ -221,7 +221,7 @@ output$compareClusterKEGG <- renderPlot({
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
-    GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.egSYMBOL2EG))))
+    GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
     if (inherits(try(cgo <- compareCluster(GroupsID, fun="enrichKEGG")),"try-error"))
     {
       stop("No KEGG enrichment found with actual Gene List...")
@@ -242,7 +242,7 @@ output$compareClusterCC<- renderPlot({
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
-    GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.egSYMBOL2EG))))
+    GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
     if (inherits(try(cgo <- compareCluster(GroupsID, fun="groupGO", OrgDb='org.Hs.eg.db')),"try-error"))
     {
       stop("No Cellular Component enrichment found with actual Gene List...")
