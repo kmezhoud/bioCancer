@@ -1,9 +1,20 @@
 language: r
+r:
+  - oldrel
+  - release
+  - devel
+
+r_binary_packages: car
+cache: packages
+
+repos:
+  CRAN: https://cloud.r-project.org
+
 bioc_required: true
+
 sudo: required
 
-r_packages: car
-r_github_packages: visNetwork
+
 
 #before_install:
 #./travis-tool.sh aptget_install r-cran-car
