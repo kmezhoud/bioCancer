@@ -14,7 +14,12 @@ http://46.101.227.144:3838/bioCancer/
 It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Dr. Vincent Nijs</a>. 
 -->
 ## Network modeling example
-<img src="inst/extradata/imgs/demoReactome.gif">
+
+<img src="./inst/extradata/imgs/demoReactome.gif">
+
+<!--
+![Zoomable Wheel](./ZoomableCoffeeWheel.gif)
+-->
 
 ## Key features
 
