@@ -17,7 +17,9 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 
 <img src="./demoReactome.gif">
 
-![Network modeling](./demoReactome.gif)
+
+![Network modeling](./inst/extradata/imgs/demoReactomeCmp.gif)
+
 
 
 ## Key features
