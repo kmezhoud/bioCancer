@@ -17,9 +17,8 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 
 <img src="./inst/extradata/imgs/demoReactome.gif">
 
-<!--
-![Zoomable Wheel](./ZoomableCoffeeWheel.gif)
--->
+![Zoomable Wheel](./inst/extradata/imgs/demoReactome.gif)
+
 
 ## Key features
 
