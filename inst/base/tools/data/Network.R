@@ -169,7 +169,7 @@ attriShape2Node <- function(gene, genelist){
 # 4 BRCA2       3
 
 Node_df <- function(genelist, freqIn){
- # FreqIn <- r_data$FreqIn
+  FreqIn <- freqIn
   FreqIn[["shape"]]<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Node(x, GeneList)))
   FreqIn$FreqSum  <- FreqIn$FreqSum / 10
   names(FreqIn) <- c("id","FreqSum","shape")
@@ -205,7 +205,7 @@ Node_df <- function(genelist, freqIn){
 #'
 Node_df_FreqIn <- function(genelist, freqIn){
 
-  #FreqIn <- r_data$FreqIn
+  FreqIn <- freqIn
   #FreqIn[["shape"]]<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Node(x, GeneList)))
   FreqIn$FreqSum  <- FreqIn$FreqSum/10
   #names(FreqIn) <- c("id", "value","shape")
@@ -355,7 +355,7 @@ output$network <- visNetwork::renderVisNetwork({
 
 
 
-      graphe <- visNetwork::visNetwork(nodes, edges, width = "500%") #%>%
+      graphe <- visNetwork::visNetwork(nodes, edges, height = "500%",width = "500%") #%>%
 
 
     ## resizing nodes is not possible without scaling option. this is useful for circle, box shape
@@ -364,7 +364,7 @@ output$network <- visNetwork::renderVisNetwork({
     visNetwork::visNodes(graph = graphe, color = list(label = list(enabled = TRUE)))#%>%
     #visEdges(scaling = list(label = list(enabled = TRUE)))%>%
     visNetwork::visOptions(graph= graphe, manipulation = TRUE,
-                           selectedBy = "group",
+                           #selectedBy = "group",
                            highlightNearest = TRUE )#%>%
     # visNetwork::visHierarchicalLayout(graph = graphe,enabled =  as.logical(input$enableHierarchiId),
     #                      direction = input$Hierarchi_AttId,
@@ -381,21 +381,22 @@ output$network <- visNetwork::renderVisNetwork({
   #              #scaling = c(10,15,13,17,2.0,2.3,6,3,2.3,11),
   #              borderWidthSelected = 7) %>%
   #
+     # visNetwork::visSave(graph= graphe, file = "network.html") #%>%
+      visNetwork::visExport(graph= graphe,type = "png", name = "network",
+                 label = paste0("Export as png"), background = "#fff",
+                 float = "left", style = NULL, loadDependencies = TRUE)
 
-    #  visExport( type = "png", name = "network",
-     #            label = paste0("Export as png"), background = "#fff",
-      #           float = "left", style = NULL, loadDependencies = TRUE)
-  #   visLegend(addNodes= lnodes,
-  #           addEdges= ledges,
-  #          useGroups= FALSE,
-  #         position="left")
+        #visNetwork::visLegend(graph = graphe,
+         #                     addNodes= nodes,
+          #                    addEdges= edges,
+                              #useGroups= TRUE,
+           #                   position="left")
 
 
 })
 
 observe({
    network <- visNetwork::visNetworkProxy("network")
-
  #  if(input$enableHierarchiId){
  conditionalPanel("input.enableHierarchiId==true",
     visNetwork::visHierarchicalLayout(network, enabled= input$enableHierarchiId,

@@ -39,13 +39,13 @@ output$ui_AnnoGeneSet_ReactomeFI <- renderUI({
   type <- c("None","Pathway", "BP","CC","MF")
   selectizeInput("TypeGeneSetID", label="Type of enrichment:", choices=type,
                  selected ="None", multiple=FALSE
-                 )
+  )
 })
 
 output$ui_GeneSetFDR <- renderUI({
   #if(is.null(r_data$MinGeneSetFDR)){
-    sliderInput("GeneSetFDRID", "FDR of enrichment", 0.025, min =0.0005,
-                max=0.05, step=0.0005 )
+  sliderInput("GeneSetFDRID", "FDR of enrichment", 0.025, min =0.0005,
+              max=0.05, step=0.0005 )
   #}else{
   #sliderInput("GeneSetFDRID", "FDR", 0.005, min =r_data$MinGeneSetFDR,
   #            max=0.05, step=0.0005 )
@@ -107,9 +107,9 @@ output$ui_Reactome <- renderUI({
 
       conditionalPanel("input.NodeAttri_ReactomeID =='GeneSet' ||
                        input.NodeAttri_ReactomeID =='FreqInt./GeneSet'",
-                      uiOutput("ui_AnnoGeneSet_ReactomeFI"),
-                      uiOutput("ui_GeneSetFDR")
-                      ),
+                       uiOutput("ui_AnnoGeneSet_ReactomeFI"),
+                       uiOutput("ui_GeneSetFDR")
+      ),
 
 
       #conditionalPanel(condition = "input.ClassID=='Classifier'",
@@ -133,27 +133,27 @@ output$ui_Reactome <- renderUI({
 
 
 
-      conditionalPanel(condition= "input.getlistProfDataID==true",
-                       uiOutput("ui_NodeAttri_ProfData")
+        conditionalPanel(condition= "input.getlistProfDataID==true",
+                         uiOutput("ui_NodeAttri_ProfData")
+        ),
+
+
+        #),
+        #                 )
+        conditionalPanel(condition ="input.getlistProfDataID==true",
+                         uiOutput("ui_Freq_MutSlider"),
+                         uiOutput("ui_MetSliderHM450"),
+                         uiOutput("ui_MetSliderHM27")
+                         #                       div(class="col-xs-6",
+                         #                            numericInput("ThresholdMetHM450ID",
+                         #                                         "HM450",
+                         #                                         "0.8",min = 0.8, max = 1 , step = 0.05)),
+                         #                        div(class="col-xs-6",
+                         #                            numericInput("ThresholdMetHM27ID",
+                         #                                         "HM27",
+                         #                                         "0.8",min = 0.8, max = 1 , step = 0.05))
+        )
       ),
-
-
-      #),
-      #                 )
-      conditionalPanel(condition ="input.getlistProfDataID==true",
-                       uiOutput("ui_Freq_MutSlider"),
-                       uiOutput("ui_MetSliderHM450"),
-                       uiOutput("ui_MetSliderHM27")
-#                       div(class="col-xs-6",
-#                            numericInput("ThresholdMetHM450ID",
-#                                         "HM450",
-#                                         "0.8",min = 0.8, max = 1 , step = 0.05)),
-#                        div(class="col-xs-6",
-#                            numericInput("ThresholdMetHM27ID",
-#                                         "HM27",
-#                                         "0.8",min = 0.8, max = 1 , step = 0.05))
-      )
-      )
       #         conditionalPanel(condition= "input.NodeAttri_ProfDataID=='Met_HM450'",
       #                           uiOutput("ui_MetSliderHM450")
       #         ),
@@ -163,33 +163,29 @@ output$ui_Reactome <- renderUI({
       #conditionalPanel(condition ="input.NodeAttri_ClassID =='All'",
       #                uiOutput("ui_Freq_MutSlider2")
       #),
-
+      div(class="row",
+          div(class="col-xs-4",
+              checkboxInput("ReacRunId", "Plot" ,value = FALSE)),
+          div(class="col-xs-4",
+              checkboxInput("ReacLegendId", "Legend", value=FALSE)
+          )
+      )
 
     ),
 
-    #     radioButtons(inputId = "ClassID2", label = "Processing",
-    #                  c("Samples"="Samples" ,"Classifier" = "Classifier", "Plot"="Plot"),
-    #                  selected = "Samples", inline = TRUE),
-    div(class="row",
-        div(class="col-xs-4",
-            checkboxInput("ReacRunId", "Plot" ,value = FALSE)),
-        div(class="col-xs-4",
-            checkboxInput("ReacLegendId", "Legend", value=FALSE))
+    tagList(
+      h4("Dynamic Network:"),
+      wellPanel(
+        uiOutput("ui_visPhysic"),
+        div(class="row",
+            div(class="col-xs-4",
+                checkboxInput("NetworkRunId", "Plot" ,value = FALSE)),
+            div(class="col-xs-4"
+                #checkboxInput("ReacLegendId", "Legend", value=FALSE)
+            )
+        )
+      )
     ),
-
-tagList(
-  h4("Dynamic Network:"),
-wellPanel(
-  uiOutput("ui_visPhysic")
-
-)
-),
-div(class="row",
-    div(class="col-xs-4",
-        checkboxInput("NetworkRunId", "Plot" ,value = FALSE)),
-    div(class="col-xs-4",
-        checkboxInput("ReacLegendId", "Legend", value=FALSE))
-),
     help_modal_km('Reactome','ReactomeHelp',inclMD(file.path(r_path,"base/tools/help/Reactome.md")))
 
     # with(tags, table(
@@ -227,7 +223,7 @@ output$ReactomeAvailability <- DT::renderDataTable({
                     lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
                   )
     )%>%  DT::formatStyle(names(dat),
-                      color = DT::styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
+                          color = DT::styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
 
 
 

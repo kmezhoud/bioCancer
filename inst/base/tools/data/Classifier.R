@@ -17,6 +17,7 @@ output$list_Cases <- renderUI({
     names(listCases) <- checked_Studies
     listCases <- lapply(listCases, function(x) x[grep("mrna", x)])
     listCases <- listCases[lapply(listCases,length)>0]
+    r_data[['listCases']] <- listCases
     selectizeInput('CasesIDClassifier','Select one Cases by Study', choices = listCases, multiple=TRUE, selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
     #updateSelectizeInput(session, 'CasesIDClassifier', choices = listCases,selected = listCases[1])
   })
@@ -28,11 +29,17 @@ output$list_GenProfs <- renderUI({
     checked_Studies <- input$StudiesIDClassifier
     listGenProfs <- lapply(checked_Studies, function(x)getGeneticProfiles(cgds,x)[,1])
     names(listGenProfs) <- checked_Studies
-    listGenProfs <- lapply(listGenProfs, function(x) x[grep("mrna", x)])
+    listGenProfs <- lapply(listGenProfs, function(x) x[grep("v2", x)])
     listGenProfs <- listGenProfs[lapply(listGenProfs,length)>0]
+    r_data[['listGenProfs']] <- listGenProfs
     selectizeInput('GenProfsIDClassifier', 'Select one Genetic Profile by Study', listGenProfs, multiple = TRUE, selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
   })
 })
+
+
+# output$selection <- renderPrint(
+#   input$mychooser
+# )
 
 TableCases <- reactive({
   withProgress(message = 'loading Sample size...', value = 0.1, {
@@ -124,7 +131,7 @@ output$Plot_enricher <- renderPlot({
     }
     disease2gene=gda[, c("diseaseId", "geneId")]
     disease2name=gda[, c("diseaseId", "diseaseName")]
-    x <- enricher(GeneID, pvalueCutoff = 0.05,TERM2GENE=disease2gene, TERM2NAME=disease2name)
+    x <- clusterProfiler::enricher(GeneID, pvalueCutoff = 0.05,TERM2GENE=disease2gene, TERM2NAME=disease2name)
     r_data[['x']] <- x
     options(scipen = 0, digits = 2)
     barplot(x,drop=TRUE,showCategory=10 ,digits=2)
@@ -145,7 +152,7 @@ output$compareClusterDO <- renderPlot({
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
 
-    if (inherits(try(cdo <- compareCluster(GroupsID, fun="enrichDO"), silent=TRUE),"try-error"))
+    if (inherits(try(cdo <- clusterProfiler::compareCluster(GroupsID, fun="enrichDO"), silent=TRUE),"try-error"))
     {print("No enrichment found in any of gene cluster, please check your input...")
       plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
       text(x = 0.5, y = 0.5, paste("No Disease Onthology enrichment found\n",
@@ -154,7 +161,7 @@ output$compareClusterDO <- renderPlot({
            cex = 1, col = "red")
 
     }else{
-      cdo <- compareCluster(GroupsID, fun="enrichDO")
+      cdo <- clusterProfiler::compareCluster(GroupsID, fun="enrichDO")
       r_data[['cdo']] <- cdo
       plot(cdo)
     }
@@ -176,14 +183,14 @@ output$compareClusterReactome <- renderPlot({
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
 
-    if (inherits(try(cdp <- compareCluster(GroupsID, fun="enrichPathway"), silent=TRUE),"try-error"))
+    if (inherits(try(cdp <- clusterProfiler::compareCluster(GroupsID, fun="enrichPathway"), silent=TRUE),"try-error"))
     { print("No Reactome enrichment found in any of gene cluster, please check your input...")
       text(x = 0.5, y = 0.5, paste("No Reactome Pathway enrichment found\n",
                                    "in any of gene cluster, \n",
                                    "Please check your input..."),
            cex = 1, col = "red")
     }else{
-      cdReactome <- compareCluster(GroupsID, fun="enrichPathway")
+      cdReactome <- clusterProfiler::compareCluster(GroupsID, fun="enrichPathway")
       r_data[['cdReactome']] <- cdReactome
       plot(cdReactome)
     }
@@ -200,11 +207,15 @@ output$compareClusterGO <- renderPlot({
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
-    if (inherits(try(cgo <- compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')),"try-error"))
+    if (inherits(try(cgo <- clusterProfiler::compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')),"try-error"))
     {
-      stop("No GO enrichment found with actual Gene List...")
+      print("No Gene Onthology enrichment found in any of gene cluster, please check your input...")
+      text(x = 0.5, y = 0.5, paste("No Gene Onthology Pathway enrichment found\n",
+                                   "in any of gene cluster, \n",
+                                   "Please check your input..."),
+           cex = 1, col = "red")
     }else{
-      cgo <- compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')
+      cgo <- clusterProfiler::compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')
       r_data[['cgo']] <- cgo
       plot(r_data$cgo)
     }
@@ -222,11 +233,15 @@ output$compareClusterKEGG <- renderPlot({
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
-    if (inherits(try(cgo <- compareCluster(GroupsID, fun="enrichKEGG")),"try-error"))
+    if (inherits(try(cgo <- clusterProfiler::compareCluster(GroupsID, fun="enrichKEGG")),"try-error"))
     {
-      stop("No KEGG enrichment found with actual Gene List...")
+      #print("No KEGG enrichment found in any of gene cluster, please check your input...")
+      text(x = 0.5, y = 0.5, paste("No KEGG Pathway enrichment found\n",
+                                   "in any of gene cluster, \n",
+                                   "Please check your input..."),
+           cex = 1, col = "red")
     }else{
-      ckegg <- compareCluster(GroupsID, fun="enrichKEGG")
+      ckegg <- clusterProfiler::compareCluster(GroupsID, fun="enrichKEGG")
       r_data[['ckegg']] <- ckegg
       plot(ckegg)
     }
@@ -243,11 +258,15 @@ output$compareClusterCC<- renderPlot({
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
-    if (inherits(try(cgo <- compareCluster(GroupsID, fun="groupGO", OrgDb='org.Hs.eg.db')),"try-error"))
+    if (inherits(try(cgo <- clusterProfiler::compareCluster(GroupsID, fun="groupGO", OrgDb='org.Hs.eg.db')),"try-error"))
     {
-      stop("No Cellular Component enrichment found with actual Gene List...")
+      print("No Cellular Component enrichment found in any of gene cluster, please check your input...")
+      text(x = 0.5, y = 0.5, paste("No Cellular Component Pathway enrichment found\n",
+                                   "in any of gene cluster, \n",
+                                   "Please check your input..."),
+           cex = 1, col = "red")
     }else{
-      cCC <- compareCluster(GroupsID, fun="groupGO", OrgDb='org.Hs.eg.db')
+      cCC <- clusterProfiler::compareCluster(GroupsID, fun="groupGO", OrgDb='org.Hs.eg.db')
       r_data[['cCC']] <- cCC
       plot(cCC)
     }

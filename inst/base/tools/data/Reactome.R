@@ -96,7 +96,7 @@ Edges_obj <- function(){
 
     rownames(Edges_obj) <- NULL
 
-    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\->","dir=both,arrowhead = tee,", x)))
+    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\->","dir=both,arrowhead = normal,", x)))
     Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\|\\->","dir=both,arrowtail = tee,", x)))
     Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\-\\|","dir=both,arrowhead = tee,", x)))
     Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("->","dir = forward,", x)))
@@ -348,7 +348,7 @@ Node_obj_FreqIn <- function(GeneList){
 
 }
 
-Node_obj_mRNA_Classifier <- function(GeneList,genesClassdetails){
+Node_obj_mRNA_Classifier <- function(GeneList,genesclassdetails){
   if(is.null(genesclassdetails)){
     msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
     stop(msgNoClassifier)
