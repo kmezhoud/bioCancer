@@ -14,7 +14,7 @@
 #' @importFrom RCurl basicTextGatherer
 #' @importFrom XML xmlInternalTreeParse
 #' @importFrom visNetwork renderVisNetwork visNetwork visNodes visEdges visOptions
-#' @importFrom visNetwork visHierarchicalLayout visExport visLegend visPhysics visNetworkOutput
+#' @importFrom visNetwork visHierarchicalLayout visExport visLegend visPhysics visNetworkOutput visExport
 #'
 #'
 Edges_df <- function(){

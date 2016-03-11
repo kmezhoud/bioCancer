@@ -363,7 +363,7 @@ output$network <- visNetwork::renderVisNetwork({
     visNetwork::visNodes(graph = graphe, scaling = list(label = list(enabled = TRUE)))#%>%
     visNetwork::visNodes(graph = graphe, color = list(label = list(enabled = TRUE)))#%>%
     #visEdges(scaling = list(label = list(enabled = TRUE)))%>%
-    visNetwork::visOptions(graph= graphe, manipulation = TRUE,
+    graphe <- visNetwork::visOptions(graph= graphe, manipulation = TRUE,
                            #selectedBy = "group",
                            highlightNearest = TRUE )#%>%
     # visNetwork::visHierarchicalLayout(graph = graphe,enabled =  as.logical(input$enableHierarchiId),
