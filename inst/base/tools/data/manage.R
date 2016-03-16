@@ -1,5 +1,5 @@
 descr_out <- function(descr, ret_type = 'html') {
-   ## if there is no data description
+  ## if there is no data description
   if (descr %>% is_empty) return("")
 
   ## if there is a data description and we want html output
@@ -18,14 +18,14 @@ upload_error_handler <- function(objname, ret) {
 loadClipboardData <- function(objname = "copy_and_paste", ret = "", header = TRUE, sep = "\t") {
 
   dat <- sshhr(try(
-         {if (Sys.info()["sysname"] == "Windows") {
-            read.table("clipboard", header = header, sep = sep, comment.char = "", fill = TRUE,  as.is = TRUE)
-          } else if (Sys.info()["sysname"] == "Darwin") {
-            read.table(pipe("pbpaste"), header = header, sep = sep, comment.char = "", fill = TRUE,  as.is = TRUE)
-          } else {
-            if (!is_empty(input$load_cdata))
-              read.table(text = input$load_cdata, header = header, sep = sep, comment.char = "", fill = TRUE,  as.is = TRUE)
-          }} %>% as.data.frame(check.names = FALSE), silent = TRUE))
+    {if (Sys.info()["sysname"] == "Windows") {
+      read.table("clipboard", header = header, sep = sep, comment.char = "", fill = TRUE,  as.is = TRUE)
+    } else if (Sys.info()["sysname"] == "Darwin") {
+      read.table(pipe("pbpaste"), header = header, sep = sep, comment.char = "", fill = TRUE,  as.is = TRUE)
+    } else {
+      if (!is_empty(input$load_cdata))
+        read.table(text = input$load_cdata, header = header, sep = sep, comment.char = "", fill = TRUE,  as.is = TRUE)
+    }} %>% as.data.frame(check.names = FALSE), silent = TRUE))
 
   if (is(dat, 'try-error') || nrow(dat) == 0) {
     if (ret == "") ret <- c("### Data in clipboard was not well formatted. Try exporting the data to csv format.")
@@ -53,12 +53,12 @@ saveClipboardData <- function() {
 factorizer <- function(dat) {
   isChar <- sapply(dat,is.character)
   if (sum(isChar) == 0) return(dat)
-    toFct <-
-      dplyr::select(dat, which(isChar)) %>%
-      summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < .1)) %>%
-      dplyr::select(which(. == TRUE)) %>% names
-    # summarise_each(funs(n_distinct)) %>%
-    # dplyr::select(which(. < 100 & ((. / nrow(dat)) < .1))) %>% names
+  toFct <-
+    dplyr::select(dat, which(isChar)) %>%
+    summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < .1)) %>%
+    dplyr::select(which(. == TRUE)) %>% names
+  # summarise_each(funs(n_distinct)) %>%
+  # dplyr::select(which(. < 100 & ((. / nrow(dat)) < .1))) %>% names
   if (length(toFct) == 0) return(dat)
   mutate_each_(dat, funs(as.factor), vars = toFct)
 }
@@ -69,13 +69,13 @@ loadInDatasets <- function(fname, header= TRUE){
   objname <- fname
   if(fname=="ProfData"){
     GeneList <- whichGeneList()
-  dat <- as.data.frame(getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
-  r_data[[objname]] <- dat %>% add_rownames("Patients")
+    dat <- as.data.frame(getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
+    r_data[[objname]] <- dat %>% add_rownames("Patients")
 
 
   }else if (fname=="ClinicalData"){
     dat <- as.data.frame(getClinicalData(cgds, input$CasesID))
-  r_data[[objname]] <- dat %>% add_rownames("Patients")
+    r_data[[objname]] <- dat %>% add_rownames("Patients")
 
   }else if (fname=="MutData"){
     GeneList <- whichGeneList()
@@ -94,7 +94,6 @@ loadInDatasets <- function(fname, header= TRUE){
     dat <- plyr::ldply(r_data$ListProfData$Met_HM27)
     r_data[[objname]] <- dat
   }else if (fname=="xMut"){
-
     dat <- plyr::ldply(r_data$ListMutData)
     r_data[[objname]] <- dat
   } else if(fname== "xFreqMut"){
@@ -241,6 +240,6 @@ loadUserData <- function(fname, uFile, ext,
     r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
 
 
-  #r_data[['datasetlist']] <- c(objname, r_data[['datasetlist']]) %>% unique
-}
+    #r_data[['datasetlist']] <- c(objname, r_data[['datasetlist']]) %>% unique
+  }
 }

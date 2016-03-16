@@ -101,6 +101,93 @@ reStrDimension <- function(LIST){
   return(Parent)
 }
 
+observe({
+  if(not_pressed(input$loadListProfDataCircosId)) return()
+  isolate({
+    withProgress(message = 'loading Profiles Data... ', value = 0.1, {
+      Sys.sleep(0.25)
+      getListProfData(panel='Circomics')
+    })
+  })
+})
+
+
+observe({
+  if (not_pressed(input$pullUserDataButtonId)) return()
+  isolate({
+    if(input$UserDataCNAID){
+ r_data$ListProfData$CNA[['UserData']] <- r_data[[input$UserData_CNA_id]]
+    }
+    if(input$UserDatamRNAID){
+ r_data$ListProfData$Expression[['UserData']] <- r_data[[input$UserData_mRNA_id]]
+    }
+    if(input$UserDataMet27ID){
+      r_data$ListProfData$Met_HM27[['UserData']] <- r_data[[input$UserData_MetHM27_id]]
+      r_data$ListMetData$HM27[['UserData']] <- r_data[[input$UserData_MetHM27_id]]
+    }
+    if(input$UserDataMet450ID){
+      r_data$ListProfData$Met_HM450[['UserData']] <- r_data[[input$UserData_MetHM450_id]]
+      r_data$ListMetData$HM450[['UserData']] <- r_data[[input$UserData_MetHM450_id]]
+    }
+    if(input$UserDatamiRNAID){
+      r_data$ListProfData$miRNA[['UserData']] <- r_data[[input$UserData_miRNA_id]]
+    }
+    if(input$UserDataRPPAID){
+      r_data$ListProfData$RPPA[['UserData']] <- r_data[[input$UserData_RPPA_id]]
+    }
+    if(input$UserDataFreqMutID){
+      r_data$ListMutData[['UserData']] <- r_data[[input$UserData_FreqMut_id]]
+    }
+  })
+})
+
+observe({
+  if (not_pressed(input$UnpullUserDataButtonId)) return()
+  isolate({
+    r_data$ListProfData$CNA[['UserData']] <- NULL
+    r_data$ListProfData$Expression[['UserData']] <- NULL
+     r_data$ListProfData$Met_HM27[['UserData']] <- NULL
+     r_data$ListMetData$HM27[['UserData']] <- NULL
+     r_data$ListProfData$Met_HM450[['UserData']] <- NULL
+     r_data$ListMetData$HM450[['UserData']] <- NULL
+     r_data$ListProfData$miRNA[['UserData']] <- NULL
+     r_data$ListProfData$RPPA[['UserData']] <- NULL
+    r_data$ListMutData[['UserData']] <- NULL
+  })
+})
+
+
+output$StrProfData <- renderPrint({
+
+                   r_data$ListProfData$CNA[['UserData']] <- r_data[[input$UserData_CNA_id]]
+                   #cat("PROFILES DATA:\n",str(r_data$ListProfData$CNA),sep = " " )
+
+})
+
+output$CNATable <- DT::renderDataTable({
+  #r_data$ListProfData$CNA[['UserData']] <- r_data[[input$UserData_CNA_id]]
+
+  dat <- r_data[[input$UserData_CNA_id]]
+  # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
+  action = DT::dataTableAjax(session, dat, rownames = FALSE)
+
+  #DT::datatable(dat, filter = "top", rownames =FALSE, server = TRUE,
+  DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
+                rownames = FALSE, style = "bootstrap", escape = FALSE,
+                # class = "compact",
+                options = list(
+                  ajax = list(url = action),
+                  search = list(search = "",regex = TRUE),
+                  columnDefs = list(list(className = 'dt-center', targets = "_all")),
+                  autoWidth = FALSE,
+                  processing = FALSE,
+                  pageLength = 10,
+                  lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
+                )
+  )
+
+})
+
 
 ## get Wheel for Profiles Data
 output$getCoffeeWheel_All <- renderCoffeewheel({
@@ -283,14 +370,14 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
 SaveMetabologram_CNA <- reactive({
   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData$CNA)
   title<- paste("Copy Number Alateration")
-  metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+  bioCancer::metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
 
 })
 
 SaveMetabologram_Met <- reactive({
   CoffeewheelTreeProfData <- reStrDimension(r_data$ListMetData)
   title<- paste("DNA Methylation")
-  metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
+  bioCancer::metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
 
 })
 

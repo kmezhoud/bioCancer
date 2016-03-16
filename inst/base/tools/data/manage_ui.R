@@ -48,10 +48,10 @@ output$ui_clipboard_save <- renderUI({
     tagList(
       "<label>Add data description:</label><br>" %>% HTML,
       tags$textarea(class="form-control", id="save_cdata",
-        rows="5",
-        capture.output(write.table(.getdata(), file = "", row.names = FALSE,
-                       sep = "\t")) %>%
-          paste(collapse = "\n"))
+                    rows="5",
+                    capture.output(write.table(.getdata(), file = "", row.names = FALSE,
+                                               sep = "\t")) %>%
+                      paste(collapse = "\n"))
     )
   }
 })
@@ -60,56 +60,56 @@ output$ui_Manage <- renderUI({
   tagList(
     wellPanel(
       selectInput("dataType", label = "Load data of type:",
-        c("rda" = "rda", "rds" = "rds", "state" = "state", "csv" = "csv",
-          "clipboard" = "clipboard","examples" = "examples",
-          "rda (url)" = "url_rda", "csv (url)" = "url_csv"),
-        selected = "rda"),
+                  c("rda" = "rda", "rds" = "rds", "state" = "state", "csv" = "csv",
+                    "clipboard" = "clipboard","examples" = "examples",
+                    "rda (url)" = "url_rda", "csv (url)" = "url_csv"),
+                  selected = "rda"),
       conditionalPanel(condition = "input.dataType != 'clipboard' &&
                                     input.dataType != 'examples'",
-        conditionalPanel("input.dataType == 'csv' | input.dataType == 'url_csv'",
-          with(tags, table(td(checkboxInput('man_header', 'Header', TRUE)),
-            td(HTML("&nbsp;&nbsp;")),
-            td(checkboxInput('man_str_as_factor', 'Str. as Factor', FALSE)))),
-          radioButtons('man_sep', "Separator:", c(Comma=',', Semicolon=';', Tab='\t'),
-                       ',', inline = TRUE),
-          radioButtons('man_dec', "Decimal:", c(Period='.', Comma=','),
-                       '.', inline = TRUE)
-        ),
-        uiOutput("ui_fileUploadManage")
+                       conditionalPanel("input.dataType == 'csv' | input.dataType == 'url_csv'",
+                                        with(tags, table(td(checkboxInput('man_header', 'Header', TRUE)),
+                                                         td(HTML("&nbsp;&nbsp;")),
+                                                         td(checkboxInput('man_str_as_factor', 'Str. as Factor', FALSE)))),
+                                        radioButtons('man_sep', "Separator:", c(Comma=',', Semicolon=';', Tab='\t'),
+                                                     ',', inline = TRUE),
+                                        radioButtons('man_dec', "Decimal:", c(Period='.', Comma=','),
+                                                     '.', inline = TRUE)
+                       ),
+                       uiOutput("ui_fileUploadManage")
       ),
       conditionalPanel(condition = "input.dataType == 'clipboard'",
-        uiOutput("ui_clipboard_load")
+                       uiOutput("ui_clipboard_load")
       ),
       conditionalPanel(condition = "input.dataType == 'examples'",
-        actionButton('loadExampleData', 'Load examples')
+                       actionButton('loadExampleData', 'Load examples')
       ),
       conditionalPanel(condition = "input.dataType == 'state'",
-        fileInput('uploadState', 'Load previous app state:',  accept = ".rda"),
-        uiOutput("refreshOnUpload")
+                       fileInput('uploadState', 'Load previous app state:',  accept = ".rda"),
+                       uiOutput("refreshOnUpload")
       )
     ),
     wellPanel(
       selectInput("saveAs", label = "Save data:",
-                   c("rda" = "rda", "rds" = "rds", "csv" = "csv",
-                     "clipboard" = "clipboard", "state" = "state"),
-                   selected = "rda"),
+                  c("rda" = "rda", "rds" = "rds", "csv" = "csv",
+                    "clipboard" = "clipboard", "state" = "state"),
+                  selected = "rda"),
       conditionalPanel(condition = "input.saveAs == 'clipboard'",
-        uiOutput("ui_clipboard_save")
+                       uiOutput("ui_clipboard_save")
       ),
       conditionalPanel(condition = "input.saveAs != 'clipboard' &&
                                     input.saveAs != 'state'",
-        downloadButton('downloadData', 'Save')
+                       downloadButton('downloadData', 'Save')
       ),
       conditionalPanel(condition = "input.saveAs == 'state'",
-        HTML("<label>Save current app state:</label><br/>"),
-        downloadButton('saveState', 'Save')
+                       HTML("<label>Save current app state:</label><br/>"),
+                       downloadButton('saveState', 'Save')
       )
     ),
     wellPanel(
       checkboxInput('man_show_remove', 'Remove data from memory', FALSE),
       conditionalPanel(condition = "input.man_show_remove == true",
-        uiOutput("uiRemoveDataset"),
-        actionButton('removeDataButton', 'Remove data')
+                       uiOutput("uiRemoveDataset"),
+                       actionButton('removeDataButton', 'Remove data')
       )
     ),
     help_modal('Manage','manageHelp',inclMD(file.path(r_path,"base/tools/help/manage.md")))
@@ -141,11 +141,33 @@ output$dataDescriptionMD <- renderUI({
   )
 })
 
+
+#
+# observeEvent(input$upLoadProfDataButton, {
+#   isolate({
+#     if(is.null(input$uploadProfDataID)) return()
+#     datasets <- r_data[['datasetlist']]
+#     if (length(datasets) > 1) {  # have to leave at least one dataset
+#       upLoadProfData <- input$uploadProfDataID
+#       updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies[,1], selected = c(input$StudiesIDCircos,input$uploadProfDataID))
+#       #r_data[['ListProfData']] <- r_data$datasetlist
+#       if (length(datasets) == length(upLoadProfData))
+#         upLoadProfData <- upLoadProfData[-1]
+#       # Must use single string to index into reactivevalues so loop is necessary
+#       for (rem in upLoadProfData) {
+#         r_data[[rem]] <- NULL
+#         r_data[[paste0(rem,"_descr")]] <- NULL
+#       }
+#       r_data[['datasetlist']] <- datasets[-which(datasets %in% upLoadProfData)]
+#     }
+#   })
+# })
+
 # removing datasets
 output$uiRemoveDataset <- renderUI({
   selectInput(inputId = "removeDataset", label = NULL,
-    choices = r_data$datasetlist, selected = NULL, multiple = TRUE,
-    size = length(r_data$datasetlist), selectize = FALSE
+              choices = r_data$datasetlist, selected = NULL, multiple = TRUE,
+              size = length(r_data$datasetlist), selectize = FALSE
   )
 })
 
@@ -220,16 +242,16 @@ observeEvent(input$uploadfile, {
   isolate({
     inFile <- input$uploadfile
     if (is.null(inFile)) return()
-      # iterating through the files to upload
-      for (i in 1:(dim(inFile)[1]))
-        loadUserData(inFile[i,'name'], inFile[i,'datapath'], input$dataType,
-                     header = input$man_header,
-                     man_str_as_factor = input$man_str_as_factor,
-                     sep = input$man_sep, dec = input$man_dec)
+    # iterating through the files to upload
+    for (i in 1:(dim(inFile)[1]))
+      loadUserData(inFile[i,'name'], inFile[i,'datapath'], input$dataType,
+                   header = input$man_header,
+                   man_str_as_factor = input$man_str_as_factor,
+                   sep = input$man_sep, dec = input$man_dec)
 
-      updateSelectInput(session, "dataset", label = "Datasets:",
-                        choices = r_data$datasetlist,
-                        selected = r_data$datasetlist[1])
+    updateSelectInput(session, "dataset", label = "Datasets:",
+                      choices = r_data$datasetlist,
+                      selected = r_data$datasetlist[1])
   })
 })
 
@@ -277,8 +299,8 @@ observeEvent(input$url_csv_load, {
     } else {
 
       dat <- try(read.table(con, header = input$man_header, comment.char = "",
-                 quote = "\"", fill = TRUE, stringsAsFactors = input$man_str_as_factor,
-                 sep = input$man_sep, dec = input$man_dec), silent = TRUE)
+                            quote = "\"", fill = TRUE, stringsAsFactors = input$man_str_as_factor,
+                            sep = input$man_sep, dec = input$man_dec), silent = TRUE)
 
       if (is(dat, 'try-error')) {
         upload_error_handler(objname, "### There was an error loading the csv file from the provided url.")
@@ -413,18 +435,18 @@ output$ui_datasets <- renderUI({
   ## Drop-down selection of active dataset
   tagList(
     selectInput(inputId = "dataset", label = "Datasets:", choices = r_data$datasetlist,
-      selected = state_init("dataset"), multiple = FALSE),
+                selected = state_init("dataset"), multiple = FALSE),
 
     conditionalPanel(condition = "input.tabs_Handle == 'Manage'",
 
-      checkboxInput("man_add_descr","Add/edit data description", FALSE),
-      conditionalPanel(condition = "input.man_add_descr == true",
-        actionButton('updateDescr', 'Update description')
-      ),
-      checkboxInput("man_rename_data","Rename data", FALSE),
-      conditionalPanel(condition = "input.man_rename_data == true",
-        uiOutput("uiRename")
-      )
+                     checkboxInput("man_add_descr","Add/edit data description", FALSE),
+                     conditionalPanel(condition = "input.man_add_descr == true",
+                                      actionButton('updateDescr', 'Update description')
+                     ),
+                     checkboxInput("man_rename_data","Rename data", FALSE),
+                     conditionalPanel(condition = "input.man_rename_data == true",
+                                      uiOutput("uiRename")
+                     )
     )
   )
 })
@@ -442,7 +464,7 @@ output$htmlDataExample <- renderText({
 
   ## Show only the first 10 (or 20) rows
   r_data[[paste0(input$dataset,"_descr")]] %>%
-    { is_empty(.) %>% ifelse (., 20, 10) } %>%
+  { is_empty(.) %>% ifelse (., 20, 10) } %>%
     show_data_snippet(nshow = .)
 })
 
@@ -452,8 +474,8 @@ output$htmlDataExample <- renderText({
 
 ## get Gene List in side bar panel
 #updateSelectizeInput(session, 'GeneListID', choices= names(GeneLists))
-output$ui_GeneList <- renderUI({
-  selectInput("GeneListID", "Gene List Examples", r_data$genelist)
-})
+# output$ui_GeneList <- renderUI({
+#   selectInput("GeneListID", "Gene List Examples", r_data$genelist)
+# })
 
 ##################

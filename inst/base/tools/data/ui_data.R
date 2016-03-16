@@ -69,12 +69,12 @@ output$ui_data <- renderUI({
                                           uiOutput("ui_Network")
                          )),
 
-         conditionalPanel("input.tabs_data== 'Handle'",
-#
-#                          conditionalPanel("input.tabs_Handle=='Manage'",
-#                                           uiOutput("Welcome")
-#
-#                          ),
+        conditionalPanel("input.tabs_data== 'Handle'",
+                         #
+                         #                          conditionalPanel("input.tabs_Handle=='Manage'",
+                         #                                           uiOutput("Welcome")
+                         #
+                         #                          ),
 
 
                          uiOutput("ui_datasets"),
@@ -146,9 +146,9 @@ output$Enrich <- renderUI({
   tabsetPanel(id = "tabs_Enrich",
 
               tabPanel("Circomics",
-#                        if('CNA' %in% input$CircosDimensionID ){
-#                          plot_downloader("SaveMetabologram_CNA", pre = "")
-#                        },
+                       #                        if('CNA' %in% input$CircosDimensionID ){
+                       #                          plot_downloader("SaveMetabologram_CNA", pre = "")
+                       #                        },
                        if('CNA' %in% input$CircosDimensionID ){
                          coffeewheelOutput('getCoffeeWheel_CNA', width = 600, height = 600)
                        },
@@ -159,31 +159,31 @@ output$Enrich <- renderUI({
                          #  h3("Correlation of silencing gene by Methylation: (0:1)")
                          coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
                        },
-#                        if('mRNA' %in% input$CircosDimensionID ){
-#                          plot_downloader("SaveMetabologram_mRNA", pre = "")
-#                        },
+                       #                        if('mRNA' %in% input$CircosDimensionID ){
+                       #                          plot_downloader("SaveMetabologram_mRNA", pre = "")
+                       #                        },
                        if('mRNA' %in% input$CircosDimensionID ){
                          # h3("Gene Expression")
                          coffeewheelOutput('getCoffeeWheel_mRNA', width = 600, height = 600)
                        },
-#                        if('Mutation' %in% input$CircosDimensionID ){
-#                          plot_downloader("SaveMetabologram_Mut", pre = "")
-#                        },
+                       #                        if('Mutation' %in% input$CircosDimensionID ){
+                       #                          plot_downloader("SaveMetabologram_Mut", pre = "")
+                       #                        },
                        if('Mutation' %in% input$CircosDimensionID ){
                          # h3("Mutation Frequency: (Min,Max)")
                          coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
                        },
-#                        if('miRNA' %in% input$CircosDimensionID ){
-#                          plot_downloader("SaveMetabologram_miRNA", pre = "")
-#                        },
+                       #                        if('miRNA' %in% input$CircosDimensionID ){
+                       #                          plot_downloader("SaveMetabologram_miRNA", pre = "")
+                       #                        },
 
                        if('miRNA' %in% input$CircosDimensionID ){
                          #h3("Protein phosphorylation:")
                          coffeewheelOutput('getCoffeeWheel_miRNA', width = 600, height = 600)
                        },
-#                        if('RPPA' %in% input$CircosDimensionID ){
-#                          plot_downloader("SaveMetabologram_RPPA", pre = "")
-#                        },
+                       #                        if('RPPA' %in% input$CircosDimensionID ){
+                       #                          plot_downloader("SaveMetabologram_RPPA", pre = "")
+                       #                        },
 
                        if('RPPA' %in% input$CircosDimensionID ){
                          #h3("Protein phosphorylation:")
@@ -261,10 +261,10 @@ output$Enrich <- renderUI({
                                           )
                                         )
 
-                                       # chooserInput("mychooser", "Available frobs", "Selected frobs",
-                                       #              row.names(USArrests), c(), size = 10, multiple = TRUE
-                                       # ),
-                                       #  verbatimTextOutput("selection")
+                                        # chooserInput("mychooser", "Available frobs", "Selected frobs",
+                                        #              row.names(USArrests), c(), size = 10, multiple = TRUE
+                                        # ),
+                                        #  verbatimTextOutput("selection")
                                         # textOutput("PrintCases")
 
 
@@ -306,7 +306,7 @@ output$Enrich <- renderUI({
                                                          plot_downloader("compareClusterCC", pre=""),
                                                          plotOutput("compareClusterCC")
                                         )
-                                        )
+                       )
                        #)
               ),
               tabPanel("Reactome",
@@ -314,24 +314,24 @@ output$Enrich <- renderUI({
                                         verbatimTextOutput("ReactomeHowto")
                        ),
                        conditionalPanel(condition = "input.ReacRunId== true",
-                                         #plot_downloader("ld_diagrammeR_plot", pre=""),
-                                         downloadButton('Save_diagrammeR_plot', 'HTML'),
-                                         #actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
-                                         grVizOutput('diagrammeR'),
-                                         conditionalPanel(condition= "input.TypeGeneSetID == 'Pathway'||
+                                        #plot_downloader("ld_diagrammeR_plot", pre=""),
+                                        downloadButton('Save_diagrammeR_plot', 'HTML'),
+                                        #actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
+                                        grVizOutput('diagrammeR'),
+                                        conditionalPanel(condition= "input.TypeGeneSetID == 'Pathway'||
                                                     input.TypeGeneSetID == 'BP'||
                                                     input.TypeGeneSetID == 'CC'||
                                                     input.TypeGeneSetID == 'MF'",
-                                                          #tableOutput("GeneSetLegend")
-                                                          downloadLink("dl_GeneSet_Legend", "", class = "fa fa-download alignright"),
-                                                          DT::dataTableOutput("GeneSet_Legend")
-                                         )
+                                                         #tableOutput("GeneSetLegend")
+                                                         downloadLink("dl_GeneSet_Legend", "", class = "fa fa-download alignright"),
+                                                         DT::dataTableOutput("GeneSet_Legend")
+                                        )
 
 
-                                         #                         conditionalPanel(condition= "input.NodeAttri_ReactomeID == 'FreqInt./GeneSet'",
-                                         #                                          #tableOutput("GeneSetLegend")
-                                         #                                          DT::dataTableOutput("GeneSet_Legend")
-                                         #                         )
+                                        #                         conditionalPanel(condition= "input.NodeAttri_ReactomeID == 'FreqInt./GeneSet'",
+                                        #                                          #tableOutput("GeneSetLegend")
+                                        #                                          DT::dataTableOutput("GeneSet_Legend")
+                                        #                         )
 
                        ),
                        conditionalPanel(condition= "input.ReacLegendId == true",
@@ -365,11 +365,11 @@ output$Enrich <- renderUI({
 
 
               )
-# tabPanel("Network",
-#          conditionalPanel( condition = "input.NetworkRunId== true",
-#          visNetworkOutput("network",height = "600px")
-#          )
-# )
+              # tabPanel("Network",
+              #          conditionalPanel( condition = "input.NetworkRunId== true",
+              #          visNetworkOutput("network",height = "600px")
+              #          )
+              # )
 
   )
 

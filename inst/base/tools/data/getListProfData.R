@@ -125,9 +125,11 @@ getListProfData <- function(panel){
   ## ger Genetics Profiles for selected Studies
   GenProfsRefStudies <- unname(unlist(apply(as.data.frame(checked_Studies), 1,function(x) getGeneticProfiles(cgds,x)[1])))
 
+
   LengthGenProfs <- 0
   LengthCases <- 0
   ListProfData <- NULL
+  r_data$ListProfData <- NULL #reinit tree for circomics
   ListMetData <- NULL
   ListMutData <- NULL
   for (s in 1: Lchecked_Studies){

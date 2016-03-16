@@ -8,7 +8,6 @@ FIRST RELEASE
 
 
 PERSPECTIVE
-    o visNetwork
     o use DisGeNet server despite /extdata/disGeNet file
     o clusterProfiler GMT file:
     http://www.r-bloggers.com/go-analysis-using-clusterprofiler/

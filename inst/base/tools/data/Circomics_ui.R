@@ -10,6 +10,76 @@ output$LegendCircos <- renderPlot({
 })
 
 
+## Pull User profile data with profiles of Studies
+
+
+# pull user data to r_data$ListProfData
+output$uiPullUserDataCNA <- renderUI({
+  selectInput(inputId = "UserData_CNA_id", label='CNA:',
+              choices=  r_data$datasetlist, selected= "", multiple=FALSE,
+              selectize = FALSE
+  )
+})
+output$uiPullUserDatamRNA <- renderUI({
+  selectInput(inputId = "UserData_mRNA_id", label='mRNA:',
+              choices=  r_data$datasetlist, selected= "", multiple=FALSE,
+              selectize = FALSE
+  )
+})
+output$uiPullUserDataMetHM27 <- renderUI({
+  selectInput(inputId = "UserData_MetHM27_id", label='Methylation HM27',
+              choices= r_data$datasetlist, selected= NULL, multiple=FALSE,
+              selectize = FALSE
+  )
+})
+output$uiPullUserDataMetHM450 <- renderUI({
+  selectInput(inputId = "UserData_MetHM450_id", label='Methylation HM450',
+              choices= r_data$datasetlist, selected= NULL, multiple=FALSE,
+              selectize = FALSE
+  )
+})
+output$uiPullUserDataFreqMut <- renderUI({
+  selectInput(inputId = "UserData_FreqMut_id", label='Mutation Frequency',
+              choices= r_data$datasetlist, selected= NULL, multiple=FALSE,
+              selectize = FALSE
+  )
+})
+output$uiPullUserDatamiRNA <- renderUI({
+  selectInput(inputId = "UserData_miRNA_id", label='miRNA',
+              choices= r_data$datasetlist, selected= NULL, multiple=FALSE,
+              selectize = FALSE
+  )
+})
+output$uiPullUserDataRPPA <- renderUI({
+  selectInput(inputId = "UserData_RPPA_id", label='RPPA',
+              choices= r_data$datasetlist, selected= NULL, multiple=FALSE,
+              selectize = FALSE
+  )
+})
+
+
+
+output$ui_CircosDimension <- renderUI({
+
+  Dimension <- c("CNA","Methylation", "mRNA","Mutation","miRNA","RPPA", "All" )
+  selectizeInput("CircosDimensionID", label= "Select Dimension:", choices= Dimension,
+                 selected= "", multiple=TRUE)
+})
+
+output$StrListProfDataCircos <- renderPrint({
+  #   if(is.null(input$getlistProfDataID)){
+  #     return()
+  #   }else{
+  withProgress(message = 'loading Profiles Data... ', value = 0.1, {
+    Sys.sleep(0.25)
+    getListProfData(panel='Circomics')
+  })
+  #cat("STUDIES:\n", names(r_data$ListMutData), "\n")
+  #cat("PROFILES DATA:\n",str(r_data$ListProfData) ,"and Mutation", sep = " " )
+  #str(r_data$ListProfData)
+  #str(r_data$ListMutData)
+  #}
+})
 
 output$ui_Circomics <- renderUI({
 
@@ -17,62 +87,106 @@ output$ui_Circomics <- renderUI({
   updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies[,1], selected = c("luad_tcga_pub","blca_tcga_pub"))
   #,"prad_tcga_pub","ucec_tcga_pub"
 
-  output$ui_CircosDimension <- renderUI({
-
-    Dimension <- c("CNA","Methylation", "mRNA","Mutation","miRNA","RPPA", "All" )
-    selectizeInput("CircosDimensionID", label= "Select Dimension:", choices= Dimension,
-                   selected= "", multiple=TRUE)
-  })
-
-#   output$ui_SaveCircos <- renderUI({
-#     Dimension <- c("","CNA","Methylation", "mRNA","Mutation","miRNA","RPPA", "All" )
-#     selectizeInput("SaveCircosID", label= "Save Dimension:", choices= Dimension,
-#                    selected= "", multiple=FALSE)
-#
-#   })
-#
-#   if('All' %in% input$SaveCircosID ){
-#
-#     metabologramOutput('metabologram_All')
-#
-#   }
-
-  output$StrListProfDataCircos <- renderPrint({
-    #   if(is.null(input$getlistProfDataID)){
-    #     return()
-    #   }else{
-    withProgress(message = 'loading Profiles Data... ', value = 0.1, {
-      Sys.sleep(0.25)
-      getListProfData(panel='Circomics')
-    })
-    cat("STUDIES:\n", names(r_data$ListMutData), "\n")
-    cat("PROFILES DATA:\n",names(r_data$ListProfData) ,"and Mutation", sep = " " )
-    #str(r_data$ListProfData)
-    #str(r_data$ListMutData)
-    #}
-  })
-
   conditionalPanel("input.tabs_Enrich == 'Circomics'",
+                   wellPanel(
+                     selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=NULL, multiple = TRUE),
 
-                   selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=NULL, multiple = TRUE),
-                   div(class="row",
-                       div(class="col-xs-6",
-                           checkboxInput("ViewProfDataCircosID", "Availability", value = FALSE)),
-                       div(class="col-xs-6",
-                           checkboxInput("getlistProfDataCircosID", "Load", value = FALSE))
+                     div(class="row",
+                         div(class="col-xs-4",
+                             checkboxInput("ViewProfDataCircosID", "Availability", value = FALSE)),
+                         div(class="col-xs-8",
+                             conditionalPanel(condition = "input.pullUserDataButtonId==true",
+                                              p("+ User data",align="center",style = "color:blue")
+                             )
+                         )
+                     ),
+                     div(class="row",
+                         #div(class="col-xs-3",
+                         #   checkboxInput("getlistProfDataCircosID", "Load", value = FALSE)),
+                         div(class="col-xs-3",
+                             actionButton('loadListProfDataCircosId', 'Load')),
+                         div(class="col-xs-8",
+                             conditionalPanel(condition= 'input.loadListProfDataCircosId',
+                                              actionButton('pushListProfData', 'Push to Handle Panel', style="float:center")
+                             ))
+
+                     )),
+
+                   wellPanel(
+                     h4("Pull from Handle Panel:"),
+                     div(class="row",
+                         div(class="col-xs-3",
+                             checkboxInput('UserDataCNAID', 'CNA', FALSE)),
+                         div(class="col-xs-3",
+                             checkboxInput('UserDatamRNAID', 'mRNA', FALSE)),
+                         div(class="col-xs-2",
+                             checkboxInput('UserDataFreqMutID', 'Mut', FALSE)),
+
+                         div(class="col-xs-2",
+                             checkboxInput('UserDataMet27ID', 'Met27', FALSE))
+                     ),
+                     div(class="row",
+                         div(class="col-xs-4",
+                             checkboxInput('UserDataMet450ID', 'Met450', FALSE)),
+                         div(class="col-xs-4",
+                             checkboxInput('UserDatamiRNAID', 'miRNA', FALSE)),
+                         div(class="col-xs-4",
+                             checkboxInput('UserDataRPPAID', 'RPPA', FALSE))
+                     ),
+
+                     conditionalPanel(condition="input.UserDataCNAID==true",
+                                      uiOutput("uiPullUserDataCNA")
+
+                     ),
+                     conditionalPanel(condition="input.UserDatamRNAID==true",
+                                      uiOutput("uiPullUserDatamRNA")
+                     ),
+                     conditionalPanel(condition="input.UserDataMet27ID==true",
+                                      uiOutput("uiPullUserDataMetHM27")
+                     ),
+                     conditionalPanel(condition="input.UserDataMet450ID==true",
+                                      uiOutput("uiPullUserDataMetHM450")
+                     ),
+                     conditionalPanel(condition="input.UserDataFreqMutID==true",
+                                      uiOutput("uiPullUserDataFreqMut")
+                     ),
+                     conditionalPanel(condition="input.UserDatamiRNAID==true",
+                                      uiOutput("uiPullUserDatamiRNA")
+                     ),
+
+                     conditionalPanel(condition="input.UserDataRPPAID==true",
+                                      uiOutput("uiPullUserDataRPPA")
+                     ),
+                     # if(input$UserDataCNAID ||
+                     #   input$UserDatamRNAID ||
+                     #   input$UserDataMetHM27ID ||
+                     #   input$UserDataMetHM450ID ||
+                     #   input.UserDataFreqMutID ||
+                     #   input.UserDatamiRNAID||
+                     #  input$UserDataRPPAID){
+                                      div(class="row",
+                                          div(class="col-xs-6",
+                                              actionButton('pullUserDataButtonId', 'Pull to wheel')),
+                                          div(class="col-xs-6",
+                                              #checkboxInput("getlistProfDataCircosID", "Load", value = FALSE))
+                                              actionButton('UnpullUserDataButtonId', 'Remove')
+                                          )
+                                          #checkboxInput('confirmPullUserDataID', 'Confirm Pull', FALSE)
+                                      )
+                    # }
                    ),
 
-                   conditionalPanel("input.getlistProfDataCircosID==true",
-                                    actionButton('loadListProfData', 'Load Profiles to Handle Panel', style="float:center"),
+
+                   conditionalPanel(condition= 'input.loadListProfDataCircosId',
                                     uiOutput("ui_CircosDimension")
                                     #uiOutput("ui_SaveCircos")
                    ),
 
-#                    conditionalPanel("input.CircosDimensionID == 'All'",
-#                                     #plot_downloader("SaveMetabologram_All", pre = ""),
-#                                     downloadButton('Save_Metabologram_All', 'All')
-#
-#                    ),
+                   #                    conditionalPanel("input.CircosDimensionID == 'All'",
+                   #                                     #plot_downloader("SaveMetabologram_All", pre = ""),
+                   #                                     downloadButton('Save_Metabologram_All', 'All')
+                   #
+                   #                    ),
 
                    checkboxInput("CircosLegendID", "Legend", value=FALSE),
                    #                    radioButtons(inputId = "WheelID", label = "Wheel Style:",
@@ -89,17 +203,17 @@ output$ui_Circomics <- renderUI({
                    #                    conditionalPanel(condition = "input.saveWheelID == 'Gif'",
                    #                                     downloadButton("SaveGif")),
 
-                     conditionalPanel("input.CircosLegendID==true",
-                                      wellPanel(
+                   conditionalPanel("input.CircosLegendID==true",
+                                    wellPanel(
                                       plotOutput("LegendCircos")
-                     )
-                     #                    h4("Wheel Legend"),
-                     #                    p(span("Black", style="color:black"),": Non available data."),
-                     #                    p(span("White", style="color:black"),": Non significant rate."),
-                     #                    p(span("Cyan", style="color:deepskyblue"),": Middle Negative significant rate."),
-                     #                    p(span("Blue", style="color:blue"),": Negative significant rate."),
-                     #                    p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
-                     #                    p(span("Red", style="color:red"),": Positive significant rate.")
+                                    )
+                                    #                    h4("Wheel Legend"),
+                                    #                    p(span("Black", style="color:black"),": Non available data."),
+                                    #                    p(span("White", style="color:black"),": Non significant rate."),
+                                    #                    p(span("Cyan", style="color:deepskyblue"),": Middle Negative significant rate."),
+                                    #                    p(span("Blue", style="color:blue"),": Negative significant rate."),
+                                    #                    p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
+                                    #                    p(span("Red", style="color:red"),": Positive significant rate.")
                    ),
 
                    help_modal_km('Circomics','CircomicsHelp',inclMD(file.path(r_path,"base/tools/help/Circomics.md")))
@@ -107,9 +221,9 @@ output$ui_Circomics <- renderUI({
 
 })
 
-## Load Profile data in datasets
+## Load Profile data in datasets to Handle panel
 observe({
-  if (not_pressed(input$loadListProfData)) return()
+  if (not_pressed(input$pushListProfData)) return()
   isolate({
 
     loadInDatasets(fname="xCNA", header=TRUE)
