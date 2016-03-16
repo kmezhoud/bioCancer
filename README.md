@@ -8,6 +8,17 @@
 http://kmezhoud.github.io/bioCancer/
 ) is a browser-based interface for Cancer Genomics Data analysis and visualization developped by [R](http://www.r-project.org/), and based on the [Shiny](http://www.rstudio.com/shiny/) package. Example of bioCancer server is hosted at http://46.101.227.144:3838/bioCancer/
 
+#### Interactivities
+
+bioCancer is listening user setting. Results update immediately when inputs are changed (i.e., no separate dialog boxes).
+
+#### Context
+
+bioCancer focuses on Cancer Genomics data visualisation and Genes Classifications.
+
+## Circomics: Pull User genetic profiles with existing Cancer studies
+
+<img src="./circomics.gif">
 <!--
 It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Dr. Vincent Nijs</a>. 
 -->
@@ -29,10 +40,6 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 <iframe width="640" height="375" src="https://www.youtube.com/embed/ioHopyfD2f0" frameborder="0" allowfullscreen></iframe>
 -->
 
-#### Interactivities
-
-bioCancer is listening user setting. Results update immediately when inputs are changed (i.e., no separate dialog boxes).
-
 <!--
 #### Reproducible
 
@@ -44,10 +51,6 @@ Simply saving output is not enough. You need the ability to recreate results for
 
 Although bioCancer's web-interface can handle quite a few data and analysis tasks, at times you may prefer to write your own code. bioCancer provides a bridge to programming in R(studio) by exporting the functions used for analysis. For more information about programming, see Radiant [programming](http://vnijs.github.io/radiant/programming.html) page on the documentation site.
 -->
-
-#### Context
-
-bioCancer focuses on Cancer Genomics data visualisation and Genes Classifications.
 
 
 
