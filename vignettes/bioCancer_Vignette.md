@@ -3,12 +3,12 @@ title: 'bioCancer: A Shiny App for Multi-OMICS Cancer Data Visualization and Ana
 author: "Karim Mezhoud"
 date: "6 January 2016"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     fig_caption: yes
     number_sections: yes
     theme: flatly
-    toc: yes
-  pdf_document:
     toc: yes
   word_document: default
 ---
