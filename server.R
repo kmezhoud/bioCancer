@@ -11,6 +11,11 @@
 ## biocLite("geNetClassifier", lib="/usr/lib/R/library")
 ## install.packages("AnnotationFuncs", repos = "http://www.bioconductor.org/packages/3.2/bioc", lib="/usr/local/share/R/bioconductor")
 ## sudo su - -c "R -e "install.packages('shiny', repos='http://cran.rstudio.com/')""
+
+####  IMPORTANT   #######
+# In server the function whichGeneList needs
+##    GeneList <- t(unique(read.table(paste0(r_path,"/base/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
+
 ## to install ReactomePA , reactomedb, rappdirs
 
 shinyServer(function(input, output, session) {
