@@ -104,7 +104,7 @@ reStrDimension <- function(LIST){
 observe({
   if(not_pressed(input$loadListProfDataCircosId)) return()
   isolate({
-    withProgress(message = 'loading Profiles Data... ', value = 0.1, {
+    shiny::withProgress(message = 'loading Profiles Data... ', value = 0.1, {
       Sys.sleep(0.25)
       getListProfData(panel='Circomics')
     })
@@ -191,7 +191,7 @@ output$CNATable <- DT::renderDataTable({
 
 ## get Wheel for Profiles Data
 output$getCoffeeWheel_All <- renderCoffeewheel({
-  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+  shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData(panel="Circomics")
@@ -205,7 +205,7 @@ output$getCoffeeWheel_All <- renderCoffeewheel({
 
 ## get Wheel for Methylation
 output$getCoffeeWheel_Met <- renderCoffeewheel({
-  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+  shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData()
@@ -218,7 +218,7 @@ output$getCoffeeWheel_Met <- renderCoffeewheel({
 
 ## get Wheel for CNA
 output$getCoffeeWheel_CNA <- renderCoffeewheel({
-  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+  shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData()
@@ -231,7 +231,7 @@ output$getCoffeeWheel_CNA <- renderCoffeewheel({
 
 ## get Wheel for mRNA
 output$getCoffeeWheel_mRNA <- renderCoffeewheel({
-  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+  shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData()
@@ -244,7 +244,7 @@ output$getCoffeeWheel_mRNA <- renderCoffeewheel({
 
 ## get Wheel for miRNA
 output$getCoffeeWheel_miRNA <- renderCoffeewheel({
-  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+  shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData()
@@ -257,7 +257,7 @@ output$getCoffeeWheel_miRNA <- renderCoffeewheel({
 
 ## get Wheel for RPPA
 output$getCoffeeWheel_RPPA <- renderCoffeewheel({
-  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+  shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     #getListProfData()
@@ -327,7 +327,7 @@ getFreqMutData <- function(list){
 
 ## get Wheel for Mutation
 output$getCoffeeWheel_Mut <- renderCoffeewheel({
-  withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
+  shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 0.1, {
     Sys.sleep(0.25)
 
     ## get Gene Mutation Frequency
@@ -590,7 +590,7 @@ checkDimensions<- function(panel){
 
 output$CircosAvailability <- DT::renderDataTable({
 
-  withProgress(message = 'Loading Data...', value = 0.1, {
+  shiny::withProgress(message = 'Loading Data...', value = 0.1, {
     Sys.sleep(0.25)
     dat <- checkDimensions(panel="Circomics")
     ## remove rownames to column

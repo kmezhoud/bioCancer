@@ -58,7 +58,7 @@ getListProfData <- function(panel){
 
         }
       }else{
-        withProgress(message= paste("There is no genetic Profiles: ", regex2 ), value = 0.1,
+        shiny::withProgress(message= paste("There is no genetic Profiles: ", regex2 ), value = 0.1,
                      {p1 <- proc.time()
                      Sys.sleep(2) # wait 2 seconds
                      proc.time() - p1 })
@@ -75,7 +75,7 @@ getListProfData <- function(panel){
         return( ProfData_X)
       }
     }else{
-      withProgress(message= paste("There is no Cases: ",regex1 ), value = 0.1,
+      shiny::withProgress(message= paste("There is no Cases: ",regex1 ), value = 0.1,
                    {p1 <- proc.time()
                    Sys.sleep(2)
                    proc.time() - p1 })
@@ -134,7 +134,7 @@ getListProfData <- function(panel){
   ListMutData <- NULL
   for (s in 1: Lchecked_Studies){
     #Si = myGlobalEnv$checked_StudyIndex[s]
-    withProgress(message= paste(checked_Studies[s],":"), value = 0, {
+    shiny::withProgress(message= paste(checked_Studies[s],":"), value = 0, {
 
       incProgress(0.1, detail=paste(round((s/Lchecked_Studies)*100, 0),"% of Profiles Data"))
       Sys.sleep(0.1)

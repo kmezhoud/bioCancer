@@ -1,6 +1,6 @@
 getGenesClassifier <- reactive({
 
-  withProgress(message = 'geNetClassifier is running...', value = 0.1, {
+  shiny::withProgress(message = 'geNetClassifier is running...', value = 0.1, {
     Sys.sleep(0.25)
 
     checked_Studies <- input$StudiesIDClassifier
@@ -47,7 +47,7 @@ getGenesClassifier <- reactive({
       }
       if(ncol(ProfData) < input$SampleSizeClassifierID){
         msgBigSampl <- paste(checked_Studies[s], "has only", ncol(ProfData),"samples.","\nSelect at Max: ",ncol(ProfData), "samples")
-         withProgress(message= msgBigSampl, value = 0.1,
+         shiny::withProgress(message= msgBigSampl, value = 0.1,
                      {p1 <- proc.time()
                      Sys.sleep(2) # wait 2 seconds
                      proc.time() - p1 })
@@ -80,7 +80,7 @@ getGenesClassifier <- reactive({
     if (inherits(try(rownames(DiseasesType) <- colnames(SamplingProfsData) , silent=FALSE),"try-error"))
     {
       msgDuplicateSamples <- paste("Duplicate sample names are not allowed. Do no select two studies from the same disease.")
-      withProgress(message= msgDuplicateSamples, value = 0.1,
+      shiny::withProgress(message= msgDuplicateSamples, value = 0.1,
                    {p1 <- proc.time()
                    Sys.sleep(2) # wait 2 seconds
                    proc.time() - p1 })
@@ -128,7 +128,7 @@ getGenesClassifier <- reactive({
     {
       msgNoSignificantDiff <- paste("The current genes don't differentiate the classes (Cancers)..")
 
-      withProgress(message= msgNoSignificantDiff, value = 0.1,
+      shiny::withProgress(message= msgNoSignificantDiff, value = 0.1,
                    {p1 <- proc.time()
                    Sys.sleep(2) # wait 2 seconds
                    proc.time() - p1 })

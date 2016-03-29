@@ -1,6 +1,6 @@
 getMegaProfData <- function(MegaGeneList,GenProf, Case, Class){
 
-  withProgress(message = 'loading MegaProfData...', value = 0.1, {
+  shiny::withProgress(message = 'loading MegaProfData...', value = 0.1, {
     Sys.sleep(0.25)
 
     if(is.integer(length(MegaGeneList)/500)){

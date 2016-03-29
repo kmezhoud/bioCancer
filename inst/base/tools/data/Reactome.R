@@ -32,7 +32,7 @@ Edges_obj <- function(){
 
   #if(!'ReactomeFI' %in% r_data){
   if(is.null(r_data$ReactomeFI)){
-    withProgress(message = 'Loading ReactomeFI...', value = 0.1, {
+    shiny::withProgress(message = 'Loading ReactomeFI...', value = 0.1, {
       Sys.sleep(0.25)
 
       #r_data[['ReactomeFI']] <- read.csv("https://raw.githubusercontent.com/kmezhoud/ReactomeFI/master/FIsInGene_121514_with_annotations.txt", header=TRUE, sep="\t")
@@ -50,11 +50,11 @@ Edges_obj <- function(){
   GeneList <- whichGeneList()
   #GeneList <- c("SPRY2","FOXO1","FOXO3")
   ## Edges Attributes
-  withProgress(message = 'load FI for GeneList...', value = 0.1, {
+  shiny::withProgress(message = 'load FI for GeneList...', value = 0.1, {
     Sys.sleep(0.25)
     fis <- getReactomeFI(2014,genes=GeneList, use.linkers = input$UseLinkerId)
   })
-  withProgress(message = 'load gene relationships...', value = 0.1, {
+  shiny::withProgress(message = 'load gene relationships...', value = 0.1, {
     Sys.sleep(0.25)
 
     names(fis) <- c("Gene1", "Gene2")

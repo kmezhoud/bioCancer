@@ -10,7 +10,7 @@ output$ClassifierHowto <- renderPrint({
 
 
 output$list_Cases <- renderUI({
-  withProgress(message = 'loading Cases...', value = 0.1, {
+  shiny::withProgress(message = 'loading Cases...', value = 0.1, {
     Sys.sleep(0.25)
     checked_Studies <- input$StudiesIDClassifier
     listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,1])
@@ -24,7 +24,7 @@ output$list_Cases <- renderUI({
 })
 
 output$list_GenProfs <- renderUI({
-  withProgress(message = 'loading Genetic Profiles...', value = 0.1, {
+  shiny::withProgress(message = 'loading Genetic Profiles...', value = 0.1, {
     Sys.sleep(0.25)
     checked_Studies <- input$StudiesIDClassifier
     listGenProfs <- lapply(checked_Studies, function(x)getGeneticProfiles(cgds,x)[,1])
@@ -42,7 +42,7 @@ output$list_GenProfs <- renderUI({
 # )
 
 TableCases <- reactive({
-  withProgress(message = 'loading Sample size...', value = 0.1, {
+  shiny::withProgress(message = 'loading Sample size...', value = 0.1, {
     Sys.sleep(0.25)
 
     checked_Studies <- input$StudiesIDClassifier
@@ -110,7 +110,7 @@ output$viewTableCases <- DT::renderDataTable({
 # })
 
 output$Plot_enricher <- renderPlot({
-  withProgress(message = 'Genes Diseases Association...', value = 0.1, {
+  shiny::withProgress(message = 'Genes Diseases Association...', value = 0.1, {
     Sys.sleep(0.25)
 
     GeneList <- whichGeneList()
@@ -146,7 +146,7 @@ Plot_enrich <- function(){
 
 ## Disease - Genes - Studies Associations
 output$compareClusterDO <- renderPlot({
-  withProgress(message = 'Disease Onthology enrich...', value = 0.1, {
+  shiny::withProgress(message = 'Disease Onthology enrich...', value = 0.1, {
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
@@ -176,7 +176,7 @@ compareClusterDO <- function(){
 
 ## Reactome Pathway Cluster Enrichment
 output$compareClusterReactome <- renderPlot({
-  withProgress(message = 'Reactome Pathway enrich...', value = 0.1, {
+  shiny::withProgress(message = 'Reactome Pathway enrich...', value = 0.1, {
     Sys.sleep(0.25)
       require(reactome.db)
       require(ReactomePA)
@@ -202,7 +202,7 @@ compareClusterReactome <- function(){
 }
 ## Gene Onthology (GO) Studies Associations
 output$compareClusterGO <- renderPlot({
-  withProgress(message = 'Gene Onthology Enrich...', value = 0.1, {
+  shiny::withProgress(message = 'Gene Onthology Enrich...', value = 0.1, {
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
@@ -228,7 +228,7 @@ compareClusterGO <- function(){
 }
 ## KEGG Pathway Enrichment
 output$compareClusterKEGG <- renderPlot({
-  withProgress(message = 'KEGG Pathway Enrich...', value = 0.1, {
+  shiny::withProgress(message = 'KEGG Pathway Enrich...', value = 0.1, {
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
@@ -253,7 +253,7 @@ compareClusterKEGG <- function(){
 
 ## Cellular Component  Enrichment
 output$compareClusterCC<- renderPlot({
-  withProgress(message = 'Cellular Component enrichment...', value = 0.1, {
+  shiny::withProgress(message = 'Cellular Component enrichment...', value = 0.1, {
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
