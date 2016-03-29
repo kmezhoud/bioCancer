@@ -24,7 +24,7 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 -->
 ## Network modeling example
 <!--
-![Network modeling](./inst/extradata/imgs/demoReactomeCmp.gif)
+![Network modeling](./inst/extradata/imgs/demoReactome.gif)
 -->
 <img src="./demoReactome.gif">
 
