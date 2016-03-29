@@ -5,11 +5,12 @@
 #' @export
 #'
 #' @examples
-#'
+#' example <- "run manually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Edges_df()
-#'}
+#' }
+#'
 #'
 #' @importFrom RCurl basicTextGatherer
 #' @importFrom XML xmlInternalTreeParse
@@ -19,8 +20,8 @@
 #'
 Edges_df <- function(){
 
-  if(is.null(r_data$ReactomeFI)){
-    withProgress(message = 'Loading ReactomeFI...', value = 0.1, {
+  if(is.null(ReactomeFI)){
+    #shiny::withProgress(message = 'Loading ReactomeFI...', value = 0.1, {
       Sys.sleep(0.25)
 
       if("package:bioCancer" %in% search()) {
@@ -29,24 +30,24 @@ Edges_df <- function(){
         r_data[['ReactomeFI']]  <- read.delim(file.path(paste(r_path,"/extdata/FIsInGene_121514_with_annotations.txt", sep="")))
       }
 
-    })
+   # })
   }
 
   #GeneList <- c("DKK3", "NBN", "MYO6", "TP53","PML", "IFI16", "BRCA1")
   GeneList <- whichGeneList()
 
   ## Edges Attributes
-  withProgress(message = 'load FI for GeneList...', value = 0.1, {
+  #shiny::withProgress(message = 'load FI for GeneList...', value = 0.1, {
     Sys.sleep(0.25)
-    fis <- getReactomeFI(2014,genes=GeneList, use.linkers = input$UseLinkerId) # input$UseLinkerNetId
-  })
-  withProgress(message = 'load gene relationships...', value = 0.1, {
+    fis <- getReactomeFI(2014,genes=GeneList, use.linkers = FALSE) # input$UseLinkerNetId
+#})
+  #shiny::withProgress(message = 'load gene relationships...', value = 0.1, {
     Sys.sleep(0.25)
 
     names(fis) <- c("Gene1", "Gene2")
-    Edges_obj1 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))
+    Edges_obj1 <- merge(ReactomeFI, fis, by=c("Gene1","Gene2"))
     names(fis) <- c("Gene2", "Gene1")
-    Edges_obj2 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))
+    Edges_obj2 <- merge(ReactomeFI, fis, by=c("Gene1","Gene2"))
     Edges_obj <- rbind(Edges_obj1,Edges_obj2)
 
     #     > head(Edges_obj)
@@ -62,12 +63,12 @@ Edges_df <- function(){
     #  Edges_obj <- Edges_obj[- grep(c("predic",activat), Edges_obj$Annotation),]
     #  Edges_obj <- Edges_obj[!grepl("predict|activat|binding|complex|indirect",Edges_obj$Annotation),]
 
-    Edges_obj <- Edges_obj[grepl(paste0(input$FIs_AttId, collapse="|"),Edges_obj$Annotation),] #input$FIs_AttNetworkId
+    Edges_obj <- Edges_obj[grepl(paste0(c("activat","predict"), collapse="|"),Edges_obj$Annotation),] #input$FIs_AttNetworkId
 
     ## skip infinity loop when load Reactome_Genelist
     if(is.null(r_data$Reactome_GeneList)){
       r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
-    }else if (all(length(r_data$Reactome_GeneList) == length(union(Edges_obj$Gene1, Edges_obj$Gene2)))
+    }else if (all(r_data$length(Reactome_GeneList) == length(union(Edges_obj$Gene1, Edges_obj$Gene2)))
               && all(r_data$Reactome_GeneList == union(Edges_obj$Gene1, Edges_obj$Gene2))
     ){
 
@@ -96,7 +97,7 @@ Edges_df <- function(){
     colnames(Edges_obj)<- c("from", "to","title","arrows" ,"width")
 
     #Edges_obj <- Edges_obj[1:150,]
-  })
+  #})
   ## add 3 column used with geneset enrichment
   Edges_obj <- cbind(Edges_obj,
                      dashes=FALSE,
@@ -117,10 +118,11 @@ Edges_df <- function(){
 #' @param genesclassdetails  a dataframe from geNetClassifier
 #'
 #' @examples
+#' example <- "run Manually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Ed_Diseases_obj <- Edges_Diseases_obj(genesclassdetails=GenesClassDetails)
-#'}
+#' }
 #'
 Edges_Diseases_obj <- function(genesclassdetails){
 
@@ -152,7 +154,7 @@ Edges_Diseases_obj <- function(genesclassdetails){
 #'
 
 attriShape2Node <- function(gene, genelist){
-  GeneList <- whichGeneList()
+
   if(gene %in% GeneList){
     paste0("circle")
   }else{
@@ -172,9 +174,10 @@ attriShape2Node <- function(gene, genelist){
 #'
 #' @examples
 #'
+#' example <- "run Manually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
-#' bioCancer::bioCancer()
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' node_df <- Node_df(GeneList, FreqIn )
 #'}
 #'
 Node_df <- function(genelist, freqIn){
@@ -186,18 +189,18 @@ Node_df <- function(genelist, freqIn){
   GeneFreq <- FreqIn[,c(1,3,4)]
   #GeneFreq <- data.frame(lapply(GeneFreq[,names(GeneFreq)] , as.factor))
 
-  if(input$NodeAttri_ClassifierID == 'mRNA'|| input$NodeAttri_ClassifierID == 'mRNA/Studies'){
-    colorsVector <- sapply(r_data$GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,r_data$GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
-    colors_df <- data.frame(id = r_data$GenesClassDetails$Genes,color = colorsVector)
+  #if(input$NodeAttri_ClassifierID == 'mRNA'|| input$NodeAttri_ClassifierID == 'mRNA/Studies'){
+    colorsVector <- sapply(GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
+    colors_df <- data.frame(id = GenesClassDetails$Genes,color = colorsVector)
     colors_df <- data.frame(lapply(colors_df, as.character), stringsAsFactors=FALSE)
     merge1 <- dplyr::inner_join(GeneFreq, colors_df, by="id")
     merge1 <- data.frame(merge1, value= "1")
     diff1 <- dplyr::anti_join(GeneFreq, colors_df, by="id")
     diff1 <- data.frame (diff1, color= "lightgrey", value= "1")
     GeneFreq <- rbind(merge1, diff1)
-  }else{
-    GeneFreq <- cbind(GeneFreq,color="lightgrey", value="1")
-  }
+ # }else{
+  #  GeneFreq <- cbind(GeneFreq,color="lightgrey", value="1")
+  #}
   return(GeneFreq)
 }
 
@@ -212,8 +215,9 @@ Node_df <- function(genelist, freqIn){
 #' @param freqIn dataframe with Node interaction frequencies
 #'
 #' @examples
+#' example <- "run Manually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' GeneFreq <- Node_df_FreqIn(GeneList, FreqIn)
 #'}
 Node_df_FreqIn <- function(genelist, freqIn){
@@ -238,10 +242,11 @@ Node_df_FreqIn <- function(genelist, freqIn){
 #' @param genesclassdetails  a dataframe from geNetClassifier function
 #'
 #' @examples
+#' example <- "run manually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Node_Diseases_df <- Node_Diseases_obj(genesclassdetails= GenesClassDetails)
-#' }
+#'}
 Node_Diseases_obj <- function(genesclassdetails){
   if(is.null(genesclassdetails)){
     msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
@@ -272,9 +277,10 @@ Node_Diseases_obj <- function(genesclassdetails){
 #' @param type "BP", "pathway","CC", "MF"
 #'
 #' @examples
-#'
+#' example <- "run manually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' getAnnoGeneSet_df(GeneList, "BP")
 #'}
 getAnnoGeneSet_df <- function(genelist,type){
   # type = c("Pathway", "BP", "CC", "MF")
@@ -285,7 +291,7 @@ getAnnoGeneSet_df <- function(genelist,type){
   AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type)
 
   ## Filter significant annotation using FDR
-  AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < input$GeneSetFDRID,]  #input$GeneSetFDRID
+  AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < 0.95,]  #input$GeneSetFDRID
 
   r_data[['AnnoGeneSet']] <- AnnoGeneSet
 
@@ -307,7 +313,7 @@ getAnnoGeneSet_df <- function(genelist,type){
 
     GeneSet_df <- data.frame(from = Index_Gene[,1],
                              to = Index_Gene[,2],
-                             title= input$TypeGeneSetID,
+                             title= "GeneSet",
                              arrows= "to",
                              width = "0.3",
                              dashes = TRUE,

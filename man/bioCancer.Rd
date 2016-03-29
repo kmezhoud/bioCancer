@@ -15,8 +15,10 @@ web page of bioCancer Shiny App
 Launch bioCancer with default browser
 }
 \examples{
+ShinyApp <-  1
 \dontrun{
 bioCancer::bioCancer()
 }
+
 }
 

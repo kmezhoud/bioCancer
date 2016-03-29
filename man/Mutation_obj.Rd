@@ -18,9 +18,11 @@ A dat frame with mutation frequency. Ech column corresponds to a study.
 Atribute mutation frequency to nodes
 }
 \examples{
- \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+example <- "runManually"
+\dontrun{
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Mut_obj <- Mutation_obj(ListMutData_bkp, 0.2)
 }
+
 }
 

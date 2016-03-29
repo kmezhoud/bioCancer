@@ -15,8 +15,10 @@ A list of hierarchical data
 Sample data for wheel initialization
 }
 \examples{
+
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 bioCancer::coffeewheel(treeData = sampleWheelData)
 }
 }

@@ -18,8 +18,9 @@ A data frame with nodes size attributes
 Attributes size to Nodes depending on number of interaction
 }
 \examples{
+example <- "run Manually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 GeneFreq <- Node_df_FreqIn(GeneList, FreqIn)
 }
 }

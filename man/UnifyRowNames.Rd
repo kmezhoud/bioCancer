@@ -18,9 +18,9 @@ a data frame having the gene in row name ordered as in gene list.
 Unify row names in data frame with the same order of gene list.
 }
 \examples{
-\dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Freq_Mut <- UnifyRowNames(ListMutData_bkp$luad_tcga_pub, GeneList = GeneList)
-}
+
 }
 

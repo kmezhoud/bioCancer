@@ -22,13 +22,15 @@ A vetor of colors
 Attribute color to a vector of numeric values
 }
 \examples{
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 sapply(GenesClassDetails$exprsMeanDiff,
 function(x) as.character(attriColorVector(x,
 GenesClassDetails$exprsMeanDiff ,
 colors=c("blue","white","red"),
  feet=1)))
 }
+
 }
 

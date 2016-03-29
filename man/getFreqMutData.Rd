@@ -16,9 +16,11 @@ a data frame with mutation frequency. gene is in rows and study is in column
 get mutation frequency
 }
 \examples{
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Freq_DfMutData <- getFreqMutData(ListMutData_bkp)
 }
+
 }
 

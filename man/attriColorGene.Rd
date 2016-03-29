@@ -16,8 +16,9 @@ A list colors for every gene
 Attribute Color to Gene
 }
 \examples{
+example <- "runManuallly"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 colorsls <- attriColorGene(ListProfData$Expression$luad_tcga_pub)
 }
 }

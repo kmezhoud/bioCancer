@@ -16,9 +16,11 @@ A data frame with node border attributes
 Attribute CNA data to node border
 }
 \examples{
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 CNA_obj <- Node_obj_CNA_ProfData(ListCNAData_bkp)
 }
+
 }
 

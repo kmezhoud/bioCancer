@@ -16,8 +16,9 @@ A tree structure of listes:  dimensions > Studies > genes > colors
 get Coffe Wheel for Profiles Data
 }
 \examples{
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 getCoffeeWheel(ListProfData_bkp)
 }
 

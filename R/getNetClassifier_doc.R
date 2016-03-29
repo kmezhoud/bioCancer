@@ -4,8 +4,9 @@
 #' @export
 #'
 #' @examples
+#' example <- "runManually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' getGenesClassifier()
 #'}
 #'
@@ -142,7 +143,7 @@ getGenesClassifier <- function(){
 
   eSetClassifier <- Biobase::ExpressionSet(assayData=SamplingProfsData, phenoData=phenoData, annotation="GO")
   print("getting eSetClassifier...")
-  if(min(exprs(eSetClassifier), na.rm=TRUE)<0){
+  if(min(Biobase::exprs(eSetClassifier), na.rm=TRUE)<0){
     print("There are negative values. Translating values by adding the absolute of minimum value to all matrix")
     Biobase::exprs(eSetClassifier) <- Biobase::exprs(eSetClassifier)+(abs(min(exprs(eSetClassifier), na.rm=TRUE)))
   }

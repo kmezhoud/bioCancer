@@ -18,9 +18,10 @@ A data frame with Gene Set enrichment: BP,MF, CC, Pathway, pval, FDR
 Gene Set enrichment using Reactome FI methods
 }
 \examples{
-
+example <- "run manually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+getAnnoGeneSet_df(GeneList, "BP")
 }
 }
 

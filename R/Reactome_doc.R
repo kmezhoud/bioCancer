@@ -21,14 +21,16 @@
 #' @export
 #'
 #' @examples
+#'example <- "runManually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' sapply(GenesClassDetails$exprsMeanDiff,
 #' function(x) as.character(attriColorVector(x,
 #' GenesClassDetails$exprsMeanDiff ,
 #' colors=c("blue","white","red"),
 #'  feet=1)))
 #'}
+#'
 #'@importFrom grDevices colorRampPalette colors
 attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 
@@ -55,8 +57,9 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 #' @export
 #'
 #' @examples
+#'example <- "runManually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Ed_obj <- Edges_obj()
 #'}
 #'
@@ -69,12 +72,12 @@ Edges_obj <- function(){
 
   #if(!'ReactomeFI' %in% r_data){
   if(is.null(ReactomeFI)){
-    # withProgress(message = 'Loading ReactomeFI...', value = 0.1, {
+    # shiny::withProgress(message = 'Loading ReactomeFI...', value = 0.1, {
     #  Sys.sleep(0.25)
 
     #r_data[['ReactomeFI']] <- read.csv("https://raw.githubusercontent.com/kmezhoud/ReactomeFI/master/FIsInGene_121514_with_annotations.txt", header=TRUE, sep="\t")
     #r_data[['ReactomeFI']]  <- read.delim("inst/extdata/FIsInGene_121514_with_annotations.txt")
-    ReactomeFI  <- read.delim(paste0(.libPaths(), "/bioCancer/extdata/FIsInGene_121514_with_annotations.txt", sep=""))
+    ReactomeFI  <- read.delim(paste0(path.package("bioCancer"), "/extdata/FIsInGene_121514_with_annotations.txt", sep=""))
 
     #})
   }
@@ -83,11 +86,11 @@ Edges_obj <- function(){
   #GeneList <- whichGeneList()
   #GeneList <- c("SPRY2","FOXO1","FOXO3")
   ## Edges Attributes
-  # withProgress(message = 'load FI for GeneList...', value = 0.1, {
+  # shiny::withProgress(message = 'load FI for GeneList...', value = 0.1, {
   # Sys.sleep(0.25)
   fis <- getReactomeFI(2014,genes=GeneList, use.linkers = FALSE)
   #})
-  # withProgress(message = 'load gene relationships...', value = 0.1, {
+  # shiny::withProgress(message = 'load gene relationships...', value = 0.1, {
   #  Sys.sleep(0.25)
 
   names(fis) <- c("Gene1", "Gene2")
@@ -165,10 +168,11 @@ Edges_obj <- function(){
 #' @export
 #'
 #' @examples
+#'example <- "runManually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Sd_obj <- Studies_obj(GenesClassDetails)
-#' }
+#'}
 
 Studies_obj <- function(df){
   #df <- GenesClassDetails_bkp
@@ -211,10 +215,12 @@ Studies_obj <- function(df){
 #' @export
 #'
 #' @examples
-#'  \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' example <- "runManually"
+#' \dontrun{
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Mut_obj <- Mutation_obj(ListMutData_bkp, 0.2)
-#' }
+#'}
+#'
 Mutation_obj <- function(list,threshold){
 
   df <- getFreqMutData(list = ListMutData_bkp)
@@ -263,10 +269,12 @@ Mutation_obj <- function(list,threshold){
 #' @export
 #'
 #' @examples
-#'\dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' example <- "runManually"
+#' \dontrun{
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Shape_object <- attriShape2Gene("BRCA1", GeneList)
-#'}
+#' }
+#'
 attriShape2Gene <- function(gene, genelist){
 
   if(gene %in% genelist){
@@ -286,9 +294,11 @@ attriShape2Gene <- function(gene, genelist){
 #' @export
 #'
 #' @examples
-#'\dontrun{
-#'load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
-#'}
+#' example <- "runManually"
+#' \dontrun{
+#'  load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  node_obj <- Node_obj_FreqIn(GeneList)
+#' }
 #'
 #'
 Node_obj_FreqIn <- function(GeneList){
@@ -317,9 +327,10 @@ Node_obj_FreqIn <- function(GeneList){
 #' @export
 #'
 #' @examples
+#'example <- "runManually"
 #' \dontrun{
-#'load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
-#' Node_obj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' node_obj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
 #'}
 #'
 Node_obj_mRNA_Classifier <- function(GeneList,genesclassdetails){
@@ -384,10 +395,12 @@ Node_obj_mRNA_Classifier <- function(GeneList,genesclassdetails){
 #' @export
 #'
 #' @examples
+#' example <- "runManually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' CNA_obj <- Node_obj_CNA_ProfData(ListCNAData_bkp)
 #'}
+#'
 Node_obj_CNA_ProfData <- function(list){
 
   ListDf <-lapply(list, function(x) apply(x, 2, function(y) as.data.frame(table(y[order(y)]))))
@@ -422,8 +435,9 @@ Node_obj_CNA_ProfData <- function(list){
 #' @export
 #'
 #' @examples
+#'example <- "runManually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Met_obj <- Node_obj_Met_ProfData(ListMetData_bkp$HM450,type="HM450",0.8)
 #'}
 Node_obj_Met_ProfData <- function(list, type, Threshold){
@@ -469,8 +483,9 @@ Node_obj_Met_ProfData <- function(list, type, Threshold){
 #' @export
 #'
 #' @examples
+#'example <- "runManually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' gr_obj <- graph_obj('Freq.Interaction', 'mRNA', 'Met_HM450')
 #'}
 #'
@@ -490,7 +505,7 @@ graph_obj <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData
   }
   if(NodeAttri_Classifier == 'mRNA'){
     ## Nodes Attributes
-    GeneAttri_df1 <- Node_obj_mRNA_Classifier(GeneList, genesclassdetails)
+    GeneAttri_df1 <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
     #GeneAttri_df2 <- Node_obj_FreqIn(GeneList)
     #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
     #GeneAttri_df <- rbind(GeneAttri_df1, GeneAttri_df2)
@@ -509,7 +524,7 @@ graph_obj <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData
   if (NodeAttri_Classifier == 'mRNA/Studies'){
 
     ## Nodes Attributes
-    GeneAttri_mRNA <- Node_obj_mRNA_Classifier(GeneList, genesclassdetails)
+    GeneAttri_mRNA <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
     #GeneAttri_FreqIn <- Node_obj_FreqIn(GeneList)
     Studies_Net <- Studies_obj(df= GenesClassDetails)
     #FreqMut_obj <- Mutation_obj()
@@ -575,8 +590,10 @@ graph_obj <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData
 #' @export
 #'
 #' @examples
+#'example <- "runManually"
 #' \dontrun{
-#' bioCancer::bioCancer()
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' diagrammeR('Freq.Interaction', 'mRNA', 'Met_HM450')
 #'}
 #' @import DiagrammeR
 #' @importFrom DiagrammeR grViz

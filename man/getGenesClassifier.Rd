@@ -13,8 +13,9 @@ A data frame with ranking genes.
 Classify genes by Studies using gene expression
 }
 \examples{
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 getGenesClassifier()
 }
 

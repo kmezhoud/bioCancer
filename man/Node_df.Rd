@@ -19,9 +19,10 @@ Data frame with Nodes id
 }
 \examples{
 
+example <- "run Manually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
-bioCancer::bioCancer()
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+node_df <- Node_df(GeneList, FreqIn )
 }
 
 }

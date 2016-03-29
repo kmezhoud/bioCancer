@@ -20,9 +20,11 @@ A circular layout with genetic profile in Shiny App.
 Widget output function for use in Shiny
 }
 \examples{
+
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
-bioCancer::bioCancer()
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ bioCancer::coffeewheel(treeData = sampleWheelData)
 }
 }
 

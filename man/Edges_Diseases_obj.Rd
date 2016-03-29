@@ -16,8 +16,9 @@ A data frame with egdes attributes
 get Edges dataframe for Gene/Disease association from geNetClassifier
 }
 \examples{
+example <- "run Manually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Ed_Diseases_obj <- Edges_Diseases_obj(genesclassdetails=GenesClassDetails)
 }
 

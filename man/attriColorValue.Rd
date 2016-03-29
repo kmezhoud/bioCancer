@@ -22,8 +22,9 @@ Hex Color Code
 Attribute Color to Value
 }
 \examples{
+example <- "runMAnually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 colorRef <- attriColorValue(500, ListProfData$Expression$luad_tcga_pub, colors = c("blue", "white","yellow","red", "black"), feet=10)
 }
 

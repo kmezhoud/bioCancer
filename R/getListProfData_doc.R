@@ -2,8 +2,6 @@
 #'
 #' @details See \url{https://github.com/kmezhoud/bioCancer/wiki}
 #'
-#'
-#'
 #' @return A data frame with Genetic profile
 #'
 #' @usage grepRef(regex1, listRef1,regex2, listRef2, GeneList,Mut)
@@ -15,11 +13,12 @@
 #' @param Mut Condition to set if the genetic profile is mutation or not (0,1)
 #'
 #' @examples
-#' \dontrun{
 #' GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
+#' \dontrun{
 #' cgds <- cgdsr::CGDS("http://www.cbioportal.org/public-portal/")
 #' listCase_gbm_tcga_pub <- cgdsr::getCaseLists(cgds,"gbm_tcga_pub")[,1]
 #' listGenProf_gbm_tcga_pub <- cgdsr::getGeneticProfiles(cgds,"gbm_tcga_pub")[,1]
+#'
 #' ProfData_Mut <- grepRef("gbm_tcga_pub_all", listCase_gbm_tcga_pub,
 #'  "gbm_tcga_pub_mutations", listGenProf_gbm_tcga_pub, GeneList, Mut=1)
 #'}
@@ -133,8 +132,9 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #'@export
 #'
 #'@examples
-#'\dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#'example <- "runManually"
+#' \dontrun{
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' StudiesIDCircos <- c("luad_tcga_pub","blca_tcga_pub")
 #' ListProfData <- getListProfData(panel= "Circomics")
 #'}

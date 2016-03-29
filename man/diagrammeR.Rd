@@ -20,8 +20,10 @@ plot
 Plot network with nodes and edges attributes
 }
 \examples{
+example <- "runManually"
 \dontrun{
-bioCancer::bioCancer()
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+diagrammeR('Freq.Interaction', 'mRNA', 'Met_HM450')
 }
 }
 

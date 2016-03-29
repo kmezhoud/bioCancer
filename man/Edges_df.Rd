@@ -13,11 +13,12 @@ A data frame with egdes attributes
 get Edges dataframe for visNetwork function
 }
 \examples{
-
+example <- "run manually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Edges_df()
 }
+
 
 }
 

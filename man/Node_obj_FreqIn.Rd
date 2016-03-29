@@ -16,8 +16,10 @@ A data frame with node attributes
 Attribute interaction frequency to node size
 }
 \examples{
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+ load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ node_obj <- Node_obj_FreqIn(GeneList)
 }
 
 

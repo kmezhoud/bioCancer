@@ -19,8 +19,8 @@ Use MathJax off-line in Shiny apps
 Code adapted from shiny::withMathJax
 }
 \examples{
-\dontrun{
-bioCancer::withMathJax("Some math here $$\\\\alpha+\\\\beta$$")
-}
+
+bioCancer::withMathJaxR("Some math here $$\\\\alpha+\\\\beta$$")
+
 }
 

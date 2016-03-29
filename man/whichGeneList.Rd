@@ -13,9 +13,11 @@ gene list
 Identify which gene list in input
 }
 \examples{
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 GeneList <- whichGeneList()
 }
+
 }
 

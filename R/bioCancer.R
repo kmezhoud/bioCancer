@@ -5,9 +5,11 @@
 #' @usage bioCancer()
 #'
 #' @examples
+#' ShinyApp <-  1
 #' \dontrun{
 #' bioCancer::bioCancer()
-#'}
+#' }
+#'
 #' @name bioCancer
 #' @docType package
 #' @import ggplot2

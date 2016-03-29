@@ -17,9 +17,11 @@ The data frame is filled with yes/no response.
 Chech wich Cases and genetic profiles are available for every seleted study
 }
 \examples{
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 df <- checkDimensions(panel='Reactome')
 }
+
 }
 

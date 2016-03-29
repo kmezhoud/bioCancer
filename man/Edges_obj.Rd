@@ -13,8 +13,9 @@ A data frame with egdes attributes
 get Edges object for grVis function
 }
 \examples{
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Ed_obj <- Edges_obj()
 }
 

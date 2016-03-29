@@ -16,9 +16,10 @@
 #' @param partitionAttribute "value"
 #'
 #' @examples
+#' example <- "run manually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
-#' bioCancer::bioCancer()
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  bioCancer::coffeewheel(treeData = sampleWheelData)
 #'}
 coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttribute="value"){
   x <- list(
@@ -46,9 +47,11 @@ coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttri
 #' @param height 700
 #'
 #' @examples
+#'
+#' example <- "runManually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
-#' bioCancer::bioCancer()
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  bioCancer::coffeewheel(treeData = sampleWheelData)
 #'}
 #' @export
 coffeewheelOutput <- function(outputId, width=700, height=700) {
@@ -64,8 +67,10 @@ coffeewheelOutput <- function(outputId, width=700, height=700) {
 #' @param quoted FALSE
 #'
 #' @examples
+#'
+#' example <- "runManually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' bioCancer::coffeewheel(treeData = sampleWheelData)
 #'}
 #' @export
@@ -79,8 +84,10 @@ renderCoffeewheel <- function(expr, env = parent.frame(), quoted = FALSE){
 #'
 #' @return A list of hierarchical data
 #' @examples
+#'
+#' example <- "runManually"
 #' \dontrun{
-#' load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' bioCancer::coffeewheel(treeData = sampleWheelData)
 #'}
 #' @export

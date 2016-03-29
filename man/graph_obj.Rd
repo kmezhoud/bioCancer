@@ -20,8 +20,9 @@ Object graph for grViz with Nodes and Edges attributes
 get graph object for grViz
 }
 \examples{
+example <- "runManually"
 \dontrun{
-load(paste(.libPaths(),"/bioCancer/extdata/ListProfData.RData", sep=""))
+load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 gr_obj <- graph_obj('Freq.Interaction', 'mRNA', 'Met_HM450')
 }
 
