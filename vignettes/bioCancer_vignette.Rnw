@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{bioCancer Vignette}
-%\VignetteEngine{R.rsp::tex}
+%\VignetteEngine{knitr::rmarkdown}
 %\VignetteAuthor{Karim Mezhoud}
 \documentclass[a4paper]{article}
 %\usepackage[OT1]{fontenc}
