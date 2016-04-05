@@ -317,7 +317,7 @@ output$Enrich <- renderUI({
                                         #plot_downloader("ld_diagrammeR_plot", pre=""),
                                         downloadButton('Save_diagrammeR_plot', 'HTML'),
                                         #actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
-                                        grVizOutput('diagrammeR'),
+                                        DiagrammeR::grVizOutput('diagrammeR'),
                                         conditionalPanel(condition= "input.TypeGeneSetID == 'Pathway'||
                                                     input.TypeGeneSetID == 'BP'||
                                                     input.TypeGeneSetID == 'CC'||

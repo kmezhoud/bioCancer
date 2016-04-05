@@ -104,8 +104,9 @@ addResourcePath("rmarkdown", file.path(r_path,"base/www/rmarkdown/"))
 # https://github.com/rstudio/shiny/issues/692
 # however, only use for local due to problems with mathjax rendering in IE
 if (r_local) {
-  addResourcePath("MathJax", file.path(system.file(package = "bioCancer"), "MathJax/"))
-  withMathJax <- bioCancer::withMathJaxR
+ #addResourcePath("MathJax", file.path(system.file(package = "bioCancer"), "MathJax/"))
+ #withMathJax <- bioCancer::withMathJaxR
+ withMathJax <- shiny::withMathJax
 }
 
 #,theme= shinythemes::shinytheme("cerulean")
