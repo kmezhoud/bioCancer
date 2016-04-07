@@ -122,12 +122,12 @@ output$Plot_enricher <- renderPlot({
 
     ## downloaded from http://www.disgenet.org/ds/DisGeNET/results/all_gene_disease_associations.tar.gz
     if ("package:bioCancer" %in% search()) {
-      gda <- read.delim(paste0(system.file(package = "bioCancer"),"/extdata/all_gene_disease_associations.txt"))
+      gda <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/all_gene_disease_association.RDS"))
       #gdafile <- read.delim(system.file("extdata", "all_gene_disease_associations.txt", package="bioCancer"))
       #gdafile <- system.file("extdata", "c5.cc.v5.0.entrez.gmt", package="clusterProfiler")
 
     }else{
-      gda <- read.delim(file.path(paste(r_path,"/extdata/all_gene_disease_associations.txt", sep="")))
+      gda <- readRDS(file.path(paste(r_path,"/extdata/all_gene_disease_association.RDS", sep="")))
     }
     disease2gene=gda[, c("diseaseId", "geneId")]
     disease2name=gda[, c("diseaseId", "diseaseName")]

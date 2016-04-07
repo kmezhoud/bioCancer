@@ -24,6 +24,8 @@
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+#' "/extdata/all_gene_disease_association.RDS"))
 #' sapply(GenesClassDetails$exprsMeanDiff,
 #' function(x) as.character(attriColorVector(x,
 #' GenesClassDetails$exprsMeanDiff ,
@@ -60,6 +62,8 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+#' "/extdata/all_gene_disease_association.RDS"))
 #' Ed_obj <- Edges_obj()
 #'}
 #'
@@ -171,6 +175,7 @@ Edges_obj <- function(){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/all_gene_disease_association.RDS"))
 #' Sd_obj <- Studies_obj(GenesClassDetails)
 #'}
 
@@ -297,6 +302,8 @@ attriShape2Gene <- function(gene, genelist){
 #' example <- "runManually"
 #' \dontrun{
 #'  load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+#'  "/extdata/all_gene_disease_association.RDS"))
 #'  node_obj <- Node_obj_FreqIn(GeneList)
 #' }
 #'
@@ -330,6 +337,8 @@ Node_obj_FreqIn <- function(GeneList){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+#' "/extdata/all_gene_disease_association.RDS"))
 #' node_obj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
 #'}
 #'
@@ -398,6 +407,8 @@ Node_obj_mRNA_Classifier <- function(GeneList,genesclassdetails){
 #' example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+#' "/extdata/all_gene_disease_association.RDS"))
 #' CNA_obj <- Node_obj_CNA_ProfData(ListCNAData_bkp)
 #'}
 #'
@@ -438,6 +449,8 @@ Node_obj_CNA_ProfData <- function(list){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+#' "/extdata/all_gene_disease_association.RDS"))
 #' Met_obj <- Node_obj_Met_ProfData(ListMetData_bkp$HM450,type="HM450",0.8)
 #'}
 Node_obj_Met_ProfData <- function(list, type, Threshold){
@@ -486,6 +499,8 @@ Node_obj_Met_ProfData <- function(list, type, Threshold){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+#' "/extdata/all_gene_disease_association.RDS"))
 #' gr_obj <- graph_obj('Freq.Interaction', 'mRNA', 'Met_HM450')
 #'}
 #'
@@ -593,6 +608,8 @@ graph_obj <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+#' "/extdata/all_gene_disease_association.RDS"))
 #' diagrammeR('Freq.Interaction', 'mRNA', 'Met_HM450')
 #'}
 #' @import DiagrammeR

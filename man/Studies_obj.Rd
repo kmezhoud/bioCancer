@@ -19,6 +19,7 @@ get object for grViz. Link Studies to genes
 example <- "runManually"
 \dontrun{
 load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/all_gene_disease_association.RDS"))
 Sd_obj <- Studies_obj(GenesClassDetails)
 }
 }

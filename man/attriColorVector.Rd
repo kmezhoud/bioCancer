@@ -25,6 +25,8 @@ Attribute color to a vector of numeric values
 example <- "runManually"
 \dontrun{
 load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+"/extdata/all_gene_disease_association.RDS"))
 sapply(GenesClassDetails$exprsMeanDiff,
 function(x) as.character(attriColorVector(x,
 GenesClassDetails$exprsMeanDiff ,

@@ -19,7 +19,7 @@ Restructure the list of color attributed to the genes in every study for every d
 example <- "runManually"
 \dontrun{
 load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-Parent <- reStrDimension(ListProfData_bkp)
+Parent <- reStrDimension(ListProfData)
 }
 
 }

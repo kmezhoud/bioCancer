@@ -16,6 +16,8 @@ get Edges object for grVis function
 example <- "runManually"
 \dontrun{
 load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+"/extdata/all_gene_disease_association.RDS"))
 Ed_obj <- Edges_obj()
 }
 

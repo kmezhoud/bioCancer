@@ -19,7 +19,7 @@ get Coffe Wheel for Profiles Data
 example <- "runManually"
 \dontrun{
 load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-getCoffeeWheel(ListProfData_bkp)
+getCoffeeWheel(ListProfData)
 }
 
 }

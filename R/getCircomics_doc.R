@@ -151,7 +151,7 @@ reStrDisease <- function(List){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' Parent <- reStrDimension(ListProfData_bkp)
+#' Parent <- reStrDimension(ListProfData)
 #'}
 #'
 reStrDimension <- function(LIST){
@@ -178,7 +178,7 @@ reStrDimension <- function(LIST){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' getCoffeeWheel(ListProfData_bkp)
+#' getCoffeeWheel(ListProfData)
 #'}
 #'
 getCoffeeWheel <- function(ListProfData){

@@ -23,6 +23,8 @@ Attribute gene Methylation to Nodes
 example <- "runManually"
 \dontrun{
 load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
+"/extdata/all_gene_disease_association.RDS"))
 Met_obj <- Node_obj_Met_ProfData(ListMetData_bkp$HM450,type="HM450",0.8)
 }
 }
