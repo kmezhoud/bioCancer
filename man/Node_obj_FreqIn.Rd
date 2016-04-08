@@ -19,8 +19,7 @@ Attribute interaction frequency to node size
 example <- "runManually"
 \dontrun{
  load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
- ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
- "/extdata/all_gene_disease_association.RDS"))
+ ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
  node_obj <- Node_obj_FreqIn(GeneList)
 }
 

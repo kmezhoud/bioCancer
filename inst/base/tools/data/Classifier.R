@@ -120,14 +120,14 @@ output$Plot_enricher <- renderPlot({
     ## Symbol2GeneID
     GeneID<- unname(unlist(AnnotationFuncs::translate(GeneList, org.Hs.eg.db::org.Hs.egSYMBOL2EG)))
 
-    ## downloaded from http://www.disgenet.org/ds/DisGeNET/results/all_gene_disease_associations.tar.gz
+    ## downloaded from http://www.disgenet.org/ds/DisGeNET/resultsDisGeNet.tar.gz
     if ("package:bioCancer" %in% search()) {
-      gda <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/all_gene_disease_association.RDS"))
+      gda <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
       #gdafile <- read.delim(system.file("extdata", "all_gene_disease_associations.txt", package="bioCancer"))
       #gdafile <- system.file("extdata", "c5.cc.v5.0.entrez.gmt", package="clusterProfiler")
 
     }else{
-      gda <- readRDS(file.path(paste(r_path,"/extdata/all_gene_disease_association.RDS", sep="")))
+      gda <- readRDS(file.path(paste(r_path,"/extdata/DisGeNet.RDS", sep="")))
     }
     disease2gene=gda[, c("diseaseId", "geneId")]
     disease2name=gda[, c("diseaseId", "diseaseName")]

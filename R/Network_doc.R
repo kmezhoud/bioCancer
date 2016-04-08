@@ -25,9 +25,9 @@ Edges_df <- function(){
       Sys.sleep(0.25)
 
       if("package:bioCancer" %in% search()) {
-        r_data[['ReactomeFI']]  <- read.delim(paste0(system.file(package = "bioCancer"), "/extdata/FIsInGene_121514_with_annotations.txt", sep=""))
+        r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"), "/extdata/ReactomeFI2015", sep=""))
       }else{
-        r_data[['ReactomeFI']]  <- read.delim(file.path(paste(r_path,"/extdata/FIsInGene_121514_with_annotations.txt", sep="")))
+        r_data[['ReactomeFI']]  <- readRDS(file.path(paste(r_path,"/extdata/ReactomeFI2015", sep="")))
       }
 
    # })

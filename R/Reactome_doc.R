@@ -24,8 +24,7 @@
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
-#' "/extdata/all_gene_disease_association.RDS"))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' sapply(GenesClassDetails$exprsMeanDiff,
 #' function(x) as.character(attriColorVector(x,
 #' GenesClassDetails$exprsMeanDiff ,
@@ -62,8 +61,7 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
-#' "/extdata/all_gene_disease_association.RDS"))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' Ed_obj <- Edges_obj()
 #'}
 #'
@@ -81,7 +79,7 @@ Edges_obj <- function(){
 
     #r_data[['ReactomeFI']] <- read.csv("https://raw.githubusercontent.com/kmezhoud/ReactomeFI/master/FIsInGene_121514_with_annotations.txt", header=TRUE, sep="\t")
     #r_data[['ReactomeFI']]  <- read.delim("inst/extdata/FIsInGene_121514_with_annotations.txt")
-    ReactomeFI  <- read.delim(paste0(path.package("bioCancer"), "/extdata/FIsInGene_121514_with_annotations.txt", sep=""))
+    ReactomeFI  <- readRDS(paste0(path.package("bioCancer"), "/extdata/ReactomeFI2015.RDS", sep=""))
 
     #})
   }
@@ -175,7 +173,7 @@ Edges_obj <- function(){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/all_gene_disease_association.RDS"))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' Sd_obj <- Studies_obj(GenesClassDetails)
 #'}
 
@@ -302,8 +300,7 @@ attriShape2Gene <- function(gene, genelist){
 #' example <- "runManually"
 #' \dontrun{
 #'  load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#'  ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
-#'  "/extdata/all_gene_disease_association.RDS"))
+#'  ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #'  node_obj <- Node_obj_FreqIn(GeneList)
 #' }
 #'
@@ -337,8 +334,7 @@ Node_obj_FreqIn <- function(GeneList){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
-#' "/extdata/all_gene_disease_association.RDS"))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' node_obj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
 #'}
 #'
@@ -407,8 +403,7 @@ Node_obj_mRNA_Classifier <- function(GeneList,genesclassdetails){
 #' example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
-#' "/extdata/all_gene_disease_association.RDS"))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' CNA_obj <- Node_obj_CNA_ProfData(ListCNAData_bkp)
 #'}
 #'
@@ -449,8 +444,7 @@ Node_obj_CNA_ProfData <- function(list){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
-#' "/extdata/all_gene_disease_association.RDS"))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' Met_obj <- Node_obj_Met_ProfData(ListMetData_bkp$HM450,type="HM450",0.8)
 #'}
 Node_obj_Met_ProfData <- function(list, type, Threshold){
@@ -499,8 +493,7 @@ Node_obj_Met_ProfData <- function(list, type, Threshold){
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
-#' "/extdata/all_gene_disease_association.RDS"))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' gr_obj <- graph_obj('Freq.Interaction', 'mRNA', 'Met_HM450')
 #'}
 #'
@@ -608,8 +601,7 @@ graph_obj <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData
 #'example <- "runManually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),
-#' "/extdata/all_gene_disease_association.RDS"))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' diagrammeR('Freq.Interaction', 'mRNA', 'Met_HM450')
 #'}
 #' @import DiagrammeR

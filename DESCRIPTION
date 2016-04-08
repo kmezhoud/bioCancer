@@ -62,5 +62,6 @@ URL: http://kmezhoud.github.io/bioCancer
 BugReports: https://github.com/kmezhoud/bioCancer/issues
 License: AGPL-3 | file LICENSE
 LazyData: true
-biocViews: GUI, DataRepresentation, Network, GeneExpression
+biocViews: GUI, DataRepresentation, Network, GeneExpression, Clustering, GeneSetEnrichment, GO, KEGG,
+    MultipleComparison, Pathways, Reactome, Visualization
 RoxygenNote: 5.0.1
