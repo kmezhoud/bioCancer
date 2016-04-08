@@ -25,7 +25,7 @@
 #' @importFrom shinyAce aceEditor updateAceEditor
 #' @importFrom readr read_delim write_csv
 #' @import shiny
-#' @importFrom DT datatable dataTableOutput renderDataTable styleColorBar
+#' @importFrom DT datatable styleColorBar
 #' @importFrom DT styleInterval JS formatStyle formatPercentage
 #' @import plyr
 #' @import ggdendro
