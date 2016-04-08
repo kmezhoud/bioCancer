@@ -14,8 +14,6 @@
 #' example <- "runMAnually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' colorRef <- attriColorValue(500, ListProfData$Expression$luad_tcga_pub,
-#' colors = c("blue", "white","yellow","red", "black"), feet=10)
 #'}
 #'
 attriColorValue <- function(Value, df, colors=c(a,b,c, d,e),feet){
