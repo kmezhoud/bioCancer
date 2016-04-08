@@ -24,12 +24,14 @@
 #' @importFrom markdown markdownToHTML
 #' @importFrom shinyAce aceEditor updateAceEditor
 #' @importFrom readr read_delim write_csv
-#'@import shiny
-#'@import plyr
-#'@import ggdendro
-#'@import data.tree
-#'@importFrom stringr str_match
-#'@importFrom psych KMO corr.test cortest.bartlett fa.sort principal skew
+#' @import shiny
+#' @importFrom DT datatable dataTableOutput renderDataTable styleColorBar
+#' @importFrom DT styleInterval JS formatStyle formatPercentage
+#' @import plyr
+#' @import ggdendro
+#' @import data.tree
+#' @importFrom stringr str_match
+#' @importFrom psych KMO corr.test cortest.bartlett fa.sort principal skew
 #'@importFrom yaml yaml.load
 #'@importFrom AlgDesign optFederov
 #'@importFrom MASS isoMDS
@@ -37,8 +39,6 @@
 #'@importFrom car leveragePlots recode vif
 #'@importFrom curl curl
 #'@import GPArotation
-#'@importFrom DT datatable dataTableOutput renderDataTable styleColorBar
-#'@importFrom DT styleInterval JS formatStyle formatPercentage
 #'@import scales
 #'@import htmlwidgets
 #'@importFrom htmlwidgets shinyRenderWidget
@@ -47,7 +47,16 @@
 #'@import stats
 #'
 
-NULL
+### dont import function from DT : conflicts with shiny
+#@importFrom DT datatable dataTableOutput renderDataTable styleColorBar
+#@importFrom DT styleInterval JS formatStyle formatPercentage
+# @importFrom shiny actionButton actionLink addResourcePath browserViewer checkboxGroupInput checkboxInput conditionalPanel dateInput downloadButton downloadHandler downloadLink eventReactive fileInput
+# @importFrom shiny h4 h5 headerPanel HTML htmlOutput icon imageOutput img includeCSS includeHTML includeMarkdown includeScript includeText incProgress inputPanel isolate mainPanel navbarMenu
+# @importFrom shiny navbarPage navlistPanel observe observeEvent outputOptions paneViewer plotOutput plotPNG Progress reactive reactivePlot reactiveTable reactiveText
+# @importFrom shiny reactiveUI reactiveValues renderPlot renderPrint renderText renderUI runApp selectInput selectizeInput setProgress shinyApp shinyServer shinyUI sidebarLayout sidebarPanel
+# @importFrom shiny sliderInput stopApp submitButton tabPanel tabsetPanel tag tagList textInput textOutput titlePanel uiOutput updateCheckboxInput updateDateInput updateNavbarPage updateNumericInput updateRadioButtons
+# @importFrom shiny  updateSelectInput updateSelectizeInput updateTabsetPanel updateTextInput validate validateCssUnit verbatimTextOutput verticalLayout wellPanel withMathJax withProgress
+# @importFrom shiny pageWithSliderbar radioButton session viewer
 
 bioCancer <- function(){
   if ("package:bioCancer" %in% search()){
