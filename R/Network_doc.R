@@ -22,15 +22,16 @@ Edges_df <- function(){
 
   if(is.null(ReactomeFI)){
     #shiny::withProgress(message = 'Loading ReactomeFI...', value = 0.1, {
-      Sys.sleep(0.25)
+    Sys.sleep(0.25)
 
-      if("package:bioCancer" %in% search()) {
-        r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"), "/extdata/ReactomeFI2015", sep=""))
-      }else{
-        r_data[['ReactomeFI']]  <- readRDS(file.path(paste(r_path,"/extdata/ReactomeFI2015", sep="")))
-      }
+    if("package:bioCancer" %in% search()) {
+      r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"),
+                                                "/extdata/ReactomeFI2015", sep=""))
+    }else{
+      r_data[['ReactomeFI']]  <- readRDS(file.path(paste(r_path,"/extdata/ReactomeFI2015", sep="")))
+    }
 
-   # })
+    # })
   }
 
   #GeneList <- c("DKK3", "NBN", "MYO6", "TP53","PML", "IFI16", "BRCA1")
@@ -38,65 +39,67 @@ Edges_df <- function(){
 
   ## Edges Attributes
   #shiny::withProgress(message = 'load FI for GeneList...', value = 0.1, {
-    Sys.sleep(0.25)
-    fis <- getReactomeFI(2014,genes=GeneList, use.linkers = FALSE) # input$UseLinkerNetId
-#})
+  Sys.sleep(0.25)
+  fis <- getReactomeFI(2014,genes=GeneList, use.linkers = FALSE) # input$UseLinkerNetId
+  #})
   #shiny::withProgress(message = 'load gene relationships...', value = 0.1, {
-    Sys.sleep(0.25)
+  Sys.sleep(0.25)
 
-    names(fis) <- c("Gene1", "Gene2")
-    Edges_obj1 <- merge(ReactomeFI, fis, by=c("Gene1","Gene2"))
-    names(fis) <- c("Gene2", "Gene1")
-    Edges_obj2 <- merge(ReactomeFI, fis, by=c("Gene1","Gene2"))
-    Edges_obj <- rbind(Edges_obj1,Edges_obj2)
+  names(fis) <- c("Gene1", "Gene2")
+  Edges_obj1 <- merge(ReactomeFI, fis, by=c("Gene1","Gene2"))
+  names(fis) <- c("Gene2", "Gene1")
+  Edges_obj2 <- merge(ReactomeFI, fis, by=c("Gene1","Gene2"))
+  Edges_obj <- rbind(Edges_obj1,Edges_obj2)
 
-    #     > head(Edges_obj)
-    #     from to                                    Annotation Direction Score
-    #     1  EGR1  TP53 expression regulated by; expression regulates       <->  1.00
-    #     2  EGR1   UBB                          expression regulates        ->  1.00
-    #     3  MYO6   UBB                                     predicted         -  0.61
-    #     4   PML  TP53       complex; expression regulated by; input        <-  1.00
-    #     5  TP53   UBB                  catalyze; complex; predicted        ->  1.00
-    #     6 BRCA1  EGR1                       expression regulated by        <-  1.00
+  #     > head(Edges_obj)
+  #     from to                                    Annotation Direction Score
+  #     1  EGR1  TP53 expression regulated by; expression regulates       <->  1.00
+  #     2  EGR1   UBB                          expression regulates        ->  1.00
+  #     3  MYO6   UBB                                     predicted         -  0.61
+  #     4   PML  TP53       complex; expression regulated by; input        <-  1.00
+  #     5  TP53   UBB                  catalyze; complex; predicted        ->  1.00
+  #     6 BRCA1  EGR1                       expression regulated by        <-  1.00
 
-    ## Filter Annotation interaction
-    #  Edges_obj <- Edges_obj[- grep(c("predic",activat), Edges_obj$Annotation),]
-    #  Edges_obj <- Edges_obj[!grepl("predict|activat|binding|complex|indirect",Edges_obj$Annotation),]
+  ## Filter Annotation interaction
+  #  Edges_obj <- Edges_obj[- grep(c("predic",activat), Edges_obj$Annotation),]
+  #  Edges_obj <- Edges_obj[!grepl("predict|activat|binding|complex|indirect",Edges_obj$Annotation),]
 
-    Edges_obj <- Edges_obj[grepl(paste0(c("activat","predict"), collapse="|"),Edges_obj$Annotation),] #input$FIs_AttNetworkId
+  Edges_obj <- Edges_obj[grepl(paste0(c("activat","predict"),
+                                      collapse="|"),Edges_obj$Annotation),] #input$FIs_AttNetworkId
 
-    ## skip infinity loop when load Reactome_Genelist
-    if(is.null(r_data$Reactome_GeneList)){
-      r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
-    }else if (all(r_data$length(Reactome_GeneList) == length(union(Edges_obj$Gene1, Edges_obj$Gene2)))
-              && all(r_data$Reactome_GeneList == union(Edges_obj$Gene1, Edges_obj$Gene2))
-    ){
+  ## skip infinity loop when load Reactome_Genelist
+  if(is.null(r_data$Reactome_GeneList)){
+    r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
+  }else if (all(r_data$length(Reactome_GeneList) == length(union(Edges_obj$Gene1, Edges_obj$Gene2)))
+            && all(r_data$Reactome_GeneList == union(Edges_obj$Gene1, Edges_obj$Gene2))
+  ){
 
-    }else{
-      r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
-    }
-    ## Get interaction Frequency in dataframe FreqIn
+  }else{
+    r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
+  }
+  ## Get interaction Frequency in dataframe FreqIn
 
-    FreqIn <- rbind(t(t(table(as.character(Edges_obj$Gene2)))), t(t(table(as.character(Edges_obj$Gene1)))))
-    colnames(FreqIn) <- "Freq"
-    FreqIn <- as.data.frame(FreqIn) %>% add_rownames("Genes")
-    r_data[['FreqIn']] <- plyr::ddply(FreqIn,~Genes,summarise,FreqSum=sum(Freq))
+  FreqIn <- rbind(t(t(table(as.character(Edges_obj$Gene2)))),
+                  t(t(table(as.character(Edges_obj$Gene1)))))
+  colnames(FreqIn) <- "Freq"
+  FreqIn <- as.data.frame(FreqIn) %>% add_rownames("Genes")
+  r_data[['FreqIn']] <- plyr::ddply(FreqIn,~Genes,summarise,FreqSum=sum(Freq))
 
 
-    rownames(Edges_obj) <- NULL
+  rownames(Edges_obj) <- NULL
 
-    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\->","from;to", x)))
-    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\|\\->","from;to", x)))
-    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\-\\|","to;from", x)))
-    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("->","to", x)))
-    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<-","from", x)))
-    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\|\\-","from", x)))
-    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\-\\|","to", x)))
-    Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("-","none", x)))
+  Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\->","from;to", x)))
+  Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\|\\->","from;to", x)))
+  Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\-\\|","to;from", x)))
+  Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("->","to", x)))
+  Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<-","from", x)))
+  Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\|\\-","from", x)))
+  Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\-\\|","to", x)))
+  Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("-","none", x)))
 
-    colnames(Edges_obj)<- c("from", "to","title","arrows" ,"width")
+  colnames(Edges_obj)<- c("from", "to","title","arrows" ,"width")
 
-    #Edges_obj <- Edges_obj[1:150,]
+  #Edges_obj <- Edges_obj[1:150,]
   #})
   ## add 3 column used with geneset enrichment
   Edges_obj <- cbind(Edges_obj,
@@ -190,15 +193,19 @@ Node_df <- function(genelist, freqIn){
   #GeneFreq <- data.frame(lapply(GeneFreq[,names(GeneFreq)] , as.factor))
 
   #if(input$NodeAttri_ClassifierID == 'mRNA'|| input$NodeAttri_ClassifierID == 'mRNA/Studies'){
-    colorsVector <- sapply(GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
-    colors_df <- data.frame(id = GenesClassDetails$Genes,color = colorsVector)
-    colors_df <- data.frame(lapply(colors_df, as.character), stringsAsFactors=FALSE)
-    merge1 <- dplyr::inner_join(GeneFreq, colors_df, by="id")
-    merge1 <- data.frame(merge1, value= "1")
-    diff1 <- dplyr::anti_join(GeneFreq, colors_df, by="id")
-    diff1 <- data.frame (diff1, color= "lightgrey", value= "1")
-    GeneFreq <- rbind(merge1, diff1)
- # }else{
+  colorsVector <- sapply(GenesClassDetails$exprsMeanDiff,
+                         function(x) as.character(
+                           attriColorVector(x,GenesClassDetails$exprsMeanDiff,
+                                            colors=c("blue","white","red"), feet=1)
+                           ))
+  colors_df <- data.frame(id = GenesClassDetails$Genes,color = colorsVector)
+  colors_df <- data.frame(lapply(colors_df, as.character), stringsAsFactors=FALSE)
+  merge1 <- dplyr::inner_join(GeneFreq, colors_df, by="id")
+  merge1 <- data.frame(merge1, value= "1")
+  diff1 <- dplyr::anti_join(GeneFreq, colors_df, by="id")
+  diff1 <- data.frame (diff1, color= "lightgrey", value= "1")
+  GeneFreq <- rbind(merge1, diff1)
+  # }else{
   #  GeneFreq <- cbind(GeneFreq,color="lightgrey", value="1")
   #}
   return(GeneFreq)

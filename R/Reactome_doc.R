@@ -43,7 +43,8 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
   my.colors <- grDevices::colorRampPalette(colors)
   #generates Max-Min colors from the color ramp
 
-  color.df <- data.frame(COLOR_VALUE=seq(Min,Max,feet), color.name=my.colors(length(seq(Min,Max,feet))))
+  color.df <- data.frame(COLOR_VALUE=seq(Min,Max,feet),
+                         color.name=my.colors(length(seq(Min,Max,feet))))
   colorRef <- color.df[which(color.df[,1]==Value),2]
   #colorRef <- paste0(colorRef, collapse =",")
   return(colorRef)
@@ -109,7 +110,8 @@ Edges_obj <- function(){
   Reactome_GeneList <- union(Edges_obj$Gene1, Edges_obj$Gene2)
 
   ## Get interaction Frequency in dataframe FreqIn
-  FreqIn <- rbind(t(t(table(as.character(Edges_obj$Gene2)))), t(t(table(as.character(Edges_obj$Gene1)))))
+  FreqIn <- rbind(t(t(table(as.character(Edges_obj$Gene2)))),
+                  t(t(table(as.character(Edges_obj$Gene1)))))
   colnames(FreqIn) <- "Freq"
   FreqIn <- as.data.frame(FreqIn) %>% add_rownames("Genes")
   FreqIn <- plyr::ddply(FreqIn,~Genes,summarise,FreqSum=sum(Freq))
@@ -309,7 +311,8 @@ Node_obj_FreqIn <- function(GeneList){
 
   FreqIn$Genes<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Gene(x, GeneList)))
   FreqIn$FreqSum  <- FreqIn$FreqSum / 10
-  FreqIn$FreqSum <- paste0("fixedsize = TRUE, width =",FreqIn$FreqSum,", alpha_fillcolor =",FreqIn$FreqSum,",")
+  FreqIn$FreqSum <- paste0("fixedsize = TRUE, width =",
+                           FreqIn$FreqSum,", alpha_fillcolor =",FreqIn$FreqSum,",")
   FreqIn <- cbind(FreqIn, Direction="peripheries=1,")
   FreqIn <- cbind(FreqIn, Annotation="style = filled,")
   FreqIn <- cbind(FreqIn, Arrowsize="alpha_fillcolor = 1,")
@@ -362,7 +365,8 @@ Node_obj_mRNA_Classifier <- function(GeneList,genesclassdetails){
     #     GeneList <- t(unique(read.table(paste0(getwd(),"/data/GeneList/",input$GeneListID,".txt" ,sep=""))))
     #   }
 
-    GenesClassDetails$Genes <- unname(sapply(GenesClassDetails$Genes,  function(x) attriShape2Gene(x, GeneList)))
+    GenesClassDetails$Genes <- unname(sapply(GenesClassDetails$Genes,
+                                             function(x) attriShape2Gene(x, GeneList)))
 
     ###GenesClassDetails$ranking <- paste("peripheries=",GenesClassDetails$ranking,"," ,sep=" ")
     GenesClassDetails$ranking <- paste("peripheries=","1","," ,sep=" ")
@@ -379,10 +383,15 @@ Node_obj_mRNA_Classifier <- function(GeneList,genesclassdetails){
     GenesClassDetails$postProb <- "style = filled, fillcolor ='"
 
     GenesClassDetails$exprsMeanDiff <- sapply(GenesClassDetails$exprsMeanDiff,
-                                              function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff,
-                                                                                        colors=c("blue","white","red"), feet=1)))
+                                              function(x) as.character(
+                                                attriColorVector(x,
+                                                                 GenesClassDetails$exprsMeanDiff,
+                                                                 colors=c("blue","white","red"),
+                                                                 feet=1)))
 
-    GenesClassDetails$FreqSum <- paste0("',fixedsize = TRUE, width =",GenesClassDetails$FreqSum,", alpha_fillcolor =",GenesClassDetails$FreqSum,"]")
+    GenesClassDetails$FreqSum <- paste0("',fixedsize = TRUE, width =",
+                                        GenesClassDetails$FreqSum,", alpha_fillcolor =",
+                                        GenesClassDetails$FreqSum,"]")
 
     # rename column to rbind with edge dataframe
     names(GenesClassDetails) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
@@ -474,7 +483,7 @@ Node_obj_Met_ProfData <- function(list, type, Threshold){
     Met_Obj$Score <- "fixedsize=true]"
     Met_Obj <- Met_Obj[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
 
-    #lapply(ListProfData_bkp$Met_HM450, function(x) attriColorGene(x))
+    #lapply(ListProfData$Met_HM450, function(x) attriColorGene(x))
     return(Met_Obj)
   }
 }
@@ -555,21 +564,21 @@ graph_obj <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData
   }
   if(NodeAttri_ProfData == 'CNA'){
 
-    CNA_obj <- Node_obj_CNA_ProfData(list=ListProfData_bkp$CNA)
+    CNA_obj <- Node_obj_CNA_ProfData(list=ListProfData$CNA)
     Edges_obj <- rbind(Edges_obj, CNA_obj)
 
   }
 
   if(NodeAttri_ProfData== 'Met_HM450'){
 
-    Met_obj <- Node_obj_Met_ProfData(list= ListProfData_bkp$Met_HM450, type ='HM450', Threshold = 0.8)
+    Met_obj <- Node_obj_Met_ProfData(list= ListProfData$Met_HM450, type ='HM450', Threshold = 0.8)
     Edges_obj <- rbind(Edges_obj, Met_obj)
 
   }
 
   if(NodeAttri_ProfData=='Met_HM27' ){
 
-    Met_obj <- Node_obj_Met_ProfData(list= ListProfData_bkp$Met_HM27, type='HM27', Threshold = 0.8)
+    Met_obj <- Node_obj_Met_ProfData(list= ListProfData$Met_HM27, type='HM27', Threshold = 0.8)
     Edges_obj <- rbind(Edges_obj, Met_obj)
 
   }

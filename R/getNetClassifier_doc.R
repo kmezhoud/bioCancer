@@ -66,7 +66,7 @@ getGenesClassifier <- function(){
     ProfData <- t(ProfData)
     #profdata <<- ProfData
     ##remove all NAs rows
-    if (inherits(try(ProfData<- ProfData[which( apply( !( apply(ProfData,1,is.na) ),2,sum)!=0 ),] , silent=FALSE),"try-error"))
+    if (inherits(try(ProfData<- ProfData[which(apply(!( apply(ProfData,1,is.na) ),2,sum)!=0 ),] , silent=FALSE),"try-error"))
     {
       stop("Reselect Cases and Genetic Profiles from Samples. It is recommanded to use v2_mrna data. ")
     } else{
@@ -145,14 +145,19 @@ getGenesClassifier <- function(){
   print("getting eSetClassifier...")
   if(min(Biobase::exprs(eSetClassifier), na.rm=TRUE)<0){
     print("There are negative values. Translating values by adding the absolute of minimum value to all matrix")
-    Biobase::exprs(eSetClassifier) <- Biobase::exprs(eSetClassifier)+(abs(min(exprs(eSetClassifier), na.rm=TRUE)))
+    Biobase::exprs(eSetClassifier) <- Biobase::exprs(eSetClassifier)+
+      (abs(min(exprs(eSetClassifier), na.rm=TRUE)))
   }
 
   #r_data[['eSetClassifier']] <- eSetClassifier
   # Biobase::exprs(eSetClassifier) <- Biobase::exprs(eSetClassifier)[,-1]
   #eSetClassifier <<- eSetClassifier
 
-  if (inherits(try(signGenesRank_DiseaseType<- geNetClassifier::calculateGenesRanking(eSetClassifier[,1:(SamplesSize*length(checked_Studies))], sampleLabels="DiseasesType", lpThreshold= Threshold, returnRanking="significant", plotLp = FALSE), silent=TRUE),"try-error"))
+  if (inherits(try(signGenesRank_DiseaseType<- geNetClassifier::calculateGenesRanking(
+    eSetClassifier[,1:(SamplesSize*length(checked_Studies))],
+    sampleLabels="DiseasesType", lpThreshold= Threshold,
+    returnRanking="significant", plotLp = FALSE),
+    silent=TRUE),"try-error"))
   {
     msgNoSignificantDiff <- paste("The current genes don't differentiate the classes (Cancers)..")
 
@@ -165,7 +170,10 @@ getGenesClassifier <- function(){
     stop(msgNoSignificantDiff )
   } else{
 
-    signGenesRank_DiseaseType <- geNetClassifier::calculateGenesRanking(eSetClassifier[,1:(SamplesSize*length(checked_Studies))], sampleLabels="DiseasesType", lpThreshold= Threshold, returnRanking="significant", plotLp = FALSE)
+    signGenesRank_DiseaseType <- geNetClassifier::calculateGenesRanking(
+      eSetClassifier[,1:(SamplesSize*length(checked_Studies))],
+      sampleLabels="DiseasesType", lpThreshold= Threshold,
+      returnRanking="significant", plotLp = FALSE)
   }
 
 

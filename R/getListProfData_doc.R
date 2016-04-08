@@ -51,12 +51,17 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
         if(length(ProfData_X)== 0){
           if(length(GeneList) <= 500){
             ## built empty data frame with gene Symbol in colnames
-            ProfData_X <- as.data.frame(setNames(replicate(length(GeneList),numeric(1), simplify = FALSE), GeneList[order(GeneList)]))
+            ProfData_X <- as.data.frame(setNames(replicate(length(GeneList),
+                                                           numeric(1), simplify = FALSE),
+                                                 GeneList[order(GeneList)]))
             return(ProfData_X)
 
           }else{
-            ProfData_X <- as.data.frame(setNames(replicate(length(SubMegaGeneList),numeric(1), simplify = FALSE), SubMegaGeneList[order(SubMegaGeneList)]))
+            ProfData_X <- as.data.frame(setNames(replicate(length(SubMegaGeneList),
+                                                           numeric(1), simplify = FALSE),
+                                                 SubMegaGeneList[order(SubMegaGeneList)]))
             return(ProfData_X)
+
           }
         }else{
           return(ProfData_X)
@@ -68,7 +73,9 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
         #print(paste("MutData: ",dim(MutData)))
         if(length(MutData)==0){
           ## built emty data.frame as the same form of MutData
-          MutData <- data.frame("gene_symbol"=character(1),"mutation_type"=character(1), "amino_acid_change"=character(1))
+          MutData <- data.frame("gene_symbol"=character(1),
+                                "mutation_type"=character(1),
+                                "amino_acid_change"=character(1))
           return(MutData)
         }else{
           ## From Mut Data frame select only Gene_symbol, Mutation_Type, AA-Changes
@@ -87,10 +94,14 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
       #print(paste("There is no genetic Profile: ", regex2," for Study:",checked_Studies[s],"..." ))
       ## built empty data frame with gene Symbol in colnames
       if(length(GeneList) <500){
-        ProfData_X <- as.data.frame(setNames(replicate(length(GeneList),numeric(1), simplify = FALSE), GeneList[order(GeneList)]))
+        ProfData_X <- as.data.frame(setNames(replicate(length(GeneList),
+                                                       numeric(1), simplify = FALSE),
+                                             GeneList[order(GeneList)]))
         return(ProfData_X)
       }else{
-        ProfData_X <- as.data.frame(setNames(replicate(length(SubMegaGeneList),numeric(1), simplify = FALSE), SubMegaGeneList[order(SubMegaGeneList)]))
+        ProfData_X <- as.data.frame(setNames(replicate(length(SubMegaGeneList),
+                                                       numeric(1), simplify = FALSE),
+                                             SubMegaGeneList[order(SubMegaGeneList)]))
         return(ProfData_X)
       }
       return( ProfData_X)
@@ -104,10 +115,14 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
     #print(paste("There is no Cases: ", regex1," for Study:",checked_Studies[s],"..." ))
     ## built empty data frame with gene Symbol in colnames
     if(length(GeneList) <500){
-      ProfData_X <-as.data.frame(setNames(replicate(length(GeneList),numeric(1), simplify = FALSE), GeneList[order(GeneList)]))
+      ProfData_X <-as.data.frame(setNames(replicate(length(GeneList),
+                                                    numeric(1), simplify = FALSE),
+                                          GeneList[order(GeneList)]))
       return(ProfData_X)
     }else{
-      ProfData_X <-as.data.frame(setNames(replicate(length(SubMegaGeneList),numeric(1), simplify = FALSE), SubMegaGeneList[order(SubMegaGeneList)]))
+      ProfData_X <-as.data.frame(setNames(replicate(length(SubMegaGeneList),
+                                                    numeric(1), simplify = FALSE),
+                                          SubMegaGeneList[order(SubMegaGeneList)]))
       return(ProfData_X)
     }
     return(ProfData_X)
@@ -179,9 +194,11 @@ getListProfData <- function(panel){
 
   }
   ## get Cases for selected Studies
-  CasesRefStudies <- unname(unlist(apply(as.data.frame(checked_Studies), 1,function(x) getCaseLists(cgds,x)[1])))
+  CasesRefStudies <- unname(unlist(apply(as.data.frame(checked_Studies),
+                                         1,function(x) getCaseLists(cgds,x)[1])))
   ## ger Genetics Profiles for selected Studies
-  GenProfsRefStudies <- unname(unlist(apply(as.data.frame(checked_Studies), 1,function(x) getGeneticProfiles(cgds,x)[1])))
+  GenProfsRefStudies <- unname(unlist(apply(as.data.frame(checked_Studies),
+                                            1,function(x) getGeneticProfiles(cgds,x)[1])))
 
   LengthGenProfs <- 0
   LengthCases <- 0

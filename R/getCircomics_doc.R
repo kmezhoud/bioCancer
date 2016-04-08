@@ -14,6 +14,8 @@
 #' example <- "runMAnually"
 #' \dontrun{
 #' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' colorRef <- attriColorValue(500, ListProfData$Expression$luad_tcga_pub,
+#' colors = c("blue", "white","yellow","red", "black"), feet=10)
 #'}
 #'
 attriColorValue <- function(Value, df, colors=c(a,b,c, d,e),feet){
@@ -30,7 +32,8 @@ attriColorValue <- function(Value, df, colors=c(a,b,c, d,e),feet){
     Min <- min(df, na.rm=TRUE)
   }
   my.colors <- colorRampPalette(colors)
-  color.df<-data.frame(COLOR_VALUE=seq(Min,Max,feet), color.name=my.colors(length(seq(Min,Max,feet)))) #generates Max-Min colors from the color ramp
+  #generates Max-Min colors from the color ramp
+  color.df<-data.frame(COLOR_VALUE=seq(Min,Max,feet), color.name=my.colors(length(seq(Min,Max,feet))))
   colorRef <- color.df[which(color.df[,1]==Value),2]
   return(colorRef)
 }
@@ -84,7 +87,9 @@ attriColorGene <- function(df){
     colorls <- lapply(dfMeansOrCNA, function(x) attriColorValue(x, dfMeansOrCNA, colors=c("white"), feet=0.1))
     print("setting black color for empty data...")
   }else{
-    colorls <- lapply(dfMeansOrCNA, function(x) attriColorValue(x, dfMeansOrCNA, colors=c("blue3","cyan3","white","yellow","red"), feet=0.1))
+    colorls <- lapply(dfMeansOrCNA, function(x) attriColorValue(x, dfMeansOrCNA,
+                                                                colors=c("blue3","cyan3","white","yellow","red"),
+                                                                feet=0.1))
   }
   return(colorls)
 }
@@ -107,7 +112,8 @@ reStrColorGene <- function(df){
   colorls <- attriColorGene(df)
   ## extract disease name
   disease_name <- unlist(lapply(strsplit(capture.output(substitute(df)), "\\$"),tail, 1))
-  Children <- list(name=disease_name,unname(mapply(function(genes, color){list(list(name=genes, colour= color))},names(colorls), colorls)))
+  Children <- list(name=disease_name,unname(mapply(function(genes, color){
+                    list(list(name=genes, colour= color))},names(colorls), colorls)))
   names(Children)[2] <- "children"
   return(Children)
 
@@ -297,7 +303,8 @@ whichGeneList <- function(){
   }else if(GeneListID == "Reactome_GeneList"){
     GeneList <- "Reactome_GeneList"
   }else{
-    GeneList <- t(unique(read.table(paste0(system.file(package = "bioCancer"),"/base/data/GeneList/",GeneListID,".txt" ,sep=""))))
+    GeneList <- t(unique(read.table(paste0(system.file(package = "bioCancer"),
+                                           "/base/data/GeneList/",GeneListID,".txt" ,sep=""))))
     #GeneList <- t(unique(read.table(paste0(.libPaths(),"/bioCancer/base/data/GeneList/",GeneListID,".txt" ,sep=""))))
   }
   return(GeneList)
@@ -333,13 +340,19 @@ getFreqMutData <- function(list){
 
 
   ## convert the list of correlation matrices to Array
-  Freq_ArrayMutData <- array(unlist( Freq_ListMutData), dim = c(nrow(Freq_ListMutData[[1]]), ncol( Freq_ListMutData[[1]]), length(Freq_ListMutData)))
+  Freq_ArrayMutData <- array(unlist( Freq_ListMutData), dim = c(nrow(Freq_ListMutData[[1]]),
+                                                                ncol( Freq_ListMutData[[1]]),
+                                                                length(Freq_ListMutData)))
 
-  if (inherits(try(dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1], colnames(Freq_ListMutData[[1]]), names(Freq_ListMutData)), silent=TRUE),"try-error")){
-    stop("There is a Study without Mutation Data. Use Mutation Panel to verify mutations data for selected studies.")
+  if (inherits(try(dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1],
+                                                       colnames(Freq_ListMutData[[1]]),
+                                                       names(Freq_ListMutData)), silent=TRUE),"try-error")){
+    stop("There is a Study without Mutation Data. Use Mutation
+         Panel to verify mutations data for selected studies.")
   }else{
 
-    dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1], colnames(Freq_ListMutData[[1]]), names(Freq_ListMutData))
+    dimnames(Freq_ArrayMutData) <- list(Freq_ListMutData[[1]][,1],
+                                        colnames(Freq_ListMutData[[1]]), names(Freq_ListMutData))
   }
   # Freq_ArrayMutData <<- Freq_ArrayMutData
 
@@ -432,14 +445,18 @@ checkDimensions<- function(panel){
 
     checked_Studies <- StudiesIDReactome
     # get Cases for selected Studies
-    CasesRefStudies <- unname(unlist(apply(as.data.frame(StudiesIDReactome), 1,function(x) getCaseLists(cgds,x)[1])))
+    CasesRefStudies <- unname(unlist(apply(as.data.frame(StudiesIDReactome), 1,
+                                           function(x) getCaseLists(cgds,x)[1])))
     ## ger Genetics Profiles for selected Studies
-    GenProfsRefStudies <- unname(unlist(apply(as.data.frame(StudiesIDReactome), 1,function(x) getGeneticProfiles(cgds,x)[1])))
+    GenProfsRefStudies <- unname(unlist(apply(as.data.frame(StudiesIDReactome), 1,
+                                              function(x) getGeneticProfiles(cgds,x)[1])))
 
   }
 
-  df <- data.frame(row.names = c("Case_CNA", "GenProf_GISTIC", "Case_mRNA", "GenProf_mRNA", "Case_Met_HM450", "GenProf_Met_HM450",
-                                 "Case_Met_HM27", "GenProf_Met_HM27", "Case_RPPA", "GeneProf_RPPA", "Case_miRNA", "GenProf_miRNA",
+  df <- data.frame(row.names = c("Case_CNA", "GenProf_GISTIC", "Case_mRNA",
+                                 "GenProf_mRNA", "Case_Met_HM450", "GenProf_Met_HM450",
+                                 "Case_Met_HM27", "GenProf_Met_HM27",
+                                 "Case_RPPA", "GeneProf_RPPA", "Case_miRNA", "GenProf_miRNA",
                                  "Case_Mut","GeneProf_Mut"
   ) )
 
