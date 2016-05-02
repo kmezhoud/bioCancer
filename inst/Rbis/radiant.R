@@ -1,23 +1,3 @@
-#' Launch bioCancer in the default browser
-#'
-#' @details See \url{http://kmezhoud.github.io/bioCancer} for documentation and tutorials
-#'
-#' @param app Choose the app to run. One of "base", "quant", "analytics", "marketing". "analytics" is the default
-#'
-#' @examples
-#' if (interactive()) {
-#'   bioCancer("base")
-#'   bioCancer("quant")
-#'   bioCancer("marketing")
-#'   bioCancer("analytics")
-#' }
-#' @export
-bioCancer <- function(app = c("analytics", "marketing", "quant", "base")) {
-  if (!"package:bioCancer" %in% search())
-    if (!require(bioCancer)) stop("Calling bioCancer start function but bioCancer is not installed.")
-  runApp(system.file(app[1], package = "bioCancer"), launch.browser = TRUE)
-}
-
 #' Alias used to set the class for analysis function return
 #'
 #' @examples
