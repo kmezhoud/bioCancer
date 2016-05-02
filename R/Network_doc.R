@@ -7,7 +7,11 @@
 #' @examples
 #' example <- "run manually"
 #' \dontrun{
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Edges_df()
 #' }
 #'
@@ -123,7 +127,10 @@ Edges_df <- function(){
 #' @examples
 #' example <- "run Manually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
 #' Ed_Diseases_obj <- Edges_Diseases_obj(genesclassdetails=GenesClassDetails)
 #' }
 #'
@@ -179,7 +186,10 @@ attriShape2Node <- function(gene, genelist){
 #'
 #' example <- "run Manually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
 #' node_df <- Node_df(GeneList, FreqIn )
 #'}
 #'
@@ -224,7 +234,10 @@ Node_df <- function(genelist, freqIn){
 #' @examples
 #' example <- "run Manually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
 #' GeneFreq <- Node_df_FreqIn(GeneList, FreqIn)
 #'}
 Node_df_FreqIn <- function(genelist, freqIn){
@@ -251,7 +264,10 @@ Node_df_FreqIn <- function(genelist, freqIn){
 #' @examples
 #' example <- "run manually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
 #' Node_Diseases_df <- Node_Diseases_obj(genesclassdetails= GenesClassDetails)
 #'}
 Node_Diseases_obj <- function(genesclassdetails){
@@ -286,7 +302,10 @@ Node_Diseases_obj <- function(genesclassdetails){
 #' @examples
 #' example <- "run manually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
 #' getAnnoGeneSet_df(GeneList, "BP")
 #'}
 getAnnoGeneSet_df <- function(genelist,type){

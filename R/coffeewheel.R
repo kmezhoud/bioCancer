@@ -18,7 +18,11 @@
 #' @examples
 #' example <- "run manually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#'  ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #'  bioCancer::coffeewheel(treeData = sampleWheelData)
 #'}
 coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttribute="value"){
@@ -50,7 +54,11 @@ coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttri
 #'
 #' example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #'  bioCancer::coffeewheel(treeData = sampleWheelData)
 #'}
 #' @export
@@ -70,7 +78,11 @@ coffeewheelOutput <- function(outputId, width=700, height=700) {
 #'
 #' example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' bioCancer::coffeewheel(treeData = sampleWheelData)
 #'}
 #' @export
@@ -87,7 +99,11 @@ renderCoffeewheel <- function(expr, env = parent.frame(), quoted = FALSE){
 #'
 #' example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' bioCancer::coffeewheel(treeData = sampleWheelData)
 #'}
 #' @export

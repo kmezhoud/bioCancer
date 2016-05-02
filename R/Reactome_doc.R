@@ -23,7 +23,11 @@
 #' @examples
 #'example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' sapply(GenesClassDetails$exprsMeanDiff,
 #' function(x) as.character(attriColorVector(x,
@@ -61,7 +65,11 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 #' @examples
 #'example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' Ed_obj <- Edges_obj()
 #'}
@@ -174,7 +182,11 @@ Edges_obj <- function(){
 #' @examples
 #'example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' Sd_obj <- Studies_obj(GenesClassDetails)
 #'}
@@ -222,7 +234,11 @@ Studies_obj <- function(df){
 #' @examples
 #' example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Mut_obj <- Mutation_obj(ListMutData_bkp, 0.2)
 #'}
 #'
@@ -276,7 +292,11 @@ Mutation_obj <- function(list,threshold){
 #' @examples
 #' example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' Shape_object <- attriShape2Gene("BRCA1", GeneList)
 #' }
 #'
@@ -301,7 +321,11 @@ attriShape2Gene <- function(gene, genelist){
 #' @examples
 #' example <- "runManually"
 #' \dontrun{
-#'  load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#'  ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #'  ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #'  node_obj <- Node_obj_FreqIn(GeneList)
 #' }
@@ -336,7 +360,11 @@ Node_obj_FreqIn <- function(GeneList){
 #' @examples
 #'example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' node_obj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
 #'}
@@ -411,7 +439,11 @@ Node_obj_mRNA_Classifier <- function(GeneList,genesclassdetails){
 #' @examples
 #' example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' CNA_obj <- Node_obj_CNA_ProfData(ListCNAData_bkp)
 #'}
@@ -452,7 +484,11 @@ Node_obj_CNA_ProfData <- function(list){
 #' @examples
 #'example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' Met_obj <- Node_obj_Met_ProfData(ListMetData_bkp$HM450,type="HM450",0.8)
 #'}
@@ -501,7 +537,11 @@ Node_obj_Met_ProfData <- function(list, type, Threshold){
 #' @examples
 #'example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' gr_obj <- graph_obj('Freq.Interaction', 'mRNA', 'Met_HM450')
 #'}
@@ -609,7 +649,11 @@ graph_obj <- function(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData
 #' @examples
 #'example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 #' diagrammeR('Freq.Interaction', 'mRNA', 'Met_HM450')
 #'}

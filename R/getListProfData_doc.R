@@ -90,8 +90,6 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
       #                    {p1 <- proc.time()
       #                    Sys.sleep(2) # wait 2 seconds
       #                    proc.time() - p1 })
-      #tkmessageBox(message = paste("There is no genetic Profiles: ", regex2," for Study:",checked_Studies[s] ), icon="warning" )
-      #print(paste("There is no genetic Profile: ", regex2," for Study:",checked_Studies[s],"..." ))
       ## built empty data frame with gene Symbol in colnames
       if(length(GeneList) <500){
         ProfData_X <- as.data.frame(setNames(replicate(length(GeneList),
@@ -149,7 +147,11 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #'@examples
 #'example <- "runManually"
 #' \dontrun{
-#' load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 #' StudiesIDCircos <- c("luad_tcga_pub","blca_tcga_pub")
 #' ListProfData <- getListProfData(panel= "Circomics")
 #'}
