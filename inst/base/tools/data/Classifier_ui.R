@@ -1,5 +1,6 @@
 updateSelectizeInput(session, 'ClusterPlotsID',
-                     choices=c("None","GeneList/Diseases","Disease Onthology","Pathway","GO","KEGG"),
+                     #choices=c("None","GeneList/Diseases","Disease Onthology","Pathway","GO","KEGG"),
+                     choices=c("None","Disease Onthology","Pathway","GO","KEGG"),
                      selected = "None")
 
 updateSelectizeInput(session, 'ClassID',
@@ -57,7 +58,8 @@ output$ui_Classifier <- renderUI({
     ),
     conditionalPanel("input.ClassID=='Classifier'",
                      selectizeInput('ClusterPlotsID', 'Pathway Clusters',
-                                    choices=c("None","GeneList/Diseases","Disease Onthology","Reactome","GO","KEGG", "Cellular Component"),
+                                    #choices=c("None","GeneList/Diseases","Disease Onthology","Reactome","GO","KEGG", "Cellular Component"),
+                                    choices=c("None","Disease Onthology","Reactome","GO","KEGG", "Cellular Component"),
                                     multiple= FALSE)
     ),
 

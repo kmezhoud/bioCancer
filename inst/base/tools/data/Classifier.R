@@ -120,17 +120,23 @@ output$Plot_enricher <- renderPlot({
     ## Symbol2GeneID
     GeneID<- unname(unlist(AnnotationFuncs::translate(GeneList, org.Hs.eg.db::org.Hs.egSYMBOL2EG)))
 
-    ## downloaded from http://www.disgenet.org/ds/DisGeNET/resultsDisGeNet.tar.gz
-    if ("package:bioCancer" %in% search()) {
-      gda <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
-      #gdafile <- read.delim(system.file("extdata", "all_gene_disease_associations.txt", package="bioCancer"))
-      #gdafile <- system.file("extdata", "c5.cc.v5.0.entrez.gmt", package="clusterProfiler")
+    # ## downloaded from http://www.disgenet.org/ds/DisGeNET/resultsDisGeNet.tar.gz
+    # if ("package:bioCancer" %in% search()) {
+    #   gda <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
+    #
+    # }else{
+    #   gda <- readRDS(file.path(paste(r_path,"/extdata/DisGeNet.RDS", sep="")))
+    # }
+    # # for Local RDC filr
+    # disease2gene=gda[, c("diseaseId", "geneId")]
+    # disease2name=gda[, c("diseaseId", "diseaseName")]
 
-    }else{
-      gda <- readRDS(file.path(paste(r_path,"/extdata/DisGeNet.RDS", sep="")))
-    }
-    disease2gene=gda[, c("diseaseId", "geneId")]
-    disease2name=gda[, c("diseaseId", "diseaseName")]
+    entity = "gene"
+    identifier = "entrez"
+    gda <- doQuery(entity, identifier)
+
+    disease2gene = gda[,c("c1.cui","c2.geneId")]
+    disease2name = gda[, c("c1.cui", "c1.name")]
     x <- clusterProfiler::enricher(GeneID, pvalueCutoff = 0.05,TERM2GENE=disease2gene, TERM2NAME=disease2name)
     r_data[['x']] <- x
     options(scipen = 0, digits = 2)
