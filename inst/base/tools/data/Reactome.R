@@ -37,6 +37,10 @@ Edges_obj <- function(){
 
       #r_data[['ReactomeFI']] <- read.csv("https://raw.githubusercontent.com/kmezhoud/ReactomeFI/master/FIsInGene_121514_with_annotations.txt", header=TRUE, sep="\t")
       #r_data[['ReactomeFI']]  <- read.delim("inst/extdata/FIsInGene_121514_with_annotations.txt")
+
+      #download.file("http://reactomews.oicr.on.ca:8080/caBigR3WebApp2014/FIsInGene_121514_with_annotations.txt.zip", tmp <- tempfile())
+      #xx = read.delim(unzip(tmp))
+
       if ("package:bioCancer" %in% search()) {
         r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"), "/extdata/reactomeFI2015.RDS", sep=""))
       }else{
