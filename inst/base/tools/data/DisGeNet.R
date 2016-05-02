@@ -11,24 +11,21 @@
 # main
 ###############################################################################
 # load packages
-
+#require(RCurl)
 
 ###############################################################################
 # subs
 ###############################################################################
-#require(RCurl)
-doQuery = function(inputFile, entity, identifier){
-  print(inputFile)
-  #print(outFile)
-  print(entity)
-  print(identifier)
+
+doQuery = function(entity, identifier){
+  #print(entity)
+  #print(identifier)
 
 
-  # read in all data
-  GeneSymbol <- t(unique(read.table(inputFile, sep="")))
+  GeneSymbol <- whichGeneList()
+  #inputFile = paste("inst/base/data/GeneList/102.txt", sep="")
+  #GeneSymbol <- t(unique(read.table(inputFile, sep="")))
   inFile <- data.frame(V1=unname(unlist(AnnotationFuncs::translate(GeneSymbol, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
-  #inFile<- clusterProfiler::bitr(GeneSymbol, fromType="SYMBOL", toType="ENTREZID", annoDb="org.Hs.eg.db")[,2]
-
   #inFile = read.csv(file=paste(getwd(), inputFile, sep="/"), sep="\t", header=F)
   dataFin <- data.frame(matrix(nrow=0, ncol=14))
 
@@ -37,7 +34,7 @@ doQuery = function(inputFile, entity, identifier){
     if (identifier == "entrez"){
       STR = "c2.geneId = '"
     }
-    else  if (identifier == "entrez"){
+    else  if (identifier == "hgnc"){
       STR = "c2.name = '"
     }
     else{
@@ -66,28 +63,30 @@ doQuery = function(inputFile, entity, identifier){
   for (ent in inFile$V1 ){
     url <- "http://www.disgenet.org/oql"
     oql <- paste( "DEFINE
-                  c0='/data/gene_disease_score_onexus',
+                  c0='/data/gene_disease_summary',
                   c1='/data/diseases',
                   c2='/data/genes',
-                  c3='/data/sources'
+                  c3='/data/gene_roles',
+                  c4='/data/sources'
                   ON
-                  'http://bitbucket.org/janis_pi/disgenet_onexus.git'
+                  'http://www.disgenet.org/web/DisGeNET'
                   SELECT
-                  c1 (cui, name, diseaseClassName, STY, MESH, omimInt),
                   c2 (geneId, name, uniprotId, description, pathName, pantherName),
-                  c0 (score, pmids)
+                  c1 (cui, name, diseaseClassName, STY, MESH, omimInt, type),
+                  c3 (PI, PL),
+                  c0 (score, pmids,  snps)
+
                   FROM
                   c0
                   WHERE
                   (
-                  c3 = 'ALL'
+                  c4 = 'ALL'
                   AND ", STR, ent , "' )
                   ORDER BY
                   c0.score DESC" , sep = "")
-
+    #print(oql)
     dataTsv <-  getURLContent(url, readfunction =charToRaw(oql), upload = TRUE, customrequest = "POST")
     #dataTsv <- rawToChar( getURLContent(url, readfunction =charToRaw(oql), upload = TRUE, customrequest = "POST"))
-
     data <- read.csv(textConnection(dataTsv), header = TRUE, sep="\t")
     if (dim(data)[1] == 0 ){
       print ( paste (entity , ent, " is not in DisGeNET ", sep = " "))
@@ -110,11 +109,10 @@ doQuery = function(inputFile, entity, identifier){
 #c("DKK3", "NBN", "MYO6", "TP53","PML", "IFI16", "BRCA1")
 #myargs = commandArgs()
 
-
-#  inputFile = paste("inst/base/data/GeneList/102.txt", sep="")
+# inputFile = paste("inst/base/data/GeneList/102.txt", sep="")
 #  ##outputFile = paste("GDA/output.txt", sep="")
-# entity = "gene"
-# identifier = "entrez"
+ #entity = "gene"
+ #identifier = "entrez"
 #
 #
 # print("Querying the database ")
