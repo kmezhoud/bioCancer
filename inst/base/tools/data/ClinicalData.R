@@ -7,7 +7,7 @@ output$StudiesTable <- DT::renderDataTable({
   DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
                 rownames = FALSE, style = "bootstrap", escape = FALSE,
                 # class = "compact",
-                 options = list(
+                options = list(
                   ajax = list(url = action),
                   search = list(search = "",regex = TRUE),
                   columnDefs = list(list(className = 'dt-center', targets = "_all")),
@@ -35,24 +35,28 @@ output$dl_Studies_tab <- shiny::downloadHandler(
 
 output$ClinicalDataTable <- DT::renderDataTable({
 
-  #if (not_available(r_data$Clinical_vars)) return()
+
+  #if(is.null(r_data$Clinical_vars)) return()
   ##### get Clinical Data for selected Case
-  dat <- cgdsr::getClinicalData(cgds, input$CasesID)
+  #dat <- cgdsr::getClinicalData(cgds, input$CasesID)
   ## change rownames in the first column
-  dat <- dat %>% add_rownames("Patients")
+  #dat <- dat %>% add_rownames("Patients")
 
-  r_data[['ClinicalData']] <- dat
+  #dat <- r_data[['ClinicalData']]
 
-  dat <- dat[input$ui_Clinical_vars]
-
-
+  ##  needed to make silence the error
+  if (inherits(try( dat <- r_data$ClinicalData[input$ui_Clinical_vars], silent=TRUE),"try-error")){
+    dat <- r_data$ClinicalData
+  }else{
+    dat <- r_data$ClinicalData[input$ui_Clinical_vars]
+  }
   # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
   action = DT::dataTableAjax(session, dat, rownames = FALSE)
 
   #DT::datatable(dat, filter = "top", rownames =FALSE, server = TRUE,
   DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
                 rownames = FALSE, style = "bootstrap", escape = FALSE,
-                 class = "compact",
+                class = "compact",
                 options = list(
                   ajax = list(url = action),
                   search = list(regex = TRUE),

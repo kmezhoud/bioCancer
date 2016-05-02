@@ -18,8 +18,10 @@ output$ui_Clinical_vars <- renderUI({
   dat <- cgdsr::getClinicalData(cgds, input$CasesID)
   ## change rownames in the first column
   dat <- dat %>% add_rownames("Patients")
+  r_data[['ClinicalData']] <- dat
 
   Clinical_vars <- names(dat)
+  r_data[['Clinical_vars']] <- Clinical_vars
 
     selectInput("ui_Clinical_vars", "Select variables to show:", choices  = Clinical_vars,
               selected = state_multiple("Clinical_vars",Clinical_vars, Clinical_vars), multiple = TRUE,
