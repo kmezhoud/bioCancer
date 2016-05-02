@@ -1,15 +1,43 @@
 ---
-title: "bioCancer"
-author: "Karim Mezhoud"
-date: "April 8, 2016"
-output: html_document
+title: "bioCancer: Interactive Multi-OMICS Cancers Data Visualization and Analysis"
+author: "\\
+	Karim Mezhoud (<kmezhoud@gmail.com>)\\
+        Nuclear Science Center of Tunisia, Nuclear Safety & Security Department"
+date: "`r Sys.Date()`"
+output: 
+  BiocStyle::html_document:
+    toc: true
+  BiocStyle::pdf_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{bioCancer: Interactive Multi-OMICS Cancers Data Visualization and Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+```{r style, echo=FALSE, results="asis", message=FALSE}
+BiocStyle::markdown()
+knitr::opts_chunk$set(tidy = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
 ```
 
-#Portal Panel
+
+# bioCancer Package 
+
+bioCancer is a platform-independent interface for dynamic interaction with cancer genomics data. The web is implemented in the R language and based on the Shiny package. It runs on any modern Web browser and requires no programming skills, increasing the accessibility to the huge, complex and heterogeneous cancer genomic data. The data are provided from cBioPortal that contains data from 105 cancer genomics studies. The studies are updated monthly, based on the last TCGA production runs. User can access easily to studies, search in clinical data or by genetic profiles. All data are displayed in table which user can filter, combine, download, visualize and get statistics on it. For more global exploring, zoomable circular layout are available to merge and view around twenty matrices in the same plot. The circular layout makes easy and rapid to identify pertinent multi-assays changes in genes through multiple cancers or studies.
+The web page implements multiple methods, to classify genes by study or by disease, to cluster studies by biological process or other ontology annotation. From gene list user can predicts functional interaction network. Nodes and edges can be colored and formatted by omics cancer data. User is free to choose which dimension will be included in network and can set some thresholds to view only significant biological scenario.
+The web accepts multiple format of input data that can be included by user to compare/analysis with/without cancer studies. All investigation done by user can be saved in session and can be reloaded later or shared with colleagues. The main R plotting features are available and easy to use. User needs only to chose the type of plot and select variables to be viewed. All generated plot is downloadable with a high resolution.
+ bioCancer has dynamic sidebar dashboard that changes and displays functionalities depending on user request. It reduces excessive clicking or false queries. It can be launched in local machine with any system with R installed or used from a remote server as in ([bioCancer Server ](http://46.101.227.144:3838/bioCancer/)). All navigating panel are well assisted and documented by examples.
+bioCancer is free and open to all users and there is no login requirement.
+
+## How to run bioCancer
+```
+library(bioCancer)
+bioCancer()
+```
+# Portal Panel
 
 ## Display available Cancer Studies in Table
 
@@ -1704,7 +1732,7 @@ For additional discussion see <http://cran.r-project.org/web/packages/dplyr/vign
 #### References
 [1] Aibar S, Fontanillo C, Droste C, Roson-Burgo B, Campos-Laborie F, Hernandez-Rivas J and De Las Rivas J (2015). “Analyse multiple disease subtypes and build associated gene networks using genome-wide expression profiles.” BMC Genomics, 16(Suppl 5:S3). http://dx.doi.org/10.1186/1471-2164-16-S5-S3.
 
-[2] Piñero, J., Queralt-Rosinach, N., Bravo, À., Deu-Pons, J., Bauer-Mehren, A., Baron, M., Ferran Sanz, and Furlong, L. I. (2015). DisGeNET: a discovery platform for the dynamical exploration of human diseases and their genes. Database: The Journal of Biological Databases and Curation, 2015, bav028. http://doi.org/10.1093/database/bav028
+[2] Piñero, J., Queralt-Rosinach, N., Bravo, A., Deu-Pons, J., Bauer-Mehren, A., Baron, M., Ferran Sanz, and Furlong, L. I. (2015). DisGeNET: a discovery platform for the dynamical exploration of human diseases and their genes. Database: The Journal of Biological Databases and Curation, 2015, bav028. http://doi.org/10.1093/database/bav028
 
 [3] Yu G, Wang L, Han Y and He Q (2012). “clusterProfiler: an R package for comparing biological themes among gene clusters.” OMICS: A Journal of Integrative Biology, 16(5), pp. 284-287. http://dx.doi.org/10.1089/omi.2011.0118. 
 
