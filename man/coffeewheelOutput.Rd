@@ -23,7 +23,11 @@ Widget output function for use in Shiny
 
 example <- "runManually"
 \dontrun{
-load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+ string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+ link <- curl::curl(paste0(string1,string2, sep=""))
+ load(link)
+##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
  bioCancer::coffeewheel(treeData = sampleWheelData)
 }
 }

@@ -22,7 +22,11 @@ get graph object for grViz
 \examples{
 example <- "runManually"
 \dontrun{
-load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+ string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+ link <- curl::curl(paste0(string1,string2, sep=""))
+ load(link)
+##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
 gr_obj <- graph_obj('Freq.Interaction', 'mRNA', 'Met_HM450')
 }

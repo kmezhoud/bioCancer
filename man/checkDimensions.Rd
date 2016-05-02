@@ -19,7 +19,11 @@ Chech wich Cases and genetic profiles are available for every seleted study
 \examples{
 example <- "runManually"
 \dontrun{
-load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+ string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+ link <- curl::curl(paste0(string1,string2, sep=""))
+ load(link)
+##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 df <- checkDimensions(panel='Reactome')
 }
 

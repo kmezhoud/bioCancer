@@ -15,7 +15,11 @@ get Edges dataframe for visNetwork function
 \examples{
 example <- "run manually"
 \dontrun{
-load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+ string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+ link <- curl::curl(paste0(string1,string2, sep=""))
+ load(link)
+##load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Edges_df()
 }
 

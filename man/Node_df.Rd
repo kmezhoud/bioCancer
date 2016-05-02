@@ -21,7 +21,10 @@ Data frame with Nodes id
 
 example <- "run Manually"
 \dontrun{
-load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+ string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+ link <- curl::curl(paste0(string1,string2, sep=""))
+ load(link)
 node_df <- Node_df(GeneList, FreqIn )
 }
 

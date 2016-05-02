@@ -20,7 +20,10 @@ Attributes size to Nodes depending on number of interaction
 \examples{
 example <- "run Manually"
 \dontrun{
-load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+ string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+ string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+ link <- curl::curl(paste0(string1,string2, sep=""))
+ load(link)
 GeneFreq <- Node_df_FreqIn(GeneList, FreqIn)
 }
 }
