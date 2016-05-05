@@ -42,7 +42,7 @@ Imports:
     ggdendro (>= 0.1.17),
     broom (>= 0.3.7),
     pryr (>= 0.1),
-    shiny (>= 0.12.2),
+    shiny (>= 0.13.2),
     jsonlite (>= 0.9.17),
     shinyAce (>= 0.1),
     DT (>= 0.1),
@@ -54,13 +54,13 @@ Imports:
     covr (>= 1.2.0),
     stringr (>= 1.0)
 Suggests:
-    rmarkdown (>= 0.4.2),
-    testthat (>= 0.10.0),
-    rappdirs
+    BiocStyle,
+    rmarkdown,
+    testthat (>= 0.10.0)
 VignetteBuilder: knitr
 URL: http://kmezhoud.github.io/bioCancer
 BugReports: https://github.com/kmezhoud/bioCancer/issues
 License: AGPL-3 | file LICENSE
 LazyData: true
-biocViews:GUI, DataRepresentation, Network, MultipleComparison, Pathways, Reactome, Visualization
+biocViews:GUI, DataRepresentation, Network, MultipleComparison, Pathways, Reactome, Visualization,GeneExpression,GeneTarget
 RoxygenNote: 5.0.1

@@ -142,27 +142,6 @@ output$dataDescriptionMD <- renderUI({
 })
 
 
-#
-# observeEvent(input$upLoadProfDataButton, {
-#   isolate({
-#     if(is.null(input$uploadProfDataID)) return()
-#     datasets <- r_data[['datasetlist']]
-#     if (length(datasets) > 1) {  # have to leave at least one dataset
-#       upLoadProfData <- input$uploadProfDataID
-#       updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies[,1], selected = c(input$StudiesIDCircos,input$uploadProfDataID))
-#       #r_data[['ListProfData']] <- r_data$datasetlist
-#       if (length(datasets) == length(upLoadProfData))
-#         upLoadProfData <- upLoadProfData[-1]
-#       # Must use single string to index into reactivevalues so loop is necessary
-#       for (rem in upLoadProfData) {
-#         r_data[[rem]] <- NULL
-#         r_data[[paste0(rem,"_descr")]] <- NULL
-#       }
-#       r_data[['datasetlist']] <- datasets[-which(datasets %in% upLoadProfData)]
-#     }
-#   })
-# })
-
 # removing datasets
 output$uiRemoveDataset <- renderUI({
   selectInput(inputId = "removeDataset", label = NULL,
@@ -326,7 +305,7 @@ observeEvent(input$loadExampleData, {
 
   isolate({
 
-    # loading data bundled with Radiant
+    # loading data bundled with bioCancer
     data_path <- file.path(r_path,"base/data/")
     examples <- list.files(data_path)
 

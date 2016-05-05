@@ -49,7 +49,6 @@ saveClipboardData <- function() {
   }
 }
 
-
 factorizer <- function(dat) {
   isChar <- sapply(dat,is.character)
   if (sum(isChar) == 0) return(dat)
@@ -109,7 +108,8 @@ loadInDatasets <- function(fname, header= TRUE){
   r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
   r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
 }
-######
+#################
+
 loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = TRUE, sep = "\t") {
 
   dat <- sshhr(try(
@@ -133,36 +133,8 @@ loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = TRUE, s
   r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
 }
 
-## Load Gene Lists example from package to r_data$genelist
-# loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, sep = "\n") {
-#
-#   if (Sys.info()["sysname"] == "Windows") {
-#     GeneList <- try(read.table("clipboard", header = header, sep = sep), silent = TRUE)
-#     GeneList <- t(GeneList)
-#   } else if (Sys.info()["sysname"] == "Darwin") {
-#     GeneList <- try(read.table(pipe("pbpaste"), header = header, sep = sep), silent = TRUE)
-#    GeneList <- t(GeneList)
-#   } else {
-#     GeneList <- try(read.table(text = input$load_cdata, header = header, sep = sep), silent = TRUE)
-#     GeneList <- t(GeneList)
-#   }
-#
-#   if (is(GeneList, 'try-error')) {
-#     if (ret == "") ret <- c("### Data in clipboard was not well formatted. Try exporting the data to csv format.")
-#     upload_error_handler(objname,ret)
-#   } else {
-#     ret <- paste0("### Clipboard data\nData copied from clipboard on", lubridate::now())
-#     r_data[[objname]] <- data.frame(GeneList, check.names = FALSE)
-#     #r_data[[paste0(objname,"description")]] <- ret
-#   }
-#   r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
-#
-#
-# }
-
-
-
 loadUserData <- function(fname, uFile, ext,
+                         .csv = FALSE,
                          header = TRUE,
                          man_str_as_factor = TRUE,
                          sep = ",",
@@ -181,10 +153,8 @@ loadUserData <- function(fname, uFile, ext,
 
   ## if ext isn't in the filename nothing was replaced and so ...
   if (objname == filename) {
-    # fext <- tools::file_ext(filename) %>% tolower
-
     if (fext %in% c("xls","xlsx")) {
-      ret <- "### bioCancer does not load xls files directly. Please save the data as a csv file and try again."
+      ret <- "### Radiant does not load xls files directly. Please save the data as a csv file and try again."
     } else {
       ret <- paste0("### The filename extension (",fext,") does not match the specified file-type (",ext,"). Please specify the file type you are trying to upload (i.e., csv or rda).")
     }
@@ -206,40 +176,42 @@ loadUserData <- function(fname, uFile, ext,
         upload_error_handler(objname,"### More than one R object contained in the data.")
       }
     } else {
-      # r_data[[objname]] <- as.data.frame(get(robjname)) %>% {gsub("^\\s+|\\s+$", "", names(.))}
       r_data[[objname]] <- as.data.frame(get(robjname)) %>% {set_colnames(., gsub("^\\s+|\\s+$", "", names(.)))}
-      r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
     }
+    r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
+    r_data[['datasetlist']] <<- c(objname, r_data[['datasetlist']]) %>% unique
+  } else if (ext == 'rds') {
+    ## objname will hold the name of the object(s) inside the R datafile
+    robj <- try(readRDS(uFile), silent = TRUE)
+    if (is(robj, 'try-error')) {
+      upload_error_handler(objname, "### There was an error loading the data. Please make sure the data are in rds.")
+    } else {
+      r_data[[objname]] <- as.data.frame(robj) %>% {set_colnames(., gsub("^\\s+|\\s+$", "", names(.)))}
+      r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
+      r_data[['datasetlist']] <<- c(objname, r_data[['datasetlist']]) %>% unique
+    }
+  } else if (ext == 'csv') {
+    r_data[[objname]] <- loadcsv(uFile, .csv = .csv, header = header, sep = sep, saf = man_str_as_factor) %>%
+    {if (is.character(.)) upload_error_handler(objname, mess) else .} %>%
+    {set_colnames(., gsub("^\\s+|\\s+$", "", names(.)))}
 
-    #############
-    r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
-    ############
-  }
+    r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
+    r_data[['datasetlist']] <<- c(objname, r_data[['datasetlist']]) %>% unique
 
-  if (ext == 'csv') {
-    # r_data[[objname]] <- read.csv(uFile, header=header, sep=sep, dec=dec,
-    # r_data[[objname]] <- readr::read_csv(uFile, col_names=header)
-    # stringsAsFactors=man_str_as_factor), silent = TRUE) %>%
-    r_data[[objname]] <- loadcsv(uFile, header = header, sep = sep, saf = man_str_as_factor) %>%
-    {if (is.character(.)) upload_error_handler(objname, mess) else .}
+  } else if (ext != "---") {
 
-  } else {
     ret <- paste0("### The selected filetype is not currently supported (",fext,").")
     upload_error_handler(objname,ret)
+
   }
-  ############################
   if (ext == 'txt') {
-    # r_data[[objname]] <- read.csv(uFile, header=header, sep=sep, dec=dec,
-    # r_data[[objname]] <- readr::read_csv(uFile, col_names=header)
-    # stringsAsFactors=man_str_as_factor), silent = TRUE) %>%
     r_data[[objname]] <- try(read.table(uFile, header=header, sep=sep, dec=dec,
                                         stringsAsFactors=FALSE), silent = TRUE) %>%
-                                        { if (is(., 'try-error')) upload_error_handler(objname, "### There was an error loading the data. Please make sure the data are in either txt format, one gene by row.")
+                                        { if (is(., 'try-error')) upload_error_handler(objname,
+                                        "### There was an error loading the data. Please make sure the data are in either txt format, one gene by row.")
                                           else . } %>%
                                           { if (man_str_as_factor) factorizer(.) else . } # %>% tbl_df
     r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
 
-
-    #r_data[['datasetlist']] <- c(objname, r_data[['datasetlist']]) %>% unique
   }
 }

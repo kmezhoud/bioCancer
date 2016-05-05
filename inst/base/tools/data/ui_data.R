@@ -197,7 +197,7 @@ output$Enrich <- renderUI({
                          coffeewheelOutput('getCoffeeWheel_All', width = 800, height = 800)
 
                        },
-                       conditionalPanel(condition = "input.getlistProfDataCircosID ==true",
+                       conditionalPanel(condition = "input.loadListProfDataCircosId ==true",
                                         h3("Loaded Profiles Data", align="center"),
                                         verbatimTextOutput("StrListProfDataCircos")
                        ),
@@ -229,7 +229,7 @@ output$Enrich <- renderUI({
                                         h3("Available Profiles data in select Studies", align="center"),
                                         DT::dataTableOutput(outputId ="CircosAvailability")
                        ),
-                       conditionalPanel("input.getlistProfDataCircosID==false",
+                       conditionalPanel("input.loadListProfDataCircosId==false",
                                         verbatimTextOutput("CircomicsHowto")
                        )
 

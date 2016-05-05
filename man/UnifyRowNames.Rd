@@ -18,12 +18,14 @@ a data frame having the gene in row name ordered as in gene list.
 Unify row names in data frame with the same order of gene list.
 }
 \examples{
+example <- "runManually"
+\dontrun{
  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
  link <- curl::curl(paste0(string1,string2, sep=""))
  load(link)
  ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
 Freq_Mut <- UnifyRowNames(ListMutData_bkp$luad_tcga_pub, GeneList = GeneList)
-
+}
 }
 

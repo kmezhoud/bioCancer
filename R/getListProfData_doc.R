@@ -249,7 +249,7 @@ getListProfData <- function(panel){
     if(length(GeneList)>500){
       MegaGeneList <- GeneList
       if(is.integer(length(MegaGeneList)/500)){
-        G <- lenght(MegaGeneList)/500
+        G <- length(MegaGeneList)/500
       }else{
         G <- as.integer(length(MegaGeneList)/500) + 1
       }

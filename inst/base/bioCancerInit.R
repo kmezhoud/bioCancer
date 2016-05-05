@@ -69,7 +69,7 @@ observeEvent(input$refresh_bioCancer, {
 })
 
 saveStateOnRefresh <- function(session = session) {
-  session$onSessionEnded(function() {
+  session$onSessionEnded(function(){
     isolate({
       if (not_pressed(input$refresh_bioCancer) && not_pressed(input$stop_bioCancer) &&
           is.null(input$uploadState)) {
@@ -93,8 +93,8 @@ saveStateOnRefresh <- function(session = session) {
 
 ## get active dataset and apply data-filter if available
 .getdata <- reactive({
-
-  if (is.null(input$dataset)) return()
+  rep(input$dataset)
+  #if (is.null(input$dataset)) return()
 
 
   # selcom <- input$data_filter %>% gsub("\\s","", .) %>% gsub("\"","\'",.)
@@ -265,7 +265,8 @@ show_data_snippet <- function(dat = input$dataset, nshow = 7, title = "") {
 }
 
 suggest_data <- function(text = "", dat = "diamonds")
-  paste0(text, "For an example dataset go to Data > Manage, select 'examples' from the\n'Load data of type' dropdown, and press the 'Load examples' button. Then\nselect the \'", dat, "\' dataset.")
+  paste0(text, "For an example dataset go to Data > Manage, select 'examples' from the\n
+         'Load data of type' dropdown, and press the 'Load examples' button. Then\nselect the \'", dat, "\' dataset.")
 
 ## function written by @wch https://github.com/rstudio/shiny/issues/781#issuecomment-87135411
 capture_plot <- function(expr, env = parent.frame()) {

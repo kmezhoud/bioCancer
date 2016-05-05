@@ -4,6 +4,7 @@ FIRST RELEASE
       - Omit help_and_report function
     o Various issues request DT (>=0.1.39)
       - Omit Show Plot in Pivot sidebar menu
+      - Can not download/Store correctly  filtered table in Handle/View
 
 
 
