@@ -10,7 +10,7 @@ FIRST RELEASE
 
 PERSPECTIVE
     o Release R 3.4 import(shiny, except= c("dataTableOutput", "renderDataTable"))
-    o use DisGeNet server despite /extdata/disGeNet file
+    o use DisGeNet server despite /extdata/disGeNet file (DONE Not Working)
     o clusterProfiler GMT file:
     http://www.r-bloggers.com/go-analysis-using-clusterprofiler/
     o gene classification using rpart,ggplot2, ggtree:

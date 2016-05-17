@@ -36,19 +36,14 @@ A circular layout with genetic profile.
 Circular plot of hierarchital data of genetic profile.
 }
 \examples{
-example <- "runManually"
+How <- "runManually"
 \dontrun{
- string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
- string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
- link <- curl::curl(paste0(string1,string2, sep="")) #'  load(link)
- load(link)
- ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-bioCancer::metabologram(treeData = sampleWheelData, width=600,
-height=600, main="title", showLegend = TRUE, fontSize = 10,
+ metabologram(treeData = sampleWheelData, width=600,
+ height=600, main="title", showLegend = TRUE, fontSize = 10,
  legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
  legendColors=c("black","blue","cyan","white","yellow","red") ,
  legendText="Legend")
-}
+ }
 
 }
 \seealso{

@@ -6,7 +6,7 @@ output$MutDataTable <- DT::renderDataTable({
     dat <- as.data.frame("Please select mutations from Genetic Profiles")
   }else{
 
-    GeneList <- whichGeneList()
+    GeneList <- whichGeneList(input$GeneListID)
 
     ##### Get Mutation Data for selected Case and Genetic Profile
     if(length(GeneList)>500){
@@ -25,22 +25,7 @@ output$MutDataTable <- DT::renderDataTable({
     dat <- dat[input$ui_Mut_vars]
     r_data[['MutData']] <- dat
 
-    action = DT::dataTableAjax(session, dat, rownames = FALSE)
-
-    #DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
-    DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
-                  rownames = FALSE, style = "bootstrap", escape = FALSE,
-                  # class = "compact",
-                  options = list(
-                    ajax = list(url = action),
-                    search = list(regex = TRUE),
-                    columnDefs = list(list(className = 'dt-center', targets = "_all")),
-                    autoWidth = TRUE,
-                    processing = FALSE,
-                    pageLength = 10,
-                    lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-                  )
-    )
+    displayTable(dat)
   }
 })
 

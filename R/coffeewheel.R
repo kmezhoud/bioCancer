@@ -3,11 +3,6 @@
 #'
 #' @return  A circular layout with genetic profile.
 #'
-#'
-#' @import htmlwidgets
-#' @export
-#'
-#'
 #' @usage coffeewheel(treeData, width=600, height=600, main="", partitionAttribute="value")
 #' @param treeData A hierarchical tree data as in example
 #' @param width 600
@@ -16,15 +11,13 @@
 #' @param partitionAttribute "value"
 #'
 #' @examples
-#' example <- "run manually"
+#' How <- "runManually"
 #' \dontrun{
-#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
-#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
-#'  link <- curl::curl(paste0(string1,string2, sep=""))
-#'  load(link)
-#'  ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#'  bioCancer::coffeewheel(treeData = sampleWheelData)
-#'}
+#'  coffeewheel(treeData = sampleWheelData)
+#'  }
+#' @export
+#' @import htmlwidgets
+#'
 coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttribute="value"){
   x <- list(
     treeData = treeData,
@@ -51,17 +44,12 @@ coffeewheel <- function(treeData, width=600, height=600, main="", partitionAttri
 #' @param height 700
 #'
 #' @examples
-#'
-#' example <- "runManually"
+#' How <- "runManually"
 #' \dontrun{
-#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
-#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
-#'  link <- curl::curl(paste0(string1,string2, sep=""))
-#'  load(link)
-#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#'  bioCancer::coffeewheel(treeData = sampleWheelData)
-#'}
+#' coffeewheel(treeData = sampleWheelData)
+#' }
 #' @export
+#'
 coffeewheelOutput <- function(outputId, width=700, height=700) {
   htmlwidgets::shinyWidgetOutput(outputId, 'coffeewheel', width, height, package = 'bioCancer')
 }
@@ -75,17 +63,12 @@ coffeewheelOutput <- function(outputId, width=700, height=700) {
 #' @param quoted FALSE
 #'
 #' @examples
-#'
-#' example <- "runManually"
+#' How <- "runManually"
 #' \dontrun{
-#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
-#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
-#'  link <- curl::curl(paste0(string1,string2, sep=""))
-#'  load(link)
-#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' bioCancer::coffeewheel(treeData = sampleWheelData)
-#'}
+#' coffeewheel(treeData = sampleWheelData)
+#' }
 #' @export
+#'
 renderCoffeewheel <- function(expr, env = parent.frame(), quoted = FALSE){
   if (!quoted) { expr <- substitute(expr) } # force quoted
   htmlwidgets::shinyRenderWidget(expr, coffeewheelOutput, env, quoted = TRUE)
@@ -96,17 +79,12 @@ renderCoffeewheel <- function(expr, env = parent.frame(), quoted = FALSE){
 #'
 #' @return A list of hierarchical data
 #' @examples
-#'
-#' example <- "runManually"
+#' How <- "runManually"
 #' \dontrun{
-#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
-#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
-#'  link <- curl::curl(paste0(string1,string2, sep=""))
-#'  load(link)
-#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' bioCancer::coffeewheel(treeData = sampleWheelData)
-#'}
+#' coffeewheel(treeData = sampleWheelData)
+#' }
 #' @export
+#'
 sampleWheelData <- list(
   list(
     name="R",

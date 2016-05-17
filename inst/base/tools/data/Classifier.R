@@ -64,11 +64,6 @@ TableCases <- reactive({
   })
 })
 
-# output$viewTableCases <- renderTable({
-#   if (is.null(input$StudiesIDClassifier))
-#     return()
-#     TableCases()
-# })
 
 output$viewTableCases <- DT::renderDataTable({
   dat <-   TableCases()
@@ -91,29 +86,12 @@ output$viewTableCases <- DT::renderDataTable({
 })
 
 
-#Size <- input$SampleSizeClassifier
-
-# output$SampleSize <- renderPrint({
-#   if (is.null(input$SampleSizeClassifierID))
-#     return()
-#   str(input$SampleSizeClassifierID)
-# })
-#
-# output$ClassifierThreshold <- renderPrint({
-#   if (is.null(input$ClassifierThresholdID))
-#     return()
-#   input$ClassifierThresholdID
-# })
-
-# output$PrintCases <- renderPrint({
-# input$CasesIDClassifier
-# })
 
 output$Plot_enricher <- renderPlot({
   shiny::withProgress(message = 'Genes Diseases Association...', value = 0.1, {
     Sys.sleep(0.25)
 
-    GeneList <- whichGeneList()
+    GeneList <- whichGeneList(input$GeneListID)
 
     ## clusterProfile package
     #GeneID = bitr(GeneList, fromType="SYMBOL", toType="ENTREZID", annoDb="org.Hs.eg.db")[,2]
@@ -124,9 +102,9 @@ output$Plot_enricher <- renderPlot({
     if(is.null(r_data$gda)){
       shiny::withProgress(message = 'Loading DisGeNet.RDS...', value = 0.1, {
         Sys.sleep(0.25)
-
         download.file("https://wiki.ubuntu.com/kmezhoud/bioCancer?action=AttachFile&do=get&target=DisGeNet.RDS",tmp <- tempfile())
-        r_data[['gda']] <-readRDS(tmp)
+        gda <- readRDS(tmp)
+        r_data[['gda']] <- gda
 
       })
     }

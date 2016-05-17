@@ -10,24 +10,24 @@ output$ReactomeHowto <- renderPrint({
       ")
 })
 
-####### Attribute Color to Value in Vector
-attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
-
-  vector <- round(vector, digits = 0)
-  Value <- round(Value, digits = 0)
-  Max <- max(vector, na.rm=TRUE)
-  Min <- min(vector, na.rm=TRUE)
-  #   }
-  my.colors <- grDevices::colorRampPalette(colors)
-  #generates Max-Min colors from the color ramp
-
-  color.df <- data.frame(COLOR_VALUE=seq(Min,Max,feet), color.name=my.colors(length(seq(Min,Max,feet))))
-  colorRef <- color.df[which(color.df[,1]==Value),2]
-  #colorRef <- paste0(colorRef, collapse =",")
-  return(colorRef)
-}
-
-
+#' get Edges object for grVis function
+#'
+#' @usage Edges_obj()
+#'
+#' @return A data frame with egdes attributes
+#'
+#' @examples
+#'example <- "runManually"
+#' \dontrun{
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
+#' Ed_obj <- Edges_obj()
+#'}
+#'
 Edges_obj <- function(){
 
   #if(!'ReactomeFI' %in% r_data){
@@ -51,7 +51,7 @@ Edges_obj <- function(){
   }
 
   #GeneList <- c("DKK3", "NBN", "MYO6", "TP53","PML", "IFI16", "BRCA1")
-  GeneList <- whichGeneList()
+  GeneList <- whichGeneList(input$GeneListID)
   #GeneList <- c("SPRY2","FOXO1","FOXO3")
   ## Edges Attributes
   shiny::withProgress(message = 'load FI for GeneList...', value = 0.1, {
@@ -67,14 +67,14 @@ Edges_obj <- function(){
     Edges_obj2 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))
     Edges_obj <- rbind(Edges_obj1,Edges_obj2)
 
-#     > head(Edges_obj)
-#     Gene1 Gene2                                    Annotation Direction Score
-#     1  EGR1  TP53 expression regulated by; expression regulates       <->  1.00
-#     2  EGR1   UBB                          expression regulates        ->  1.00
-#     3  MYO6   UBB                                     predicted         -  0.61
-#     4   PML  TP53       complex; expression regulated by; input        <-  1.00
-#     5  TP53   UBB                  catalyze; complex; predicted        ->  1.00
-#     6 BRCA1  EGR1                       expression regulated by        <-  1.00
+    #     > head(Edges_obj)
+    #     Gene1 Gene2                                    Annotation Direction Score
+    #     1  EGR1  TP53 expression regulated by; expression regulates       <->  1.00
+    #     2  EGR1   UBB                          expression regulates        ->  1.00
+    #     3  MYO6   UBB                                     predicted         -  0.61
+    #     4   PML  TP53       complex; expression regulated by; input        <-  1.00
+    #     5  TP53   UBB                  catalyze; complex; predicted        ->  1.00
+    #     6 BRCA1  EGR1                       expression regulated by        <-  1.00
 
     ## Filter Annotation interaction
     #  Edges_obj <- Edges_obj[- grep(c("predic",activat), Edges_obj$Annotation),]
@@ -177,23 +177,6 @@ getAnnoGeneSet_obj <- function(genelist,type){
     ## Maybe useful add GeneList with index and genes
     #ref_GeneSet  <-  cbind(GeneSet = AnnoGeneSet_hits[subset[,1],2],subset)
 
-    #   ## substitute space to _
-    #   AnnoGeneSet[,1] <- gsub(" ","_",AnnoGeneSet[,1])
-    #   ## parenthesis are not supported in GrVis
-    #   AnnoGeneSet[,1] <- gsub("\\(","_", AnnoGeneSet[,1])
-    #   AnnoGeneSet[,1] <- gsub("\\)","", AnnoGeneSet[,1])
-    #   ## substitue , by " "
-    #   AnnoGeneSet[,7] <- gsub(","," ",AnnoGeneSet[,7])
-    #
-    #   AnnoGeneSet[,2] <- "->"
-    #   AnnoGeneSet[,3] <- "{"
-    #   AnnoGeneSet[,4] <- AnnoGeneSet[,7]
-    #   AnnoGeneSet[,5] <- "}"
-    #   AnnoGeneSet[,6] <- "[arrowhead=none, color=LightGray, penwidth=0.2]"
-    #
-    #   GeneSet_obj <- AnnoGeneSet[,1:6]
-    #  names(GeneSet_obj)<- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
-
     GeneSet_obj <- data.frame(Gene1 = paste(input$TypeGeneSetID,Index_Gene[,1], sep=""),
                               Gene2 = "->",
                               Direction = Index_Gene[,2],
@@ -206,12 +189,6 @@ getAnnoGeneSet_obj <- function(genelist,type){
   return(GeneSet_obj)
 }
 
-# output$GeneSetLegend <- renderTable({
-#   if (is.null(r_data$Legend_GeneSet))
-#         return()
-#  return(r_data$Legend_GeneSet[,1:2])
-#
-# })
 output$dl_GeneSet_Legend <- shiny::downloadHandler(
   filename = function() { paste0("GeneSet_Legend.csv") },
   content = function(file) {
@@ -224,7 +201,20 @@ output$dl_GeneSet_Legend <- shiny::downloadHandler(
 
 output$GeneSet_Legend <- DT::renderDataTable({
   ## Attribute index to pathway
-  Legend_GeneSet <- cbind(Node = paste(input$TypeGeneSetID,seq_len(nrow(r_data$AnnoGeneSet)), sep=""), r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"])
+  if (inherits(try(
+    Legend_GeneSet <- cbind(Node = paste(input$TypeGeneSetID,
+                                         seq_len(nrow(r_data$AnnoGeneSet)),
+                                         sep=""),
+                            r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"]),
+    silent=TRUE),"try-error")){
+  }else{
+
+    Legend_GeneSet <- cbind(Node = paste(input$TypeGeneSetID,
+                                         seq_len(nrow(r_data$AnnoGeneSet)),
+                                         sep=""),
+                            r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"])
+  }
+
   #Legend_GeneSet_bkp <<- Legend_GeneSet
   Legend_GeneSet[,4:7] <- round(Legend_GeneSet[,4:7], digits=2)
   colnames(Legend_GeneSet)[c(3,4,6)] <- c("nhit","nGenes","pval")
@@ -232,240 +222,38 @@ output$GeneSet_Legend <- DT::renderDataTable({
 
   r_data[['GeneSet_Legend']] <- dat
 
-  action = DT::dataTableAjax(session, dat, rownames = FALSE)
-
-  #DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
-  DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
-                rownames = FALSE, style = "bootstrap", escape = FALSE,
-                # class = "compact",
-                options = list(
-                  ajax = list(url = action),
-                  search = list(regex = TRUE),
-                  columnDefs = list(list(className = 'dt-center', targets = "_all")),
-                  autoWidth = TRUE,
-                  processing = FALSE,
-                  pageLength = 10,
-                  lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-                )
-  )
+  displayTable(dat)
 })
 
-### Add Studies to Network
 
-# Genes ranking     class postProb exprsMeanDiff exprsUpDw
-# 1 FANCF       1 brca_tcga  1.00000      179.9226        UP
-# 2  MLH1       1  gbm_tcga  0.99703      256.3173        UP
-
-Studies_obj <- function(df= df){
-
-  if(is.null(df)){
-    msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
-    stop(msgNoClassifier)
-  }else{
-    names(df) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
-
-    df$Gene2 <- "->"
-    df$Annotation <- "[arrowhead = None,"
-    df$arrowsize <- "color= Gray,alpha=80,"
-    df$Score <- "penwidth= 0.2]"
-
-    V <- as.numeric(factor(df$Direction))
-    set.seed(17)
-    C <- sample(colors(),length(table(df$Direction)))
-    dfbis <- data.frame("Gene1"=df$Direction,
-                        "Gene2"="[shape=egg,",
-                        "Direction" = "style = filled,",
-                        "Annotation"= "fillcolor =",
-                        "arrowsize"= C[V],
-                        "Score"="]"
-    )
-    df <- rbind(df, dfbis)
-    #GenesClassDetails$class <- paste("penwidth=3,color =", C[V],"," ,sep=" ")
-
-    return(df)
-  }
-}
-
-### Mutation Attribution
-Mutation_obj <- function(){
-
-  df <- getFreqMutData(list = r_data$ListMutData)
-
-  if(is.null(df)){
-    msgNoFreqMut <- paste("Mutation frequency is not found, please run gene Circomics before...")
-    stop(msgNoFreqMut)
-  }else{
-
-    df <- df[apply(df, 1, function(x) !all(is.na(x))),]
-    c1 <- apply(df,1, function(x)max(x, na.rm=TRUE))
-    c2 <- colnames(df)[apply(df,1, function(x)which.max(x))]
-    c  <- cbind.data.frame(c2,round(c1, digits=2))
-
-    c <- c %>% add_rownames("Genes")
-    colnames(c) <- c("Genes", "Disease", "Percentage")
-
-    V <- as.numeric(factor(c$Disease))
-    set.seed(17)
-    C <- sample(colors(),length(table(c$Disease)))
-
-    Mut <- cbind.data.frame(c,arrowsize=C[V])
-    #BRCA1[shape = box, style= filled, fillcolor="#0007CD", color=red, penwidth=3, peripheries=2 ]
-    #names(df) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
-    Mut$Gene1 <- paste(Mut$Genes,"[", sep=" ")
-    Mut$Gene2 <- "shape="
-    Mut$Direction <- sapply(Mut$Percentage,function(x)if(x < input$FreqMutSliderID){
-      paste("circle","," ,sep="")
-    }else{
-      paste("diamond",",",sep="")})
-    Mut$Annotation <- "color="
-    Mut$Score <- ",fontsize=10]"
-    Mut <- Mut[c("Gene1","Gene2","Direction","Annotation","arrowsize","Score")]
-    return(Mut)
-  }
-}
-
-### Attributes for Nodes
-attriShape2Gene <- function(gene, genelist){
-
-  if(gene %in% genelist){
-    paste0(gene, "[shape = 'circle',", sep=" ")
-  }else{
-    paste0(gene, "[shape = 'box',", sep=" ")
-  }
-
-}
-
-Node_obj_FreqIn <- function(GeneList){
-
-  FreqIn <- r_data$FreqIn
-  FreqIn$Genes<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Gene(x, GeneList)))
-  FreqIn$FreqSum  <- FreqIn$FreqSum / 10
-  FreqIn$FreqSum <- paste0("fixedsize = TRUE, width =",FreqIn$FreqSum,", alpha_fillcolor =",FreqIn$FreqSum,",")
-  FreqIn <- cbind(FreqIn, Direction="peripheries=1,")
-  FreqIn <- cbind(FreqIn, Annotation="style = filled,")
-  FreqIn <- cbind(FreqIn, Arrowsize="alpha_fillcolor = 1,")
-  FreqIn <- cbind(FreqIn, Score="fontsize=10]")
-  names(FreqIn) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
-
-  GeneAttri <- FreqIn
-  return(GeneAttri)
-
-}
-
-Node_obj_mRNA_Classifier <- function(GeneList,genesclassdetails){
-  if(is.null(genesclassdetails)){
-    msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
-    stop(msgNoClassifier)
-  }else{
-    GenesClassDetails <- merge(genesclassdetails, r_data$FreqIn, by="Genes")
-    GenesClassDetails <- GenesClassDetails[,!(names(GenesClassDetails) %in% "exprsUpDw")]
-    GenesClassDetails$FreqSum  <- GenesClassDetails$FreqSum / 10
-
-    ## geneDiseaseClass_obj
-    # GenesClassDetails_ls <- lapply(r_data$GenesClassDetails, function(x) x %>% add_rownames("Genes")
-    #GenesClassDetails_df <- plyr::ldply(GenesClassDetails_ls)
-    #GenesClassDetails_df <- GenesClassDetails_df[,-1]
-    #GenesClassDetails <- r_data$GenesClassDetails
-    ## identify Gene List
-    #   if(input$GeneListID == "Genes"){
-    #     GeneList <- r_data$Genes
-    #   }else if(input$GeneListID =="Reactome_GeneList"){
-    #     GeneList <- r_data$Reactome_GeneList
-    #     print(GeneList)
-    #   }else{
-    #     GeneList <- t(unique(read.table(paste0(getwd(),"/extdata/GeneList/",input$GeneListID,".txt" ,sep=""))))
-    #   }
-
-    GenesClassDetails$Genes <- unname(sapply(GenesClassDetails$Genes,  function(x) attriShape2Gene(x, GeneList)))
-
-    ###GenesClassDetails$ranking <- paste("peripheries=",GenesClassDetails$ranking,"," ,sep=" ")
-    GenesClassDetails$ranking <- paste("peripheries=","1","," ,sep=" ")
-    GenesClassDetails_bkpbkp <<- GenesClassDetails
-    V <- as.numeric(factor(GenesClassDetails$class))
-    set.seed(17)
-    C <- sample(colors(),length(table(GenesClassDetails$class)))
-
-    if(is.null(input$NodeAttri_ProfDataID)){
-      GenesClassDetails$class <- paste("penwidth=3,color =", C[V],"," ,sep=" ")
-    }else{
-      GenesClassDetails$class <- paste("penwidth=3,color =", "white","," ,sep=" ")
-    }
-    GenesClassDetails$postProb <- "style = filled, fillcolor ='"
-
-    GenesClassDetails$exprsMeanDiff <- sapply(GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
-
-    GenesClassDetails$FreqSum <- paste0("',fixedsize = TRUE, width =",GenesClassDetails$FreqSum,", alpha_fillcolor =",GenesClassDetails$FreqSum,"]")
-
-    # rename column to rbind with edge dataframe
-    names(GenesClassDetails) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
-    #GenesClassDetails_bkp <<- GenesClassDetails
-    GeneAttri <- GenesClassDetails
-    return(GeneAttri)
-  }
-}
-
-Node_obj_CNA_ProfData <- function(list){
-
-  ListDf <-lapply(list, function(x) apply(x, 2, function(y) as.data.frame(table(y[order(y)]))))
-  ListDf2 <-   lapply(ListDf, function(x) lapply(x, function(y) y[,1][which(y[,2]== max(y[,2]))]))
-  ListDf3 <- plyr::ldply(ListDf2, data.frame)
-  MostFreqCNA_Df <- plyr::ldply(apply(ListDf3,2,function(x) names(which(max(table(x))==table(x))))[-1],data.frame)
-
-  #MostFreqCNA_Df$arrowsize <- paste(MostFreqCNA_Df[,1], MostFreqCNA_Df[,2], sep=":")
-  MostFreqCNA_Df[,2] <- gsub("-1", "1, style=dashed", MostFreqCNA_Df[,2] )
-  MostFreqCNA_Df[,2] <- gsub("-2", "2, style=dashed", MostFreqCNA_Df[,2] )
-  MostFreqCNA_Df[,2] <- gsub("0", "0.5", MostFreqCNA_Df[,2] )
-  MostFreqCNA_Df[,2] <- gsub("1", " 1, penwidth=2 ", MostFreqCNA_Df[,2] )
-  MostFreqCNA_Df[,2] <- gsub("2", " 2 ", MostFreqCNA_Df[,2])
-  MostFreqCNA_Df$arrowsize <- MostFreqCNA_Df[,2]
-  MostFreqCNA_Df$Gene1 <- MostFreqCNA_Df$.id
-  MostFreqCNA_Df$Gene2 <- "["
-  MostFreqCNA_Df$Direction <- "pripheries"
-  MostFreqCNA_Df$Annotation <- "="
-  MostFreqCNA_Df$Score <- "]"
-  MostFreqCNA_Df <- MostFreqCNA_Df[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
-
-  return(MostFreqCNA_Df)
-}
-
-Node_obj_Met_ProfData <- function(list, type){
-  #dfMeansOrCNA<-apply(df,2,function(x) mean(x, na.rm=TRUE))
-  #dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
-
-  Met_Obj <- lapply(list, function(x) apply(x,2,function(y) mean(y, na.rm=TRUE)))
-  Met_Obj <- lapply(Met_Obj, function(x) round(x, digits = 2))
-  Met_Obj <- plyr::ldply(Met_Obj)[,-1]
-
-  Met_Obj <- plyr::ldply(Met_Obj,function(x) (max(x, na.rm = TRUE)))
-
-  if(type == "HM450"){
-    Met_Obj <- subset(Met_Obj, V1 > input$ThresholdMetHM450ID)
-  } else if( type == "HM27"){
-    Met_Obj <- subset(Met_Obj, V1 > input$ThresholdMetHM27ID)
-  }
-
-  if(nrow(Met_Obj)== 0){
-
-  }else{
-    Met_Obj$Gene1 <- Met_Obj$.id
-    Met_Obj$Gene2 <- "["
-    Met_Obj$Direction <- "shape"
-    Met_Obj$Annotation <- "="
-    Met_Obj$arrowsize <- "invtriangle,"
-    Met_Obj$Score <- "fixedsize=true]"
-    Met_Obj <- Met_Obj[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
-
-    #lapply(ListProfData_bkp$Met_HM450, function(x) attriColorGene(x))
-    return(Met_Obj)
-  }
-}
-
+#' get graph object for grViz
+#' @usage graph_obj(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData)
+#'
+#' @param NodeAttri_Reactome  Node attribute from Reactome database ('Freq. Interaction')
+#' @param NodeAttri_Classifier Node attributes from geNetClassifier ('mRNA','Studies','mRNA/Studies')
+#' @param NodeAttri_ProfData Node attributes from Profiles Data ('Mutation', 'CNA', 'Met_HM450', 'Met_HM27')
+#'
+#' @return Object graph for grViz with Nodes and Edges attributes
+#'
+#' @examples
+#'example <- "runManually"
+#' \dontrun{
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
+#' gr_obj <- graph_obj('Freq.Interaction', 'mRNA', 'Met_HM450')
+#'}
+#'
+#' @importFrom RCurl basicTextGatherer
+#'
 graph_obj <- function(){
 
-  GeneList <- whichGeneList()
+  GeneList <- whichGeneList(input$GeneListID)
 
   Edges_obj <- Edges_obj()
-  #Edges_obj_bkp <<- Edges_obj()
 
   if(input$NodeAttri_ReactomeID == 'Freq. Interaction'){
     ## Nodes Attributes
@@ -476,11 +264,12 @@ graph_obj <- function(){
   if(input$NodeAttri_ReactomeID == 'FreqInt./GeneSet'){
     ## Nodes Attributes
     GeneFreqIn_df <- Node_obj_FreqIn(GeneList)
+    if(input$TypeGeneSetID =="None"){
 
-    if(input$TypeGeneSetID =="Pathway" ||
-       input$TypeGeneSetID =="BP" ||
-       input$TypeGeneSetID =="CC" ||
-       input$TypeGeneSetID =="MF"
+    }else if(input$TypeGeneSetID =="Pathway" ||
+             input$TypeGeneSetID =="BP" ||
+             input$TypeGeneSetID =="CC" ||
+             input$TypeGeneSetID =="MF"
     ){
       GeneSetAnno_df <- getAnnoGeneSet_obj(GeneList,input$TypeGeneSetID)
 
@@ -492,10 +281,12 @@ graph_obj <- function(){
   }
 
   if(input$NodeAttri_ReactomeID == 'GeneSet'){
-    if(input$TypeGeneSetID =="Pathway" ||
-       input$TypeGeneSetID =="BP" ||
-       input$TypeGeneSetID =="CC" ||
-       input$TypeGeneSetID =="MF"
+    if(input$TypeGeneSetID =="None"){
+
+    }else if(input$TypeGeneSetID =="Pathway" ||
+             input$TypeGeneSetID =="BP" ||
+             input$TypeGeneSetID =="CC" ||
+             input$TypeGeneSetID =="MF"
     ){
       GeneSetAnno_df <- getAnnoGeneSet_obj(GeneList,input$TypeGeneSetID) #input$TypeGeneSetID
       Edges_obj <- rbind(Edges_obj, GeneSetAnno_df)
@@ -516,7 +307,6 @@ graph_obj <- function(){
 
   }
   if (input$NodeAttri_ClassifierID =='Studies'){
-    GenesClassDetails_bkp <<- r_data$GenesClassDetails
     Disease_Net <- Studies_obj(df=r_data$GenesClassDetails)
     Edges_obj<- rbind(Edges_obj, Disease_Net)
 
@@ -542,7 +332,7 @@ graph_obj <- function(){
 
   if('Mutation' %in% input$NodeAttri_ProfDataID ){
 
-    FreqMut_obj <- Mutation_obj()
+    FreqMut_obj <- Mutation_obj(list = r_data$ListMutData, FreqMutThreshold=input$FreqMutSliderID, geneListLabel = input$GeneListID)
     Edges_obj <- rbind(Edges_obj, FreqMut_obj)
 
   }
@@ -555,14 +345,14 @@ graph_obj <- function(){
 
   if('Met_HM450' %in% input$NodeAttri_ProfDataID){
 
-    Met_obj <- Node_obj_Met_ProfData(list= r_data$ListProfData$Met_HM450, type ='HM450')
+    Met_obj <- Node_obj_Met_ProfData(list= r_data$ListProfData$Met_HM450, type ='HM450',input$ThresholdMetHM450ID )
     Edges_obj <- rbind(Edges_obj, Met_obj)
 
   }
 
   if('Met_HM27' %in% input$NodeAttri_ProfDataID ){
 
-    Met_obj <- Node_obj_Met_ProfData(list= r_data$ListProfData$Met_HM27, type='HM27')
+    Met_obj <- Node_obj_Met_ProfData(list= r_data$ListProfData$Met_HM27, type='HM27', input$ThresholdMetHM27ID)
     Edges_obj <- rbind(Edges_obj, Met_obj)
 
   }
@@ -580,7 +370,26 @@ graph_obj <- function(){
 
 }
 
-
+#' Plot network with nodes and edges attributes
+#'
+#' @usage diagrammeR(NodeAttri_Reactome,NodeAttri_Classifier,NodeAttri_ProfData)
+#' @param NodeAttri_Reactome  Node attribute from Reactome database ('Freq. Interaction')
+#' @param NodeAttri_Classifier Node attributes from geNetClassifier ('mRNA','Studies','mRNA/Studies')
+#' @param NodeAttri_ProfData Node attributes from Profiles Data ('Mutation', 'CNA', 'Met_HM450', 'Met_HM27')
+#'
+#' @return plot
+#'
+#' @examples
+#'example <- "runManually"
+#' \dontrun{
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
+#' diagrammeR('Freq.Interaction', 'mRNA', 'Met_HM450')
+#'}
 output$diagrammeR <- DiagrammeR::renderGrViz({
   DiagrammeR::grViz(
     #     digraph{
@@ -599,8 +408,8 @@ output$diagrammeR <- DiagrammeR::renderGrViz({
 
     #    },
     graph_obj(),
-     ## Engine argument do not work in the future (update viz.js)
-     ## https://github.com/rich-iannone/DiagrammeR/issues/150
+    ## Engine argument do not work in the future (update viz.js)
+    ## https://github.com/rich-iannone/DiagrammeR/issues/150
     #engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
     width = 1200
   )
@@ -636,9 +445,6 @@ output$Save_diagrammeR_plot <- downloadHandler(
   #unlink(paste(getwd(),"Reactomeplot.html", sep="/"))
 
 )
-
-
-
 
 output$ReactomeLegend <- renderImage({
   # When input$n is 3, filename is ./images/image3.jpeg

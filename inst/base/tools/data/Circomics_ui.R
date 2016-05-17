@@ -10,9 +10,6 @@ output$LegendCircos <- renderPlot({
 })
 
 
-## Pull User profile data with profiles of Studies
-
-
 # pull user data to r_data$ListProfData
 output$uiPullUserDataCNA <- renderUI({
   selectInput(inputId = "UserData_CNA_id", label='CNA:',
@@ -72,7 +69,7 @@ output$StrListProfDataCircos <- renderPrint({
   #   }else{
   withProgress(message = 'loading Profiles Data... ', value = 0.1, {
     Sys.sleep(0.25)
-    getListProfData(panel='Circomics')
+    getListProfData(panel='Circomics',input$GeneListID)
   })
   #cat("STUDIES:\n", names(r_data$ListMutData), "\n")
   #cat("PROFILES DATA:\n",str(r_data$ListProfData) ,"and Mutation", sep = " " )
@@ -266,16 +263,4 @@ observe({
 #     #file.rename('random.gif', file)
 # }
 #     )
-
-
-
-#   observe({
-#
-#     if (not_pressed(input$SaveTIFF)) return()
-#     isolate({
-#
-#       coffeewheel(CoffeewheelTreeData, width=500, height=500, main="CoffeeWheel", partitionAttribute="value")
-#
-#     })
-#   })
 

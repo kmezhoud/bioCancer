@@ -14,7 +14,7 @@ serviceURL <- function(version){
   return(serv.url)
 }
 
-
+#' @export
 queryBuildNetwork <- function(version, genes){
   service.url <- paste0(serviceURL(version), "buildNetwork")
   genes.str <- paste(genes, collapse = "\t")
@@ -54,7 +54,6 @@ queryFIs <- function(version, genes){
 
 getReactomeFI <- function(version, genes, use.linkers = FALSE){
   if (length(genes) > 1) {
-
 
     if (use.linkers) {
       fis <- queryBuildNetwork(version, genes)

@@ -201,30 +201,6 @@ output$Enrich <- renderUI({
                                         h3("Loaded Profiles Data", align="center"),
                                         verbatimTextOutput("StrListProfDataCircos")
                        ),
-
-                       #                        conditionalPanel("input.WheelID =='init'",
-                       #                                         h3("Available Profiles data in select Studies", align="center"),
-                       #                                         DT::dataTableOutput(outputId ="CircosInit")),
-                       #
-                       #
-                       #                        conditionalPanel("input.WheelID == 'Zoom'",
-                       #                                         h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)"),
-                       #
-                       #                                         coffeewheelOutput('getCoffeeWheel_All', width = 600, height = 600),
-                       #
-                       #                                         h3("Correlation of silencing gene by Methylation: (0:1)"),
-                       #                                         coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600),
-                       #
-                       #                                         h3("Mutation Frequency: (Min,Max)"),
-                       #                                         coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
-                       #                                         # uiOutput("dataDescriptionHTML")
-                       #                        )
-                       # conditionalPanel("input.WheelID == 'Zoom'", uiOutput("dataDescriptionHTML"))
-
-                       #                                     conditionalPanel(
-                       #                                      "input.WheelID == 'Static'",
-                       #                                      metabologramOutput('metabologram')
-                       #                                    )
                        conditionalPanel(condition = "input.ViewProfDataCircosID==true",
                                         h3("Available Profiles data in select Studies", align="center"),
                                         DT::dataTableOutput(outputId ="CircosAvailability")

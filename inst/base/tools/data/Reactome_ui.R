@@ -204,29 +204,12 @@ output$ui_Reactome <- renderUI({
 output$ReactomeAvailability <- DT::renderDataTable({
   withProgress(message = 'Loading Data...', value = 0.1, {
     Sys.sleep(0.25)
-    dat <- checkDimensions(panel = "Reactome")
+    dat <- checkDimensions(panel = "Reactome", StudyID= input$StudiesIDReactome)
     ## remove rownames to column
     dat <- dat %>% add_rownames("Samples")
     # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
-    action = DT::dataTableAjax(session, dat, rownames = FALSE)
-
-    DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
-                  rownames = FALSE, style = "bootstrap", escape = FALSE,
-                  # class = "compact",
-                  options = list(
-                    ajax = list(url = action),
-                    search = list(regex = TRUE),
-                    columnDefs = list(list(className = 'dt-center', targets = "_all")),
-                    autoWidth = TRUE,
-                    processing = FALSE,
-                    pageLength = 14,
-                    lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-                  )
-    )%>%  DT::formatStyle(names(dat),
+    displayTable(dat) %>%  DT::formatStyle(names(dat),
                           color = DT::styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
-
-
-
 
   })
 })
@@ -239,7 +222,7 @@ output$StrListProfData <- renderPrint({
   #   }else{
   withProgress(message = 'loading Profiles Data... ', value = 0.1, {
     Sys.sleep(0.25)
-    getListProfData(panel='Reactome')
+    getListProfData(panel='Reactome', input$GeneListID)
   })
   cat("STUDIES:\n", names(r_data$ListMutData), "\n")
   cat("PROFILES DATA:\n",names(r_data$ListProfData) ,"and Mutation", sep = " " )

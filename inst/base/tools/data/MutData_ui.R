@@ -1,29 +1,21 @@
-
-
-# output$ui_clipboard_load_MutData <- renderUI({
-#   if (r_local) {
-#     actionButton('loadClipMutData', 'Paste data')
-#   } else {
-#     tagList(tags$textarea(class="form-control",
-#                           id="load_cdata", rows="5"
-#     ),
-#     actionButton('loadClipMutData', 'Paste data'))
-#   }
-# })
-
-
 output$ui_Mut_vars <- renderUI({
 
-  GeneList <- whichGeneList()
+  GeneList <- whichGeneList(input$GeneListID)
 
-  dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
+  dat <- cgdsr::getMutationData(cgds,
+                                input$CasesID,
+                                input$GenProfID,
+                                GeneList)
   ## change rownames in the first column
   dat <- as.data.frame(dat %>% add_rownames("Patients"))
 
   Mut_vars <- names(dat)
-  selectInput("ui_Mut_vars", "Select variables to show:", choices  = Mut_vars,
-              selected = state_multiple("Mut_vars",Mut_vars, Mut_vars), multiple = TRUE,
-              selectize = FALSE, size = min(6, length(Mut_vars)))
+  selectInput("ui_Mut_vars", "Select variables to show:",
+              choices  = Mut_vars,
+              selected = state_multiple("Mut_vars",Mut_vars, Mut_vars),
+              multiple = TRUE,
+              selectize = FALSE,
+              size = min(6, length(Mut_vars)))
 })
 
 output$ui_MutData <- renderUI({

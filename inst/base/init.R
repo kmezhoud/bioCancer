@@ -248,65 +248,65 @@ if (r_local) {
 
 ## try http://127.0.0.1:3174/?url=decide/simulate/&SSUID=local
 
-url_list <-
-  list("Data" = list("tabs_data" = list("Manage"    = "data/",
-                                        "View"      = "data/view/",
-                                        "Visualize" = "data/visualize/",
-                                        "Pivot"     = "data/pivot/",
-                                        "Explore"   = "data/explore/",
-                                        "Transform" = "data/transform/",
-                                        "Combine"   = "data/combine/")),
+# url_list <-
+#   list("Data" = list("tabs_data" = list("Manage"    = "data/",
+#                                         "View"      = "data/view/",
+#                                         "Visualize" = "data/visualize/",
+#                                         "Pivot"     = "data/pivot/",
+#                                         "Explore"   = "data/explore/",
+#                                         "Transform" = "data/transform/",
+#                                         "Combine"   = "data/combine/")),
+#
+#        "Sampling"    = "sample/sampling/",
+#        "Sample size" = "sample/sample-size/",
+#
+#        "Single mean" = list("tabs_single_mean" = list("Summary" = "base/single-mean/",
+#                                                       "Plot"    = "base/single-mean/plot/")),
+#
+#        "Compare means" = list("tabs_compare_means" = list("Summary" = "base/compare-means/",
+#                                                           "Plot"    = "base/compare-means/plot/")),
+#
+#        "Single proportion" = list("tabs_single_prop" = list("Summary" = "base/single-prop/",
+#                                                             "Plot"    = "base/single-prop/plot/")),
+#
+#        "Compare proportions" = list("tabs_compare_props" = list("Summary" = "base/compare-props/",
+#                                                                 "Plot"    = "base/compare-props/plot/")),
+#
+#        "Cross-tabs" = list("tabs_cross_tabs" = list("Summary" = "base/cross-tabs/",
+#                                                      "Plot"    = "base/cross-tabs/plot/")),
+#
+#        "Correlation" = list("tabs_correlation" = list("Summary" = "regression/correlation/",
+#                                                       "Plot"    = "regression/correlation/plot/")),
+#
+#        "Linear (OLS)" = list("tabs_regression" = list("Summary" = "regression/linear/",
+#                                                       "Predict" = "regression/linear/predict/",
+#                                                       "Plot"    = "regression/linear/plot/")),
+#
+#        "GLM" = list("tabs_glm_reg" = list("Summary" = "regression/glm/",
+#                                           "Predict" = "regression/glm/predict/",
+#                                           "Plot"    = "regression/glm/plot/")),
+#
+#        "Decision tree"    = list("tabs_dtree"    = list("Model" = "decide/dtree/",
+#                                                         "Plot"  = "decide/dtree/plot/")),
+#
+#        "Simulate"    = list("tabs_simulate"    = list("Model"   = "decide/simulate/",
+#                                                       "Repeat"  = "decide/simulate/repeat/"))
+#   )
 
-       "Sampling"    = "sample/sampling/",
-       "Sample size" = "sample/sample-size/",
-
-       "Single mean" = list("tabs_single_mean" = list("Summary" = "base/single-mean/",
-                                                      "Plot"    = "base/single-mean/plot/")),
-
-       "Compare means" = list("tabs_compare_means" = list("Summary" = "base/compare-means/",
-                                                          "Plot"    = "base/compare-means/plot/")),
-
-       "Single proportion" = list("tabs_single_prop" = list("Summary" = "base/single-prop/",
-                                                            "Plot"    = "base/single-prop/plot/")),
-
-       "Compare proportions" = list("tabs_compare_props" = list("Summary" = "base/compare-props/",
-                                                                "Plot"    = "base/compare-props/plot/")),
-
-       "Cross-tabs" = list("tabs_cross_tabs" = list("Summary" = "base/cross-tabs/",
-                                                     "Plot"    = "base/cross-tabs/plot/")),
-
-       "Correlation" = list("tabs_correlation" = list("Summary" = "regression/correlation/",
-                                                      "Plot"    = "regression/correlation/plot/")),
-
-       "Linear (OLS)" = list("tabs_regression" = list("Summary" = "regression/linear/",
-                                                      "Predict" = "regression/linear/predict/",
-                                                      "Plot"    = "regression/linear/plot/")),
-
-       "GLM" = list("tabs_glm_reg" = list("Summary" = "regression/glm/",
-                                          "Predict" = "regression/glm/predict/",
-                                          "Plot"    = "regression/glm/plot/")),
-
-       "Decision tree"    = list("tabs_dtree"    = list("Model" = "decide/dtree/",
-                                                        "Plot"  = "decide/dtree/plot/")),
-
-       "Simulate"    = list("tabs_simulate"    = list("Model"   = "decide/simulate/",
-                                                      "Repeat"  = "decide/simulate/repeat/"))
-  )
-
-## generate url patterns for navigation
-url_patterns <- list()
-for (i in names(url_list)) {
-  res <- url_list[[i]]
-  if (!is.list(res)) {
-    url_patterns[[res]] <- list("nav_radiant" = i)
-  } else {
-    tabs <- names(res)
-    for (j in names(res[[tabs]])) {
-      url <- res[[tabs]][[j]]
-      url_patterns[[url]] <- setNames(list(i,j), c("nav_radiant",tabs))
-    }
-  }
-}
+# ## generate url patterns for navigation
+# url_patterns <- list()
+# for (i in names(url_list)) {
+#   res <- url_list[[i]]
+#   if (!is.list(res)) {
+#     url_patterns[[res]] <- list("nav_radiant" = i)
+#   } else {
+#     tabs <- names(res)
+#     for (j in names(res[[tabs]])) {
+#       url <- res[[tabs]][[j]]
+#       url_patterns[[url]] <- setNames(list(i,j), c("nav_radiant",tabs))
+#     }
+#   }
+# }
 
 ## try http://127.0.0.1:3174/?url=decide/simulate/&SSUID=local
 # unlink("~/gh/radiant/tests/urls/urls.Rmd")
@@ -330,33 +330,33 @@ if (!exists("r_knitr")) {
   r_knitr <- if (exists("r_env")) new.env(parent = r_env) else new.env()
 }
 
-## parse the url and use updateTabsetPanel to navigate to the desired tab
-observe({
-  url_query <- parseQueryString(session$clientData$url_search)
-  if ("url" %in% names(url_query)) {
-    r_data$url <- url_query$url
-  } else if (is_empty(r_data$url)) {
-    return()
-  }
+# ## parse the url and use updateTabsetPanel to navigate to the desired tab
+# observe({
+#   url_query <- parseQueryString(session$clientData$url_search)
+#   if ("url" %in% names(url_query)) {
+#     r_data$url <- url_query$url
+#   } else if (is_empty(r_data$url)) {
+#     return()
+#   }
 
-  ## create an observer and suspend when done
-  url_observe <- observe({
-    if (is.null(input$dataset)) return()
-    url <- url_patterns[[r_data$url]]
-    if (is.null(url)) {
-      ## if pattern not found suspend observer
-      url_observe$suspend()
-      return()
-    }
-    ## move through the url
-    for (u in names(url)) {
-      if (is.null(input[[u]])) return()
-      if (input[[u]] != url[[u]])
-        updateTabsetPanel(session, u, selected = url[[u]])
-      if (names(tail(url,1)) == u) url_observe$suspend()
-    }
-  })
-})
+#   ## create an observer and suspend when done
+#   url_observe <- observe({
+#     if (is.null(input$dataset)) return()
+#     url <- url_patterns[[r_data$url]]
+#     if (is.null(url)) {
+#       ## if pattern not found suspend observer
+#       url_observe$suspend()
+#       return()
+#     }
+#     ## move through the url
+#     for (u in names(url)) {
+#       if (is.null(input[[u]])) return()
+#       if (input[[u]] != url[[u]])
+#         updateTabsetPanel(session, u, selected = url[[u]])
+#       if (names(tail(url,1)) == u) url_observe$suspend()
+#     }
+#   })
+# })
 
 ## keeping track of the main tab we are on
 observe({

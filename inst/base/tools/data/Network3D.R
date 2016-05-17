@@ -35,7 +35,7 @@
 #
 #    output$forceNetwork <- networkD3::renderForceNetwork({
 #
-#  GeneList <- whichGeneList()
+#  GeneList <- whichGeneList(input$GeneListID)
 #   #GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
 #   #GeneList <- c("CHEK1","CHEK2","RAD51","BRCA1","BRCA2","MLH1","MSH2","ATM","ATR","MDC1","PARP1","FANCF")
 #

@@ -438,13 +438,23 @@ output$uiRename <- renderUI({
 })
 
 output$htmlDataExample <- renderText({
-
-  if (is.null(.getdata())) return()
+  if (inherits(try(  if (is.null(.getdata())) return(), silent=TRUE),"try-error")){
+ }else{
+    if (is.null(.getdata())) return()
+  }
 
   ## Show only the first 10 (or 20) rows
+  if (inherits(try(
+    r_data[[paste0(input$dataset,"_descr")]] %>%
+    { is_empty(.) %>% ifelse (., 20, 10) } %>%
+    show_data_snippet(nshow = .)
+    , silent=TRUE),"try-error")){
+
+  }else{
   r_data[[paste0(input$dataset,"_descr")]] %>%
   { is_empty(.) %>% ifelse (., 20, 10) } %>%
     show_data_snippet(nshow = .)
+  }
 })
 
 

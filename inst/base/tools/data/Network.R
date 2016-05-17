@@ -1,16 +1,18 @@
 #' get Edges dataframe for visNetwork function
+#' @usage Edges_df()
 #'
 #' @return A data frame with egdes attributes
-#' @export
 #'
 #' @examples
-#'
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' Ed_obj <- Edges_obj()
-#'
-#'
-#' @importFrom RCurl basicTextGatherer
-#' @importFrom XML xmlInternalTreeParse
+#' example <- "run manually"
+#' \dontrun{
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' ##load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
+#' Edges_df()
+#' }
 #'
 #'
 Edges_df <- function(){
@@ -29,7 +31,7 @@ Edges_df <- function(){
   }
 
   #GeneList <- c("DKK3", "NBN", "MYO6", "TP53","PML", "IFI16", "BRCA1")
-  GeneList <- whichGeneList()
+  GeneList <- whichGeneList(input$GeneListID)
 
   ## Edges Attributes
   shiny::withProgress(message = 'load FI for GeneList...', value = 0.1, {
@@ -74,7 +76,7 @@ Edges_df <- function(){
 
     FreqIn <- rbind(t(t(table(as.character(Edges_obj$Gene2)))), t(t(table(as.character(Edges_obj$Gene1)))))
     colnames(FreqIn) <- "Freq"
-    FreqIn <- as.data.frame(FreqIn) %>% add_rownames("Genes")
+    FreqIn <- as.data.frame(FreqIn) %>% dplyr::add_rownames("Genes")
     r_data[['FreqIn']] <- plyr::ddply(FreqIn,~Genes,summarise,FreqSum=sum(Freq))
 
 
@@ -103,63 +105,24 @@ Edges_df <- function(){
   return(Edges_obj)
 }
 
-
-#' get Edges dataframe for Gene/Disease association from geNetClassifier
-#'
-#' @return A data frame with egdes attributes
-#' @export
-#'
-#' @examples
-#'
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' Ed_Diseases_obj <- Edges_Diseases_obj(GeneClassDetails)
-#'
-#'
-Edges_Diseases_obj <- function(genesclassdetails){
-
- Ed_Diseases_obj <- data.frame(from = genesclassdetails$class,
-                               to= genesclassdetails$Genes,
-                               title="GDA",
-                               arrows="to",
-                               width= 0.3,
-                               dashes=TRUE,
-                               smooth=FALSE,
-                               shadow=FALSE
-                     #length= NULL
-                     )
- return(Ed_Diseases_obj)
-}
-
-
-#' Attributes shape to Nodes
-#'
-#' @return A data frame with egdes attributes
-#' @export
-#'
-#' @examples
-#'
-#' genelist <- c("DKK3" , "NBN"  , "MYO6" , "TP53" , "PML"  , "IFI16" ,"BRCA1")
-#' NodeShape <- attriShape2Gene("DKK3", genelist)
-#'
-
-attriShape2Node <- function(gene, genelist){
-  GeneList <- whichGeneList()
-  if(gene %in% GeneList){
-    paste0("circle")
-  }else{
-    paste0("box")
-  }
-
-}
-
 #' Data frame with Nodes id
 #'
 #' @return A data frame with nodes id
-#' @export
+#'
+#' @usage Node_df(genelist, freqIn)
+#' @param genelist a vector of genes
+#' @param freqIn dataframe with Node interaction frequencies
 #'
 #' @examples
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' GeneFreq <- Node_df(GeneList, FreqIn)
+#'
+#' example <- "run Manually"
+#' \dontrun{
+#'  string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
+#'  string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
+#'  link <- curl::curl(paste0(string1,string2, sep=""))
+#'  load(link)
+#' node_df <- Node_df(GeneList, FreqIn )
+#'}
 #'
 # FreqIn
 # Genes FreqSum
@@ -170,7 +133,7 @@ attriShape2Node <- function(gene, genelist){
 
 Node_df <- function(genelist, freqIn){
   FreqIn <- freqIn
-  FreqIn[["shape"]]<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Node(x, GeneList)))
+  FreqIn[["shape"]]<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Node(x, genelist)))
   FreqIn$FreqSum  <- FreqIn$FreqSum / 10
   names(FreqIn) <- c("id","FreqSum","shape")
   FreqIn[["label"]] <- FreqIn$id
@@ -192,70 +155,16 @@ Node_df <- function(genelist, freqIn){
   return(GeneFreq)
 }
 
-
-#' Attributes size to Nodes depending on number of interaction
-#'
-#' @return A data frame with nodes size attributes
-#' @export
-#'
-#' @examples
-#'
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' GeneFreq <- Node_df_FreqIn(GeneList, FreqIn)
-#'
-Node_df_FreqIn <- function(genelist, freqIn){
-
-  FreqIn <- freqIn
-  #FreqIn[["shape"]]<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Node(x, GeneList)))
-  FreqIn$FreqSum  <- FreqIn$FreqSum/10
-  #names(FreqIn) <- c("id", "value","shape")
-  names(FreqIn) <- c("id", "value")
-  #FreqIn[["label"]] <- FreqIn$id
-  GeneFreq <- FreqIn[,2]
-  return(GeneFreq)
-
-}
-
-#' Attributes color and shape to Nodes of Diseases
-#'
-#' @return A data frame with nodes Shapes and colors
-#' @export
-#'
-#' @examples
-#'
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' Node_Diseases_df <- Node_Diseases_obj(genesclassdetails= GenesClassDetails)
-#'
-Node_Diseases_obj <- function(genesclassdetails){
-  if(is.null(genesclassdetails)){
-    msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
-    stop(msgNoClassifier)
-  }else{
-    V <- as.numeric(factor(genesclassdetails[,3]))
-    set.seed(17)
-    C <- sample(colors(),length(unique(genesclassdetails[,3])))
-    C <- gsub('[0-9]+', '', C)
-    Node_Diseases_df <- data.frame(id= unique(genesclassdetails[,3]),
-                               shape= "ellipse",
-                               label=unique(genesclassdetails[,3]),
-                               color=unique(C[V]),
-                               value="0.5"
-)
-return(Node_Diseases_df)
-
-  }
-}
-
-
 #' Gene Set enrichment using Reactome FI methods
 #'
 #' @return A data frame with Gene Set enrichment: BP,MF, CC, Pathway, pval, FDR
-#' @export
+#' @usage getAnnoGeneSet_df(genelist, type)
+#' @param genelist vector of genes
+#' @param type "BP", "pathway","CC", "MF"
 #'
 #' @examples
-#'
-#' load(paste(path.package("bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' GeneSet <- getAnnoGeneSet_df(genelist,"BP")
+#' GeneList <- whichGeneList("DNA_damage_Response")
+#' geneSet_df <- getAnnoGeneSet_df(GeneList, "BP")
 #'
 getAnnoGeneSet_df <- function(genelist,type){
   # type = c("Pathway", "BP", "CC", "MF")
@@ -303,7 +212,7 @@ getAnnoGeneSet_df <- function(genelist,type){
 
 
 output$network <- visNetwork::renderVisNetwork({
-  GeneList <- whichGeneList()
+  GeneList <- whichGeneList(input$GeneListID)
 
   edges <- Edges_df()
   nodes <-  Node_df(genelist = GeneList, freqIn = r_data$FreqIn)
@@ -318,7 +227,10 @@ output$network <- visNetwork::renderVisNetwork({
     value <- Node_df_FreqIn(GeneList, freqIn = r_data$FreqIn)
      nodes[['value']] <- value
 
-    if(input$TypeGeneSetID =="Pathway" ||
+     #if(input$NodeAttri_ReactomeID == 'GeneSet'){
+       if(input$TypeGeneSetID =="None"){
+
+       }else if(input$TypeGeneSetID =="Pathway" ||
        input$TypeGeneSetID =="BP" ||
        input$TypeGeneSetID =="CC" ||
        input$TypeGeneSetID =="MF"
@@ -335,7 +247,8 @@ output$network <- visNetwork::renderVisNetwork({
                                     value= "0.4"
                                     )
       nodes <- rbind(nodes, nodesForGeneSet)
-    }
+     }
+     #}
   }
 
   ###### Attributes from geNetClassifier

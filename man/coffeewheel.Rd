@@ -26,14 +26,9 @@ This is an htmlwidgets-based visualization tool for hierarchical data.
 It is zoomable, meaning that you can interact with the hierarchy and zoom in/out accordingly.
 }
 \examples{
-example <- "run manually"
+How <- "runManually"
 \dontrun{
- string1 <- "https://wiki.ubuntu.com/kmezhoud/bioCancer?"
- string2 <- "action=AttachFile&do=get&target=ListProfData.RData"
- link <- curl::curl(paste0(string1,string2, sep=""))
- load(link)
- ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
- bioCancer::coffeewheel(treeData = sampleWheelData)
-}
+ coffeewheel(treeData = sampleWheelData)
+ }
 }
 
