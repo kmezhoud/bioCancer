@@ -10,11 +10,11 @@ Depends:
     ggplot2 (>= 1.0.0),
     lubridate (>= 1.3.3),
     tidyr (>= 0.3.1),
-    dplyr (>= 0.4.3),
     cgdsr,
     RCurl,
     XML
 Imports:
+    dplyr (>= 0.4.3),
     htmlwidgets,
     Biobase,
     geNetClassifier,
