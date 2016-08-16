@@ -12,7 +12,7 @@ GeneList <- whichGeneList(input$GeneListID)
   if(is.numeric(dat[2,2])){
   dat <- round(dat, digits = 3)
   }
-  dat <- dat %>% add_rownames("Patients")
+  dat <- dat %>% dplyr::add_rownames("Patients")
   r_data[['ProfData']] <- dat
 
     displayTable(dat)

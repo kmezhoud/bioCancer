@@ -61,6 +61,11 @@ Although bioCancer's web-interface can handle quite a few data and analysis task
 - Required: A modern browser (e.g., [Chrome](https://www.google.com/intl/en/chrome/browser/desktop/) or Safari). Internet Explorer (version 11 or higher) should work as well
 - Recommended: [Rstudio](http://www.rstudio.com/products/rstudio/download/)
 
+bioCancer courant release:
+```r
+ source("https://bioconductor.org/biocLite.R")
+ biocLite("bioCancer")
+```
 
 bioCancer is under development:
 ```r

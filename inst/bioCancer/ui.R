@@ -11,7 +11,7 @@ help_menu <-
     ),
     js_head
   )
-## ui for quant class - radiant
+## ui for quant class
 source("../quant/quant_ui.R")
 
 ## ui for marketing

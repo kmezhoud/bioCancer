@@ -21,7 +21,7 @@ output$MutDataTable <- DT::renderDataTable({
       }
     }
     ## change rownames in the first column
-    dat <- as.data.frame(dat %>% add_rownames("Patients"))
+    dat <- as.data.frame(dat %>% dplyr::add_rownames("Patients"))
     dat <- dat[input$ui_Mut_vars]
     r_data[['MutData']] <- dat
 

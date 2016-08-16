@@ -56,9 +56,10 @@ whichGeneList <- function(geneListLabel){
     GeneList <- r_data$Genes
   }else if(geneListLabel == "Reactome_GeneList"){
     GeneList <- t(r_data$Reactome_GeneList)
-  }else{
+  }else if(r_path == "inst"){
     ## For server
-    #GeneList <- t(unique(read.table(paste0(r_path,"/base/data/GeneList/",geneListLabel,".txt" ,sep=""))))
+    GeneList <- t(unique(read.table(paste0(r_path,"/base/data/GeneList/",geneListLabel,".txt" ,sep=""))))
+  } else{
     ## For R package
     GeneList <- t(unique(read.table(paste0(.libPaths(),"/bioCancer/base/data/GeneList/",geneListLabel,".txt" ,sep=""))))
   }

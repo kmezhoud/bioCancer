@@ -7,7 +7,7 @@ output$ui_Mut_vars <- renderUI({
                                 input$GenProfID,
                                 GeneList)
   ## change rownames in the first column
-  dat <- as.data.frame(dat %>% add_rownames("Patients"))
+  dat <- as.data.frame(dat %>% dplyr::add_rownames("Patients"))
 
   Mut_vars <- names(dat)
   selectInput("ui_Mut_vars", "Select variables to show:",

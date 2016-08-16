@@ -140,7 +140,6 @@ output$Portal <- renderUI({
   )
 })
 
-
 output$Enrich <- renderUI({
 
   tabsetPanel(id = "tabs_Enrich",
@@ -253,7 +252,7 @@ output$Enrich <- renderUI({
                                         # conditionalPanel("input.ClassID=='Plot'",
 
                                         conditionalPanel("input.ClusterPlotsID=='GeneList/Diseases'",
-                                                         h4("Which Disease are involving your Genes list", align='center'),
+                                                         h4("Which Diseases are involving your Genes list", align='center'),
                                                          plot_downloader("Plot_enrich", pre = ""),
                                                          plotOutput("Plot_enricher")
                                         ),

@@ -119,7 +119,7 @@ getGenesClassifier <- reactive({
     #GenesClassDetails_bkp1 <<- GenesClassDetails
 
     print("getting Genes Details...")
-    GenesClassDetails_ls <- lapply(GenesClassDetails, function(x) x %>% add_rownames("Genes"))
+    GenesClassDetails_ls <- lapply(GenesClassDetails, function(x) x %>% dplyr::add_rownames("Genes"))
     GenesClassDetails_df <- plyr::ldply(GenesClassDetails_ls)
     r_data[['GenesClassDetails']] <- GenesClassDetails_df[,-1]
 

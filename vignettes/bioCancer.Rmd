@@ -268,7 +268,7 @@ User needs to
 
 ### Datasets
 
-When you first start bioCancer a dataset (`epiGenomics`) with information on how it was formatted is shown in `Handle` panel.
+When you start bioCancer a dataset (`epiGenomics`) with information on how it was formatted is shown in `Handle` panel.
 
 It is good practice to add a description of the data and variables to each file you use. For the files that are part of bioCancer you will see a brief overview of the variables etc. below the table of the first 10 rows of the data. If you would like to add a description for your own data check the 'Add/edit data description' check-box. A window will open below the data table where you can add text in
 <a href="http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html" target="_blank">markdown</a> format. The descriptions of the data included with bioCancer should serve as a good starting point.
@@ -281,7 +281,7 @@ The best way to load and save data for use in bioCancer (and R) is to use the R-
 
 You can get data from a spreadsheet (e.g., Excel or Google sheets) into bioCancer in two ways. First, you can save data from the spreadsheet in csv format and then, in bioCancer, choose `csv` from the `Load data of type` dropdown. Most likely you will have a header row in the csv file with variable names. If the data are not comma separated you can choose semicolon or tab separated. To load a csv file click 'Choose files' and locate the file on your computer. If the `csv` data is available online choose `csv (url)` from the dropdown, paste the url into the text input shown, and press `Load`.
 
-> **Note:** For Windows users with data that contain multibyte characters please make sure your data are in ANSI format so R(adiant) can load the characters correctly.
+> **Note:** For Windows users with data that contain multibyte characters please make sure your data are in ANSI format so bioCancer can load the characters correctly.
 
 Alternatively, you can select and copy the data in the spreadsheet using CTRL-C (or CMD-C on mac), go to bioCancer, choose `clipboard` from the dropdown, and click the `Paste data` button. This is a short-cut that can be convenient for smaller datasets that are cleanly formatted. If you see a message in bioCancer that the data were not transferred cleanly try saving the data in csv format and loading it into bioCancer as described above.
 
@@ -579,7 +579,7 @@ Choose `Create` from the `Transformation type` drop-down. This is the most flexi
 
 5. Create a variable z that is equal to x lagged by 3 periods
 
-	z = lag(x,3)
+	z = log(x,3)
 
 6. Create a categorical variable with two levels
 
@@ -589,7 +589,7 @@ Choose `Create` from the `Transformation type` drop-down. This is the most flexi
 
 	z = ifelse(x < 60, '< 60', ifelse(x > 65, '> 65', '60-65'))
 
-8. Convert an outlier to a missing value. For example, if we want to remove the maximum value from a variable called `xmRNA` that is equal to 400 we could use an `ifelse` statement and enter the command below in the `Create` box. Press `return` and `Store` to add the new `xmRNA_rc` variable. Note that if we had entered `xmTNA` on the left-hand side of the `=` sign the original variable would have been overwritten
+8. Convert an outlier to a missing value. For example, if we want to remove the maximum value from a variable called `xmRNA` that is equal to 400 we could use an `ifelse` statement and enter the command below in the `Create` box. Press `return` and `Store` to add the new `xmRNA_rc` variable. Note that if we had entered `xmRNA` on the left-hand side of the `=` sign the original variable would have been overwritten
 
 
   xmRNA_rc = ifelse(xmRNA > 400, NA, sales)

@@ -31,3 +31,10 @@ User can `remove` and `pull` him data for all existing dimension.
 `Legend` checkbox displays the meaning of the color palette.
 
 ![Mutation Frequency of two cancers studies compared to User Data](figures/Circomics.png)
+
+
+##### Format of user data
+Mutation: A data frame with at less two column named `gene_symbol` and `mutation`.
+All other dimensions: A data frame with:
+first column named `id.` that has the study/cancer reference
+the remain columns named by the `gene symbol` and have the value of the dimension for each study.

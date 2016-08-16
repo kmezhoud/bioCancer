@@ -114,9 +114,9 @@ output$getCoffeeWheel_CNA <- renderCoffeewheel({
     Sys.sleep(0.25)
 
     #getListProfData()
-    CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$CNA)
+    CoffeewheelTreeCNAData <- reStrDisease(r_data$ListProfData$CNA)
     title<- paste("Copy Number Alteration [-2, +2]")
-    coffeewheel(CoffeewheelTreeMetData, width=600, height=600,main=title)
+    coffeewheel(CoffeewheelTreeCNAData, width=600, height=600,main=title)
   })
 
 })
@@ -284,7 +284,7 @@ output$CircosAvailability <- DT::renderDataTable({
     Sys.sleep(0.25)
     dat <- checkDimensions(panel="Circomics", StudyID= input$StudiesIDCircos )
     ## remove rownames to column
-    dat <- dat %>% add_rownames("Samples")
+    dat <- dat %>% dplyr::add_rownames("Samples")
 
     # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
     action = DT::dataTableAjax(session, dat, rownames = FALSE)

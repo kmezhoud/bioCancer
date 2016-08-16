@@ -69,17 +69,17 @@ loadInDatasets <- function(fname, header= TRUE){
   if(fname=="ProfData"){
     GeneList <- whichGeneList()
     dat <- as.data.frame(getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
-    r_data[[objname]] <- dat %>% add_rownames("Patients")
+    r_data[[objname]] <- dat %>% dplyr::add_rownames("Patients")
 
 
   }else if (fname=="ClinicalData"){
     dat <- as.data.frame(getClinicalData(cgds, input$CasesID))
-    r_data[[objname]] <- dat %>% add_rownames("Patients")
+    r_data[[objname]] <- dat %>% dplyr::add_rownames("Patients")
 
   }else if (fname=="MutData"){
     GeneList <- whichGeneList()
     dat <- as.data.frame((getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)))
-    r_data[[objname]] <- dat %>% add_rownames("Patients")
+    r_data[[objname]] <- dat %>% dplyr::add_rownames("Patients")
   } else if (fname=="xCNA"){
     dat <- plyr::ldply(r_data$ListProfData$CNA)
     r_data[[objname]] <- dat
@@ -97,7 +97,7 @@ loadInDatasets <- function(fname, header= TRUE){
     r_data[[objname]] <- dat
   } else if(fname== "xFreqMut"){
     dat <- r_data$Freq_DfMutData
-    r_data[[objname]] <- dat %>% add_rownames("Genes")
+    r_data[[objname]] <- dat %>% dplyr::add_rownames("Genes")
   }else if (fname== "xmiRNA"){
     dat <- plyr::ldply(r_data$ListProfData$miRNA)
     r_data[[objname]] <- dat

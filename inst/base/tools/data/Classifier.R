@@ -144,7 +144,7 @@ Plot_enrich <- function(){
 
 ## Disease - Genes - Studies Associations
 output$compareClusterDO <- renderPlot({
-  shiny::withProgress(message = 'Disease Onthology enrich...', value = 0.1, {
+  shiny::withProgress(message = 'Disease Ontology enrich...', value = 0.1, {
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
@@ -153,7 +153,7 @@ output$compareClusterDO <- renderPlot({
     if (inherits(try(cdo <- clusterProfiler::compareCluster(GroupsID, fun="enrichDO"), silent=TRUE),"try-error"))
     {print("No enrichment found in any of gene cluster, please check your input...")
       plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
-      text(x = 0.5, y = 0.5, paste("No Disease Onthology enrichment found\n",
+      text(x = 0.5, y = 0.5, paste("No Disease Ontology enrichment found\n",
                                    " in any of gene cluster, \n",
                                    "Please check your input..."),
            cex = 1, col = "red")
@@ -167,7 +167,7 @@ output$compareClusterDO <- renderPlot({
 })
 
 compareClusterDO <- function(){
-  plot(r_data$cdo, type="dot", title="Disease Onthology Enrichment Comparison")
+  plot(r_data$cdo, type="dot", title="Disease Ontology Enrichment Comparison")
 
 }
 
@@ -198,17 +198,17 @@ output$compareClusterReactome <- renderPlot({
 compareClusterReactome <- function(){
   plot(r_data$cdReactome, type="dot", title="Reactome Pathway Enrichment Comparison")
 }
-## Gene Onthology (GO) Studies Associations
+## Gene Ontology (GO) Studies Associations
 output$compareClusterGO <- renderPlot({
-  shiny::withProgress(message = 'Gene Onthology Enrich...', value = 0.1, {
+  shiny::withProgress(message = 'Gene Ontology Enrich...', value = 0.1, {
     Sys.sleep(0.25)
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
     if (inherits(try(cgo <- clusterProfiler::compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')),"try-error"))
     {
-      print("No Gene Onthology enrichment found in any of gene cluster, please check your input...")
-      text(x = 0.5, y = 0.5, paste("No Gene Onthology Pathway enrichment found\n",
+      print("No Gene Ontology enrichment found in any of gene cluster, please check your input...")
+      text(x = 0.5, y = 0.5, paste("No Gene Ontology Pathway enrichment found\n",
                                    "in any of gene cluster, \n",
                                    "Please check your input..."),
            cex = 1, col = "red")

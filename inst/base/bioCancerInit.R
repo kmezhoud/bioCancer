@@ -134,14 +134,14 @@ saveStateOnRefresh <- function(session = session) {
 ## used for group_by and facet row/column
 # groupable_vars <- reactive({
 #   .getdata() %>%
-#     summarise_each(funs(is.factor(.) || lubridate::is.Date(.) || (n_distinct(., na_rm = TRUE)/n()) < .25)) %>%
+#     dplyr::summarise_each(funs(is.factor(.) || lubridate::is.Date(.) || (n_distinct(., na_rm = TRUE)/n()) < .25)) %>%
 #     {which(. == TRUE)} %>%
 #     varnames()[.]
 # })
 
 groupable_vars <- reactive({
   .getdata() %>%
-    summarise_each(funs(is.factor(.) || is.logical(.) || lubridate::is.Date(.) || is.integer(.) ||
+    dplyr::summarise_each(funs(is.factor(.) || is.logical(.) || lubridate::is.Date(.) || is.integer(.) ||
                         ((n_distinct(., na_rm = TRUE)/n()) < .30))) %>%
                         # ((n_distinct(., na_rm = TRUE)/n()) < .30 && !is.numeric(.)))) %>%
     {which(. == TRUE)} %>%
@@ -150,7 +150,7 @@ groupable_vars <- reactive({
 
 groupable_vars_nonum <- reactive({
   .getdata() %>%
-    summarise_each(funs(is.factor(.) || is.logical(.) || lubridate::is.Date(.) || is.integer(.) ||
+    dplyr::summarise_each(funs(is.factor(.) || is.logical(.) || lubridate::is.Date(.) || is.integer(.) ||
                    is.character(.))) %>%
                         # ((n_distinct(., na_rm = TRUE)/n()) < .30 && !is.numeric(.)))) %>%
     {which(. == TRUE)} %>%
@@ -161,7 +161,7 @@ groupable_vars_nonum <- reactive({
 ## used in compare proportions
 two_level_vars <- reactive({
   .getdata() %>%
-    summarise_each(funs(n_distinct(., na_rm = TRUE))) %>%
+    dplyr::summarise_each(funs(n_distinct(., na_rm = TRUE))) %>%
     { . == 2 } %>%
     which(.) %>%
     varnames()[.]
@@ -170,7 +170,7 @@ two_level_vars <- reactive({
 ## used in visualize - don't plot Y-variables that don't vary
 varying_vars <- reactive({
   .getdata() %>%
-    summarise_each(funs(does_vary(.))) %>%
+    dplyr::summarise_each(funs(does_vary(.))) %>%
     as.logical %>%
     which %>%
     varnames()[.]

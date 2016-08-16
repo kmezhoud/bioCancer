@@ -11,7 +11,6 @@
 #'
 #' @name bioCancer
 #' @docType package
-#' @importFrom shinythemes shinytheme
 #' @importFrom dplyr add_rownames combine collect combine collapse collect full_join
 #' @importFrom dplyr inner_join left_join mutate n_distinct rename right_join
 #' @importFrom dplyr select select_ slice slice_ mutate_each

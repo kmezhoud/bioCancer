@@ -79,23 +79,29 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 
       }
     }else{
-      shiny::withProgress(message= paste("There is no genetic Profiles: ", regex2 ), value = 0.1,
+      shiny::withProgress(message=
+                            paste("There is no genetic Profiles: ",
+                                  regex2 ), value = 0.1,
                           {p1 <- proc.time()
                           Sys.sleep(2) # wait 2 seconds
                           proc.time() - p1 })
       if(length(GeneList) <500){
         ProfData_X <- as.data.frame(setNames(replicate(
-          length(GeneList),numeric(1), simplify = FALSE), GeneList[order(GeneList)]))
+          length(GeneList),numeric(1), simplify = FALSE),
+          GeneList[order(GeneList)]))
         return(ProfData_X)
       }else{
         ProfData_X <- as.data.frame(setNames(replicate(
-          length(SubMegaGeneList),numeric(1), simplify = FALSE), SubMegaGeneList[order(SubMegaGeneList)]))
+          length(SubMegaGeneList),numeric(1), simplify = FALSE),
+          SubMegaGeneList[order(SubMegaGeneList)]))
         return(ProfData_X)
       }
       return( ProfData_X)
     }
   }else{
-    shiny::withProgress(message= paste("There is no Cases: ",regex1 ), value = 0.1,
+    shiny::withProgress(message=
+                          paste("There is no Cases: ",
+                                regex1 ), value = 0.1,
                         {p1 <- proc.time()
                         Sys.sleep(2)
                         proc.time() - p1 })
@@ -163,9 +169,13 @@ getListProfData <- function(panel, geneListLabel){
 
   }
   ## get Cases for selected Studies
-  CasesRefStudies <- unname(unlist(apply(as.data.frame(checked_Studies), 1,function(x) getCaseLists(cgds,x)[1])))
+  CasesRefStudies <- unname(unlist(apply(
+    as.data.frame(checked_Studies), 1,
+    function(x) cgdsr::getCaseLists(cgds,x)[1])))
   ## ger Genetics Profiles for selected Studies
-  GenProfsRefStudies <- unname(unlist(apply(as.data.frame(checked_Studies), 1,function(x) getGeneticProfiles(cgds,x)[1])))
+  GenProfsRefStudies <- unname(unlist(apply(
+    as.data.frame(checked_Studies), 1,
+    function(x) getGeneticProfiles(cgds,x)[1])))
 
 
   LengthGenProfs <- 0
