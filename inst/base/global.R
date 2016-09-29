@@ -115,7 +115,7 @@ shared_ui <-
 #               tabPanel("Code", uiOutput("rcode"), icon = icon("code"))
 #    ),
 
-    navbarMenu(title = "", id = "State", icon = icon("save"),
+    navbarMenu(title = "",  "State", icon = icon("save"),
                tabPanel(downloadLink("saveStateNav", " Save state", class = "fa fa-download")),
                ## waiting for this feature in Shiny
                # tabPanel(tags$a(id = "loadStateNav", href = "", class = "shiny-input-container",
@@ -130,7 +130,7 @@ shared_ui <-
     #          list(icon("power-off"), ""), onclick = "window.close();")),
 
     ## stop app *and* close browser window
-    navbarMenu(title = "", id = "Stop", icon = icon("power-off"),
+    navbarMenu(title = "",  "Stop", icon = icon("power-off"),
                tabPanel(actionLink("stop_bioCancer", "Stop", icon = icon("stop"),
                                    onclick = "setTimeout(function(){window.close();}, 100); ")),
                tabPanel(tags$a(id = "refresh_bioCancer", href = "#", class = "action-button",
