@@ -206,7 +206,7 @@ output$ReactomeAvailability <- DT::renderDataTable({
     Sys.sleep(0.25)
     dat <- checkDimensions(panel = "Reactome", StudyID= input$StudiesIDReactome)
     ## remove rownames to column
-    dat <- dat %>% dplyr::add_rownames("Samples")
+    dat <- dat %>% tibble::rownames_to_column("Samples")
     # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
     displayTable(dat) %>%  DT::formatStyle(names(dat),
                           color = DT::styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'

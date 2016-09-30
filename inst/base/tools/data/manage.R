@@ -69,7 +69,7 @@ loadInDatasets <- function(fname, header= TRUE){
   if(fname=="ProfData"){
     GeneList <- whichGeneList()
     dat <- as.data.frame(getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
-    r_data[[objname]] <- dat %>% dplyr::add_rownames("Patients")
+    r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
 
 
   }else if (fname=="ClinicalData"){

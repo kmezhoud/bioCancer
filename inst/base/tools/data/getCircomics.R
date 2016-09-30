@@ -284,7 +284,7 @@ output$CircosAvailability <- DT::renderDataTable({
     Sys.sleep(0.25)
     dat <- checkDimensions(panel="Circomics", StudyID= input$StudiesIDCircos )
     ## remove rownames to column
-    dat <- dat %>% dplyr::add_rownames("Samples")
+    dat <- dat %>% tibble::rownames_to_column("Samples")
 
     # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
     action = DT::dataTableAjax(session, dat, rownames = FALSE)

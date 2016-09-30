@@ -76,7 +76,7 @@ Edges_df <- function(){
 
     FreqIn <- rbind(t(t(table(as.character(Edges_obj$Gene2)))), t(t(table(as.character(Edges_obj$Gene1)))))
     colnames(FreqIn) <- "Freq"
-    FreqIn <- as.data.frame(FreqIn) %>% dplyr::add_rownames("Genes")
+    FreqIn <- as.data.frame(FreqIn) %>% tibble::rownames_to_column("Genes")
     r_data[['FreqIn']] <- plyr::ddply(FreqIn,~Genes, dplyr::summarise,FreqSum=sum(Freq))
 
 

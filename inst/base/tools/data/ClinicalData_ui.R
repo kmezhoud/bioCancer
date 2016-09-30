@@ -17,7 +17,8 @@ output$ui_Clinical_vars <- renderUI({
   ##### get Clinical Data for selected Case
   dat <- cgdsr::getClinicalData(cgds, input$CasesID)
   ## change rownames in the first column
-  dat <- dat %>% dplyr::add_rownames("Patients")
+  #dat <- dat %>% dplyr::add_rownames("Patients")
+  dat <- dat %>% tibble::rownames_to_column("Patients")
   r_data[['ClinicalData']] <- dat
 
   Clinical_vars <- names(dat)

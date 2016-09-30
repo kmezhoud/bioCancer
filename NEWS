@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.0.01 (29 Septembre 2016)
+------------------------
+o rm "id=" from navbarMenu - shiny update
+
 CHANGES IN VERSION 1.0.0 (07 July 2016)
 ------------------------
 o built vignette with knitr
