@@ -24,6 +24,18 @@ sig_stars <- function(pval) {
     c("",".","*", "**", "***")[.]
 }
 
+#' Convenience function to add a class
+#'
+#' @param x Object
+#' @param cl Vector of class labels to add
+#'
+#' @examples
+#' foo <- "some text" %>% add_class("text")
+#' foo <- "some text" %>% add_class(c("text","another class"))
+#'
+#' @export
+add_class <- function(x, cl) `class<-`(x, c(cl, class(x)))
+
 #' Hide warnings and messages and return invisible
 #'
 #' @details Adapted from \url{http://www.onthelambda.com/2014/09/17/fun-with-rprofile-and-customizing-r-startup/}

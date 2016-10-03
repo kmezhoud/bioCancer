@@ -597,3 +597,21 @@ make_funs <- function(x) {
   env <- if (exists("bioCancer")) environment(bioCancer) else parent.frame()
   dplyr::funs_(lapply(paste0(xclean, " = ~", x), as.formula, env = env) %>% setNames(xclean))
 }
+
+#' Convert categorical variables to factors and deal with empty/missing values (used in pivotr and explore)
+#' @param x Categorical variable used in table
+#' @return Variable with updated levels
+#' @export
+empty_level <- function(x) {
+  if (!is.factor(x)) x %<>% as.factor
+  levs <- levels(x)
+  if ("" %in% levs) {
+    levs[levs == ""] <- "NA"
+    x <- factor(x, levels = levs)
+    x[is.na(x)] <- "NA"
+  } else if (any(is.na(x))) {
+    x <- factor(x, levels = c(levs,"NA"))
+    x[is.na(x)] <- "NA"
+  }
+  x
+}

@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.0.03 (29 Septembre 2016)
+------------------------
+o update pivotr from radiant.data
+
+CHANGES IN VERSION 1.0.02 (29 Septembre 2016)
+------------------------
+o replace add_rownames() by rownames_t_column()
+
+
 CHANGES IN VERSION 1.0.01 (29 Septembre 2016)
 ------------------------
 o rm "id=" from navbarMenu - shiny update
