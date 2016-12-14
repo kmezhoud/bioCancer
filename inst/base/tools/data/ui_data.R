@@ -321,9 +321,10 @@ output$Enrich <- renderUI({
                        conditionalPanel( condition = "input.NetworkRunId== true",
                                          visNetwork::visNetworkOutput("network",height = "600px")
                        ),
-                       conditionalPanel(condition = "input.getlistProfDataID ==true",
+                       conditionalPanel(condition = "input.getlistProfDataIDReactome ==true",
                                         h3("Loaded Profiles Data", align="center"),
-                                        verbatimTextOutput("StrListProfData")
+                                        #uiOutput("StrListProfDataCircos")
+                                        verbatimTextOutput("StrListProfDataReactome")
                                         #htmlOutput("StrListProfData")
 
 

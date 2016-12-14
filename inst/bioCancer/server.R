@@ -9,12 +9,20 @@ shinyServer(function(input, output, session) {
 
   ## get Cases in side bar panel
   output$ui_Cases <- renderUI({
-    selectInput("CasesID", "Cases for selected study",cgdsr::getCaseLists(cgds,input$StudiesID)[,1] )
+    CaseLists <- cgdsr::getCaseLists(cgds,input$StudiesID)[,1]
+    selectInput("CasesID", "Cases for selected study",
+                choices= CaseLists,
+                selected = CaseLists[2]
+                )
   })
 
   ## get Genetic Profiles in side bar panel
   output$ui_GenProfs <- renderUI({
-    selectInput("GenProfID", "Genetic Profiles",cgdsr::getGeneticProfiles(cgds,input$StudiesID)[,1] )
+    GeneticProfiles <- cgdsr::getGeneticProfiles(cgds,input$StudiesID)[,1]
+    selectInput("GenProfID", "Genetic Profiles",
+                choices = GeneticProfiles,
+                selected = GeneticProfiles[3]
+                )
   })
 
 

@@ -1,21 +1,42 @@
 output$ui_Mut_vars <- renderUI({
 
   GeneList <- whichGeneList(input$GeneListID)
-
   dat <- cgdsr::getMutationData(cgds,
                                 input$CasesID,
                                 input$GenProfID,
                                 GeneList)
-  ## change rownames in the first column
-  dat <- as.data.frame(dat %>% tibble::rownames_to_column("Patients"))
 
-  Mut_vars <- names(dat)
-  selectInput("ui_Mut_vars", "Select variables to show:",
-              choices  = Mut_vars,
-              selected = state_multiple("Mut_vars",Mut_vars, Mut_vars),
-              multiple = TRUE,
-              selectize = FALSE,
-              size = min(6, length(Mut_vars)))
+
+  if(dim(dat)[1]==0){
+
+    #dat <- as.data.frame("Gene List is empty. copy and paste genes from text file (Gene/line)")
+
+    selectInput("ui_Mut_vars", "Select variables to show:",
+                choices  = "Patients",
+                #selected = state_multiple("Mut_vars",Mut_vars, Mut_vars),
+                multiple = FALSE,
+                selectize = FALSE,
+                size = min(2)
+                )
+  }else{
+
+    # dat <- cgdsr::getMutationData(cgds,
+    #                               input$CasesID,
+    #                               input$GenProfID,
+    #                               GeneList)
+
+    ## change rownames in the first column
+    dat <- as.data.frame(dat %>% tibble::rownames_to_column("Patients"))
+
+    Mut_vars <- names(dat)
+
+    selectInput("ui_Mut_vars", "Select variables to show:",
+                choices  = Mut_vars,
+                selected = state_multiple("Mut_vars",Mut_vars, Mut_vars),
+                multiple = TRUE,
+                selectize = FALSE,
+                size = min(6, length(Mut_vars)))
+  }
 })
 
 output$ui_MutData <- renderUI({
@@ -28,7 +49,7 @@ output$ui_MutData <- renderUI({
                    selected = "Genes", inline = TRUE),
 
       conditionalPanel(condition = "input.loadGeneListID_Mut == 'clipboard_GeneList'",
-                       actionButton('loadClip_GeneList', 'Paste Gene List')
+                       actionButton('loadClipMut_GeneList', 'Paste Gene List')
                        #uiOutput("ui_clipboard_load_MutData")
       ),
       conditionalPanel(condition = "input.loadGeneListID_Mut == 'ExampleGeneList'",
@@ -49,7 +70,7 @@ output$ui_MutData <- renderUI({
     wellPanel(
       checkboxInput(inputId = "MutData", "Load Mutations to Datasets" ,value = FALSE),
       #radioButtons(inputId = "MutData", label = "Load Mutations to Datasets:",
-       #            c("MutData"="MutData"), selected = FALSE, inline =TRUE),
+      #            c("MutData"="MutData"), selected = FALSE, inline =TRUE),
       conditionalPanel(condition = "input.MutData == true",
                        actionButton('loadMutData', 'Load Mutation Table')
 
@@ -84,9 +105,9 @@ observe({
 ## load genelist from clipBoard
 observe({
   # 'reading' data from clipboard
-  if (not_pressed(input$loadClip_GeneList)) return()
+  if (not_pressed(input$loadClipMut_GeneList)) return()
   isolate({
-    loadClipboard_GeneList()
+    loadClipboard_GeneList(tab = input$loadClipMut_GeneList)
     updateRadioButtons(session = session, inputId = "GeneListID",
                        label = "Paste Genes:",
                        c( "examples" = "ExampleGeneList",  "clipboard" = "clipboard_GeneList"),

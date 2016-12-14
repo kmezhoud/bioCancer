@@ -51,11 +51,13 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
         if(length(ProfData_X)== 0){
           if(length(GeneList) <= 500){
             ## built empty data frame with gene Symbol in colnames
-            ProfData_X <- as.data.frame(setNames(replicate(length(GeneList),numeric(1), simplify = FALSE), GeneList[order(GeneList)]))
+            ProfData_X <- as.data.frame(setNames(replicate(length(GeneList),numeric(1),
+                                                           simplify = FALSE), GeneList[order(GeneList)]))
             return(ProfData_X)
 
           }else{
-            ProfData_X <- as.data.frame(setNames(replicate(length(SubMegaGeneList),numeric(1), simplify = FALSE), SubMegaGeneList[order(SubMegaGeneList)]))
+            ProfData_X <- as.data.frame(setNames(replicate(length(SubMegaGeneList),numeric(1),
+                                                           simplify = FALSE), SubMegaGeneList[order(SubMegaGeneList)]))
             return(ProfData_X)
           }
         }else{
@@ -66,9 +68,13 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
         #print(paste("Getting Mutation Data of ",checked_Studies[s],"...",sep=""))
         MutData <- getMutationData(cgds,regex1, regex2, GeneList)
         #print(paste("MutData: ",dim(MutData)))
-        if(length(MutData)==0){
+        if(length(MutData)==0 || nrow(MutData)==0){
           ## built emty data.frame as the same form of MutData
-          MutData <- data.frame("gene_symbol"=character(1),"mutation_type"=character(1), "amino_acid_change"=character(1))
+          gene_symbol <- as.vector(GeneList)
+          mutation_type <- rep(character(1), length(GeneList))
+          amino_acid_change <- rep(character(1), length(GeneList))
+          MutData <- data.frame(gene_symbol, mutation_type, amino_acid_change)
+#          MutData <- data.frame("gene_symbol"=character(1),"mutation_type"=character(1), "amino_acid_change"= character(1))
           return(MutData)
         }else{
           ## From Mut Data frame select only Gene_symbol, Mutation_Type, AA-Changes
@@ -137,8 +143,8 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #'        "Reactome_GeneList" GeneList plus genes from reactomeFI
 #'       "file name" from Examples
 #'
-#' @return A LIST of a list data frame. Each LIST is related to profiles data (CNA, mRNA, Methylation, Mutation, miRNA, RPPA).
-#'         each list of data frame is related to studies.
+#' @return A LIST of profiles data (CNA, mRNA, Methylation, Mutation, miRNA, RPPA).
+#'         Each dimension content a list of studies.
 #'
 #'
 #'@examples
@@ -159,6 +165,19 @@ getListProfData <- function(panel, geneListLabel){
 
 
   GeneList <- whichGeneList(geneListLabel)
+  cgds <-  cgdsr::CGDS("http://www.cbioportal.org/")
+  dat <- cgdsr::getProfileData(cgds,GeneList, "gbm_tcga_pub_mrna","gbm_tcga_pub_all")
+
+  if(all(dim(dat)==c(0,1))== TRUE){
+    ## avoide error when GeneList is empty
+    ## Error..No.cancer.study..cancer_study_id...or.genetic.profile..genetic_profile_id..or.case.list.or..case_list..case.set..case_set_id..provid
+    #dat <- as.list(as.data.frame("Gene List is empty. copy and paste genes from text file (Gene/line)
+     #                    or use gene list from examples."))
+    r_data[['ListProfData']] <- NULL
+    #r_data[['ListMetData']] <- NULL
+    #r_data[['ListMutData']] <- NULL
+
+  }else{
 
   if (panel=="Circomics"){
     checked_Studies <- input$StudiesIDCircos
@@ -175,7 +194,7 @@ getListProfData <- function(panel, geneListLabel){
   ## ger Genetics Profiles for selected Studies
   GenProfsRefStudies <- unname(unlist(apply(
     as.data.frame(checked_Studies), 1,
-    function(x) getGeneticProfiles(cgds,x)[1])))
+    function(x) cgdsr::getGeneticProfiles(cgds,x)[1])))
 
 
   LengthGenProfs <- 0
@@ -285,12 +304,7 @@ getListProfData <- function(panel, geneListLabel){
         ProfData_miRNA<- grepRef(Case_miRNA, CasesRefStudies, GenProf_miRNA, GenProfsRefStudies, GeneList,Mut=0)
         MutData <- grepRef(Case_Mut,CasesRefStudies ,GenProf_Mut, GenProfsRefStudies,GeneList, Mut=1)
 
-      } else {
-        #tkmessageBox(message= "Load gene List", icon="warning")
-        #close(progressBar_ProfilesData)
-        stop("Load Gene List")
       }
-
 
       ListProfData$CNA[[checked_Studies[s]]] <- ProfData_CNA
       ListProfData$Expression[[checked_Studies[s]]] <- ProfData_Exp
@@ -309,7 +323,6 @@ getListProfData <- function(panel, geneListLabel){
   r_data[['ListProfData']] <- ListProfData
   r_data[['ListMetData']] <- ListMetData
   r_data[['ListMutData']] <- ListMutData
-
   # r_data[['Freq_DfMutData']] <- getFreqMutData(list = r_data$ListMutData,input$GeneListID)
 
   #   ListProfData_bkp <<- ListProfData
@@ -327,4 +340,5 @@ getListProfData <- function(panel, geneListLabel){
   #     myGlobalEnv$ListMutData <- myGlobalEnv$ListMutData[order(names(myGlobalEnv$ListMutData))]
 
   #    print("End Ordering ...")
+  }
 }

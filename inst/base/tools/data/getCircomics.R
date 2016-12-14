@@ -15,6 +15,7 @@ observe({
       Sys.sleep(0.25)
       getListProfData(panel='Circomics',input$GeneListID)
     })
+
   })
 })
 
@@ -64,21 +65,21 @@ observe({
 })
 
 
-output$StrProfData <- renderPrint({
-
-                   r_data$ListProfData$CNA[['UserData']] <- r_data[[input$UserData_CNA_id]]
-                   #cat("PROFILES DATA:\n",str(r_data$ListProfData$CNA),sep = " " )
-
-})
-
-output$CNATable <- DT::renderDataTable({
-  #r_data$ListProfData$CNA[['UserData']] <- r_data[[input$UserData_CNA_id]]
-
-  dat <- r_data[[input$UserData_CNA_id]]
-
-  displayTable(dat)
-
-})
+# output$StrProfData <- renderPrint({
+#
+#                    r_data$ListProfData$CNA[['UserData']] <- r_data[[input$UserData_CNA_id]]
+#                    #cat("PROFILES DATA:\n",str(r_data$ListProfData$CNA),sep = " " )
+#
+# })
+#
+# output$CNATable <- DT::renderDataTable({
+#   #r_data$ListProfData$CNA[['UserData']] <- r_data[[input$UserData_CNA_id]]
+#
+#   dat <- r_data[[input$UserData_CNA_id]]
+#
+#   displayTable(dat)
+#
+# })
 
 
 ## get Wheel for Profiles Data
@@ -169,7 +170,7 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
     print("Start getting Frequency of Mutation ...")
     Freq_DfMutData <- getFreqMutData(list = r_data$ListMutData, geneListLabel = input$GeneListID)
     print("End getting Mutation Frequency...")
-    listMut_df <- apply(r_data$Freq_DfMutData,2,function(x)as.data.frame(t(x)))
+    listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
     TreeMutData <- reStrDisease(listMut_df)
     coffeewheel(TreeMutData, width=600, height=600, main="Mutation Frequency: (Min,Max)")
   })

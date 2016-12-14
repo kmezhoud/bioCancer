@@ -32,7 +32,7 @@ output$ui_ProfData <- renderUI({
 
       radioButtons(inputId = "loadGeneListID_ProfData", label = "Load Gene List:",
                    c( "examples" = "ExampleGeneList_ProfData",  "clipboard" = "clipboard_GeneList_ProfData"),
-                   selected = "Genes", inline = TRUE),
+                   selected = state_multiple("loadGeneListID_ProfData", "DNA_damage_Response"), inline = TRUE),
 
       conditionalPanel(condition = "input.loadGeneListID_ProfData == 'clipboard_GeneList_ProfData'",
                        actionButton('loadClipProf_GeneList', 'Paste Gene List')
@@ -86,13 +86,14 @@ observe({
   # 'reading' data from clipboard
   if (not_pressed(input$loadClipProf_GeneList)) return()
   isolate({
-    loadClipboard_GeneList()
+    loadClipboard_GeneList(tab=input$loadClipProf_GeneList)
     updateRadioButtons(session = session, inputId = "GeneListID",
                        label = "Paste Genes:",
                        c( "examples" = "ExampleGeneList",  "clipboard" = "clipboard_GeneList"),
-                       selected = "Genes", inline = TRUE)
+                       #selected = "Genes",
+                       inline = TRUE)
     updateSelectInput(session, "GeneListID", label = "Pasted Genes:",
-                      choices = r_data$genelist, selected = "Genes")
+                      choices = r_data$genelist)
   })
 })
 

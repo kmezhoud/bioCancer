@@ -13,12 +13,13 @@ output$list_Cases <- renderUI({
   shiny::withProgress(message = 'loading Cases...', value = 0.1, {
     Sys.sleep(0.25)
     checked_Studies <- input$StudiesIDClassifier
-    listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,1])
+    listCases <- lapply(checked_Studies, function(x) cgdsr::getCaseLists(cgds,x)[,1])
     names(listCases) <- checked_Studies
     listCases <- lapply(listCases, function(x) x[grep("mrna", x)])
     listCases <- listCases[lapply(listCases,length)>0]
     r_data[['listCases']] <- listCases
-    selectizeInput('CasesIDClassifier','Select one Cases by Study', choices = listCases, multiple=TRUE, selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
+    selectizeInput('CasesIDClassifier','Select one Cases by Study', choices = listCases, multiple=TRUE,
+                   selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
     #updateSelectizeInput(session, 'CasesIDClassifier', choices = listCases,selected = listCases[1])
   })
 })
@@ -27,12 +28,13 @@ output$list_GenProfs <- renderUI({
   shiny::withProgress(message = 'loading Genetic Profiles...', value = 0.1, {
     Sys.sleep(0.25)
     checked_Studies <- input$StudiesIDClassifier
-    listGenProfs <- lapply(checked_Studies, function(x)getGeneticProfiles(cgds,x)[,1])
+    listGenProfs <- lapply(checked_Studies, function(x) cgdsr::getGeneticProfiles(cgds,x)[,1])
     names(listGenProfs) <- checked_Studies
     listGenProfs <- lapply(listGenProfs, function(x) x[grep("v2", x)])
     listGenProfs <- listGenProfs[lapply(listGenProfs,length)>0]
     r_data[['listGenProfs']] <- listGenProfs
-    selectizeInput('GenProfsIDClassifier', 'Select one Genetic Profile by Study', listGenProfs, multiple = TRUE, selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
+    selectizeInput('GenProfsIDClassifier', 'Select one Genetic Profile by Study', listGenProfs, multiple = TRUE,
+                   selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
   })
 })
 
@@ -46,7 +48,7 @@ TableCases <- reactive({
     Sys.sleep(0.25)
 
     checked_Studies <- input$StudiesIDClassifier
-    listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,3])
+    listCases <- lapply(checked_Studies, function(x) cgdsr::getCaseLists(cgds,x)[,3])
     #listGenProf <- lapply(checked_Studies, function(x)getGeneticProfiles(cgds,x)[,2])
     matchedCases <- lapply(listCases, function(x) x[grep("mRNA expression", x)])
     #matchedGenProf <- lapply(listGenProf, function(x)x[grep("mRNA expression",x)])
@@ -67,22 +69,21 @@ TableCases <- reactive({
 
 output$viewTableCases <- DT::renderDataTable({
   dat <-   TableCases()
-  action = DT::dataTableAjax(session, dat, rownames = FALSE)
-
-  #DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
-  DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
-                rownames = FALSE, style = "bootstrap", escape = FALSE,
-                # class = "compact",
-                options = list(
-                  ajax = list(url = action),
-                  search = list(regex = TRUE),
-                  columnDefs = list(list(className = 'dt-center', targets = "_all")),
-                  autoWidth = TRUE,
-                  processing = FALSE,
-                  pageLength = 10,
-                  lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-                )
-  )
+  displayTable(dat)
+  # #DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
+  # DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
+  #               rownames = FALSE, style = "bootstrap", escape = FALSE,
+  #               # class = "compact",
+  #               options = list(
+  #                 ajax = list(url = action),
+  #                 search = list(regex = TRUE),
+  #                 columnDefs = list(list(className = 'dt-center', targets = "_all")),
+  #                 autoWidth = TRUE,
+  #                 processing = FALSE,
+  #                 pageLength = 10,
+  #                 lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
+  #               )
+  # )
 })
 
 

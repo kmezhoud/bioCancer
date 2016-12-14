@@ -64,18 +64,21 @@ output$ui_CircosDimension <- renderUI({
 })
 
 output$StrListProfDataCircos <- renderPrint({
-  #   if(is.null(input$getlistProfDataID)){
-  #     return()
-  #   }else{
+
   withProgress(message = 'loading Profiles Data... ', value = 0.1, {
     Sys.sleep(0.25)
     getListProfData(panel='Circomics',input$GeneListID)
   })
-  #cat("STUDIES:\n", names(r_data$ListMutData), "\n")
-  #cat("PROFILES DATA:\n",str(r_data$ListProfData) ,"and Mutation", sep = " " )
-  #str(r_data$ListProfData)
-  #str(r_data$ListMutData)
-  #}
+     if(is.null(r_data$ListProfData)){
+       c("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.")
+    }else{
+
+  c("STUDIES:", input$StudiesIDCircos,
+  "Genetic Profiles: mRNA, Methylation, CNA, miRNA, Mutations, RPPA",
+  "Gene List:",
+  r_data[[input$GeneListID]]
+)
+}
 })
 
 output$ui_Circomics <- renderUI({
@@ -87,27 +90,39 @@ output$ui_Circomics <- renderUI({
   conditionalPanel("input.tabs_Enrich == 'Circomics'",
                    wellPanel(
                      selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=NULL, multiple = TRUE),
-
+                      conditionalPanel(condition = "input.StudiesIDCircos == null",
+                                       p("Select at less two studies",align="center",style = "color:red")
+                                       ),
+                  # if(length(input$StudiesIDCircos)==1){
                      div(class="row",
                          div(class="col-xs-4",
-                             checkboxInput("ViewProfDataCircosID", "Availability", value = FALSE)),
+                             conditionalPanel(condition = "input.StudiesIDCircos != null",
+                             checkboxInput("ViewProfDataCircosID", "Availability", value = FALSE))
+                             ),
                          div(class="col-xs-8",
                              conditionalPanel(condition = "input.pullUserDataButtonId==true",
-                                              p("+ User data",align="center",style = "color:blue")
+                                              p("+ User data",align="center", style = "color:blue")
                              )
                          )
                      ),
                      div(class="row",
-                         #div(class="col-xs-3",
-                         #   checkboxInput("getlistProfDataCircosID", "Load", value = FALSE)),
                          div(class="col-xs-3",
-                             actionButton('loadListProfDataCircosId', 'Load')),
+                             conditionalPanel(condition = "input.StudiesIDCircos != null",
+                            checkboxInput("loadListProfDataCircosId", "Load", value = FALSE))
+                            ),
+                         # div(class="col-xs-3",
+                         # conditionalPanel(condition = "input.StudiesIDCircos != null",
+                         #   actionButton('loadListProfDataCircosId', 'Load')
+                         # )
+                         #   ),
                          div(class="col-xs-8",
                              conditionalPanel(condition= 'input.loadListProfDataCircosId',
                                               actionButton('pushListProfData', 'Push to Handle Panel', style="float:center")
                              ))
 
-                     )),
+                     )
+                   #}
+                     ),
 
                    wellPanel(
                      h4("Pull from Handle Panel:"),
@@ -232,12 +247,12 @@ observe({
     loadInDatasets(fname="xmiRNA", header=TRUE)
     loadInDatasets(fname="xRPPA", header=TRUE)
 
+    #### Updating datasets generate error with vars view tab
     # sorting files alphabetically
-    r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
-
-    updateSelectInput(session, "dataset", label = "Datasets:",
-                      choices = r_data$datasetlist,
-                      selected = "")
+    #r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
+    #updateSelectInput(session, "dataset", label = "Datasets:",
+     #                 choices = r_data$datasetlist,
+      #                selected = "")
 
   })
 })

@@ -67,19 +67,19 @@ loadInDatasets <- function(fname, header= TRUE){
 
   objname <- fname
   if(fname=="ProfData"){
-    GeneList <- whichGeneList()
-    dat <- as.data.frame(getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
+    GeneList <- whichGeneList(input$GeneListID)
+    dat <- as.data.frame(cgdsr::getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
     r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
 
 
   }else if (fname=="ClinicalData"){
-    dat <- as.data.frame(getClinicalData(cgds, input$CasesID))
-    r_data[[objname]] <- dat %>% dplyr::add_rownames("Patients")
+    dat <- as.data.frame(cgdsr::getClinicalData(cgds, input$CasesID))
+    r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
 
   }else if (fname=="MutData"){
-    GeneList <- whichGeneList()
-    dat <- as.data.frame((getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)))
-    r_data[[objname]] <- dat %>% dplyr::add_rownames("Patients")
+    GeneList <- whichGeneList(input$GeneListID)
+    dat <- as.data.frame((cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)))
+    r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
   } else if (fname=="xCNA"){
     dat <- plyr::ldply(r_data$ListProfData$CNA)
     r_data[[objname]] <- dat
@@ -97,7 +97,7 @@ loadInDatasets <- function(fname, header= TRUE){
     r_data[[objname]] <- dat
   } else if(fname== "xFreqMut"){
     dat <- r_data$Freq_DfMutData
-    r_data[[objname]] <- dat %>% dplyr::add_rownames("Genes")
+    r_data[[objname]] <- dat %>% tibble::rownames_to_column("Genes")
   }else if (fname== "xmiRNA"){
     dat <- plyr::ldply(r_data$ListProfData$miRNA)
     r_data[[objname]] <- dat
@@ -110,27 +110,28 @@ loadInDatasets <- function(fname, header= TRUE){
 }
 #################
 
-loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = TRUE, sep = "\t") {
+loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, sep = "\t", tab) {
 
   dat <- sshhr(try(
     {if (Sys.info()["sysname"] == "Windows") {
       read.table("clipboard", header = header, sep = sep, as.is = TRUE)
     } else if (Sys.info()["sysname"] == "Darwin") {
       read.table(pipe("pbpaste"), header = header, sep = sep, as.is = TRUE)
-    } else {
-      if (!is_empty(input$load_cdata))
-        read.table(text = input$load_cdata, header = header, sep = sep, as.is = TRUE)
-    }} %>% as.data.frame(check.names = FALSE), silent = TRUE))
+    } else if (!is_empty(tab)){
+        read.table(text = tab, header = header, sep = sep, as.is = TRUE) #load_cdata
+    }} %>% as.data.frame(check.names = TRUE), silent = TRUE))
   dat <- t(dat)
   if (is(dat, 'try-error') || nrow(dat) == 0) {
-    if (ret == "") ret <- c("### Data in clipboard was not well formatted. Try exporting the data to csv format.")
+    if (ret == "") ret <- c("### Gene List in clipboard was not well formatted.")
     upload_error_handler(objname,ret)
+    r_data[['genelist']] <- c("DNA_damage_Response",r_data[['genelist']]) %>% unique
   } else {
     ret <- paste0("### Clipboard data\nData copied from clipboard on", lubridate::now())
     r_data[[objname]] <- dat
     r_data[[paste0(objname,"_descr")]] <- ret
+    r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
   }
-  r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
+
 }
 
 loadUserData <- function(fname, uFile, ext,

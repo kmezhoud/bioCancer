@@ -6,6 +6,18 @@ getGenesClassifier <- reactive({
     checked_Studies <- input$StudiesIDClassifier
 
     GeneList <- whichGeneList(input$GeneListID)
+    cgds <-  cgdsr::CGDS("http://www.cbioportal.org/")
+    dat <- cgdsr::getProfileData(cgds,GeneList, "gbm_tcga_pub_mrna","gbm_tcga_pub_all")
+
+    if(all(dim(dat)==c(0,1))== TRUE){
+      ## avoide error when GeneList is empty
+      ## Error..No.cancer.study..cancer_study_id...or.genetic.profile..genetic_profile_id..or.case.list.or..case_list..case.set..case_set_id..provid
+      GenesClassDetails_df <- as.data.frame("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.",
+                                            row.names = NULL,
+                                            col.names= NULL)
+
+
+    }else{
 
     SamplesSize <- input$SampleSizeClassifierID
     Threshold <- input$ClassifierThresholdID
@@ -125,7 +137,7 @@ getGenesClassifier <- reactive({
 
     #GenesClassTab <- do.call(rbind.data.frame, GenesClassDetails)
     #GenesClassTab <- t(t(as.data.frame.matrix(GenesClassTab)))
-
+}
     return(GenesClassDetails_df[,-1])
   })
 })
@@ -133,7 +145,9 @@ getGenesClassifier <- reactive({
 
 output$getGenesClassifier <- DT::renderDataTable({
   dat <-   getGenesClassifier()
-  displayTable(dat)
+  displayTable(dat)%>% DT::formatStyle(names(dat),
+                                       color = DT::styleEqual("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.",
+                                                              'red'))#, backgroundColor = 'white', fontWeight = 'bold'
 })
 
 

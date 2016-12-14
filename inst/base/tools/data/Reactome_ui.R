@@ -123,7 +123,7 @@ output$ui_Reactome <- renderUI({
             div(class="col-xs-6",
                 checkboxInput("ViewProfDataReactomeID", "Availability", value = FALSE)),
             div(class="col-xs-6",
-                checkboxInput("getlistProfDataID", "Load", value = FALSE))
+                checkboxInput("getlistProfDataIDReactome", "Load", value = FALSE))
         ),
 
 
@@ -216,19 +216,21 @@ output$ReactomeAvailability <- DT::renderDataTable({
 
 ## print Structure of Profiles data
 
-output$StrListProfData <- renderPrint({
-  #   if(is.null(input$getlistProfDataID)){
-  #     return()
-  #   }else{
+output$StrListProfDataReactome <- renderPrint({
   withProgress(message = 'loading Profiles Data... ', value = 0.1, {
     Sys.sleep(0.25)
     getListProfData(panel='Reactome', input$GeneListID)
   })
+  if(is.null(r_data$ListProfData)){
+    c("Gene List is empty. copy and paste genes from text file (Gene/line)
+      or use gene list from examples.")
+  }else{
   cat("STUDIES:\n", names(r_data$ListMutData), "\n")
   cat("PROFILES DATA:\n",names(r_data$ListProfData) ,"and Mutation", sep = " " )
   #str(r_data$ListProfData)
   #str(r_data$ListMutData)
-  #}
+  }
+
 })
 
 
