@@ -200,7 +200,8 @@ reStrDimension <- function(LIST){
 #'   }
 #' @export
 UnifyRowNames <- function(x, geneList){
-  df_MutData <-as.data.frame(table(x$gene_symbol)/sum(table(x$gene_symbol))*100)
+  #df_MutData <-as.data.frame(table(x$gene_symbol) /sum(table(x$gene_symbol))*100)
+  df_MutData <-as.data.frame(table(x$gene_symbol))
   rownames(df_MutData) <- df_MutData$Var1
   ## ordering genes in MutData as in GeneList
 
@@ -240,7 +241,7 @@ getFreqMutData <- function(list, geneListLabel){
   if(is.null(list)){stop("Select a less one Study.")}
 
   Freq_ListMutData <- lapply(list,
-                             function(x) UnifyRowNames(x, GeneList))
+                              function(x) UnifyRowNames(x, GeneList))
 
   ## convert the list of correlation matrices to Array
   Freq_ArrayMutData <- array(unlist( Freq_ListMutData),
@@ -253,22 +254,35 @@ getFreqMutData <- function(list, geneListLabel){
                         colnames(Freq_ListMutData[[1]]),
                         names(Freq_ListMutData)),
                    silent=TRUE),"try-error")){
-    stop("There is a Study without Mutation Data.
-         Use Mutation Panel to verify mutations data for selected studies.")
+    p("There is a Study without Mutation Data.
+         Use Mutation Panel to verify mutations data for selected studies.",
+      align="center", style = "color:blue")
   }else{
     dimnames(Freq_ArrayMutData) <-
       list(Freq_ListMutData[[1]][,1],
            colnames(Freq_ListMutData[[1]]),
            names(Freq_ListMutData))
   }
+#   ?getListProfData(Genes= empty)
+  if(dim(Freq_ArrayMutData)[3]==1){
+    Freq_DfMutData <- as.numeric(Freq_ArrayMutData[,2,])
+    names(Freq_DfMutData) <- names(Freq_ArrayMutData[,2,])
+    ## ordering gene list as in GeneList from MSigDB:
+    ## grouping genes with the same biological process or gene Sets
+    Freq_DfMutData <- Freq_DfMutData[GeneList]
+    Freq_DfMutData <- data.frame(round(Freq_DfMutData,digits=2))
+    names(Freq_DfMutData) <- names(Freq_ListMutData)
+  }else{
+    Freq_DfMutData <- apply(Freq_ArrayMutData[,2,],2,as.numeric)
+    rownames(Freq_DfMutData) <- rownames(Freq_ArrayMutData[,2,])
+    ## ordering gene list as in GeneList from MSigDB:
+    ## grouping genes with the same biological process or gene Sets
+    Freq_DfMutData <- Freq_DfMutData[GeneList,,drop=FALSE]
+    Freq_DfMutData <- data.frame(round(Freq_DfMutData,digits=2))
+  }
 
-  Freq_DfMutData <- apply(Freq_ArrayMutData[,2,],2,as.numeric)
-  rownames(Freq_DfMutData) <- rownames(Freq_ArrayMutData[,2,])
-  ## ordering gene list as in GeneList from MSigDB:
-  ## grouping genes with the same biological process or gene Sets
 
-  Freq_DfMutData <- Freq_DfMutData[GeneList,,drop=FALSE]
-  Freq_DfMutData <- data.frame(round(Freq_DfMutData,digits=2))
+
 
   r_data[['Freq_DfMutData']] <- Freq_DfMutData
   return(Freq_DfMutData)
