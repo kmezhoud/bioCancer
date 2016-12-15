@@ -6,7 +6,7 @@ output$ui_Mut_vars <- renderUI({
                                 input$GenProfID,
                                 GeneList)
 
-
+## avoid error when geneList is empty
   if(dim(dat)[1]==0){
 
     #dat <- as.data.frame("Gene List is empty. copy and paste genes from text file (Gene/line)")
@@ -43,6 +43,10 @@ output$ui_MutData <- renderUI({
 
   list(
     wellPanel(
+
+      conditionalPanel("input.GeneListID == 'DNA_damage_Response' && input.loadClipMut_GeneList%2 == 1 ",
+                       p("Gene List is empty!", align="center",style = "color:red")
+      ),
 
       radioButtons(inputId = "loadGeneListID_Mut", label = "Load Gene List:",
                    c( "examples" = "ExampleGeneList",  "clipboard" = "clipboard_GeneList"),
@@ -111,9 +115,10 @@ observe({
     updateRadioButtons(session = session, inputId = "GeneListID",
                        label = "Paste Genes:",
                        c( "examples" = "ExampleGeneList",  "clipboard" = "clipboard_GeneList"),
-                       selected = "Genes", inline = TRUE)
+                       #selected = "Genes",
+                       inline = TRUE)
     updateSelectInput(session, "GeneListID", label = "Pasted Genes:",
-                      choices = r_data$genelist, selected = "Genes")
+                      choices = r_data$genelist)
   })
 })
 

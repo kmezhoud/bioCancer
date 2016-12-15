@@ -29,6 +29,9 @@ output$ui_ProfData <- renderUI({
   list(
 
     wellPanel(
+      conditionalPanel("input.GeneListID == 'DNA_damage_Response' && input.loadClipProf_GeneList%2 == 1",
+                        p("Gene List is empty!",align="center",style = "color:red")
+                       ),
 
       radioButtons(inputId = "loadGeneListID_ProfData", label = "Load Gene List:",
                    c( "examples" = "ExampleGeneList_ProfData",  "clipboard" = "clipboard_GeneList_ProfData"),
