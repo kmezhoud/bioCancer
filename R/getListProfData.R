@@ -66,7 +66,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 
       }else if(Mut==1){
         #print(paste("Getting Mutation Data of ",checked_Studies[s],"...",sep=""))
-        MutData <- getMutationData(cgds,regex1, regex2, GeneList)
+        MutData <- cgdsr::getMutationData(cgds,regex1, regex2, GeneList)
         #print(paste("MutData: ",dim(MutData)))
         if(length(MutData)==0 || nrow(MutData)==0){
           ## built emty data.frame as the same form of MutData
@@ -152,7 +152,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #'  \dontrun{
 #' geneList <- whichGeneList("73")
 #' r_data <- new.env()
-#' MutData <- getMutationData(cgds,"gbm_tcga_pub_all",
+#' MutData <- cgdsr::getMutationData(cgds,"gbm_tcga_pub_all",
 #'  "gbm_tcga_pub_mutations", geneList )
 #' FreqMut <- getFreqMutData(list(ls1=MutData, ls2=MutData), "73")
 #' input <- NULL

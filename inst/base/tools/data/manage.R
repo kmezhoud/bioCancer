@@ -54,7 +54,7 @@ factorizer <- function(dat) {
   if (sum(isChar) == 0) return(dat)
   toFct <-
     dplyr::select(dat, which(isChar)) %>%
-    summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < .1)) %>%
+    dplyr::summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < .1)) %>%
     dplyr::select(which(. == TRUE)) %>% names
   # summarise_each(funs(n_distinct)) %>%
   # dplyr::select(which(. < 100 & ((. / nrow(dat)) < .1))) %>% names
