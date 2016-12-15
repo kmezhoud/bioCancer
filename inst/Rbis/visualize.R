@@ -1,17 +1,18 @@
 #' Visualize data using ggplot2 \url{http://docs.ggplot2.org/current/}
 #'
-#' @details See \url{http://vnijs.github.io/radiant/base/visualize.html} for an example in Radiant
+#' @details See \url{http://radiant-rstats.github.io/docs/data/visualize.html} for an example in Radiant
 #'
 #' @param dataset Dataset name (string). This can be a dataframe in the global environment or an element in an r_data list from Radiant
 #' @param xvar One or more variables to display along the X-axis of the plot
 #' @param yvar Variable to display along the Y-axis of the plot (default = "none")
 #' @param comby Combine yvars in plot (TRUE or FALSE, FALSE is the default)
 #' @param combx Combine xvars in plot (TRUE or FALSE, FALSE is the default)
-#' @param type Type of plot to create. One of Histogram ('hist'), Density ('density'), Scatter ('scatter'), Line ('line'), Bar ('bar'), or Box-plot ('box')
+#' @param type Type of plot to create. One of Distribution ('dist'), Density ('density'), Scatter ('scatter'), Surface ('surface'), Line ('line'), Bar ('bar'), or Box-plot ('box')
 #' @param facet_row Create vertically arranged subplots for each level of the selected factor variable
 #' @param facet_col Create horizontally arranged subplots for each level of the selected factor variable
-#' @param color Adds color to a scatter plot to generate a heat map. For a line plot one line is created for each group and each is assigned a different color
-#' @param fill Group bar, histogram, and density plots by group, each with a different color
+#' @param color Adds color to a scatter plot to generate a 'heat map'. For a line plot one line is created for each group and each is assigned a different color
+#' @param fill Display bar, distribution, and density plots by group, each with a different color. Also applied to surface plots to generate a 'heat map'
+#' @param size Numeric variable used to scale the size of scatter-plot points
 #' @param bins Number of bins used for a histogram (1 - 50)
 #' @param smooth Adjust the flexibility of the loess line for scatter plots
 #' @param fun Set the summary measure for line and bar plots when the X-variable is a factor (default is "mean"). Also used to plot an error bar in a scatter plot when the X-variable is a factor. Options are "mean" and/or "median"
@@ -25,27 +26,32 @@
 #' @return Generated plots
 #'
 #' @examples
-#' visualize("diamonds", "carat", "price", type = "scatter", check = "loess")
-#' visualize("diamonds", "price:x", type = "hist")
+#' visualize("diamonds", "price:x", type = "dist")
 #' visualize("diamonds", "carat:x", yvar = "price", type = "scatter")
-#' visualize(dataset = "diamonds", yvar = "price", xvar = c("cut","clarity"), type = "bar",
-#'   fun = "median")
+#' visualize(dataset = "diamonds", yvar = "price", xvar = c("cut","clarity"),
+#'   type = "bar", fun = "median")
+#' visualize(dataset = "diamonds", yvar = "price", xvar = c("cut","clarity"),
+#'   type = "line", fun = "max")
+#' visualize(dataset = "diamonds", yvar = "price", xvar = "carat", type = "scatter",
+#'           size = "table", custom = TRUE) + scale_size(range=c(1,10), guide = "none")
 #' visualize(dataset = "diamonds", yvar = "price", xvar = "carat", type = "scatter", custom = TRUE) +
 #'   ggtitle("A scatterplot") + xlab("price in $")
 #' visualize(dataset = "diamonds", xvar = "price:carat", custom = TRUE) %>%
 #'   {.[[1]] + ggtitle("A histogram") + xlab("price in $")}
-#' diamonds %>% visualize(c("price","carat","depth"), type = "density")
+#' visualize(dataset = "diamonds", xvar = "cut", yvar = "price", type = "bar",
+#'   facet_row = "cut", fill = "cut", custom = FALSE)
 #'
 #' @export
 visualize <- function(dataset, xvar,
                       yvar = "",
                       comby = FALSE,
                       combx = FALSE,
-                      type = "hist",
+                      type = "dist",
                       facet_row = ".",
                       facet_col = ".",
                       color = "none",
                       fill = "none",
+                      size = "none",
                       bins = 10,
                       smooth = 1,
                       fun = "mean",
@@ -60,10 +66,11 @@ visualize <- function(dataset, xvar,
   vars <- xvar
 
   if (!type %in% c("scatter","line")) color <- "none"
-  if (!type %in% c("bar","hist","density")) fill <- "none"
+  if (!type %in% c("bar","dist","density","surface")) fill <- "none"
   if (type != "scatter") {
     check %<>% sub("line","",.) %>% sub("loess","",.)
     fun <- fun[1]  # only scatter can deal with multiple functions
+    size <- "none"
   }
   if (!type %in% c("scatter","box")) check %<>% sub("jitter","",.)
 
@@ -71,11 +78,13 @@ visualize <- function(dataset, xvar,
   byvar <- NULL
 
   if (length(yvar) == 0 || identical(yvar, "")) {
-    if (!type %in% c("hist","density")) {
+    if (!type %in% c("dist","density")) {
       return("No Y-variable provided for a plot that requires one")
     }
+  } else if (type == "surface" && is_empty(fill, "none")) {
+    return("No Fill variable provided for a plot that requires one")
   } else {
-    if (type %in% c("hist","density")) {
+    if (type %in% c("dist","density")) {
       yvar <- ""
     } else {
       vars %<>% c(., yvar)
@@ -94,11 +103,16 @@ visualize <- function(dataset, xvar,
     vars %<>% c(., facet_col)
     byvar <- if (is.null(byvar)) facet_col else unique(c(byvar, facet_col))
   }
+
+  if (facet_col != "." && facet_row == facet_col)
+    return("The same variable cannot be used for both Facet row and Facet column")
+
   if (fill != "none") {
     vars %<>% c(., fill)
     if (type == "bar")
       byvar <- if (is.null(byvar)) fill else unique(c(byvar, fill))
   }
+  if (size != "none") vars %<>% c(., size)
 
   ## so you can also pass-in a data.frame
   dat <- getdata(dataset, vars, filt = data_filter)
@@ -115,15 +129,14 @@ visualize <- function(dataset, xvar,
   }
 
   ## convertising factor variables if needed
-  # isChar <- sapply(dat, class) == "character"
   isChar <- dc == "character"
   if (sum(isChar) > 0) {
     if (type == "density") {
-      dat[,isChar] <- dplyr::select(dat, which(isChar)) %>% mutate_each(funs(as_numeric))
+      dat[,isChar] <- dplyr::select(dat, which(isChar)) %>% dplyr::mutate_each(funs(as_numeric))
       if ("character" %in% getclass(dplyr::select(dat,which(isChar))))
         return("Character variable(s) were not converted to numeric.\nTo use these variables in a plot convert them to numeric\nvariables (or factors) in the Data > Transform tab")
     } else {
-      dat[,isChar] <- dplyr::select(dat, which(isChar)) %>% mutate_each(funs(as_factor))
+      dat[,isChar] <- dplyr::select(dat, which(isChar)) %>% dplyr::mutate_each(funs(as_factor))
       nrlev <- sapply(dat, function(x) if (is.factor(x)) length(levels(x)) else 0)
       if (max(nrlev) > 100)
         return("Character variable(s) were not converted to factors.\nTo use these variable in a plot convert them to factors\n(or numeric variables) in the Data > Transform tab")
@@ -132,12 +145,22 @@ visualize <- function(dataset, xvar,
     dc <- getclass(dat)
   }
 
-  ## 1 of first level of factor, else 0
-  # if (type %in% c("bar","scatter")) {
   if (type == "bar") {
+    if (any(xvar %in% yvar)) {
+      return("Cannot create a bar-chart if an X-variable is also included as a Y-variable")
+    }
+  } else if (type == "box") {
+    if (any(xvar %in% yvar)) {
+      return("Cannot create a box-plot if an X-variable is also included as a Y-variable")
+    }
+  }
+
+  ## 1 of first level of factor, else 0
+  if (type == "bar") {
+
     isFctY <- "factor" == dc & names(dc) %in% yvar
     if (sum(isFctY)) {
-      dat[,isFctY] <- dplyr::select(dat, which(isFctY)) %>% mutate_each(funs(as.integer(. == levels(.)[1])))
+      dat[,isFctY] <- dplyr::select(dat, which(isFctY)) %>% dplyr::mutate_each(funs(as.integer(. == levels(.)[1])))
       dc[isFctY] <- "integer"
     }
   }
@@ -155,14 +178,14 @@ visualize <- function(dataset, xvar,
     if (any(!dc[xvar] %in% c("integer","numeric")))
       return("'Log X' is only meaningful for X-variables of type integer or numeric")
     to_log <- (dc[xvar] %in% c("integer","numeric")) %>% xvar[.]
-    dat[, to_log] <- dplyr::select_(dat, .dots = to_log) %>% mutate_each(funs(log_trans))
+    dat[, to_log] <- dplyr::select_(dat, .dots = to_log) %>% dplyr::mutate_each(funs(log_trans))
   }
 
   if ("log_y" %in% axes) {
     if (any(!dc[yvar] %in% c("integer","numeric")))
       return("'Log Y' is only meaningful for Y-variables of type integer or numeric")
     to_log <- (dc[yvar] %in% c("integer","numeric")) %>% yvar[.]
-    dat[, to_log] <- dplyr::select_(dat, .dots = to_log) %>% mutate_each(funs(log_trans))
+    dat[, to_log] <- dplyr::select_(dat, .dots = to_log) %>% dplyr::mutate_each(funs(log_trans))
   }
 
   ## combining Y-variables if needed
@@ -170,6 +193,7 @@ visualize <- function(dataset, xvar,
     if (any(xvar %in% yvar)) return("X-variables cannot be part of Y-variables when combining Y-variables")
     if (!is_empty(color, "none")) return("Cannot use Color when combining Y-variables")
     if (!is_empty(fill, "none")) return("Cannot use Fill when combining Y-variables")
+    if (!is_empty(size, "none")) return("Cannot use Size when combining Y-variables")
     if (facet_row %in% yvar || facet_col %in% yvar) return("Facet row or column variables cannot be part of\nY-variables when combining Y-variables")
 
     dat <- gather_(dat, "yvar", "values", gather_cols = yvar)
@@ -195,41 +219,39 @@ visualize <- function(dataset, xvar,
   }
 
   plot_list <-  list()
-  if (type == "hist") {
+  if (type == "dist") {
     for (i in xvar) {
 
-      ## can't create a histogram for a logical
+      ## can't create a distribution plot for a logical
       if (dc[i] == "logical") {
         dat[[i]] <- as_factor(dat[[i]])
         dc[i] <- "factor"
       }
 
       hist_par <- list(alpha = alpha, position = "dodge")
-      plot_list[[i]] <- ggplot(dat, aes_string(x=i))
+      plot_list[[i]] <- ggplot(dat, aes_string(x = i))
       if ("density" %in% axes && !"factor" %in% dc[i]) {
         hist_par <- list(aes(y = ..density..), alpha = alpha, position = "dodge")
         plot_list[[i]] <- plot_list[[i]] + geom_density(color = "blue", size = .5)
-
       }
       if ("factor" %in% dc[i]) {
         plot_fun <- get("geom_bar")
         if ("log_x" %in% axes) axes <- sub("log_x","",axes)
       } else {
         plot_fun <- get("geom_histogram")
-        hist_par[["binwidth"]] <- dplyr::select_(dat,i) %>% range %>% {diff(.)/bins}
+        hist_par[["binwidth"]] <- dplyr::select_(dat, .dots = i) %>% range %>% {diff(.)/(bins-1)}
       }
 
-      # plot_list[[i]] <- plot_list[[i]] + do.call(geom_histogram, hist_par)
       plot_list[[i]] <- plot_list[[i]] + do.call(plot_fun, hist_par)
       if ("log_x" %in% axes) plot_list[[i]] <- plot_list[[i]] + xlab(paste("log", i))
     }
   } else if (type == "density") {
     for (i in xvar) {
-      plot_list[[i]] <- ggplot(dat, aes_string(x=i)) +
+      plot_list[[i]] <- ggplot(dat, aes_string(x = i)) +
         if (fill == "none")
           geom_density(adjust = smooth, color = "blue", fill = "blue", alpha = alpha, size = 1)
-        else
-          geom_density(adjust = smooth, alpha = alpha, size = 1)
+      else
+        geom_density(adjust = smooth, alpha = alpha, size = 1)
 
       if ("log_x" %in% axes) plot_list[[i]] <- plot_list[[i]] + xlab(paste("log", i))
     }
@@ -237,7 +259,6 @@ visualize <- function(dataset, xvar,
 
     itt <- 1
     if ("jitter" %in% check) {
-      # gs <- geom_blank() + geom_jitter(alpha = alpha, position = position_jitter(width = 0.4, height = 0.1))
       gs <- geom_jitter(alpha = alpha, position = position_jitter(width = 0.4, height = 0.1))
       check <- sub("jitter","", check)
     } else {
@@ -245,17 +266,14 @@ visualize <- function(dataset, xvar,
     }
 
     for (i in xvar) {
-      # if ("log_x" %in% axes && "factor" %in% class(dat[[i]])) axes <- sub("log_x","",axes)
       if ("log_x" %in% axes && dc[i] == "factor") axes <- sub("log_x","",axes)
-      # if ("log_y" %in% axes && dc[i] == "factor") axes <- sub("log_y","",axes)
 
       for (j in yvar) {
-        plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j)) + gs
+        plot_list[[itt]] <- ggplot(dat, aes_string(x = i, y = j)) + gs
 
         if ("log_x" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + xlab(paste("log", i))
         if ("log_y" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + ylab(paste("log", j))
 
-        # if ("factor" %in% class(dat[[i]])) {
         if (dc[i] == "factor") {
 
           ## make range comparable to bar plot
@@ -269,9 +287,7 @@ visualize <- function(dataset, xvar,
               data.frame(ymin = y, ymax = y, y = y)
             }
             plot_list[[itt]] <- plot_list[[itt]] +
-              ylab(paste(plot_list[[itt]]$labels$y, "(mean)")) +
-              # geom_errorbar(stat = "hline", yintercept = "mean", width = .8, size = 1, color = "blue", aes(ymax = ..y.., ymin = ..y..))
-              stat_summary(fun.data=meanf, geom="crossbar", color = "blue")
+              stat_summary(fun.data = meanf, geom = "crossbar", color = "blue")
           }
 
           if ("median" %in% fun) {
@@ -280,11 +296,32 @@ visualize <- function(dataset, xvar,
               data.frame(ymin = y, ymax = y, y = y)
             }
             plot_list[[itt]] <- plot_list[[itt]] +
-              ylab(paste(plot_list[[itt]]$labels$y, "(median)")) +
-              # geom_errorbar(stat = "hline", yintercept = "median", width = .8, size = 1, color = "red", aes(ymax = ..y.., ymin = ..y..))
-              stat_summary(fun.data=medianf, geom="crossbar", color = "red")
+              stat_summary(fun.data = medianf, geom = "crossbar", color = "red")
           }
+
+          nr <- nrow(dat)
+          if (nr > 1000 || nr != length(unique(dat[[i]])))
+            plot_list[[itt]]$labels$y %<>% paste0(., " (", fun, ")")
+
         }
+
+        itt <- itt + 1
+      }
+    }
+
+  } else if (type == "surface") {
+
+    itt <- 1
+    for (i in xvar) {
+      if ("log_x" %in% axes && dc[i] == "factor") axes <- sub("log_x","",axes)
+      interpolate <- ifelse ("interpolate" %in% check, TRUE, FALSE)
+
+      for (j in yvar) {
+        plot_list[[itt]] <- ggplot(dat, aes_string(x = i, y = j, fill = fill)) +
+          geom_raster(interpolate = interpolate)
+
+        if ("log_x" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + xlab(paste("log", i))
+        if ("log_y" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + ylab(paste("log", j))
 
         itt <- itt + 1
       }
@@ -295,31 +332,30 @@ visualize <- function(dataset, xvar,
       for (j in yvar) {
         flab <- ""
         if (color == 'none') {
-          # if (is.factor(dat[[i]])) {
-          if ("factor" %in% dc[i]) {
+          if (dc[i] %in% c("factor","date")) {
             tbv <- if (is.null(byvar)) i else c(i, byvar)
-            tmp <- dat %>% group_by_(.dots = tbv) %>% dplyr::select_(j) %>% summarise_each(make_funs(fun))
-
-            plot_list[[itt]] <- ggplot(tmp, aes_string(x=i, y=j)) + geom_point() + geom_line(aes(group = 1))
+            tmp <- dat %>% dplyr::group_by_(.dots = tbv) %>% dplyr::select_(.dots = c(tbv, j)) %>% summarise_each(make_funs(fun))
+            colnames(tmp)[ncol(tmp)] <- j
+            plot_list[[itt]] <- ggplot(tmp, aes_string(x = i, y = j)) + geom_line(aes(group = 1))
+            if (nrow(tmp) < 101) plot_list[[itt]] <- plot_list[[itt]] + geom_point()
           } else {
-            plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j)) + geom_line()
+            plot_list[[itt]] <- ggplot(dat, aes_string(x = i, y = j)) + geom_line()
           }
         } else {
-          # if (is.factor(dat[[i]])) {
-          if ("factor" %in% dc[i]) {
-            tbv <- if (is.null(byvar)) i else c(i, byvar)
-
-            tmp <- dat %>% group_by_(.dots = tbv) %>% dplyr::select_(j, color) %>% summarise_each(make_funs(fun))
-
-            plot_list[[itt]] <- ggplot(tmp, aes_string(x=i, y=j, color = color, group = color)) + geom_point() + geom_line()
-
+          if (dc[i] %in% c("factor","date")) {
+            tbv <- if (is.null(byvar)) i else unique(c(i, byvar))
+            tmp <- dat %>% dplyr::group_by_(.dots = tbv) %>% dplyr::select_(.dots = c(tbv, color, j)) %>% summarise_each(make_funs(fun))
+            colnames(tmp)[ncol(tmp)] <- j
+            plot_list[[itt]] <- ggplot(tmp, aes_string(x = i, y = j, color = color, group = color)) + geom_line()
+            if (nrow(tmp) < 101) plot_list[[itt]] <- plot_list[[itt]] + geom_point()
           } else {
-            plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j, color = color, group = color)) + geom_line()
+            plot_list[[itt]] <- ggplot(dat, aes_string(x = i, y = j, color = color, group = color)) + geom_line()
           }
         }
         if ("log_x" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + xlab(paste("log", i))
         if ("log_y" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + ylab(paste("log", j))
-        if ("factor" %in% dc[i]) plot_list[[itt]]$labels$y %<>% paste0(., " (", fun, ")")
+        if (dc[i] %in% c("factor","date") && nrow(tmp) < nrow(dat))
+          plot_list[[itt]]$labels$y %<>% paste0(., " (", fun, ")")
 
         itt <- itt + 1
       }
@@ -327,27 +363,26 @@ visualize <- function(dataset, xvar,
   } else if (type == "bar") {
     itt <- 1
     for (i in xvar) {
-      # dat[,i] %<>% as_factor
-      if (!"factor" %in% dc[i]) dat[[i]] %<>% as_factor
 
+      if (!"factor" %in% dc[i]) dat[[i]] %<>% as_factor
       if ("log_x" %in% axes) axes <- sub("log_x","",axes)
       for (j in yvar) {
         tbv <- if (is.null(byvar)) i else c(i, byvar)
-
-        tmp <- dat %>% group_by_(.dots = tbv) %>% dplyr::select_(j) %>% summarise_each(make_funs(fun))
-
+        tmp <- dat %>% dplyr::group_by_(.dots = tbv) %>% dplyr::select_(.dots = c(tbv, j)) %>% summarise_each(make_funs(fun))
+        colnames(tmp)[ncol(tmp)] <- j
 
         if ("sort" %in% axes && facet_row == "." && facet_col == ".") {
           tmp <- arrange_(ungroup(tmp), j)
           tmp[[i]] %<>% factor(., levels = unique(.))
         }
 
-        plot_list[[itt]] <- ggplot(tmp, aes_string(x=i, y=j)) +
-          geom_bar(stat="identity", position = "dodge", alpha = alpha)
+        plot_list[[itt]] <- ggplot(tmp, aes_string(x = i, y = j)) +
+          geom_bar(stat = "identity", position = "dodge", alpha = alpha)
 
         if ("log_y" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + ylab(paste("log", j))
 
-        plot_list[[itt]]$labels$y %<>% paste0(., " (", fun, ")")
+        if (dc[i] %in% c("factor","date") && nrow(tmp) < nrow(dat))
+          plot_list[[itt]]$labels$y %<>% paste0(., " (", fun, ")")
 
         itt <- itt + 1
       }
@@ -355,12 +390,11 @@ visualize <- function(dataset, xvar,
   } else if (type == "box") {
     itt <- 1
     for (i in xvar) {
-      # dat[,i] %<>% as_factor
       if (!"factor" %in% dc[i]) dat[[i]] %<>% as_factor
       for (j in yvar) {
-        plot_list[[itt]] <- ggplot(dat, aes_string(x=i, y=j, fill=i)) +
-                          geom_boxplot(alpha = alpha) +
-                          theme(legend.position = "none")
+        plot_list[[itt]] <- ggplot(dat, aes_string(x = i, y = j, fill = i)) +
+          geom_boxplot(alpha = alpha) +
+          theme(legend.position = "none")
 
         if ("log_y" %in% axes) plot_list[[itt]] <- plot_list[[itt]] + ylab(paste("log", j))
 
@@ -371,21 +405,26 @@ visualize <- function(dataset, xvar,
 
   if (facet_row != "." || facet_col != ".") {
     facets <- if (facet_row == ".")  paste("~", facet_col)
-              else paste(facet_row, '~', facet_col)
-    scales <- if ("scale_y" %in% axes) "free_y" else "fixed"
+    else paste(facet_row, '~', facet_col)
+    scl <- if ("scale_y" %in% axes) "free_y" else "fixed"
     facet_fun <- if (facet_row == ".") facet_wrap else facet_grid
     for (i in 1:length(plot_list))
-      plot_list[[i]] <- plot_list[[i]] + facet_fun(as.formula(facets), scales = scales)
+      plot_list[[i]] <- plot_list[[i]] + facet_fun(as.formula(facets), scales = scl)
 
   }
 
-  if (color != 'none') {
+  if (color != "none") {
     for (i in 1:length(plot_list))
-      plot_list[[i]] <- plot_list[[i]] + aes_string(color=color)
+      plot_list[[i]] <- plot_list[[i]] + aes_string(color = color)
+  }
+
+  if (size != "none") {
+    for (i in 1:length(plot_list))
+      plot_list[[i]] <- plot_list[[i]] + aes_string(size = size)
   }
 
   ## adding fill
-  if (fill != 'none') {
+  if (fill != "none") {
     for (i in 1:length(plot_list))
       plot_list[[i]] <- plot_list[[i]] + aes_string(fill = fill)
   }
@@ -398,25 +437,26 @@ visualize <- function(dataset, xvar,
 
   if ("line" %in% check) {
     for (i in 1:length(plot_list))
-      plot_list[[i]] <- plot_list[[i]] + sshhr( geom_smooth(method = "lm", fill = 'blue',
-                                             alpha = .1, size = .75,
-                                             linetype = "dashed",
-                                             colour = 'black') )
+      plot_list[[i]] <- plot_list[[i]] +
+        sshhr(geom_smooth(method = "lm", fill = "blue", alpha = .1, size = .75,
+                          linetype = "dashed", color = "black"))
   }
 
   if ("loess" %in% check) {
     for (i in 1:length(plot_list))
-      plot_list[[i]] <- plot_list[[i]] + sshhr( geom_smooth(span = smooth, method = "loess", size = .75,
-                                             linetype = "dotdash", aes(group=1)) )
+      plot_list[[i]] <- plot_list[[i]] +
+        sshhr(geom_smooth(span = smooth, method = "loess", size = .75,
+                          linetype = "dotdash", aes(group = 1)))
   }
 
   if ("flip" %in% axes) {
-    for (i in 1:length(plot_list)) plot_list[[i]] <- plot_list[[i]] + coord_flip()
+    for (i in 1:length(plot_list))
+      plot_list[[i]] <- plot_list[[i]] + coord_flip()
   }
 
- if (custom)
-   if (length(plot_list) == 1) return(plot_list[[1]]) else return(plot_list)
+  if (custom)
+    if (length(plot_list) == 1) return(plot_list[[1]]) else return(plot_list)
 
- sshhr( do.call(gridExtra::arrangeGrob, c(plot_list, list(ncol = min(length(plot_list), 2)))) ) %>%
-   { if (shiny) . else print(.) }
+  sshhr( do.call(gridExtra::arrangeGrob, c(plot_list, list(ncol = min(length(plot_list), 2)))) ) %>%
+  {if (shiny) . else print(.)}
 }

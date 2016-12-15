@@ -533,3 +533,95 @@ use_input <- function(var, vars, init = character(0), fun = "state_single") {
     get(fun)(var, vars, init)
   }
 }
+
+## use the value in the input list if available and update r_state
+state_init <- function(var, init = "") {
+  isolate({
+    ivar <- input[[var]]
+    if (var %in% names(input) || length(ivar) > 0) {
+      ivar <- input[[var]]
+      if (is_empty(ivar)) r_state[[var]] <<- NULL
+    } else {
+      ivar <- .state_init(var, init)
+    }
+    ivar
+  })
+}
+
+## need a separate function for checkboxGroupInputs
+state_group <- function(var, init = "") {
+  isolate({
+    ivar <- input[[var]]
+    if (var %in% names(input) || length(ivar) > 0) {
+      ivar <- input[[var]]
+      if (is_empty(ivar)) r_state[[var]] <<- NULL
+    } else {
+      ivar <- .state_init(var, init)
+      r_state[[var]] <<- NULL ## line that differs for CBG inputs
+    }
+    ivar
+  })
+}
+
+.state_init <- function(var, init = "") {
+  rs <- r_state[[var]]
+  if (is_empty(rs)) init else rs
+}
+
+state_single <- function(var, vals, init = character(0)) {
+  isolate({
+    ivar <- input[[var]]
+    if (var %in% names(input) && is.null(ivar)) {
+      r_state[[var]] <<- NULL
+      ivar
+    } else if (available(ivar) && all(ivar %in% vals)) {
+      if (length(ivar) > 0) r_state[[var]] <<- ivar
+      ivar
+    } else if (available(ivar) && any(ivar %in% vals)) {
+      ivar[ivar %in% vals]
+    } else {
+      if (length(ivar) > 0 && all(ivar %in% c("None","none",".","")))
+        r_state[[var]] <<- ivar
+      .state_single(var, vals, init = init)
+    }
+    # .state_single(var, vals, init = init)
+  })
+}
+
+.state_single <- function(var, vals, init = character(0)) {
+  rs <- r_state[[var]]
+  if (is_empty(rs)) init else vals[vals == rs]
+}
+
+state_multiple <- function(var, vals, init = character(0)) {
+  isolate({
+    ivar <- input[[var]]
+    if (var %in% names(input) && is.null(ivar)) {
+      r_state[[var]] <<- NULL
+      ivar
+    } else if (available(ivar) && all(ivar %in% vals)) {
+      if (length(ivar) > 0) r_state[[var]] <<- ivar
+      ivar
+    } else if (available(ivar) && any(ivar %in% vals)) {
+      ivar[ivar %in% vals]
+    } else {
+      if (length(ivar) > 0 && all(ivar %in% c("None","none",".","")))
+        r_state[[var]] <<- ivar
+      .state_multiple(var, vals, init = init)
+    }
+  })
+}
+
+.state_multiple <- function(var, vals, init = character(0)) {
+  rs <- r_state[[var]]
+  ## "a" %in% character(0) --> FALSE, letters[FALSE] --> character(0)
+  if (is_empty(rs)) vals[vals %in% init] else vals[vals %in% rs]
+}
+
+## cat to file
+## use with tail -f ~/r_cat.txt in a terminal
+cf <- function(...) {
+  cat(paste0("\n--- called from: ", environmentName(parent.frame()), " (", lubridate::now(), ")\n"), file = "~/r_cat.txt", append = TRUE)
+  out <- paste0(capture.output(...), collapse = "\n")
+  cat("--\n", out, "\n--", sep = "\n", file = "~/r_cat.txt", append = TRUE)
+}
