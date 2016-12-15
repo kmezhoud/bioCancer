@@ -49,29 +49,30 @@ output$ui_data <- renderUI({
                          conditionalPanel("input.tabs_portal == 'Profiles'", uiOutput("ui_ProfData")),
                          conditionalPanel("input.tabs_portal == 'Mutation'", uiOutput("ui_MutData"))
         ),
-        conditionalPanel("input.tabs_data == 'Enrich'",
-                         conditionalPanel("input.tabs_Enrich == 'Circomics'",
+        conditionalPanel("input.tabs_data == 'Enrichment'",
+                         conditionalPanel("input.tabs_Enrichment == 'Circomics'",
                                           uiOutput("ui_Circomics")),
-                         #                          conditionalPanel("input.tabs_Enrich=='Network'",
+                         #                          conditionalPanel("input.tabs_Enrichment=='Network'",
                          #                                           wellPanel(
                          #                                             uiOutput("ui_NetworkSlider"),
                          #                                             uiOutput("ui_Provider")
                          #                                           )),
 
-                         conditionalPanel("input.tabs_Enrich=='Classifier'",
+                         conditionalPanel("input.tabs_Enrichment =='Classifier'",
                                           uiOutput("ui_Classifier")
                          ),
 
-                         conditionalPanel("input.tabs_Enrich=='Reactome'",
+                         conditionalPanel("input.tabs_Enrichment =='Networking'",
                                           uiOutput("ui_Reactome")
+                         )
+                         # conditionalPanel("input.tabs_Enrichment=='Network'",
+                         #                  uiOutput("ui_Network")
+                         # )
                          ),
-                         conditionalPanel("input.tabs_Enrich=='Network'",
-                                          uiOutput("ui_Network")
-                         )),
 
-        conditionalPanel("input.tabs_data== 'Handle'",
+        conditionalPanel("input.tabs_data== 'Processing'",
                          #
-                         #                          conditionalPanel("input.tabs_Handle=='Manage'",
+                         #                          conditionalPanel("input.tabs_Processing=='Manage'",
                          #                                           uiOutput("Welcome")
                          #
                          #                          ),
@@ -80,7 +81,7 @@ output$ui_data <- renderUI({
                          uiOutput("ui_datasets"),
 
                          conditionalPanel(
-                           "input.tabs_Handle != 'Manage'",
+                           "input.tabs_Processing != 'Manage'",
                            checkboxInput(
                              'show_filter', 'Filter (e.g., price > 5000)', value = state_init("show_filter",FALSE)
                            ),
@@ -94,15 +95,15 @@ output$ui_data <- renderUI({
                          )
         ),
 
-        conditionalPanel("input.tabs_data == 'Handle'",
+        conditionalPanel("input.tabs_data == 'Processing'",
 
-                         conditionalPanel("input.tabs_Handle == 'Manage'", uiOutput("ui_Manage")),
-                         conditionalPanel("input.tabs_Handle == 'View'", uiOutput("ui_View")),
-                         conditionalPanel("input.tabs_Handle == 'Visualize'", uiOutput("ui_Visualize")),
-                         conditionalPanel("input.tabs_Handle == 'Pivot'",uiOutput("ui_Pivotr")),
-                         conditionalPanel("input.tabs_Handle == 'Explore'",uiOutput("ui_Explore")),
-                         conditionalPanel("input.tabs_Handle == 'Transform'", uiOutput("ui_Transform")),
-                         conditionalPanel("input.tabs_Handle == 'Combine'", uiOutput("ui_Combine"))
+                         conditionalPanel("input.tabs_Processing == 'Manage'", uiOutput("ui_Manage")),
+                         conditionalPanel("input.tabs_Processing == 'View'", uiOutput("ui_View")),
+                         conditionalPanel("input.tabs_Processing == 'Visualize'", uiOutput("ui_Visualize")),
+                         conditionalPanel("input.tabs_Processing == 'Pivot'",uiOutput("ui_Pivotr")),
+                         conditionalPanel("input.tabs_Processing == 'Explore'",uiOutput("ui_Explore")),
+                         conditionalPanel("input.tabs_Processing == 'Transform'", uiOutput("ui_Transform")),
+                         conditionalPanel("input.tabs_Processing == 'Combine'", uiOutput("ui_Combine"))
 
         )
 
@@ -112,8 +113,8 @@ output$ui_data <- renderUI({
           id = "tabs_data",
 
           tabPanel("Portal", uiOutput("Portal")),
-          tabPanel("Enrich", uiOutput("Enrich")),
-          tabPanel("Handle", uiOutput("Handle"))
+          tabPanel("Processing", uiOutput("Processing")),
+          tabPanel("Enrichment", uiOutput("Enrichment"))
 
 
 
@@ -140,9 +141,9 @@ output$Portal <- renderUI({
   )
 })
 
-output$Enrich <- renderUI({
+output$Enrichment <- renderUI({
 
-  tabsetPanel(id = "tabs_Enrich",
+  tabsetPanel(id = "tabs_Enrichment",
               tabPanel("Circomics",
                        #                        if('CNA' %in% input$CircosDimensionID ){
                        #                          plot_downloader("SaveMetabologram_CNA", pre = "")
@@ -283,7 +284,7 @@ output$Enrich <- renderUI({
                        )
                        #)
               ),
-              tabPanel("Reactome",
+              tabPanel("Networking",
                        conditionalPanel(condition = "input.ReacRunId == false",
                                         verbatimTextOutput("ReactomeHowto")
                        ),
@@ -351,8 +352,8 @@ output$Enrich <- renderUI({
 
 })
 
-output$Handle <- renderUI({
-  tabsetPanel(id = "tabs_Handle",
+output$Processing <- renderUI({
+  tabsetPanel(id = "tabs_Processing",
               tabPanel(
                 "Manage", htmlOutput("htmlDataExample"),
                 conditionalPanel("input.man_add_descr == false", uiOutput("dataDescriptionHTML")),

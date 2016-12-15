@@ -87,7 +87,7 @@ output$ui_Circomics <- renderUI({
   updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies[,1], selected = c("luad_tcga_pub","blca_tcga_pub"))
   #,"prad_tcga_pub","ucec_tcga_pub"
 
-  conditionalPanel("input.tabs_Enrich == 'Circomics'",
+  conditionalPanel("input.tabs_Enrichment == 'Circomics'",
                    wellPanel(
                      selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=NULL, multiple = TRUE),
                       conditionalPanel(condition = "input.StudiesIDCircos == null",

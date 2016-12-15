@@ -186,7 +186,7 @@ output$ui_Reactome <- renderUI({
         )
       )
     ),
-    help_modal_km('Reactome','ReactomeHelp',inclMD(file.path(r_path,"base/tools/help/Reactome.md")))
+    help_modal_km('Networking','ReactomeHelp',inclMD(file.path(r_path,"base/tools/help/Reactome.md")))
 
     # with(tags, table(
     #   tr(
