@@ -49,7 +49,7 @@ output$ui_data <- renderUI({
                          conditionalPanel("input.tabs_portal == 'Profiles'", uiOutput("ui_ProfData")),
                          conditionalPanel("input.tabs_portal == 'Mutation'", uiOutput("ui_MutData"))
         ),
-        conditionalPanel("input.tabs_data== 'Enrich'",
+        conditionalPanel("input.tabs_data == 'Enrich'",
                          conditionalPanel("input.tabs_Enrich == 'Circomics'",
                                           uiOutput("ui_Circomics")),
                          #                          conditionalPanel("input.tabs_Enrich=='Network'",
@@ -143,7 +143,6 @@ output$Portal <- renderUI({
 output$Enrich <- renderUI({
 
   tabsetPanel(id = "tabs_Enrich",
-
               tabPanel("Circomics",
                        #                        if('CNA' %in% input$CircosDimensionID ){
                        #                          plot_downloader("SaveMetabologram_CNA", pre = "")

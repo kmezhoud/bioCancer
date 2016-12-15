@@ -44,7 +44,7 @@ output$ui_AnnoGeneSet_ReactomeFI <- renderUI({
 
 output$ui_GeneSetFDR <- renderUI({
   #if(is.null(r_data$MinGeneSetFDR)){
-  sliderInput("GeneSetFDRID", "FDR of enrichment", 0.025, min =0.0005,
+  sliderInput("GeneSetFDRID", "FDR of enrichment", 0.0005, min =0.0005,
               max=0.05, step=0.0005 )
   #}else{
   #sliderInput("GeneSetFDRID", "FDR", 0.005, min =r_data$MinGeneSetFDR,

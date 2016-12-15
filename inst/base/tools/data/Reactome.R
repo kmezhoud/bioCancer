@@ -28,7 +28,7 @@ output$ReactomeHowto <- renderPrint({
 #' Ed_obj <- Edges_obj()
 #'}
 #'
-Edges_obj <- function(){
+Edges_obj <- reactive({
 
   #if(!'ReactomeFI' %in% r_data){
   if(is.null(r_data$ReactomeFI)){
@@ -42,9 +42,11 @@ Edges_obj <- function(){
       #xx = read.delim(unzip(tmp))
 
       if ("package:bioCancer" %in% search()) {
-        r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"), "/extdata/reactomeFI2015.RDS", sep=""))
+        r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"),
+                                                  "/extdata/ReactomeFI2015.RDS", sep=""))
       }else{
-        r_data[['ReactomeFI']]  <- readRDS(file.path(paste(r_path,"/extdata/reactomeFI2015.RDS", sep="")))
+        r_data[['ReactomeFI']]  <- readRDS(file.path(paste(r_path,
+                                                           "/extdata/ReactomeFI2015.RDS", sep="")))
       }
 
     })
@@ -138,10 +140,10 @@ Edges_obj <- function(){
   })
   #Edges_objbkp <<- Edges_obj
   return(Edges_obj)
-}
+})
 
 
-getAnnoGeneSet_obj <- function(genelist,type){
+getAnnoGeneSet_obj <- function(genelist,type, fdr){
   # type = c("Pathway", "BP", "CC", "MF")
   # type <- input$TypeGeneSetID
   #type <- match.arg(type)
@@ -150,7 +152,7 @@ getAnnoGeneSet_obj <- function(genelist,type){
   AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type)
 
   ## Filter significant annotation using FDR
-  AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < input$GeneSetFDRID,]
+  AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < fdr,]
   #AnnoGeneSetbkp <<- AnnoGeneSet
 
   r_data[['AnnoGeneSet']] <- AnnoGeneSet
@@ -249,7 +251,7 @@ output$GeneSet_Legend <- DT::renderDataTable({
 #'
 #' @importFrom RCurl basicTextGatherer
 #'
-graph_obj <- function(){
+graph_obj <- reactive({
 
   GeneList <- whichGeneList(input$GeneListID)
 
@@ -271,7 +273,7 @@ graph_obj <- function(){
              input$TypeGeneSetID =="CC" ||
              input$TypeGeneSetID =="MF"
     ){
-      GeneSetAnno_df <- getAnnoGeneSet_obj(GeneList,input$TypeGeneSetID)
+      GeneSetAnno_df <- getAnnoGeneSet_obj(GeneList,input$TypeGeneSetID,input$GeneSetFDRID)
 
       GeneAttri_df <- rbind(GeneFreqIn_df,GeneSetAnno_df)
       #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
@@ -281,6 +283,7 @@ graph_obj <- function(){
   }
 
   if(input$NodeAttri_ReactomeID == 'GeneSet'){
+
     if(input$TypeGeneSetID =="None"){
 
     }else if(input$TypeGeneSetID =="Pathway" ||
@@ -288,7 +291,7 @@ graph_obj <- function(){
              input$TypeGeneSetID =="CC" ||
              input$TypeGeneSetID =="MF"
     ){
-      GeneSetAnno_df <- getAnnoGeneSet_obj(GeneList,input$TypeGeneSetID) #input$TypeGeneSetID
+      GeneSetAnno_df <- getAnnoGeneSet_obj(GeneList,input$TypeGeneSetID,input$GeneSetFDRID) #input$TypeGeneSetID
       Edges_obj <- rbind(Edges_obj, GeneSetAnno_df)
       # Edges_obj_bkp <<- Edges_obj
     }
@@ -368,7 +371,7 @@ graph_obj <- function(){
 
   return(obj)
 
-}
+})
 
 #' Plot network with nodes and edges attributes
 #'
@@ -391,6 +394,7 @@ graph_obj <- function(){
 #' diagrammeR('Freq.Interaction', 'mRNA', 'Met_HM450')
 #'}
 output$diagrammeR <- DiagrammeR::renderGrViz({
+
   DiagrammeR::grViz(
     #     digraph{
     ## Edge Atrributes
@@ -413,6 +417,7 @@ output$diagrammeR <- DiagrammeR::renderGrViz({
     #engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
     width = 1200
   )
+
 })
 
 
