@@ -47,10 +47,10 @@ output$ui_pvt_nvar <- renderUI({
 })
 
 output$ui_pvt_fun <- renderUI({
-  r_funs <- getOption("radiant.functions")
+  #r_funs <- getOption("radiant.functions")
   selectizeInput("pvt_fun", label = "Apply function:",
-                 choices = r_funs,
-                 selected = state_single("pvt_fun", r_funs, "mean_rm"),
+                 choices = r_functions,
+                 selected = state_single("pvt_fun", r_functions, "mean_rm"),
                  multiple = FALSE)
 })
 
@@ -104,9 +104,10 @@ output$ui_Pivotr <- renderUI({
                        checkboxInput("pvt_flip", "Flip", value = state_init("pvt_flip", FALSE))
                      )
     ),
-    help_and_report(modal_title = "Pivotr",
-                    fun_name = "pivotr",
-                    help_file = inclMD(file.path(getOption("radiant.path.data"),"app/tools/help/pivotr.md")))
+    help_modal('Pivot','PivotHelp',inclMD(file.path(r_path,"base/tools/help/pivotr.md")))
+    # help_and_report(modal_title = "Pivotr",
+    #                 fun_name = "pivotr",
+    #                 help_file = inclMD(file.path(getOption("radiant.path.data"),"app/tools/help/pivotr.md")))
   )
 })
 

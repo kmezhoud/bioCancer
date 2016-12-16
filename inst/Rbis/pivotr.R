@@ -58,9 +58,9 @@ pivotr <- function(dataset,
   }
 
   ## convert categorical variables to factors and deal with empty/missing values
-  dat[,cvars] <- select_(dat, .dots = cvars) %>% mutate_each(funs(empty_level(.)))
+  dat[,cvars] <- dplyr::select_(dat, .dots = cvars) %>% mutate_each(funs(empty_level(.)))
 
-  sel <- function(x, nvar, cvar = c()) if (nvar == "n") x else select_(x, .dots = c(nvar,cvar))
+  sel <- function(x, nvar, cvar = c()) if (nvar == "n") x else dplyr::select_(x, .dots = c(nvar,cvar))
   sfun <- function(x, nvar, cvars = "", fun = fun) {
     if (nvar == "n") {
       if (all(cvars == "")) count_(x) else count_(x, cvars)
@@ -103,7 +103,7 @@ pivotr <- function(dataset,
       group_by_(.dots = cvars[-1]) %>%
       sfun(nvar, cvars[-1], fun) %>%
       ungroup %>%
-      select(ncol(.)) %>%
+      dplyr::select(ncol(.)) %>%
       bind_rows(total) %>%
       set_colnames("Total")
 
@@ -123,7 +123,7 @@ pivotr <- function(dataset,
 
   ## resetting factor levels
   ind <- ifelse (length(cvars) > 1, -1, 1)
-  levs <- lapply(select_(dat, .dots = cvars[ind]), levels)
+  levs <- lapply(dplyr::select_(dat, .dots = cvars[ind]), levels)
 
   for (i in cvars[ind])
     tab[[i]] %<>% factor(., levels = c(levs[[i]],"Total"))
@@ -226,7 +226,7 @@ summary.pivotr <- function(object,
     if (length(object$cvars) < 3) {
 
       cst <- object$tab_freq %>% filter(.[[1]] != "Total") %>%
-        select(-which(names(.) %in% c(object$cvars, "Total")))  %>%
+        dplyr::select(-which(names(.) %in% c(object$cvars, "Total")))  %>%
         mutate_each(funs(ifelse (is.na(.), 0, .))) %>%
         {sshhr(chisq.test(., correct = FALSE))}
 
@@ -411,7 +411,7 @@ plot.pivotr <- function(x,
       geom_bar(stat="identity", position = "dodge", alpha=.7)
   } else if (length(cvars) == 2) {
     ctot <- which(colnames(tab) == "Total")
-    if (length(ctot) > 0) tab %<>% select(-matches("Total"))
+    if (length(ctot) > 0) tab %<>% dplyr::select(-matches("Total"))
 
     dots <- paste0("factor(",cvars[1],", levels = c('", paste0(setdiff(colnames(tab),cvars[2]),collapse="','"),"'))")
     plot_list[[1]] <-
@@ -421,7 +421,7 @@ plot.pivotr <- function(x,
       geom_bar(stat="identity", position = type, alpha=.7)
   } else if (length(cvars) == 3) {
     ctot <- which(colnames(tab) == "Total")
-    if (length(ctot) > 0) tab %<>% select(-matches("Total"))
+    if (length(ctot) > 0) tab %<>% dplyr::select(-matches("Total"))
 
     dots <- paste0("factor(",cvars[1],", levels = c('", paste0(setdiff(colnames(tab),cvars[2:3]),collapse="','"),"'))")
     plot_list[[1]] <-

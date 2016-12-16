@@ -1085,3 +1085,29 @@ find_dropbox <- function(folder = 1) {
     stop("Could not find a Drobox folder")
   }
 }
+
+#' Method to create datatables
+#'
+#' @param object Object of relevant class to render
+#' @param ... Additional arguments
+#'
+#' @export
+dtab <- function(object, ...) UseMethod("dtab", object)
+
+#' Round double in a data.frame to a specified number of decimal places
+#'
+#' @param tbl Data frame
+#' @param dec Number of decimal places
+#'
+#' @return Data frame with rounded doubles
+#'
+#' @examples
+#' data.frame(x = c("a","b"), y = c(1L, 2L), z = c(-0.0005, 3.1)) %>%
+#'   rounddf(dec = 3)
+#'
+#' @export
+rounddf <- function(tbl, dec = 3) {
+  mutate_each(tbl,
+              funs(if (is.double(.)) round(., dec) else .)
+  )
+}
