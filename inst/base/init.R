@@ -26,10 +26,10 @@ init_state <- function(r_data) {
   ## functions and outputs that depend on these datasets will know when they
   ## are changed."
 
-  robj <- load(file.path(r_path,"base/data/diamonds.rda"))
-  df <- get(robj)
-  r_data[["diamonds"]] <- df
-  r_data[["diamonds_descr"]] <- attr(df,'description')
+  #robj <- load(file.path(r_path,"base/data/diamonds.rda"))
+  #df <- get(robj)
+  #r_data[["diamonds"]] <- df
+  #r_data[["diamonds_descr"]] <- attr(df,'description')
 
   robj <- load(file.path(r_path,"base/data/epiGenomics.rda"))
   df <- get(robj)
