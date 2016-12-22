@@ -13,7 +13,8 @@ output$MutDataTable <- DT::renderDataTable({
       dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="MutData")
     } else if (inherits(try(dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList), silent=FALSE),"try-error")){
 
-      dat <- as.data.frame("There are some Gene Symbols not supported by cbioportal server")
+      dat <- as.data.frame("There are some Gene Symbols not supported by cbioportal.
+                           Or bioCancer is not connected to cgdsr server (check connection).")
     }else{
       dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
       if(dim(dat)[1]==0){

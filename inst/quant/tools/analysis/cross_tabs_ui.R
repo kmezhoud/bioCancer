@@ -57,7 +57,7 @@ output$ui_cross_tabs <- renderUI({
       #              state_init("ct_nrsim", 0),
       #              min = 0, step = 100)
 		),
-  	help_and_report(modal_title = "Cross-tabs",
+  	help_and_report_km(modal_title = "Cross-tabs",
   	                fun_name = "cross_tabs",
   	                help_file = inclMD(file.path(r_path,"quant/tools/help/cross_tabs.md")))
   )

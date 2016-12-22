@@ -117,7 +117,7 @@ getGenesClassifier <- reactive({
                    Sys.sleep(2) # wait 2 seconds
                    proc.time() - p1 })
 
-      stop(msgNoSignificantDiff )
+      print(msgNoSignificantDiff)
     } else{
 
       signGenesRank_DiseaseType <- geNetClassifier::calculateGenesRanking(eSetClassifier[,1:(input$SampleSizeClassifierID*length(checked_Studies))], sampleLabels="DiseasesType", lpThreshold= input$ClassifierThresholdID, returnRanking="significant", plotLp = FALSE)

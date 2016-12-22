@@ -461,6 +461,30 @@ help_and_report <- function(modal_title, fun_name, help_file) {
   enc2utf8 %>% HTML %>% withMathJax
 }
 
+
+help_and_report_km <- function(modal_title, fun_name, help_file) {
+  sprintf("<div class='modal fade' id='%s_help' tabindex='-1' role='dialog' aria-labelledby='%s_help_label' aria-hidden='true'>
+          <div class='modal-dialog'>
+          <div class='modal-content'>
+          <div class='modal-header'>
+          <button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
+          <h4 class='modal-title' id='%s_help_label'>%s</h4>
+          </div>
+          <div class='modal-body'>%s<br>
+
+          &copy; K. Mezhoud (2016) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a>
+
+          </div>
+          </div>
+          </div>
+          </div>
+          <i title='Help' class='fa fa-question alignleft' data-toggle='modal' data-target='#%s_help'></i>
+          <i title='Report results' class='fa fa-edit action-button shiny-bound-input alignright' href='#%s_report' id='%s_report'></i>
+          <div style='clear: both;'></div>",
+          fun_name, fun_name, fun_name, modal_title, help_file, fun_name, fun_name, fun_name) %>%
+    enc2utf8 %>% HTML %>% withMathJax
+}
+
 ## function to render .md files to html
 inclMD <- function(path) {
   markdown::markdownToHTML(path, fragment.only = TRUE, options = "",

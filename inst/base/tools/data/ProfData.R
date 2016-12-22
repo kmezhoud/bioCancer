@@ -12,7 +12,8 @@ output$ProfDataTable <- DT::renderDataTable({
 
     } else if (inherits(try( dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID),
                              silent=FALSE),"try-error")){
-      dat <- as.data.frame("There are some Gene Symbols not supported by cbioportal server")
+      dat <- as.data.frame("There are some Gene Symbols not supported by cbioportal.
+                           Or bioCancer is not connected to cgdsr server (check connection).")
     }else{
       dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
       if(all(dim(dat)==c(0,1))== TRUE){
@@ -22,7 +23,7 @@ output$ProfDataTable <- DT::renderDataTable({
     }else{
       #dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
       ## remove empty row
-      #dat <-  dat[which(apply(!(apply(dat,1,is.na) ),2,sum)!=0 ),]
+      dat <-  dat[which(apply(!(apply(dat,1,is.na) ),2,sum)!=0 ),]
 
       if(is.numeric(dat[2,2])){
         dat <- round(dat, digits = 3)

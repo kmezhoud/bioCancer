@@ -128,7 +128,7 @@ output$ui_compare_means <- renderUI({
           inline = TRUE)
       )
     ),
-    help_and_report(modal_title = "Compare means",
+    help_and_report_km(modal_title = "Compare means",
                     fun_name = "compare_means",
                     help_file = inclMD(file.path(r_path,"quant/tools/help/compare_means.md")))
   )

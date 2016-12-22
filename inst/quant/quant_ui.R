@@ -5,8 +5,8 @@ quant_ui <- tagList(
 #   ),
 
   navbarMenu("Base",
-    tabPanel("Probability calculator", uiOutput("prob_calc")),
-    tabPanel("Central Limit Theorem", uiOutput("clt")),
+    #tabPanel("Probability calculator", uiOutput("prob_calc")),
+    #tabPanel("Central Limit Theorem", uiOutput("clt")),
    # tabPanel("Single mean", uiOutput("single_mean")),
     tabPanel("Compare means", uiOutput("compare_means")),
    # tabPanel("Single proportion", uiOutput("single_prop")),
@@ -15,9 +15,9 @@ quant_ui <- tagList(
   ),
 
   navbarMenu("Regression",
-    tabPanel("Correlation", uiOutput("correlation")),
-    tabPanel("Linear (OLS)", uiOutput("regression")),
-    tabPanel("GLM", uiOutput("glm_reg"))
+    tabPanel("Correlation", uiOutput("correlation"))
+    #tabPanel("Linear (OLS)", uiOutput("regression")),
+    #tabPanel("GLM", uiOutput("glm_reg"))
   )
 
 #  , navbarMenu("Decide",

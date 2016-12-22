@@ -1,3 +1,6 @@
+### Overview of Methods used in bioCancer
+![Overview Methods used in bioCancer](figures/overview_methods.png)
+
 > Display available Cancer Studies in Table
 
 ### Studies Panel

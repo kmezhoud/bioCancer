@@ -323,7 +323,7 @@ getListProfData <- function(panel, geneListLabel){
   r_data[['ListProfData']] <- ListProfData
   r_data[['ListMetData']] <- ListMetData
   r_data[['ListMutData']] <- ListMutData
-  # r_data[['Freq_DfMutData']] <- getFreqMutData(list = r_data$ListMutData,input$GeneListID)
+  r_data[['Freq_DfMutData']] <- getFreqMutData(list = r_data$ListMutData,input$GeneListID)
 
   #   ListProfData_bkp <<- ListProfData
   #   ListMetData_bkp <<- ListMetData

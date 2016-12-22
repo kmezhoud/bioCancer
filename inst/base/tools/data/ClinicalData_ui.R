@@ -1,5 +1,5 @@
 output$ui_Studies <- renderUI({
-  help_modal_km('Studies','StudiesHelp',inclMD(file.path(r_path,"base/tools/help/Studies.md")))
+  help_modal_km('Workflow Overview','StudiesHelp',inclMD(file.path(r_path,"base/tools/help/Studies.md")))
 })
 
 output$ui_clipboard_load_Clinical <- renderUI({
