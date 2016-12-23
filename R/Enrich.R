@@ -74,7 +74,7 @@ attriColorGene <- function(df){
 
   }else if(all(apply(df,2, function(x)class(x)=='numeric'))==TRUE){
     ## Compute mean of FreqMutData and mRNA Expression
-    dfMeansOrCNA<-apply(df,2,function(x) mean(x, na.rm=TRUE))
+    dfMeansOrCNA <-apply(df,2,function(x) mean(x, na.rm=TRUE))
     dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
   }
 

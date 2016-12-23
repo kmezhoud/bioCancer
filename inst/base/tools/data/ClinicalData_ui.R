@@ -44,7 +44,8 @@ output$ui_ClinicalData <- renderUI({
 
 
       conditionalPanel(condition = "input.ClinicalDataID == 'ClinicalData'",
-                       actionButton('loadClinicalData', 'Load Clinical Data', style="float:center")
+                       actionButton('loadClinicalData', 'export for Processing',
+                                    icon('arrow-up'), style="float:center")
 
       ),
       conditionalPanel(condition = "input.ClinicalDataID == 'clipboard_Clin'",
@@ -63,7 +64,7 @@ observe({
   isolate({
     loadClipboardData()
     updateRadioButtons(session = session, inputId = "ClinicalDataID",
-                       label = "Load Clincial Data to Datasets:",
+                       label = "Export Clincial Data to Datasets:",
                        c("Load ClinicalData" = "ClinicalData","clipboard" = "clipboard_Clin"),
                        selected = "ClinicalData", inline = TRUE)
 

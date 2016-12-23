@@ -52,11 +52,11 @@ output$ui_ProfData <- renderUI({
   ),
 
   wellPanel(
-    checkboxInput(inputId = "ProfData", "Load Profile to Datasets" ,value = FALSE),
+    checkboxInput(inputId = "ProfData", "Export Profile to Datasets" ,value = FALSE),
    # radioButtons(inputId = "ProfData", label = "Load ProfData to Datasets:",
     #             c("ProfData"="ProfData"), selected = "ProfData", inline =TRUE),
     conditionalPanel(condition = "input.ProfData == true",
-                     actionButton('loadProfData', 'Load Profiles Table'))
+                     actionButton('loadProfData', 'export for Processing', icon('arrow-up')))
   ),
     help_modal_km('Profiles Data','ProfilesHelp',inclMD(file.path(r_path,"base/tools/help/Profiles.md")))
   )

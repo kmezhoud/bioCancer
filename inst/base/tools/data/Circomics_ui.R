@@ -73,11 +73,11 @@ output$StrListProfDataCircos <- renderPrint({
        c("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.")
     }else{
 
-  c("STUDIES:", input$StudiesIDCircos,
-  "Genetic Profiles: mRNA, Methylation, CNA, miRNA, Mutations, RPPA",
-  "Gene List:",
-  r_data[[input$GeneListID]]
-)
+   c("STUDIES:", input$StudiesIDCircos,
+   "Genetic Profiles: mRNA, Methylation, CNA, miRNA, Mutations, RPPA",
+   "Gene List:",
+   r_data[[input$GeneListID]]
+ )
 }
 })
 
@@ -105,7 +105,7 @@ output$ui_Circomics <- renderUI({
                              )
                          )
                      ),
-                     div(class="row",
+                      div(class="row",
                          div(class="col-xs-3",
                              conditionalPanel(condition = "input.StudiesIDCircos != null",
                             checkboxInput("loadListProfDataCircosId", "Load", value = FALSE))
@@ -116,8 +116,10 @@ output$ui_Circomics <- renderUI({
                          # )
                          #   ),
                          div(class="col-xs-8",
-                             conditionalPanel(condition= 'input.loadListProfDataCircosId',
-                                              actionButton('pushListProfData', 'Push to Handle Panel', style="float:center")
+                             conditionalPanel(condition= 'input.loadListProfDataCircosId == true',
+                                              actionButton('pushListProfData', 'Push for Processing',
+                                                           icon("arrow-up")
+                                                           )
                              ))
 
                      )
@@ -125,7 +127,7 @@ output$ui_Circomics <- renderUI({
                      ),
 
                    wellPanel(
-                     h4("Pull from Handle Panel:"),
+                     h4("Pull from Processing Panel:"),
                      div(class="row",
                          div(class="col-xs-3",
                              checkboxInput('UserDataCNAID', 'CNA', FALSE)),
@@ -178,7 +180,7 @@ output$ui_Circomics <- renderUI({
                      #  input$UserDataRPPAID){
                                       div(class="row",
                                           div(class="col-xs-6",
-                                              actionButton('pullUserDataButtonId', 'Pull to wheel')),
+                                              actionButton('pullUserDataButtonId', 'Add to wheel', icon('arrow-down'))),
                                           div(class="col-xs-6",
                                               #checkboxInput("getlistProfDataCircosID", "Load", value = FALSE))
                                               actionButton('UnpullUserDataButtonId', 'Remove')
@@ -189,7 +191,7 @@ output$ui_Circomics <- renderUI({
                    ),
 
 
-                   conditionalPanel(condition= 'input.loadListProfDataCircosId',
+                   conditionalPanel(condition= 'input.loadListProfDataCircosId == true',
                                     uiOutput("ui_CircosDimension")
                                     #uiOutput("ui_SaveCircos")
                    ),
@@ -233,7 +235,7 @@ output$ui_Circomics <- renderUI({
 
 })
 
-## Load Profile data in datasets to Handle panel
+## Load Profile data in datasets to Processing panel
 observe({
   if (not_pressed(input$pushListProfData)) return()
   isolate({

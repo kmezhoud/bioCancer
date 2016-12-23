@@ -8,16 +8,18 @@ output$CircomicsHowto <- renderPrint({
       ")
 })
 
-observe({
-  if(not_pressed(input$loadListProfDataCircosId)) return()
-  isolate({
-    shiny::withProgress(message = 'loading Profiles Data... ', value = 0.1, {
-      Sys.sleep(0.25)
-      getListProfData(panel='Circomics',input$GeneListID)
-    })
 
-  })
-})
+### It is not necessary. le ListProfData is loaded when the output$StrListProfDataCircos <- renderPrint({}) is printed
+# observe({
+#   if(not_pressed(input$loadListProfDataCircosId)) return()
+#   isolate({
+#     shiny::withProgress(message = 'loading Profiles Data... ', value = 0.1, {
+#       Sys.sleep(0.25)
+#       getListProfData(panel='Circomics',input$GeneListID)
+#     })
+#
+#   })
+# })
 
 
 observe({
