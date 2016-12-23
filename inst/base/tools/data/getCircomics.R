@@ -33,11 +33,11 @@ observe({
     }
     if(input$UserDataMet27ID){
       r_data$ListProfData$Met_HM27[['UserData']] <- r_data[[input$UserData_MetHM27_id]][-1]
-      r_data$ListMetData$HM27[['UserData']] <- r_data[[input$UserData_MetHM27_id]]
+      r_data$ListMetData$HM27[['UserData']] <- r_data[[input$UserData_MetHM27_id]][-1]
     }
     if(input$UserDataMet450ID){
       r_data$ListProfData$Met_HM450[['UserData']] <- r_data[[input$UserData_MetHM450_id]][-1]
-      r_data$ListMetData$HM450[['UserData']] <- r_data[[input$UserData_MetHM450_id]]
+      r_data$ListMetData$HM450[['UserData']] <- r_data[[input$UserData_MetHM450_id]][-1]
     }
     if(input$UserDatamiRNAID){
       r_data$ListProfData$miRNA[['UserData']] <- r_data[[input$UserData_miRNA_id]][-1]

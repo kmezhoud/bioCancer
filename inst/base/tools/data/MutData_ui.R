@@ -72,11 +72,11 @@ output$ui_MutData <- renderUI({
     ),
 
     wellPanel(
-      checkboxInput(inputId = "MutData", "Export Mutations to Datasets" ,value = FALSE),
+      checkboxInput(inputId = "MutData", "Export for Processing:" ,value = FALSE),
       #radioButtons(inputId = "MutData", label = "Load Mutations to Datasets:",
       #            c("MutData"="MutData"), selected = FALSE, inline =TRUE),
       conditionalPanel(condition = "input.MutData == true",
-                       actionButton('loadMutData', 'Export for Processing', icon('arrow-up'))
+                       actionButton('loadMutData', 'Export to Datasets', icon('arrow-up'))
 
       )
     ),

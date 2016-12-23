@@ -69,16 +69,17 @@ output$StrListProfDataCircos <- renderPrint({
     Sys.sleep(0.25)
     getListProfData(panel='Circomics',input$GeneListID)
   })
-     if(is.null(r_data$ListProfData)){
-       c("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.")
-    }else{
-
+  ## don't use r_data$ListProfData => cause réinitiate wheel
+#      if(is.null(r_data$ListProfData)){
+#        c("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.")
+#     }else{
+#
    c("STUDIES:", input$StudiesIDCircos,
-   "Genetic Profiles: mRNA, Methylation, CNA, miRNA, Mutations, RPPA",
-   "Gene List:",
-   r_data[[input$GeneListID]]
- )
-}
+  "Genetic Profiles: mRNA, Methylation, CNA, miRNA, Mutations, RPPA",
+    "Gene List:",
+    r_data[[input$GeneListID]]
+  )
+# }
 })
 
 output$ui_Circomics <- renderUI({

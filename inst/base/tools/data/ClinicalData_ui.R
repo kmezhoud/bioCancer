@@ -38,13 +38,13 @@ output$ui_ClinicalData <- renderUI({
     ),
 
     wellPanel(
-      radioButtons(inputId = "ClinicalDataID", label = "Load Clinical Data to Datasets:",
+      radioButtons(inputId = "ClinicalDataID", label = "Export for Processing:",
                    c("Load ClinicalData"="ClinicalData","clipboard" = "clipboard_Clin"),
                    selected = "ClinicalData", inline = TRUE),
 
 
       conditionalPanel(condition = "input.ClinicalDataID == 'ClinicalData'",
-                       actionButton('loadClinicalData', 'export for Processing',
+                       actionButton('loadClinicalData', 'Export to Datasets',
                                     icon('arrow-up'), style="float:center")
 
       ),
