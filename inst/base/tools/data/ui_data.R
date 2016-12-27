@@ -253,7 +253,7 @@ output$Enrichment <- renderUI({
                        ),
                        #conditionalPanel("input.ClassID =='Samples' && input.runClassificationBox == false",
                        conditionalPanel("input.runSamplingBox == true && input.runClassificationBox == false",
-                                        h4("Enter sampling size smaller than in Case"),
+                                        h4("Enter sampling size smaller than in Cases"),
                                         #tableOutput("viewTableCases"),
                                         DT::dataTableOutput("viewTableCases")
 

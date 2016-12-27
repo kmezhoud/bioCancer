@@ -91,14 +91,14 @@ getGenesClassification <- function(checked_Studies,
         if(length(GeneList)>500){
           ProfData <- getMegaProfData(GeneList,GenProf,Case, Class="ProfData" )
         } else{
-          ProfData<- getProfileData(cgds,GeneList, GenProf,Case)
+          ProfData<- cgdsr::getProfileData(cgds,GeneList, GenProf,Case)
         }
 
         ProfData <- t(ProfData)
         ##remove all NAs rows
         if (inherits(try(ProfData<- ProfData[which(apply( !( apply(ProfData,1,is.na) ),2,sum)!=0 ),] , silent=FALSE),"try-error"))
         {
-          print("Reselect Cases and Genetic Profiles from Samples. It is recommanded to use v2_mrna data. ")
+          print("Reselect Cases and Genetic Profiles from Samples. Maybe some studies do not have mRNA data.")
         } else{
           ProfData<- ProfData[which( apply( !( apply(ProfData,1,is.na) ),2,sum)!=0 ),]
 

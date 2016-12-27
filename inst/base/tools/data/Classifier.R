@@ -201,13 +201,13 @@ output$compareClusterDO <- renderPlot({
     }else{
       cdo <- clusterProfiler::compareCluster(GroupsID, fun="enrichDO")
       r_data[['cdo']] <- cdo
-      plot(cdo)
+      DOSE::dotplot(cdo)
     }
   })
 })
 
 compareClusterDO <- function(){
-  plot(r_data$cdo, type="dot", title="Disease Ontology Enrichment Comparison")
+  DOSE::dotplot(r_data$cdo, title="Disease Ontology Enrichment Comparison")
 
 }
 
@@ -230,13 +230,13 @@ output$compareClusterReactome <- renderPlot({
     }else{
       cdReactome <- clusterProfiler::compareCluster(GroupsID, fun="enrichPathway")
       r_data[['cdReactome']] <- cdReactome
-      plot(cdReactome)
+      DOSE::dotplot(cdReactome)
     }
   })
 })
 
 compareClusterReactome <- function(){
-  plot(r_data$cdReactome, type="dot", title="Reactome Pathway Enrichment Comparison")
+  DOSE::dotplot(r_data$cdReactome, title="Reactome Pathway Enrichment Comparison")
 }
 ## Gene Ontology (GO) Studies Associations
 output$compareClusterGO <- renderPlot({
@@ -255,14 +255,14 @@ output$compareClusterGO <- renderPlot({
     }else{
       cgo <- clusterProfiler::compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')
       r_data[['cgo']] <- cgo
-      plot(r_data$cgo)
+      DOSE::dotplot(r_data$cgo)
     }
   })
 })
 
 compareClusterGO <- function(){
 
-  plot(r_data$cgo, type="dot", title="GO Enrichment Comparison")
+  DOSE::dotplot(r_data$cgo, title="GO Enrichment Comparison")
 }
 ## KEGG Pathway Enrichment
 output$compareClusterKEGG <- renderPlot({
@@ -281,13 +281,13 @@ output$compareClusterKEGG <- renderPlot({
     }else{
       ckegg <- clusterProfiler::compareCluster(GroupsID, fun="enrichKEGG")
       r_data[['ckegg']] <- ckegg
-      plot(ckegg)
+      DOSE::dotplot(ckegg)
     }
   })
 })
 
 compareClusterKEGG <- function(){
-  plot(r_data$ckegg, type="dot", title="KEGG Enrichment Comparison")
+  DOSE::dotplot(r_data$ckegg, title="KEGG Enrichment Comparison")
 }
 
 ## Cellular Component  Enrichment
@@ -307,10 +307,10 @@ output$compareClusterCC<- renderPlot({
     }else{
       cCC <- clusterProfiler::compareCluster(GroupsID, fun="groupGO", OrgDb='org.Hs.eg.db')
       r_data[['cCC']] <- cCC
-      plot(cCC)
+      DOSE::dotplot(cCC)
     }
   })
 })
 compareClusterCC <- function(){
-  plot(r_data$cCC, type="dot", title="Cellular Component Enrichment Comparison")
+  DOSE::dotplot(r_data$cCC, title="Cellular Component Enrichment Comparison")
 }

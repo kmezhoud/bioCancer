@@ -40,7 +40,6 @@ modeling_ui <-
 
 
 
-
 ## ui for base
 shinyUI(
   do.call(navbarPage, c("bioCancer", nav_ui,quant_ui,shared_ui, help_menu)) # ,modeling_ui
