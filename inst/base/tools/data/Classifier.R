@@ -1,42 +1,42 @@
 output$ClassifierHowto <- renderPrint({
   cat("
        1 - Select Studies
-       2 - Get Samples size
-       3 - Select Cases and Genetic Profiles
-       4 - Run Classifier
+       2 - Set Samples size
+       3 - Run Classification
+       4 - Plot Cluster profiles
       ")
 })
 
 
 
-output$list_Cases <- renderUI({
-  shiny::withProgress(message = 'loading Cases...', value = 0.1, {
-    Sys.sleep(0.25)
-    checked_Studies <- input$StudiesIDClassifier
-    listCases <- lapply(checked_Studies, function(x) cgdsr::getCaseLists(cgds,x)[,1])
-    names(listCases) <- checked_Studies
-    listCases <- lapply(listCases, function(x) x[grep("mrna", x)])
-    listCases <- listCases[lapply(listCases,length)>0]
-    r_data[['listCases']] <- listCases
-    selectizeInput('CasesIDClassifier','Select one Cases by Study', choices = listCases, multiple=TRUE,
-                   selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
-    #updateSelectizeInput(session, 'CasesIDClassifier', choices = listCases,selected = listCases[1])
-  })
-})
-
-output$list_GenProfs <- renderUI({
-  shiny::withProgress(message = 'loading Genetic Profiles...', value = 0.1, {
-    Sys.sleep(0.25)
-    checked_Studies <- input$StudiesIDClassifier
-    listGenProfs <- lapply(checked_Studies, function(x) cgdsr::getGeneticProfiles(cgds,x)[,1])
-    names(listGenProfs) <- checked_Studies
-    listGenProfs <- lapply(listGenProfs, function(x) x[grep("v2", x)])
-    listGenProfs <- listGenProfs[lapply(listGenProfs,length)>0]
-    r_data[['listGenProfs']] <- listGenProfs
-    selectizeInput('GenProfsIDClassifier', 'Select one Genetic Profile by Study', listGenProfs, multiple = TRUE,
-                   selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna"))
-  })
-})
+# output$list_Cases <- renderUI({
+#   shiny::withProgress(message = 'loading Cases...', value = 0.1, {
+#     Sys.sleep(0.25)
+#     checked_Studies <- input$StudiesIDClassifier
+#     listCases <- lapply(checked_Studies, function(x) cgdsr::getCaseLists(cgds,x)[,1])
+#     names(listCases) <- checked_Studies
+#     listCases <- lapply(listCases, function(x) x[grep("v2_mrna", x)])
+#     listCases <- listCases[lapply(listCases,length)>0]
+#     r_data[['listCases']] <- listCases
+#     selectizeInput('CasesIDClassifier','Select one Cases by Study', choices = listCases, multiple=TRUE)
+#     #selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna")
+#     #updateSelectizeInput(session, 'CasesIDClassifier', choices = listCases,selected = listCases[1])
+#   })
+# })
+#
+# output$list_GenProfs <- renderUI({
+#   shiny::withProgress(message = 'loading Genetic Profiles...', value = 0.1, {
+#     Sys.sleep(0.25)
+#     checked_Studies <- input$StudiesIDClassifier
+#     listGenProfs <- lapply(checked_Studies, function(x) cgdsr::getGeneticProfiles(cgds,x)[,1])
+#     names(listGenProfs) <- checked_Studies
+#     listGenProfs <- lapply(listGenProfs, function(x) x[grep("v2_mrna$", x)])
+#     listGenProfs <- listGenProfs[lapply(listGenProfs,length)>0]
+#     r_data[['listGenProfs']] <- listGenProfs
+#     selectizeInput('GenProfsIDClassifier', 'Select one Genetic Profile by Study', listGenProfs, multiple = TRUE)
+#     #  selected=c("brca_tcga_rna_v2_mrna", "gbm_tcga_rna_v2_mrna","lihc_tcga_rna_v2_mrna","lusc_tcga_rna_v2_mrna")
+#   })
+# })
 
 
 # output$selection <- renderPrint(
@@ -55,12 +55,17 @@ TableCases <- reactive({
     ## remove emply list
     matchedCases <- matchedCases[lapply(matchedCases,length)>0]
     #matchedGenProf <- matchedGenProf[lapply(matchedGenProf,length)>0]
-
+    if(length(matchedCases) < 2){
+      dat <- as.data.frame('Check Cases for selected studies. Some ones do not have samples of mRNA expression.')
+    }else if (length(matchedCases) < 3){
+      dat <- as.data.frame('It is recommended to select at less 3 studies with mRNA data.')
+    }else{
     #  dat <- data.frame(Studies=NA,Case=NA, GenProf=NA)
     dat <- data.frame(Studies=NA,Cases=NA)
     for(s in 1:length(matchedCases)){
       dat <- rbind(dat, c(checked_Studies[s], matchedCases[[s]]))
       #dat[s,] <- c(checked_Studies[s], matchedCases[[s]], matchedGenProf[[s]])
+    }
     }
     return(dat)
   })
@@ -69,22 +74,56 @@ TableCases <- reactive({
 
 output$viewTableCases <- DT::renderDataTable({
   dat <-   TableCases()
-  displayTable(dat)
-  # #DT::datatable(dat, filter = "top", rownames = FALSE, server = TRUE,
-  # DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
-  #               rownames = FALSE, style = "bootstrap", escape = FALSE,
-  #               # class = "compact",
-  #               options = list(
-  #                 ajax = list(url = action),
-  #                 search = list(regex = TRUE),
-  #                 columnDefs = list(list(className = 'dt-center', targets = "_all")),
-  #                 autoWidth = TRUE,
-  #                 processing = FALSE,
-  #                 pageLength = 10,
-  #                 lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-  #               )
-  # )
+  displayTable(dat) %>% DT::formatStyle(names(dat),
+                                      color = DT::styleEqual('Check Cases for selected studies. Some ones do not have samples of mRNA expression.',
+                                                           'red'))#, backgroundColor = 'white', fontWeight = 'bold'
+
 })
+
+
+
+
+output$getGenesClassifier <- DT::renderDataTable({
+
+  shiny::withProgress(message = 'loading Genetic Profiles...', value = 0.1, {
+    Sys.sleep(0.25)
+
+    listGenProfs <-  getList_GenProfs(input$StudiesIDClassifier)
+  })
+
+  shiny::withProgress(message = 'loading Cases...', value = 0.1, {
+    Sys.sleep(0.25)
+    listCases <- getList_Cases(input$StudiesIDClassifier)
+  })
+
+  shiny::withProgress(message = 'geNetClassifier is running...', value = 0.1, {
+    Sys.sleep(0.25)
+    dat <-   getGenesClassification(checked_Studies = input$StudiesIDClassifier,
+                                GeneList = whichGeneList(input$GeneListID),
+                                samplesize = input$SampleSizeClassifierID,
+                                threshold = input$ClassifierThresholdID,
+                                listGenProfs= listGenProfs,
+                                listCases = listCases
+    )
+  })
+
+  displayTable(dat)%>% DT::formatStyle(names(dat),
+                                       color = DT::styleEqual("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.",
+                                                              'red'))#, backgroundColor = 'white', fontWeight = 'bold'
+})
+
+
+output$dl_GenesClassDetails_tab <- shiny::downloadHandler(
+  filename = function() { paste0("Classification_tab.csv") },
+  content = function(file) {
+    data_filter <- if (input$show_filter) input$data_filter else ""
+    getdata(r_data$GenesClassDetails, vars = input$ui_Mut_vars, filt = data_filter,
+            rows = NULL, na.rm = FALSE) %>%
+      write.csv(file, row.names = FALSE)
+  }
+)
+
+
 
 
 
@@ -177,8 +216,8 @@ compareClusterDO <- function(){
 output$compareClusterReactome <- renderPlot({
   shiny::withProgress(message = 'Reactome Pathway enrich...', value = 0.1, {
     Sys.sleep(0.25)
-   #   require(reactome.db)
-   #  require(ReactomePA)
+    #   require(reactome.db)
+    #  require(ReactomePA)
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
 
@@ -246,6 +285,7 @@ output$compareClusterKEGG <- renderPlot({
     }
   })
 })
+
 compareClusterKEGG <- function(){
   plot(r_data$ckegg, type="dot", title="KEGG Enrichment Comparison")
 }

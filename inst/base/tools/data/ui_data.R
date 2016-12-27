@@ -247,24 +247,24 @@ output$Enrichment <- renderUI({
               #                        networkD3::forceNetworkOutput("forceNetwork")
               #               ),
               tabPanel("Classifier",
-                       conditionalPanel("input.ClassID=='None'",
+                       #conditionalPanel("input.ClassID=='None'",
+                       conditionalPanel("input.runSamplingBox == false",
                                         verbatimTextOutput("ClassifierHowto")
                        ),
-                       conditionalPanel("input.ClassID =='Samples'",
+                       #conditionalPanel("input.ClassID =='Samples' && input.runClassificationBox == false",
+                       conditionalPanel("input.runSamplingBox == true && input.runClassificationBox == false",
                                         h4("Enter sampling size smaller than in Case"),
                                         #tableOutput("viewTableCases"),
-                                        DT::dataTableOutput("viewTableCases"),
-                                        #verbatimTextOutput("SampleSize"),
-                                        #verbatimTextOutput("ClassifierThreshold"),
-                                        #selectizeInput('StudiesIDClassifier', 'Studies Classification', choices=NULL, multiple = TRUE),
-                                        h4("Filtering Studies with mRNA data", align="center"),
-                                        fluidRow(
-                                          column(6,
-                                                 uiOutput("list_Cases")),
-                                          column(6,
-                                                 uiOutput("list_GenProfs")
-                                          )
-                                        )
+                                        DT::dataTableOutput("viewTableCases")
+
+                                        # h4("Filtering Studies with mRNA data", align="center"),
+                                        # fluidRow(
+                                        #   column(6,
+                                        #          uiOutput("list_Cases")),
+                                        #   column(6,
+                                        #          uiOutput("list_GenProfs")
+                                        #   )
+                                        # )
 
                                         # chooserInput("mychooser", "Available frobs", "Selected frobs",
                                         #              row.names(USArrests), c(), size = 10, multiple = TRUE
@@ -274,7 +274,8 @@ output$Enrichment <- renderUI({
 
 
                        ),
-                       conditionalPanel("input.ClassID =='Classifier'",
+                       #conditionalPanel("input.ClassID == 'Classifier'",
+                       conditionalPanel("input.runClassificationBox == true",
                                         downloadLink("dl_GenesClassDetails_tab", "", class = "fa fa-download alignright"),
                                         #tableOutput("viewTablegetGenesClassifier")),
                                         DT::dataTableOutput("getGenesClassifier"),
