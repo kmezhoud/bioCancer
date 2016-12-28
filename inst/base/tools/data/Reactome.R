@@ -202,6 +202,10 @@ output$dl_GeneSet_Legend <- shiny::downloadHandler(
 )
 
 output$GeneSet_Legend <- DT::renderDataTable({
+
+  if(nrow(r_data$AnnoGeneSet)==0){
+    dat  <- as.data.frame('There is no significant enrichment found. Change FDR.')
+  }else{
   ## Attribute index to pathway
   if (inherits(try(
     Legend_GeneSet <- cbind(Node = paste(input$TypeGeneSetID,
@@ -221,7 +225,7 @@ output$GeneSet_Legend <- DT::renderDataTable({
   Legend_GeneSet[,4:7] <- round(Legend_GeneSet[,4:7], digits=2)
   colnames(Legend_GeneSet)[c(3,4,6)] <- c("nhit","nGenes","pval")
   dat <- Legend_GeneSet[,c(1,2,3,4,6,7)]
-
+}
   r_data[['GeneSet_Legend']] <- dat
 
   displayTable(dat)

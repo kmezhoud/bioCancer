@@ -36,7 +36,7 @@ output$ui_NodeAttri_ReactomeFI <- renderUI({
 })
 
 output$ui_AnnoGeneSet_ReactomeFI <- renderUI({
-  type <- c("None","Pathway", "BP","CC","MF")
+  type <- list('None','Pathway', 'Biological Process'=list('BP'),'Cellular Component'= list('CC'), 'Molecular Function' = list('MF'))
   selectizeInput("TypeGeneSetID", label="Type of enrichment:", choices=type,
                  selected ="None", multiple=FALSE
   )
@@ -103,14 +103,15 @@ output$ui_Reactome <- renderUI({
     # conditionalPanel(condition = "input.ClassID == 'Samples'",
     h4("Node Attributes:"),
     wellPanel(
+      wellPanel(
       uiOutput("ui_NodeAttri_ReactomeFI"),
 
-      conditionalPanel("input.NodeAttri_ReactomeID =='GeneSet' ||
-                       input.NodeAttri_ReactomeID =='FreqInt./GeneSet'",
+      #conditionalPanel("input.NodeAttri_ReactomeID =='GeneSet' ||
+       #                input.NodeAttri_ReactomeID =='FreqInt./GeneSet'",
                        uiOutput("ui_AnnoGeneSet_ReactomeFI"),
                        uiOutput("ui_GeneSetFDR")
-      ),
-
+     # ),
+),
 
       #conditionalPanel(condition = "input.ClassID=='Classifier'",
       uiOutput("ui_NodeAttri_Classifier"),
@@ -127,20 +128,20 @@ output$ui_Reactome <- renderUI({
         ),
 
 
-        #           radioButtons(inputId = "getlistProfDataID", label = "Profile Data",
+        #           radioButtons(inputId = "getlistProfDataIDReactome", label = "Profile Data",
         #                        c("Availability"="Availability" ,"Load"="Load"),
         #                        selected = "", inline = TRUE),
 
 
 
-        conditionalPanel(condition= "input.getlistProfDataID==true",
+        conditionalPanel(condition= "input.getlistProfDataIDReactome==true",
                          uiOutput("ui_NodeAttri_ProfData")
         ),
 
 
         #),
         #                 )
-        conditionalPanel(condition ="input.getlistProfDataID==true",
+        conditionalPanel(condition ="input.getlistProfDataIDReactome==true",
                          uiOutput("ui_Freq_MutSlider"),
                          uiOutput("ui_MetSliderHM450"),
                          uiOutput("ui_MetSliderHM27")

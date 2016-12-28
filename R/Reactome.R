@@ -127,7 +127,7 @@ Mutation_obj <- function(list, FreqMutThreshold, geneListLabel){
     c2 <- colnames(df)[apply(df,1, function(x)which.max(x))]
     c  <- cbind.data.frame(c2,round(c1, digits=2))
 
-    c <- c %>% dplyr::add_rownames("Genes")
+    c <- c %>% tibble::rownames_to_column("Genes")
     colnames(c) <- c("Genes", "Disease", "Percentage")
 
     V <- as.numeric(factor(c$Disease))
