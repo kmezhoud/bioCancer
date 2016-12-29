@@ -86,13 +86,14 @@ output$ui_MetSliderHM27 <- renderUI({
 
 
 output$ui_Reactome <- renderUI({
-  updateSelectizeInput(session, 'StudiesIDReactome', choices = Studies[,1], selected = c("brca_tcga","gbm_tcga","lihc_tcga","lusc_tcga"))
+  updateSelectizeInput(session, 'StudiesIDReactome', choices = Studies[,1],
+                       selected = c("brca_tcga","gbm_tcga","lihc_tcga","lusc_tcga"))
 
   tagList(
     conditionalPanel(condition = "input.ReacRunId==true",
                      actionButton("ReacGeneListId", "load Reactome Genes")
     ),
-    h4("Edges Attributes:"),
+    h4("Edges Attributes:", style= "color:blue"),
     wellPanel(
       uiOutput("ui_FIsFilter"),
       uiOutput("ui_UseLinker"),
@@ -101,7 +102,9 @@ output$ui_Reactome <- renderUI({
     ),
     ## Attributes Nodes from geNetClassifier (Only if Class is pressed)
     # conditionalPanel(condition = "input.ClassID == 'Samples'",
-    h4("Node Attributes:"),
+      h4("Nodes Attributes:", style= "color:blue"),
+
+
     wellPanel(
       wellPanel(
       uiOutput("ui_NodeAttri_ReactomeFI"),
@@ -166,7 +169,7 @@ output$ui_Reactome <- renderUI({
       #),
       div(class="row",
           div(class="col-xs-4",
-              checkboxInput("ReacRunId", "Plot" ,value = FALSE)),
+              checkboxInput("ReacRunId", label = p("Plot", style="color:blue"), value = FALSE)),
           div(class="col-xs-4",
               checkboxInput("ReacLegendId", "Legend", value=FALSE)
           )
@@ -175,12 +178,12 @@ output$ui_Reactome <- renderUI({
     ),
 
     tagList(
-      h4("Dynamic Network:"),
+      h4("Dynamic Network:", style="color:blue"),
       wellPanel(
         uiOutput("ui_visPhysic"),
         div(class="row",
             div(class="col-xs-4",
-                checkboxInput("NetworkRunId", "Plot" ,value = FALSE)),
+                checkboxInput("NetworkRunId", label = p("Plot", style= "color:blue"),value = FALSE)),
             div(class="col-xs-4"
                 #checkboxInput("ReacLegendId", "Legend", value=FALSE)
             )

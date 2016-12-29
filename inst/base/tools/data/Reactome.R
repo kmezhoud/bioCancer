@@ -147,17 +147,9 @@ getAnnoGeneSet_obj <- function(genelist,type, fdr){
   # type = c("Pathway", "BP", "CC", "MF")
   # type <- input$TypeGeneSetID
   #type <- match.arg(type)
-
-  ## Query GeneSet Annotation
-  AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type)
-
-  ## Filter significant annotation using FDR
-  AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < fdr,]
-  #AnnoGeneSetbkp <<- AnnoGeneSet
-
-  r_data[['AnnoGeneSet']] <- AnnoGeneSet
-
-  if(nrow(AnnoGeneSet)== 0){
+  if (inherits(try(
+    Legend_GeneSet <- AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type),
+    silent=TRUE),"try-error") ){
     GeneSet_obj <- data.frame(Gene1 = "",
                               Gene2 = "",
                               Direction = "",
@@ -165,7 +157,26 @@ getAnnoGeneSet_obj <- function(genelist,type, fdr){
                               arrowsize = "",
                               Score = ""
     )
-  } else{
+    r_data[['AnnoGeneSet']] <- as.data.frame("Select type of enrichment.")
+
+  }else if(nrow(AnnoGeneSet)== 0){
+    GeneSet_obj <- data.frame(Gene1 = "",
+                              Gene2 = "",
+                              Direction = "",
+                              Annotation = "",
+                              arrowsize = "",
+                              Score = "")
+    r_data[['AnnoGeneSet']] <- as.data.frame("Select one type of enrichment.")
+
+  }else{
+    ## Query GeneSet Annotation
+    AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type)
+
+   ## Filter significant annotation using FDR
+   AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < fdr,]
+   #AnnoGeneSetbkp <<- AnnoGeneSet
+
+   r_data[['AnnoGeneSet']] <- AnnoGeneSet
 
     #r_data[['MinGeneSetFDR']] <- min(AnnoGeneSet$fdr, na.rm = TRUE)
 
@@ -206,26 +217,29 @@ output$GeneSet_Legend <- DT::renderDataTable({
   if(nrow(r_data$AnnoGeneSet)==0){
     dat  <- as.data.frame('There is no significant enrichment found. Change FDR.')
   }else{
-  ## Attribute index to pathway
-  if (inherits(try(
-    Legend_GeneSet <- cbind(Node = paste(input$TypeGeneSetID,
-                                         seq_len(nrow(r_data$AnnoGeneSet)),
-                                         sep=""),
-                            r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"]),
-    silent=TRUE),"try-error")){
-  }else{
+    ## Attribute index to pathway
+    if (inherits(try(
+      Legend_GeneSet <- cbind(Node = paste(input$TypeGeneSetID,
+                                           seq_len(nrow(r_data$AnnoGeneSet)),
+                                           sep=""),
+                              r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"]),
+      silent=TRUE),"try-error")){
 
-    Legend_GeneSet <- cbind(Node = paste(input$TypeGeneSetID,
-                                         seq_len(nrow(r_data$AnnoGeneSet)),
-                                         sep=""),
-                            r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"])
+      dat <- as.data.frame("Select one type of enrichment.")
+
+    }else{
+
+      Legend_GeneSet <- cbind(Node = paste(input$TypeGeneSetID,
+                                           seq_len(nrow(r_data$AnnoGeneSet)),
+                                           sep=""),
+                              r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"])
+    }
+
+    #Legend_GeneSet_bkp <<- Legend_GeneSet
+    Legend_GeneSet[,4:7] <- round(Legend_GeneSet[,4:7], digits=2)
+    colnames(Legend_GeneSet)[c(3,4,6)] <- c("nhit","nGenes","pval")
+    dat <- Legend_GeneSet[,c(1,2,3,4,6,7)]
   }
-
-  #Legend_GeneSet_bkp <<- Legend_GeneSet
-  Legend_GeneSet[,4:7] <- round(Legend_GeneSet[,4:7], digits=2)
-  colnames(Legend_GeneSet)[c(3,4,6)] <- c("nhit","nGenes","pval")
-  dat <- Legend_GeneSet[,c(1,2,3,4,6,7)]
-}
   r_data[['GeneSet_Legend']] <- dat
 
   displayTable(dat)
