@@ -59,6 +59,8 @@ TableCases <- reactive({
       dat <- as.data.frame('Check Cases for selected studies. Some ones do not have samples of mRNA expression.')
     }else if (length(matchedCases) < 3){
       dat <- as.data.frame('It is recommended to select at less 3 studies with mRNA data.')
+    }else if (length(checked_Studies) > length(matchedCases)){
+      dat <- as.data.frame('Some selected study does not have mRNA data. Select only study with mRNA data.')
     }else{
     #  dat <- data.frame(Studies=NA,Case=NA, GenProf=NA)
     dat <- data.frame(Studies=NA,Cases=NA)

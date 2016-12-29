@@ -36,7 +36,7 @@ getList_Cases <- function(checked_Studies){
 #' listGenProfs <- getList_GenProfs(listStudies[1:3])
 #'}
 #'
-getList_GenProfs <- function(checked_Studies = input$StudiesIDClassifier){
+getList_GenProfs <- function(checked_Studies){
 
    listGenProfs <- lapply(checked_Studies, function(x) cgdsr::getGeneticProfiles(cgds,x)[,1])
     names(listGenProfs) <- checked_Studies
@@ -71,14 +71,12 @@ getList_GenProfs <- function(checked_Studies = input$StudiesIDClassifier){
 #' table <- getGenesClassification(checked_Studies, GeneList ,samplesize  ,threshold  ,listGenProfs, listCases)
 #'}
 #'
-getGenesClassification <- function(checked_Studies,
-                               GeneList ,
-                               samplesize  ,
-                               threshold  ,
-                               listGenProfs,
-                               listCases
-                               ){
+getGenesClassification <- function(checked_Studies, GeneList, samplesize, threshold, listGenProfs, listCases){
+if(length(listCases) < length(checked_Studies)){
+  GenesClassDetails_df <- as.data.frame("Some selected study does not have mRNA data. Select only study witn mRNA data.")
+  return(GenesClassDetails_df)
 
+}else{
       SamplingProfsData <- 0
       DiseasesType <- 0
       for (s in 1:length(checked_Studies)){
@@ -167,7 +165,10 @@ getGenesClassification <- function(checked_Studies,
         Biobase::exprs(eSetClassifier) <- Biobase::exprs(eSetClassifier)+(abs(min(Biobase::exprs(eSetClassifier), na.rm=TRUE)))
       }
 
-      if (inherits(try(signGenesRank_DiseaseType<- geNetClassifier::calculateGenesRanking(eSetClassifier[,1:(input$SampleSizeClassifierID*length(checked_Studies))], sampleLabels="DiseasesType", lpThreshold= input$ClassifierThresholdID, returnRanking="significant", plotLp = FALSE), silent=TRUE),"try-error"))
+      if (inherits(try(signGenesRank_DiseaseType<-
+                       geNetClassifier::calculateGenesRanking(eSetClassifier[,1:(input$SampleSizeClassifierID*length(checked_Studies))],
+                                                              sampleLabels="DiseasesType", lpThreshold= input$ClassifierThresholdID,
+                                                              returnRanking="significant", plotLp = FALSE), silent=TRUE),"try-error"))
       {
         msgNoSignificantDiff <- paste("The current genes don't differentiate the classes (Cancers)..")
 
@@ -179,7 +180,10 @@ getGenesClassification <- function(checked_Studies,
         print(msgNoSignificantDiff)
       } else{
 
-        signGenesRank_DiseaseType <- geNetClassifier::calculateGenesRanking(eSetClassifier[,1:(input$SampleSizeClassifierID*length(checked_Studies))], sampleLabels="DiseasesType", lpThreshold= input$ClassifierThresholdID, returnRanking="significant", plotLp = FALSE)
+        signGenesRank_DiseaseType <-
+          geNetClassifier::calculateGenesRanking(eSetClassifier[,1:(input$SampleSizeClassifierID*length(checked_Studies))],
+                                                                            sampleLabels="DiseasesType", lpThreshold= input$ClassifierThresholdID,
+                                                 returnRanking="significant", plotLp = FALSE)
       }
 
       ## this line display the rank of postprob of all genes
@@ -198,5 +202,5 @@ getGenesClassification <- function(checked_Studies,
       #GenesClassTab <- t(t(as.data.frame.matrix(GenesClassTab)))
 
     return(GenesClassDetails_df[,-1])
-
+}
 }

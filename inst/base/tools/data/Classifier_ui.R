@@ -36,7 +36,7 @@ output$ui_Classifier <- renderUI({
                                            numericInput("ClassifierThresholdID",
                                                         "PostProb",
                                                         "0.95",min = 0.9, max = 1 , step = 0.01)),
-                                       tags$hr(),
+
                                        conditionalPanel("input.runSamplingBox == true",
                                        div(class="col-xs-12",
                                             checkboxInput('runClassificationBox', 'Classification')
@@ -44,6 +44,7 @@ output$ui_Classifier <- renderUI({
                                        )
 
                      ),
+                     br(),
 
   #  ),
     #conditionalPanel("input.ClassID=='Classifier'",
@@ -54,7 +55,7 @@ output$ui_Classifier <- renderUI({
                                     multiple= FALSE)
 
     ),
-
+    br(),
     help_modal_km('Classification','ClassifierHelp',inclMD(file.path(r_path,"base/tools/help/Classifier.md")))
   )
 })
