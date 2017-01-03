@@ -52,7 +52,8 @@ Imports:
     scales(>= 0.2.5),
     curl(>= 0.9.1),
     covr (>= 1.2.0),
-    stringr (>= 1.0)
+    stringr (>= 1.0),
+    tibble
 Suggests:
     BiocStyle,
     rmarkdown,
