@@ -19,7 +19,7 @@ output$ProfDataTable <- DT::renderDataTable({
                            Or bioCancer is not connected to cgdsr server (check connection).")
     }else{
       dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
-      if(all(dim(dat)==c(0,1))== TRUE){
+      if(dim(dat)[1]==0){
         ## avoide error when GeneList is empty
         ## Error..No.cancer.study..cancer_study_id...or.genetic.profile..genetic_profile_id..or.case.list.or..case_list..case.set..case_set_id..provid
         dat <- as.data.frame("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.")

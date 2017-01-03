@@ -55,16 +55,16 @@ getMegaProfData <- function(MegaGeneList,GenProf, Case, Class){
       print(paste("Getting Profile Data of Genes from: ", (((g-1)*500)+1), "to",((g)*500), sep= " "))
 
       if(Class=="ProfData"){
-        ProfData<-getProfileData(cgds,SubMegaGeneList, GenProf,Case)
+        ProfData<-cgdsr::getProfileData(cgds,SubMegaGeneList, GenProf,Case)
         MegaProfData <- cbind(MegaProfData, ProfData)
 
       }else if(Class=="MutData"){
-        if (inherits(try(ProfData <- getMutationData(cgds,Case, GenProf, SubMegaGeneList), silent=FALSE),"try-error")){
+        if (inherits(try(ProfData <- cgdsr:: getMutationData(cgds,Case, GenProf, SubMegaGeneList), silent=FALSE),"try-error")){
           msgbadGeneList <- "There are some Gene Symbols not supported by cbioportal server"
           #tkmessageBox(message=msgbadGeneList, icon="warning")
 
         }else{
-          ProfData <- getMutationData(cgds,Case, GenProf, SubMegaGeneList)
+          ProfData <- cgdsr::getMutationData(cgds,Case, GenProf, SubMegaGeneList)
         }
         MegaProfData <- rbind(MegaProfData, ProfData)
       }

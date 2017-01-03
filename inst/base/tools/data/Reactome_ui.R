@@ -109,11 +109,11 @@ output$ui_Reactome <- renderUI({
       wellPanel(
       uiOutput("ui_NodeAttri_ReactomeFI"),
 
-      #conditionalPanel("input.NodeAttri_ReactomeID =='GeneSet' ||
-       #                input.NodeAttri_ReactomeID =='FreqInt./GeneSet'",
+      conditionalPanel("input.NodeAttri_ReactomeID =='GeneSet' ||
+                       input.NodeAttri_ReactomeID =='FreqInt./GeneSet'",
                        uiOutput("ui_AnnoGeneSet_ReactomeFI"),
                        uiOutput("ui_GeneSetFDR")
-     # ),
+      )
 ),
 
       #conditionalPanel(condition = "input.ClassID=='Classifier'",

@@ -264,7 +264,7 @@ show_data_snippet <- function(dat = input$dataset, nshow = 7, title = "") {
     enc2utf8
 }
 
-suggest_data <- function(text = "", dat = "diamonds")
+suggest_data <- function(text = "", dat = "epiGenomics")
   paste0(text, "For an example dataset go to Data > Manage, select 'examples' from the\n
          'Load data of type' dropdown, and press the 'Load examples' button. Then\nselect the \'", dat, "\' dataset.")
 
