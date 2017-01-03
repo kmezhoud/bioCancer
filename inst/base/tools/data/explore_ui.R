@@ -37,8 +37,8 @@ output$ui_expl_vars <- renderUI({
   if (not_available(vars)) return()
 
   selectInput("expl_vars", label = "Select variable(s):", choices = vars,
-    selected = state_multiple("expl_vars",vars), multiple = TRUE,
-    size = min(8, length(vars)), selectize = FALSE)
+              selected = state_multiple("expl_vars",vars), multiple = TRUE,
+              size = min(8, length(vars)), selectize = FALSE)
 })
 
 output$ui_expl_byvar <- renderUI({
@@ -62,22 +62,22 @@ output$ui_expl_byvar <- renderUI({
 
 
   selectizeInput("expl_byvar", label = "Group by:", choices = vars,
-    selected = sel, multiple = TRUE,
-    options = list(placeholder = 'Select group-by variable',
-                   plugins = list('remove_button', 'drag_drop'))
+                 selected = sel, multiple = TRUE,
+                 options = list(placeholder = 'Select group-by variable',
+                                plugins = list('remove_button', 'drag_drop'))
   )
 })
 
 output$ui_expl_fun <- renderUI({
   isolate({
     sel <- if (is_empty(input$expl_fun))  state_multiple("expl_fun", r_functions, default_funs)
-           else input$expl_fun
+    else input$expl_fun
   })
   selectizeInput("expl_fun", label = "Apply function(s):",
                  choices = r_functions, selected = sel, multiple = TRUE,
                  options = list(placeholder = 'Select functions',
                                 plugins = list('remove_button', 'drag_drop'))
-    )
+  )
 })
 
 output$ui_expl_top  <- renderUI({
@@ -114,8 +114,8 @@ output$ui_Explore <- renderUI({
     help_modal('Explore','ExploreHelp',inclMD(file.path(r_path,"base/tools/help/explore.md")))
     ## for package
     #help_and_report(modal_title = "Explore",
-     #              fun_name = "explore",
-      #             help_file = inclMD(file.path(r_path,"base/tools/help/explore.md")))
+    #              fun_name = "explore",
+    #             help_file = inclMD(file.path(r_path,"base/tools/help/explore.md")))
   )
 })
 
@@ -176,8 +176,8 @@ output$explorer <- DT::renderDataTable({
   top <- ifelse (input$expl_top == "", "fun", input$expl_top)
 
   withProgress(message = 'Generating explore table', value = 0,
-    make_expl(expl, top = top, dec = input$expl_dec, search = search,
-              searchCols = searchCols, order = order)
+               make_expl(expl, top = top, dec = input$expl_dec, search = search,
+                         searchCols = searchCols, order = order)
   )
 })
 
@@ -190,7 +190,7 @@ output$dl_explore_tab <- downloadHandler(
     } else {
       rows <- input$explorer_rows_all
       flip(dat, input$expl_top) %>%
-        {if (is.null(rows)) . else dplyr::slice(., rows)} %>%
+      {if (is.null(rows)) . else dplyr::slice(., rows)} %>%
         write.csv(file, row.names = FALSE)
     }
   }
@@ -224,9 +224,9 @@ observeEvent(input$expl_store, {
 
 output$expl_summary <- renderPrint({
   if (not_available(input$expl_vars)) return(invisible())
-    withProgress(message = 'Calculating', value = 0, {
-      .explore() %>% { if (is.null(.)) invisible() else summary(., top = input$expl_top) }
-    })
+  withProgress(message = 'Calculating', value = 0, {
+    .explore() %>% { if (is.null(.)) invisible() else summary(., top = input$expl_top) }
+  })
 })
 
 observeEvent(input$explore_report, {

@@ -18,7 +18,7 @@ bioCancer focuses on Cancer Genomics data visualisation and Genes Classification
 
 ## Circomics: Pull User genetic profiles with existing Cancer studies
 
-<img src="./circomics.gif">
+<img src="./inst/extdata/imgs/circomics.gif">
 <!--
 It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Dr. Vincent Nijs</a>. 
 -->
@@ -26,7 +26,7 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 <!--
 ![Network modeling](./inst/extradata/imgs/demoReactome.gif)
 -->
-<img src="./demoReactome.gif">
+<img src="./inst/extdata/imgs/demoReactome.gif">
 
 <!--
 ## Key features
