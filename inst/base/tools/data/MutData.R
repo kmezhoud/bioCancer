@@ -10,7 +10,10 @@ output$MutDataTable <- DT::renderDataTable({
 
     ##### Get Mutation Data for selected Case and Genetic Profile
     if(length(GeneList)>500){
-      dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="MutData")
+      shiny::withProgress(message = 'loading MegaProfData...', value = 0.1, {
+        Sys.sleep(0.25)
+        dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="MutData")
+      })
     } else if (inherits(try(dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList), silent=FALSE),"try-error")){
 
       dat <- as.data.frame("There are some Gene Symbols not supported by cbioportal.
