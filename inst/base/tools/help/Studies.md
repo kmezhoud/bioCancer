@@ -18,7 +18,7 @@ By default only 10 rows of are shown at one time. You can change this setting th
 Click on a column header in the table to sort the data by the values of that variable. Clicking again will toggle between sorting in ascending and descending order. To sort on multiple columns at once press shift and then click on the 2nd, 3rd, etc. column to sort by.
 
 ### Filters in Table
-The search is possible for numerical or categorical variables. It is possible to match `string` or to use mathematical `operator` to filter data. For more detail see help page in Handle > View panel. 
+The search is possible for numerical or categorical variables. It is possible to match `string` or to use mathematical `operator` to filter data. For more detail see help page in Processing > View panel. 
 #### Global Search
 the `Filter` box on the left (click the check-box first).
 #### Column filter

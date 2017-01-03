@@ -48,7 +48,7 @@ By default only 10 rows of are shown at one time. You can change this setting th
 Click on a column header in the table to sort the data by the values of that variable. Clicking again will toggle between sorting in ascending and descending order. To sort on multiple columns at once press shift and then click on the 2nd, 3rd, etc. column to sort by.
 
 ### Filters in Table
-The search is possible for numerical or categorical variables. It is possible to match `string` or to use mathematical `operator` to filter data. For more detail see help page in Handle > View panel. 
+The search is possible for numerical or categorical variables. It is possible to match `string` or to use mathematical `operator` to filter data. For more detail see help page in Processing > View panel. 
 #### Global Search
 the `Filter` box on the left (click the check-box first).
 #### Column filter
@@ -86,11 +86,11 @@ The Clinical Data is specifuic to each Study. When user change the select Study,
 
 By default all columns in the data are shown. Click on any variable to focus on it alone. To select several variables use the SHIFT and ARROW keys on your keyboard. On a mac the CMD key can also be used to select multiple variables. The same effect is achieved on windows using the CTRL key. To select all variable use CTRL-A (or CMD-A on mac).
 
-#### Load Clinical Data to Datasets (to Handle Panel)
+#### Load Clinical Data to Datasets (to Processing Panel)
 
-It is interesting to use clinical variables for further analysis using Handle panel tools.
+It is interesting to use clinical variables for further analysis using Processing panel tools.
 
-The `Load ClinicalData` loads the clincal data table to `Datasets` in `Handle` panel. Otherwise, user can make all manipulation tools available in `Handle` panel or in Main Menu Page.
+The `Load ClinicalData` loads the clincal data table to `Datasets` in `Processing` panel. Otherwise, user can make all manipulation tools available in `Processing` panel or in Main Menu Page.
 
 With `clipboard` option, user can copy and paste own table from external file (txt, xls, odt).
 
@@ -119,7 +119,7 @@ When User selects  `clipboard`, it is possible to copy own gene list from text f
 
 #### Load Profiles to Datasets
 
-It is interesting to get any statistics analysis or transformation with genetic profiles. Any table from `Profiles` panel can be loaded to `Handle` panel by checking `Load Profiles to Datasets` and press the button. The data frame will be named `ProfData`.
+It is interesting to get any statistics analysis or transformation with genetic profiles. Any table from `Profiles` panel can be loaded to `Processing` panel by checking `Load Profiles to Datasets` and press the button. The data frame will be named `ProfData`.
 
 # Enrich Panel
 
@@ -138,14 +138,14 @@ User needs to:
 + The output is a table with Yes/No availability.
 * Load Omics data for selected Studies by checking `Load`. The output is a list of loaded dimensions for selected Studies.
 
-When Profiles Data are loaded, the button `Load Profiles in Datasets` appears. It uploads all Profiles Data to `Handle` panel for more exploring or analysis.
+When Profiles Data are loaded, the button `Load Profiles in Datasets` appears. It uploads all Profiles Data to `Processing` panel for more exploring or analysis.
 
 
 `Legend` checkbox displays the meaning of the color palette.
 
 #### Load Profiles in Datasets
 
-For every dimension, the tables are merged by study and saved as: `xCNA`, `xMetHM27`, `xMetHM450`, `xmiRNA`, `xmRNA`, `xMut`, `xRPPA` in Datasets (Handle panel).
+For every dimension, the tables are merged by study and saved as: `xCNA`, `xMetHM27`, `xMetHM450`, `xmiRNA`, `xmRNA`, `xMut`, `xRPPA` in Datasets (Processing panel).
 
 ## Genes / Diseases / Pathways Classification and clustering
 
@@ -253,14 +253,14 @@ User needs to
 
 ![Reactome Network](figures/Reactome_Network.png)
 
-# Handle Panel
+# Processing Panel
 
 ## Manage data and state: Load data into bioCancer, Save data to disk, Remove a dataset from memory, or Save/Load the full state of the app
 
 
 ### Datasets
 
-When you first start bioCancer a dataset (`epiGenomics`) with information on how it was formatted is shown in `Handle` panel.
+When you first start bioCancer a dataset (`epiGenomics`) with information on how it was formatted is shown in `Processing` panel.
 
 It is good practice to add a description of the data and variables to each file you use. For the files that are part of bioCancer you will see a brief overview of the variables etc. below the table of the first 10 rows of the data. If you would like to add a description for your own data check the 'Add/edit data description' check-box. A window will open below the data table where you can add text in
 <a href="http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html" target="_blank">markdown</a> format. The descriptions of the data included with bioCancer should serve as a good starting point.

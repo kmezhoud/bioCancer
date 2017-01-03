@@ -16,7 +16,7 @@
 #   ## reset r_state on dataset change ... when you are not on the
 #   ## Manage > Data tab
 #   if (is.null(r_state$dataset) || is.null(input$dataset)) return()
-#   if (input$tabs_data != "Handle")  {
+#   if (input$tabs_data != "Processing")  {
 #     shinyUI(
 #       do.call(navbarPage, c("bioCancer", nav_ui, shared_ui, help_menu))
 #     )

@@ -23,5 +23,5 @@ When User selects  `clipboard`, it is possible to copy own gene list from text f
 
 #### Load Profiles to Datasets
 
-It is interesting to get any statistics analysis or transformation with genetic profiles. Any table from `Profiles` panel can be loaded to `Handle` panel by checking `Load Profiles to Datasets` and press the button. The data frame will be named `ProfData`.
+It is interesting to get any statistics analysis or transformation with genetic profiles. Any table from `Profiles` panel can be loaded to `Processing` panel by checking `Load Profiles to Datasets` and press the button. The data frame will be named `ProfData`.
 

@@ -10,7 +10,7 @@ bioCancer uses resources from multiple packages and databases:
 -3 Disease Ontology [3]
 -4 for Network and Pathway enrichment : Reactome [4,5]
 -5 for Disease Gene Association: DisGeNET [6,7,8]
--6 Handle panel is implemented from radiant package develpped by Dr Vincent Nijs available at https://github.com/vnijs/radiant
+-6 Processing panel is implemented from radiant package develpped by Dr Vincent Nijs available at https://github.com/vnijs/radiant
 
 References
 

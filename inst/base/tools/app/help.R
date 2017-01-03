@@ -43,9 +43,9 @@ output$help_Portal <- reactive(append_help("help_Portal", file.path(r_path,"base
 help_Enrich <- c("Circomics"="Circomics.md", "Classifier"= "Classifier.md", "Reactome"= "Reactome.md")
 output$help_Enrich <- reactive(append_help("help_Enrich", file.path(r_path,"base/tools/help/")))
 
-help_Handle <- c("Manage" = "manage.md","View" = "view.md", "Visualize" = "visualize.md",
+help_Processing <- c("Manage" = "manage.md","View" = "view.md", "Visualize" = "visualize.md",
                "Pivot" = "pivotr.md", "Explore" = "explore.md", "Combine" = "combine.md", "Transform" = "transform.md")
-output$help_Handle <- reactive(append_help("help_Handle", file.path(r_path,"base/tools/help/")))
+output$help_Processing <- reactive(append_help("help_Processing", file.path(r_path,"base/tools/help/")))
 
 help_sample <- c("Sampling" = "sampling.md", "Sample size" = "sample_size.Rmd")
 output$help_sample <- reactive(append_help("help_sample", file.path(r_path,"quant/tools/help/"), Rmd = TRUE))
@@ -83,8 +83,8 @@ observe( help_switch(input$help_Portal_none, "help_Portal", help_on = FALSE) )
 observe( help_switch(input$help_Enrich_all, "help_Enrich") )
 observe( help_switch(input$help_Enrich_none, "help_Enrich", help_on = FALSE) )
 
-observe( help_switch(input$help_Handle_all, "help_Handle") )
-observe( help_switch(input$help_Handle_none, "help_Handle", help_on = FALSE) )
+observe( help_switch(input$help_Processing_all, "help_Processing") )
+observe( help_switch(input$help_Processing_none, "help_Processing", help_on = FALSE) )
 
 observe( help_switch(input$help_sample_all, "help_sample") )
 observe( help_switch(input$help_sample_none, "help_sample", help_on = FALSE) )
@@ -111,15 +111,15 @@ output$help_base <- renderUI({
                            selected = state_init("help_Enrich"), inline = TRUE)
       ),
       wellPanel(
-        checkboxGroupInput("help_Handle", "Handle Panel:", help_Handle,
-          selected = state_init("help_Handle"), inline = TRUE)
+        checkboxGroupInput("help_Processing", "Processing Panel:", help_Processing,
+          selected = state_init("help_Processing"), inline = TRUE)
       ),
       uiOutput("help_text")
     ),
     mainPanel(
       htmlOutput("help_Portal"),
       htmlOutput("help_Enrich"),
-      htmlOutput("help_Handle")
+      htmlOutput("help_Processing")
     )
   )
 })
@@ -138,10 +138,10 @@ help_quant_ui <- tagList(
                        selected = state_init("help_Enrich"), inline = TRUE)
     ),
   wellPanel(
-    HTML("<label>Handle Panel: <i id='help_Handle_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
-    <i id='help_Handle_none' title='Uncheck all' href='#' class='action-button glyphicon glyphicon-remove'></i></label>"),
-    checkboxGroupInput("help_Handle", NULL, help_Handle,
-      selected = state_init("help_Handle"), inline = TRUE)
+    HTML("<label>Processing Panel: <i id='help_Processing_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
+    <i id='help_Processing_none' title='Uncheck all' href='#' class='action-button glyphicon glyphicon-remove'></i></label>"),
+    checkboxGroupInput("help_Processing", NULL, help_Processing,
+      selected = state_init("help_Processing"), inline = TRUE)
   ),
 #   wellPanel(
 #     HTML("<label>Sample menu: <i id='help_sample_all' title='Check all' href='#' class='action-button glyphicon glyphicon-ok'></i>
@@ -180,7 +180,7 @@ help_quant_main <- tagList(
   #HTML("<script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>"),
   shiny::htmlOutput("help_Portal"),
   shiny::htmlOutput("help_Enrich"),
-  shiny::htmlOutput("help_Handle"),
+  shiny::htmlOutput("help_Processing"),
   shiny::htmlOutput("help_sample"),
   shiny::htmlOutput("help_base_menu"),
   shiny::htmlOutput("help_regression"),

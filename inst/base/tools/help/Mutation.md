@@ -15,4 +15,4 @@ When User selects  `clipboard`, it is possible to copy own gene list from text f
 
 #### Load Mutations to Datasets
 
-It is interesting to get any statistics analysis or transformation with genetic profiles. Any table from `Mutation` panel can be loaded to `Handle` panel by checking `Load Mutations to Datasets` and press the button. The data frame will be named `MutData`.
+It is interesting to get any statistics analysis or transformation with genetic profiles. Any table from `Mutation` panel can be loaded to `Processing` panel by checking `Load Mutations to Datasets` and press the button. The data frame will be named `MutData`.

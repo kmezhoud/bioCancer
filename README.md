@@ -18,7 +18,7 @@ bioCancer focuses on Cancer Genomics data visualisation and Genes Classification
 
 ## Circomics: Pull User genetic profiles with existing Cancer studies
 
-<img src="./inst/extdata/imgs/circomics.gif">
+<img src="./circomics.gif">
 <!--
 It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Dr. Vincent Nijs</a>. 
 -->
@@ -26,7 +26,7 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 <!--
 ![Network modeling](./inst/extradata/imgs/demoReactome.gif)
 -->
-<img src="./inst/extdata/imgs/demoReactome.gif">
+<img src="./demoReactome.gif">
 
 <!--
 ## Key features
@@ -49,7 +49,7 @@ Simply saving output is not enough. You need the ability to recreate results for
 <!--
 #### Programming
 
-Although bioCancer's web-interface can handle quite a few data and analysis tasks, at times you may prefer to write your own code. bioCancer provides a bridge to programming in R(studio) by exporting the functions used for analysis. For more information about programming, see Radiant [programming](http://vnijs.github.io/radiant/programming.html) page on the documentation site.
+Although bioCancer's web-interface can Processing quite a few data and analysis tasks, at times you may prefer to write your own code. bioCancer provides a bridge to programming in R(studio) by exporting the functions used for analysis. For more information about programming, see Radiant [programming](http://vnijs.github.io/radiant/programming.html) page on the documentation site.
 -->
 
 
@@ -85,7 +85,7 @@ Documentation and tutorials are available in the bioCancer web interface (the `?
 
 <!--
 ## Saving and loading state from bioCancer
-To save your analyses save the state of the app to a file by clicking on the <i title='Save' class='fa fa-save'></i> icon in the navbar and then on `Save state` (see also the `Data > Handle > Manage` tab). You can open this state file at a later time or on another computer to continue where you left off. You can also share the file with others that may want to replicate your analyses. As an example, load the state_file [`example.rda`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.rda?raw=true) through the Data > Manage tab. Go to `Handle > View`, `Handle > Visualize` to see some of the settings. There is also a report in `R > Report` that was created using the bioCancer interface. The html file [`ExampleState.html`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.html?raw=true) contains the output.
+To save your analyses save the state of the app to a file by clicking on the <i title='Save' class='fa fa-save'></i> icon in the navbar and then on `Save state` (see also the `Data > Processing > Manage` tab). You can open this state file at a later time or on another computer to continue where you left off. You can also share the file with others that may want to replicate your analyses. As an example, load the state_file [`example.rda`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.rda?raw=true) through the Data > Manage tab. Go to `Processing > View`, `Processing > Visualize` to see some of the settings. There is also a report in `R > Report` that was created using the bioCancer interface. The html file [`ExampleState.html`](https://github.com/vnijs/radiant/blob/master/inst/examples/RadiantState.html?raw=true) contains the output.
 
 
 Loading and saving state also works with Rstudio. If you start bioCancer from Rstudio and use <i title='Power off' class='fa fa-power-off'></i> > `Stop` to stop the app, lists called `r_data` and `r_state` will be put into Rstudio's global workspace. If you start bioCancer again using `bioCancer()` it will use these lists to restore state. This can be convenient if you want to make changes to a data file in Rstudio and load it back into bioCancer. Also, if you load a state file directly into Rstudio it will be used when you start bioCancer to recreate a previous state.
@@ -97,7 +97,7 @@ numericInput("sm_comp_value", "Comparison value:", state_init('sm_comp_value',sm
 ## Acknowledgment
 
 
-bioCancer is a collaborative work . Handle panel is adapted from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
+bioCancer is a collaborative work . Processing panel is adapted from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
 
 <!--
 ## License

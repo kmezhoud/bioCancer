@@ -32,6 +32,10 @@ The web accepts multiple format of input data that can be included by user to co
  bioCancer has dynamic sidebar dashboard that changes and displays functionalities depending on user request. It reduces excessive clicking or false queries. It can be launched in local machine with any system with R installed or used from a remote server as in ([bioCancer Server ](http://46.101.227.144:3838/bioCancer/)). All navigating panel are well assisted and documented by examples.
 bioCancer is free and open to all users and there is no login requirement.
 
+## Pipeline Overview
+
+![Plot_enrich](figures/overview_methods.png)
+
 ## How to run bioCancer
 ```
 library(bioCancer)
@@ -56,7 +60,7 @@ By default only 10 rows of are shown at one time. You can change this setting th
 Click on a column header in the table to sort the data by the values of that variable. Clicking again will toggle between sorting in ascending and descending order. To sort on multiple columns at once press shift and then click on the 2nd, 3rd, etc. column to sort by.
 
 ### Filters in Table
-The search is possible for numerical or categorical variables. It is possible to match `string` or to use mathematical `operator` to filter data. For more detail see help page in Handle > View panel. 
+The search is possible for numerical or categorical variables. It is possible to match `string` or to use mathematical `operator` to filter data. For more detail see help page in Processing > View panel. 
 #### Global Search
 the `Filter` box on the left (click the check-box first).
 #### Column filter
@@ -94,11 +98,11 @@ The Clinical Data is specifuic to each Study. When user change the select Study,
 
 By default all columns in the data are shown. Click on any variable to focus on it alone. To select several variables use the SHIFT and ARROW keys on your keyboard. On a mac the CMD key can also be used to select multiple variables. The same effect is achieved on windows using the CTRL key. To select all variable use CTRL-A (or CMD-A on mac).
 
-#### Load Clinical Data to Datasets (to Handle Panel)
+#### Load Clinical Data to Datasets (to Processing Panel)
 
-It is interesting to use clinical variables for further analysis using Handle panel tools.
+It is interesting to use clinical variables for further analysis using Processing panel tools.
 
-The `Load ClinicalData` loads the clincal data table to `Datasets` in `Handle` panel. Otherwise, user can make all manipulation tools available in `Handle` panel or in Main Menu Page.
+The `Load ClinicalData` loads the clincal data table to `Datasets` in `Processing` panel. Otherwise, user can make all manipulation tools available in `Processing` panel or in Main Menu Page.
 
 With `clipboard` option, user can copy and paste own table from external file (txt, xls, odt).
 
@@ -127,148 +131,15 @@ When User selects  `clipboard`, it is possible to copy own gene list from text f
 
 #### Load Profiles to Datasets
 
-It is interesting to get any statistics analysis or transformation with genetic profiles. Any table from `Profiles` panel can be loaded to `Handle` panel by checking `Load Profiles to Datasets` and press the button. The data frame will be named `ProfData`.
-
-# Enrich Panel
-
-## Show multi-Omics Data in Circular Layout
-
-The world `Circomics` comes from the association between `Circos` and `Omics`.
-
-[Circos](http://circos.ca/) is a package for visualizing data and information with circular layouts. User can visualize multiple matrices of [Omics](https://en.wikipedia.org/wiki/Omics) data at the same time and makes easy the exploring of relationships between dimensions using coloring sectors.
-
-This function uses [CoffeeWheel](https://github.com/armish/coffeewheel) package developped by Dr. ARman Aksoy.
-
-#### Studies in Wheel
-User needs to:
-* Choice in which Studies is interested.
-* Visualize the availability of dimensions by checking `Availability`. 
-+ The output is a table with Yes/No availability.
-* Load Omics data for selected Studies by checking `Load`. The output is a list of loaded dimensions for selected Studies.
-
-When Profiles Data are loaded, the button `Load Profiles in Datasets` appears. It uploads all Profiles Data to `Handle` panel for more exploring or analysis.
-
-
-`Legend` checkbox displays the meaning of the color palette.
-
-#### Load Profiles in Datasets
-
-For every dimension, the tables are merged by study and saved as: `xCNA`, `xMetHM27`, `xMetHM450`, `xmiRNA`, `xmRNA`, `xMut`, `xRPPA` in Datasets (Handle panel).
-
-## Genes / Diseases / Pathways Classification and clustering
-
-### Classification
-The classifier uses `geNetClassifier` methods [1] to classify genes by disease based only on gene expression (mRNA). The approach is implemented in an R package, named [geNetClassifier](http://bioconductor.org/packages/release/bioc/html/geNetClassifier.html), available as an open access tool in [Bioconductor](http://bioconductor.org/).
-All proccess are resumed into 5 steps:
-* Select Studies
-* get sample size by  `processing` > `Samples` 
-* Set the sample size and the posterior probability
-* Select one `Case` and one `Genetic Profile` for every study. **Respect the order of studies**. it is recommanded to use `_v2_mrna` for all genetic profiles.
-* Run classifier by `processing` > `Classifier`
-
-The ranking is built by ordering the genes decreasingly by their pos- terior probability for each study (class). Each gene is assigned to a class in which has the best ranking. As a result of this process, even if a gene is found associated to several classes during the expression analysis, each gene can only be on the ranking of one class [1]. 
-The resulting output is a table (Table 1) that associates genes to study and displays `PostProb` and gene expression sign `exprsUpDw`.  The `exprsMeanDiff` value is the expression difference between the mean for each gene in the given class and the mean in the closest class.
-
-**Table1: Ranking Genes by Study**
-![Classifier table](figures/Classifier_Table.png)
-
-### Plot Clusters
-
-#### Gene Diseases Association
-`GeneList/Diseases` predicts Wich disease are involving your GeneList. It uses annotations from [DisGeNET](http://www.disgenet.org/web/DisGeNET/menu;jsessionid=1bxru0uf4yelm16ipuhie2qhij) [2] and Methods from [clusterProfiler](http://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) package [3].  
-
-The `GeneList/Diseases` association uses gene list as input. The assess of this prediction is based on two parameters:
-* The number of genes that are involving in the disease (x-axis)
-* The P-value of this association (color). 
-In the following example,  there are two annotation related to Breast cancer which  involve more than 130 genes and has small P-Value.
-
-**Figure 1: Genes / Diseases Association**
-![Plot_enrich](figures/Plot_enrich.png)
-
-The `Diseases Onthology` uses genes/Study groups computed by `Classifier` (Table 1).
-The dotplot position indicates wish Diseases are annotated for genes/study [4].
-The dot size indicates the ratio of genes involved in the disease for the same genes groups (lihc_tcga has 2/3 genes involved for the 4 disease). The color indicates the P-Value.
-
-**Figure 2: Diseases Onthology**
-![DO](figures/compareClusterDO.png) 
-
-The same process is possible with Gene Onthology (GO) and KEGG.
-
-**Figure 3: GO Pathway Enrishment**
-![GO](figures/compareClusterGO.png) 
-
-**Figure 4: KEGG Pathway Enrishment **
-![KEGG](figures/compareClusterKEGG.png) 
-
-
-## Function Interaction Network Enrichment
-
-### Edges Attributes
-
-#### Function Interactions (FIs) Type
-
-Arrowhead | Reaction | Arrowhead | Reaction 
-------------- | -------- | -------- | ------------
--> | activate, express, regulate  | -\| | inhibit
-diamond -<>  | complexe |curve | catalyze, reaction
-  point -o| phosphorylate | -- | binding, input, compound
- -< | dissociation | .... | predicted, indirect,ubiquitinated
-
-#### Use Linkers
- Picks up as few as possible of linkers that can connect input genes together. For example, if the algorithm finds one gene can link all input genes together, it will not try other genes (not from gene list) that may be used as a linker.
- 
- The linker gene hes box format. 
- 
-#### Layouts 
- 
-##### dot
- The dot engine flows the directed graph in the direction of rank (i.e., downstream nodes of the same rank are aligned). By default, the direction is from top to bottom 
-##### twopi
- The twopi engine provides radial layouts. Nodes are placed on concentric circles depending their distance from a given root node.
- 
-##### neato
- The neato engine provides spring model layouts. This is a suitable engine if the graph is not too large (less than 100 nodes) and you don't know anything else about it. The neato engine attempts to minimize a global energy function, which is equivalent to statistical multi-dimensional scaling. 
- 
-##### circo
-The circo engine provide circular layouts. This is suitable for certain diagrams of multiple cyclic structures, such as certain telecommunications networks.
-
-### Nodes Attributes
-
-#### From ReactomeFI
-The size of node is related to the number of inetractions. If node has multiple interaction, it will has bigger size than node with few interaction. Otherwise, i will be easier to locate important gene in the network. 
-
-#### From Classifier
-
-##### mRNA
-Attribute node color using `exprsMeanDiff` values from `Classifier` panel.
-
-##### Studies
-Link study to associated genes from `Classifier` table.
-
-
-#### From Profiles Data
-
-User needs to
-* Select studies (`From Which Studies`)
-* Load profiles data (`Load`). 
-* Select Profiles Data
-* Set threshold from Sliders 
-
-#### Legend
-![Reactome Legend](figures/ReactomeLegend.png)
-
-### Interpretation
-
-![Reactome Network](figures/Reactome_Network.png)
-
-# Handle Panel
+It is interesting to get any statistics analysis or transformation with genetic profiles. Any table from `Profiles` panel can be loaded to `Processing` panel by checking `Load Profiles to Datasets` and press the button. The data frame will be named `ProfData`.
+# Processing Panel
 
 ## Manage data and state: Load data into bioCancer, Save data to disk, Remove a dataset from memory, or Save/Load the full state of the app
 
 
 ### Datasets
 
-When you start bioCancer a dataset (`epiGenomics`) with information on how it was formatted is shown in `Handle` panel.
+When you start bioCancer a dataset (`epiGenomics`) with information on how it was formatted is shown in `Processing` panel.
 
 It is good practice to add a description of the data and variables to each file you use. For the files that are part of bioCancer you will see a brief overview of the variables etc. below the table of the first 10 rows of the data. If you would like to add a description for your own data check the 'Add/edit data description' check-box. A window will open below the data table where you can add text in
 <a href="http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html" target="_blank">markdown</a> format. The descriptions of the data included with bioCancer should serve as a good starting point.
@@ -1726,6 +1597,138 @@ The bioCancer commands are the same as shown above, except you will need to repl
 
 --------
 For additional discussion see <http://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html>
+
+# Enrichment Panel
+
+## Show multi-Omics Data in Circular Layout
+
+The world `Circomics` comes from the association between `Circos` and `Omics`.
+
+[Circos](http://circos.ca/) is a package for visualizing data and information with circular layouts. User can visualize multiple matrices of [Omics](https://en.wikipedia.org/wiki/Omics) data at the same time and makes easy the exploring of relationships between dimensions using coloring sectors.
+
+This function uses [CoffeeWheel](https://github.com/armish/coffeewheel) package developped by Dr. ARman Aksoy.
+
+#### Studies in Wheel
+User needs to:
+* Choice in which Studies is interested.
+* Visualize the availability of dimensions by checking `Availability`. 
++ The output is a table with Yes/No availability.
+* Load Omics data for selected Studies by checking `Load`. The output is a list of loaded dimensions for selected Studies.
+
+When Profiles Data are loaded, the button `Load Profiles in Datasets` appears. It uploads all Profiles Data to `Processing` panel for more exploring or analysis.
+
+
+`Legend` checkbox displays the meaning of the color palette.
+
+#### Load Profiles in Datasets
+
+For every dimension, the tables are merged by study and saved as: `xCNA`, `xMetHM27`, `xMetHM450`, `xmiRNA`, `xmRNA`, `xMut`, `xRPPA` in Datasets (Processing panel).
+
+## Genes / Diseases / Pathways Classification and clustering
+
+### Classification
+The classifier uses `geNetClassifier` methods [1] to classify genes by disease based only on gene expression (mRNA). The approach is implemented in an R package, named [geNetClassifier](http://bioconductor.org/packages/release/bioc/html/geNetClassifier.html), available as an open access tool in [Bioconductor](http://bioconductor.org/).
+All proccess are resumed into 5 steps:
+* Select Studies
+* get sample size by  `processing` > `Samples` 
+* Set the sample size and the posterior probability
+* Select one `Case` and one `Genetic Profile` for every study. **Respect the order of studies**. it is recommanded to use `_v2_mrna` for all genetic profiles.
+* Run classifier by `processing` > `Classifier`
+
+The ranking is built by ordering the genes decreasingly by their pos- terior probability for each study (class). Each gene is assigned to a class in which has the best ranking. As a result of this process, even if a gene is found associated to several classes during the expression analysis, each gene can only be on the ranking of one class [1]. 
+The resulting output is a table (Table 1) that associates genes to study and displays `PostProb` and gene expression sign `exprsUpDw`.  The `exprsMeanDiff` value is the expression difference between the mean for each gene in the given class and the mean in the closest class.
+
+**Table1: Ranking Genes by Study**
+![Classifier table](figures/Classifier_Table.png)
+
+### Plot Clusters
+
+#### Gene Diseases Association
+`GeneList/Diseases` predicts Wich disease are involving your GeneList. It uses annotations from [DisGeNET](http://www.disgenet.org/web/DisGeNET/menu;jsessionid=1bxru0uf4yelm16ipuhie2qhij) [2] and Methods from [clusterProfiler](http://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) package [3].  
+
+The `GeneList/Diseases` association uses gene list as input. The assess of this prediction is based on two parameters:
+* The number of genes that are involving in the disease (x-axis)
+* The P-value of this association (color). 
+In the following example,  there are two annotation related to Breast cancer which  involve more than 130 genes and has small P-Value.
+
+**Figure 1: Genes / Diseases Association**
+![Plot_enrich](figures/Plot_enrich.png)
+
+The `Diseases Onthology` uses genes/Study groups computed by `Classifier` (Table 1).
+The dotplot position indicates wish Diseases are annotated for genes/study [4].
+The dot size indicates the ratio of genes involved in the disease for the same genes groups (lihc_tcga has 2/3 genes involved for the 4 disease). The color indicates the P-Value.
+
+**Figure 2: Diseases Onthology**
+![DO](figures/compareClusterDO.png) 
+
+The same process is possible with Gene Onthology (GO) and KEGG.
+
+**Figure 3: GO Pathway Enrishment**
+![GO](figures/compareClusterGO.png) 
+
+**Figure 4: KEGG Pathway Enrishment **
+![KEGG](figures/compareClusterKEGG.png) 
+
+
+## Function Interaction Network Enrichment
+
+### Edges Attributes
+
+#### Function Interactions (FIs) Type
+
+Arrowhead | Reaction | Arrowhead | Reaction 
+------------- | -------- | -------- | ------------
+-> | activate, express, regulate  | -\| | inhibit
+diamond -<>  | complexe |curve | catalyze, reaction
+  point -o| phosphorylate | -- | binding, input, compound
+ -< | dissociation | .... | predicted, indirect,ubiquitinated
+
+#### Use Linkers
+ Picks up as few as possible of linkers that can connect input genes together. For example, if the algorithm finds one gene can link all input genes together, it will not try other genes (not from gene list) that may be used as a linker.
+ 
+ The linker gene hes box format. 
+ 
+#### Layouts 
+ 
+##### dot
+ The dot engine flows the directed graph in the direction of rank (i.e., downstream nodes of the same rank are aligned). By default, the direction is from top to bottom 
+##### twopi
+ The twopi engine provides radial layouts. Nodes are placed on concentric circles depending their distance from a given root node.
+ 
+##### neato
+ The neato engine provides spring model layouts. This is a suitable engine if the graph is not too large (less than 100 nodes) and you don't know anything else about it. The neato engine attempts to minimize a global energy function, which is equivalent to statistical multi-dimensional scaling. 
+ 
+##### circo
+The circo engine provide circular layouts. This is suitable for certain diagrams of multiple cyclic structures, such as certain telecommunications networks.
+
+### Nodes Attributes
+
+#### From ReactomeFI
+The size of node is related to the number of inetractions. If node has multiple interaction, it will has bigger size than node with few interaction. Otherwise, i will be easier to locate important gene in the network. 
+
+#### From Classifier
+
+##### mRNA
+Attribute node color using `exprsMeanDiff` values from `Classifier` panel.
+
+##### Studies
+Link study to associated genes from `Classifier` table.
+
+
+#### From Profiles Data
+
+User needs to
+* Select studies (`From Which Studies`)
+* Load profiles data (`Load`). 
+* Select Profiles Data
+* Set threshold from Sliders 
+
+#### Legend
+![Reactome Legend](figures/ReactomeLegend.png)
+
+### Interpretation
+
+![Reactome Network](figures/Reactome_Network.png)
 
 
 

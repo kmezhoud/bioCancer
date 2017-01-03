@@ -10,10 +10,10 @@ The Clinical Data is specifuic to each Study. When user change the select Study,
 
 By default all columns in the data are shown. Click on any variable to focus on it alone. To select several variables use the SHIFT and ARROW keys on your keyboard. On a mac the CMD key can also be used to select multiple variables. The same effect is achieved on windows using the CTRL key. To select all variable use CTRL-A (or CMD-A on mac).
 
-#### Load Clinical Data to Datasets (to Handle Panel)
+#### Load Clinical Data to Datasets (to Processing Panel)
 
-It is interesting to use clinical variables for further analysis using Handle panel tools.
+It is interesting to use clinical variables for further analysis using Processing panel tools.
 
-The `Load ClinicalData` loads the clincal data table to `Datasets` in `Handle` panel. Otherwise, user can make all manipulation tools available in `Handle` panel or in Main Menu Page.
+The `Load ClinicalData` loads the clincal data table to `Datasets` in `Processing` panel. Otherwise, user can make all manipulation tools available in `Processing` panel or in Main Menu Page.
 
 With `clipboard` option, user can copy and paste own table from external file (txt, xls, odt).

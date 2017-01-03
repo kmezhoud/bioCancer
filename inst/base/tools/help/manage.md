@@ -3,7 +3,7 @@
 
 ### Datasets
 
-When you first start bioCancer a dataset (`epiGenomics`) with information on how it was formatted is shown in `Handle` panel.
+When you first start bioCancer a dataset (`epiGenomics`) with information on how it was formatted is shown in `Processing` panel.
 
 It is good practice to add a description of the data and variables to each file you use. For the files that are part of bioCancer you will see a brief overview of the variables etc. below the table of the first 10 rows of the data. If you would like to add a description for your own data check the 'Add/edit data description' check-box. A window will open below the data table where you can add text in
 <a href="http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html" target="_blank">markdown</a> format. The descriptions of the data included with bioCancer should serve as a good starting point.

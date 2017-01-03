@@ -90,7 +90,7 @@ numericInput("sm_comp_value", "Comparison value:", state_init('sm_comp_value',sm
 ## Acknowledgment
 
 
-The `Handle` panel of bioCancer is adapted from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
+The `Processing` panel of bioCancer is adapted from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
 
 
 ## License
