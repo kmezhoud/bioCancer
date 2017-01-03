@@ -7,7 +7,7 @@
 getListProfData(panel, geneListLabel)
 }
 \arguments{
-\item{panel}{Panel name (string) in which Studies are selected. There are two panels ("Circomics" or "Reactome")}
+\item{panel}{Panel name (string) in which Studies are selected. There are two panels ("Circomics" or "Networking")}
 
 \item{geneListLabel}{The label of GeneList. There are three cases:
  "Genes" user gene list,

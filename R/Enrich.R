@@ -290,7 +290,7 @@ getFreqMutData <- function(list, geneListLabel){
 
 #' Chech wich Cases and genetic profiles are available for every seleted study
 #' @usage checkDimensions(panel,StudyID)
-#' @param panel panel can take to strings 'Circomics' or 'Reactome'
+#' @param panel panel can take to strings 'Circomics' or 'Networking'
 #' @param StudyID Study reference using cgdsr index
 #'
 #' @return A data frame with two column (Cases, Genetic profiles). Every row has a dimension (CNA, mRNA...).
@@ -300,7 +300,7 @@ getFreqMutData <- function(list, geneListLabel){
 #' @examples
 #' cgds <- CGDS("http://www.cbioportal.org/public-portal/")
 #' \dontrun{
-#' df <- checkDimensions(panel='Reactome', StudyID= "gbm_tcga_pub")
+#' df <- checkDimensions(panel='Networking', StudyID= "gbm_tcga_pub")
 #' }
 #' @export
 #'
@@ -313,7 +313,7 @@ checkDimensions<- function(panel, StudyID){
     ## ger Genetics Profiles for selected Studies
     GenProfsRefStudies <- unname(unlist(apply(as.data.frame(StudyID), 1,function(x) getGeneticProfiles(cgds,x)[1])))
 
-  }else if (panel== "Reactome"){
+  }else if (panel== "Networking"){
 
     checked_Studies <- StudyID #input$StudiesIDReactome
     # get Cases for selected Studies

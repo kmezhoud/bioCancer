@@ -27,7 +27,7 @@ getMegaProfData <- function(MegaGeneList,GenProf, Case, Class){
 
     if(is.integer(length(MegaGeneList)/500)){
 
-      G <- lenght(MegaGeneList)/500
+      G <- length(MegaGeneList)/500
     }else{
       G <- as.integer(length(MegaGeneList)/500) + 1
 
@@ -61,7 +61,7 @@ getMegaProfData <- function(MegaGeneList,GenProf, Case, Class){
       }else if(Class=="MutData"){
         if (inherits(try(ProfData <- getMutationData(cgds,Case, GenProf, SubMegaGeneList), silent=FALSE),"try-error")){
           msgbadGeneList <- "There are some Gene Symbols not supported by cbioportal server"
-          tkmessageBox(message=msgbadGeneList, icon="warning")
+          #tkmessageBox(message=msgbadGeneList, icon="warning")
 
         }else{
           ProfData <- getMutationData(cgds,Case, GenProf, SubMegaGeneList)

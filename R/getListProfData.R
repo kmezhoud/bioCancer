@@ -137,7 +137,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #'
 #' @usage getListProfData(panel, geneListLabel)
 #'
-#' @param panel Panel name (string) in which Studies are selected. There are two panels ("Circomics" or "Reactome")
+#' @param panel Panel name (string) in which Studies are selected. There are two panels ("Circomics" or "Networking")
 #' @param geneListLabel The label of GeneList. There are three cases:
 #'        "Genes" user gene list,
 #'        "Reactome_GeneList" GeneList plus genes from reactomeFI
@@ -182,7 +182,7 @@ getListProfData <- function(panel, geneListLabel){
   if (panel=="Circomics"){
     checked_Studies <- input$StudiesIDCircos
     Lchecked_Studies <- length(checked_Studies)
-  }else if (panel=="Reactome"){
+  }else if (panel=="Networking"){
     checked_Studies <- input$StudiesIDReactome
     Lchecked_Studies <- length(checked_Studies)
 

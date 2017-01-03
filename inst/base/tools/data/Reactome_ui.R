@@ -208,7 +208,7 @@ output$ui_Reactome <- renderUI({
 output$ReactomeAvailability <- DT::renderDataTable({
   withProgress(message = 'Loading Data...', value = 0.1, {
     Sys.sleep(0.25)
-    dat <- checkDimensions(panel = "Reactome", StudyID= input$StudiesIDReactome)
+    dat <- checkDimensions(panel = "Networking", StudyID= input$StudiesIDReactome)
     ## remove rownames to column
     dat <- dat %>% tibble::rownames_to_column("Samples")
     # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
@@ -223,7 +223,7 @@ output$ReactomeAvailability <- DT::renderDataTable({
 output$StrListProfDataReactome <- renderPrint({
   withProgress(message = 'loading Profiles Data... ', value = 0.1, {
     Sys.sleep(0.25)
-    getListProfData(panel='Reactome', input$GeneListID)
+    getListProfData(panel='Networking', input$GeneListID)
   })
   if(is.null(r_data$ListProfData)){
     c("Gene List is empty. copy and paste genes from text file (Gene/line)

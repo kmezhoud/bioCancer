@@ -40,7 +40,7 @@ append_help <- function(help_str, help_path, Rmd = TRUE) {
 help_Portal <- c("Studies"= "Studies.md", "Clinical"="Clinical.md", "Profiles"="Profiles.md", "Mutation"="Mutation.md")
 output$help_Portal <- reactive(append_help("help_Portal", file.path(r_path,"base/tools/help/")))
 
-help_Enrich <- c("Circomics"="Circomics.md", "Classifier"= "Classifier.md", "Reactome"= "Reactome.md")
+help_Enrich <- c("Circomics"="Circomics.md", "Classifier"= "Classifier.md", "Networking"= "Reactome.md")
 output$help_Enrich <- reactive(append_help("help_Enrich", file.path(r_path,"base/tools/help/")))
 
 help_Processing <- c("Manage" = "manage.md","View" = "view.md", "Visualize" = "visualize.md",

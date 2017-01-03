@@ -71,9 +71,15 @@ getList_GenProfs <- function(checked_Studies){
 #' table <- getGenesClassification(checked_Studies, GeneList ,samplesize  ,threshold  ,listGenProfs, listCases)
 #'}
 #'
-getGenesClassification <- function(checked_Studies, GeneList, samplesize, threshold, listGenProfs, listCases){
+getGenesClassification <- function(checked_Studies,
+                                   GeneList,
+                                   samplesize,
+                                   threshold,
+                                   listGenProfs,
+                                   listCases){
   if(length(listCases) < length(checked_Studies)){
-    GenesClassDetails_df <- as.data.frame("Some selected study does not have mRNA data. Select only study witn mRNA data.")
+    GenesClassDetails_df <-
+      as.data.frame("Some selected study does not have mRNA data. Select only study witn mRNA data.")
     return(GenesClassDetails_df)
 
   }else{

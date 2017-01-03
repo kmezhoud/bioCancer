@@ -7,7 +7,7 @@
 checkDimensions(panel,StudyID)
 }
 \arguments{
-\item{panel}{panel can take to strings 'Circomics' or 'Reactome'}
+\item{panel}{panel can take to strings 'Circomics' or 'Networking'}
 
 \item{StudyID}{Study reference using cgdsr index}
 }
@@ -21,7 +21,7 @@ Chech wich Cases and genetic profiles are available for every seleted study
 \examples{
 cgds <- CGDS("http://www.cbioportal.org/public-portal/")
 \dontrun{
-df <- checkDimensions(panel='Reactome', StudyID= "gbm_tcga_pub")
+df <- checkDimensions(panel='Networking', StudyID= "gbm_tcga_pub")
 }
 }
 
