@@ -22,11 +22,22 @@ bioCancer focuses on Cancer Genomics data visualisation and Genes Classification
 <!--
 It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Dr. Vincent Nijs</a>. 
 -->
+
+## Preprocessing and Plotting
+
+<img src="./inst/extdata/imgs/S3Video2.gif">
+
+
+## Genes Classification and Biological terms Clustering
+
+<img src="./inst/extdata/imgs/S4Video3.gif">
+
+
 ## Network modeling example
 <!--
 ![Network modeling](./inst/extradata/imgs/demoReactome.gif)
 -->
-<img src="./demoReactome.gif">
+<img src="./inst/extdata/imgs/S5Video4.gif">
 
 <!--
 ## Key features
