@@ -21,4 +21,3 @@ coffeewheel(treeData = sampleWheelData)
 }
 }
 \keyword{datasets}
-

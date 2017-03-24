@@ -31,4 +31,3 @@ How <- "runManually"
  coffeewheel(treeData = sampleWheelData)
  }
 }
-

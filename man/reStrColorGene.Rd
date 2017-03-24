@@ -25,4 +25,3 @@ rownames(ProfData) <- NULL
 ls <- reStrColorGene(ProfData)
 }
 }
-

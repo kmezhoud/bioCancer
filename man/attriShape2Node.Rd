@@ -22,4 +22,3 @@ GeneList <- c("DKK3" , "NBN"  , "MYO6" , "TP53" , "PML"  , "IFI16" ,"BRCA1")
 NodeShape <- attriShape2Gene("DKK3", GeneList)
 
 }
-

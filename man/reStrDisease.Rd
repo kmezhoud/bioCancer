@@ -25,4 +25,3 @@ rownames(ProfData) <- NULL
 tree <- reStrDisease(list(df1=ProfData,df2=ProfData))
 }
 }
-

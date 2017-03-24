@@ -25,4 +25,3 @@ rownames(ProfData) <- NULL
 clr <- attriColorGene(ProfData)
 }
 }
-

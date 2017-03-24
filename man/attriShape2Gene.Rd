@@ -26,4 +26,3 @@ attriShape2Gene("GML",GeneList)
 }
 
 }
-

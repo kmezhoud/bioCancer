@@ -24,4 +24,3 @@ cgds <- CGDS("http://www.cbioportal.org/public-portal/")
 df <- checkDimensions(panel='Networking', StudyID= "gbm_tcga_pub")
 }
 }
-

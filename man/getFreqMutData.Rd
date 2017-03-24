@@ -27,4 +27,3 @@ MutData <- getMutationData(cgds,"gbm_tcga_pub_all",
 FreqMut <- getFreqMutData(list(ls1=MutData, ls2=MutData), "73")
 }
 }
-

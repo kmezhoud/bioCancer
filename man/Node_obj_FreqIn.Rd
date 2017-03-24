@@ -27,4 +27,3 @@ nodeObj <- Node_obj_FreqIn(GeneList)
 }
 
 }
-

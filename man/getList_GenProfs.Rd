@@ -23,4 +23,3 @@ listGenProfs <- getList_GenProfs(listStudies[1:3])
 }
 
 }
-

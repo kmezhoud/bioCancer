@@ -23,4 +23,3 @@ listCases <- getList_Cases(listStudies[1:3])
 }
 
 }
-

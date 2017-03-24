@@ -49,4 +49,3 @@ How <- "runManually"
 \seealso{
 https://github.com/armish/metabologram
 }
-

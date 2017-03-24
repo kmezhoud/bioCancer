@@ -39,4 +39,3 @@ table <- getGenesClassification(checked_Studies, GeneList ,samplesize  ,threshol
 }
 
 }
-

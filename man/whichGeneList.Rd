@@ -24,4 +24,3 @@ How <- "runManually"
 whichGeneList("102")
 }
 }
-

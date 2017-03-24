@@ -29,4 +29,3 @@ class = "data.frame", row.names = c(NA,-7L))
 Ed_Diseases_obj <- Edges_Diseases_obj(genesclassdetails=GenesClassDetails)
 
 }
-

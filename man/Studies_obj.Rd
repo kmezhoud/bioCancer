@@ -23,4 +23,3 @@ Genes ranking     class postProb exprsMeanDiff exprsUpDw
 2  MLH1       1  gbm_tcga  0.99703      256.3173        UP
 }
 }
-

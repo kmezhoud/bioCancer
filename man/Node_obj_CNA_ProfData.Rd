@@ -24,4 +24,3 @@ ListProfDataCNA <- list(ls1=ProfDataCNA, ls2=ProfDataCNA)
 nodeObj <- Node_obj_CNA_ProfData(ListProfDataCNA)
 }
 }
-

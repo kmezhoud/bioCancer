@@ -23,4 +23,3 @@ Studies<- getCancerStudies(cgds)
 displayTable(Studies)
 }
 }
-
