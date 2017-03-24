@@ -174,7 +174,9 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
     print("End getting Mutation Frequency...")
     listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
     TreeMutData <- reStrDisease(listMut_df)
-    coffeewheel(TreeMutData, width=600, height=600, main="Mutation Frequency: (Min,Max)")
+    coffeewheel(TreeMutData, width=700, height=600
+                #,main= paste0("Mutation Frequency: (Min = ", min(r_data$Freq_DfMutData) ,", Max = ", max(r_data$Freq_DfMutData)  ,")", sep="")
+                )
   })
 
 })
@@ -313,3 +315,26 @@ output$CircosAvailability <- DT::renderDataTable({
   })
 })
 
+
+output$Sequenced_SampleSize <- DT::renderDataTable({
+
+  shiny::withProgress(message = 'Computing Sample sizes...', value = 0.1, {
+    Sys.sleep(0.25)
+
+  dat <<- getSequensed_SampleSize(StudyID = input$StudiesIDCircos)
+
+  DT::datatable(dat,
+                caption= "Table 1: Sample Sizes by study",
+                autoHideNavigation = getOption("DT.autoHideNavigation")
+                )
+})
+})
+
+output$FreqMutSummary <- DT::renderDataTable({
+  dat <- r_data$Freq_DfMutData %>% tibble::rownames_to_column("Genes")
+
+  DT::datatable(dat,
+            caption="Table 2: Percentage (%) of mutation by gene in each study",
+            autoHideNavigation = getOption("DT.autoHideNavigation")
+            )
+})

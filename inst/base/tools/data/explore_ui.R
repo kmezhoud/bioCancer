@@ -176,8 +176,9 @@ output$explorer <- DT::renderDataTable({
   top <- ifelse (input$expl_top == "", "fun", input$expl_top)
 
   withProgress(message = 'Generating explore table', value = 0,
-               make_expl(expl, top = top, dec = input$expl_dec, search = search,
-                         searchCols = searchCols, order = order)
+               dtab(expl, dec = input$expl_dec, searchCols = searchCols, order = order)
+               #,make_expl(expl, top = top, dec = input$expl_dec, search = search,
+                #         searchCols = searchCols, order = order)
   )
 })
 

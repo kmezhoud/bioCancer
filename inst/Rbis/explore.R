@@ -70,7 +70,7 @@ explore <- function(dataset,
   pfun <- make_funs(fun)
 
   if (is_empty(byvar)) {
-    tab <- dat %>% select(isNum) %>%
+    tab <- dat %>% dplyr::select(isNum) %>%
       gather("variable", "value", factor_key = TRUE) %>%
       dplyr::group_by_("variable")  %>% summarise_each(pfun)
 
