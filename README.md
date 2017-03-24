@@ -3,7 +3,7 @@
 [![Travis-CI Build Status](https://travis-ci.org/kmezhoud/bioCancer.svg?branch=master)](https://travis-ci.org/kmezhoud/bioCancer)
 [![releaseVersion](https://img.shields.io/badge/release%20version-3.2.11-green.svg?style=flat)](https://bioconductor.org/packages/bioCancer) [![develVersion](https://img.shields.io/badge/devel%20version-3.3.6-green.svg?style=flat)](https://github.com/bioCancer)
 [![Bioc](http://www.bioconductor.org/shields/years-in-bioc/bioCancer.svg)](https://www.bioconductor.org/packages/devel/bioc/html/bioCancer.html#since)
-[![total](https://img.shields.io/badge/downloads-34261/total-blue.svg?style=flat)](https://bioconductor.org/packages/stats/bioc/bioCancer)
+[![total](https://img.shields.io/badge/downloads-730/total-blue.svg?style=flat)](https://bioconductor.org/packages/stats/bioc/bioCancer)
 <!--[![Coverage Status](https://img.shields.io/coveralls/kmezhoud/bioCancer.svg)](https://coveralls.io/r/kmezhoud/bioCancer?branch=master) -->
 
 
