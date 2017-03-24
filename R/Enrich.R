@@ -453,7 +453,7 @@ checkDimensions<- function(panel, StudyID){
 
 
 #' get samples size of sequensed genes
-#' @usage getSequensed_SampleSize(StudiesID)
+#' @usage getSequensed_SampleSize(StudyID)
 #' @param StudyID Study reference using cgdsr index
 #'
 #'
