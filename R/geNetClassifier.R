@@ -68,7 +68,8 @@ getList_GenProfs <- function(checked_Studies){
 #' GeneList <- c('P53', 'IFI16', 'BRCA1')
 #' samplesize <- 50
 #' threshold <- 0.95
-#' table <- getGenesClassification(checked_Studies, GeneList ,samplesize  ,threshold  ,listGenProfs, listCases)
+#' table <- getGenesClassification(checked_Studies, GeneList,
+#' samplesize  ,threshold  ,listGenProfs, listCases)
 #'}
 #'
 getGenesClassification <- function(checked_Studies,
