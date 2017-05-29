@@ -61,7 +61,7 @@ whichGeneList <- function(geneListLabel){
     GeneList <- t(unique(read.table(paste0(r_path,"/base/data/GeneList/",geneListLabel,".txt" ,sep=""))))
   } else{
     ## For R package
-    GeneList <- t(unique(read.table(paste0(.libPaths(),"/bioCancer/base/data/GeneList/",geneListLabel,".txt" ,sep=""))))
+    GeneList <- t(unique(read.table(paste0(path.package('bioCancer'),"/base/data/GeneList/",geneListLabel,".txt" ,sep=""))))
   }
   return(GeneList)
 

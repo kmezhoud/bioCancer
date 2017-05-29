@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.4.01 (29 May 2017)
+------------------------
+replace .libPath() by path.package('bioCancer') in portal.R file
+
 CHANGES IN VERSION 1.0.16 (03 January 2017)
 ------------------------
 o update documents
