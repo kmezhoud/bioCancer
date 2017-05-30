@@ -123,7 +123,10 @@ output$ui_Circomics <- renderUI({
                                                            )
                              ))
 
-                     )
+                     ),
+                  conditionalPanel(condition = "input.pushListProfData==true",
+                                   p("The data sets are loaded to Processing panel.",align="center", style = "color:blue")
+                  )
                    #}
                      ),
 
