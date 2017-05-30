@@ -448,7 +448,7 @@ help_and_report <- function(modal_title, fun_name, help_file) {
                   </div>
                 <div class='modal-body'>%s<br>
 
-                  &copy; V. Nijs (2016) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a>
+                  &copy; V. Nijs (2017) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a>
 
                 </div>
               </div>
@@ -472,7 +472,7 @@ help_and_report_km <- function(modal_title, fun_name, help_file) {
           </div>
           <div class='modal-body'>%s<br>
 
-          &copy; K. Mezhoud (2016) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a>
+          &copy; K. Mezhoud (2017) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/' target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a>
 
           </div>
           </div>

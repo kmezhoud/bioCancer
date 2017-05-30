@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.4.02 (30 May 2017)
+------------------------
+update Correlation Methods
+
 CHANGES IN VERSION 1.4.01 (29 May 2017)
 ------------------------
 replace .libPath() by path.package('bioCancer') in portal.R file
