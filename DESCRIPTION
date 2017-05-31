@@ -15,7 +15,6 @@ Depends:
     XML
 Imports:
     dplyr (>= 0.4.3),
-    radiant.data,
     htmlwidgets,
     Biobase,
     geNetClassifier,

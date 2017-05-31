@@ -4,7 +4,8 @@
 \alias{getGenesClassification}
 \title{get genes classification}
 \usage{
-getGenesClassification(checked_Studies, GeneList, samplesize, threshold, listGenProfs, listCases)
+getGenesClassification(checked_Studies, GeneList,
+ samplesize, threshold, listGenProfs, listCases)
 }
 \arguments{
 \item{checked_Studies}{checked studies}
@@ -35,7 +36,8 @@ listGenProfs <- getList_GenProfs(listStudies[1:3])
 GeneList <- c('P53', 'IFI16', 'BRCA1')
 samplesize <- 50
 threshold <- 0.95
-table <- getGenesClassification(checked_Studies, GeneList ,samplesize  ,threshold  ,listGenProfs, listCases)
+table <- getGenesClassification(checked_Studies, GeneList,
+samplesize  ,threshold  ,listGenProfs, listCases)
 }
 
 }

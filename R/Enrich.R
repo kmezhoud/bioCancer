@@ -459,7 +459,7 @@ checkDimensions<- function(panel, StudyID){
 #'
 #' @return dataframe with sample size for each selected study.
 #'
-#' @example
+#' @examples
 #' \dontrun{
 #'  sampleSize <- getSequensed_SampleSize(input$StudiesIDCircos)
 #' }

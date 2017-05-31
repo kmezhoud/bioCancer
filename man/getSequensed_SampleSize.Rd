@@ -4,7 +4,7 @@
 \alias{getSequensed_SampleSize}
 \title{get samples size of sequensed genes}
 \usage{
-getSequensed_SampleSize(StudiesID)
+getSequensed_SampleSize(StudyID)
 }
 \arguments{
 \item{StudyID}{Study reference using cgdsr index}

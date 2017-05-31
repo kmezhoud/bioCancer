@@ -67,7 +67,7 @@ summary.correlation_ <- function(object,
 
   cmat <- sshhr( psych::corr.test(object$dat, method = object$method) )
 
-  cr <- apply(cmat$r, 2, radiant.data::formatnr, dec = dec) %>%
+  cr <- apply(cmat$r, 2, formatnr, dec = dec) %>%
     format(justify = "right") %>%
     set_rownames(rownames(cmat$r))
   cr[is.na(cmat$r)] <- "-"
@@ -75,7 +75,7 @@ summary.correlation_ <- function(object,
   ltmat <- lower.tri(cr)
   cr[!ltmat] <- ""
 
-  cp <- apply(cmat$p, 2, radiant.data::formatnr, dec = dec) %>%
+  cp <- apply(cmat$p, 2, formatnr, dec = dec) %>%
     format(justify = "right") %>%
     set_rownames(rownames(cmat$p))
   cp[is.na(cmat$p)] <- "-"
@@ -101,7 +101,7 @@ summary.correlation_ <- function(object,
 
   if (covar) {
     cvmat <- sshhr( cov(object$dat, method = object$method) )
-    cvr <- apply(cvmat, 2, radiant.data::formatnr, dec = dec) %>%
+    cvr <- apply(cvmat, 2, formatnr, dec = dec) %>%
       format(justify = "right") %>%
       set_rownames(rownames(cvmat))
     cvr[abs(cmat$r) < cutoff] <- ""

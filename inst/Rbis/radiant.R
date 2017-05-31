@@ -1111,3 +1111,31 @@ rounddf <- function(tbl, dec = 3) {
               funs(if (is.double(.)) round(., dec) else .)
   )
 }
+
+
+#' Format a number with a specified number of decimal places, thousand sep, and a symbol
+#'
+#' @param x Number or vector
+#' @param sym Symbol to use
+#' @param dec Number of decimal places
+#' @param perc Display number as a percentage
+#' @param mark Thousand separator
+#'
+#' @return Character (vector) in the desired format
+#'
+#' @examples
+#' formatnr(2000, "$")
+#' formatnr(2000, dec = 4)
+#' formatnr(.05, perc = TRUE)
+#' formatnr(c(.1, .99), perc = TRUE)
+#' formatnr(data.frame(a = c(.1, .99)), perc = TRUE)
+#' formatnr(data.frame(a = 1000), sym = "$", dec = 0)
+#'
+#' @export
+formatnr <- function(x, sym = "", dec = 2, perc = FALSE, mark = ",") {
+  if ("data.frame" %in% class(x)) x <- x[[1]]
+  if (perc)
+    paste0(sym, formatC(100 * x, digits = dec, big.mark = mark, format = "f"), "%")
+  else
+    paste0(sym, formatC(x, digits = dec, big.mark = mark, format = "f"))
+}
