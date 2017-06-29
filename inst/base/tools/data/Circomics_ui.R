@@ -1,13 +1,29 @@
-output$LegendCircos <- renderPlot({
-  my.colors = colorRampPalette(c("blue3","cyan","white","yellow", "red","black"))
-  z=matrix(1:100,nrow=1)
-  x=1
-  y=seq(3,2345,len=100) # supposing 3 and 2345 are the range of your data
-  image(x,y,z,col=my.colors(100),axes=FALSE,xlab="",ylab="")
-  #axis(2)
-  mtext(text=c("Min","Low","middle","High","Max","NA"), line=1.8, las=2, side=4, at=c(50,500,900, 1400,1900,2300),adj = 1)
-  mtext(text=c("Down","Low","0","High","Up","NA"), line=0.5, las=2, side=2, outer = FALSE, at=c(50,500,900, 1400,1900,2300),adj = 1)
-})
+# output$LegendCircos <- renderPlot({
+#   #my.colors = colorRampPalette(c("blue3","cyan","white","yellow", "red","black"))
+#   my.colors = colorRampPalette(c("blue3", "white", "red"))
+#   z=matrix(1:100,nrow=1)
+#   x=1
+#   y=seq(3,2345,len=100) # supposing 3 and 2345 are the range of your data
+#   image(x,y,z,col=my.colors(100),axes=FALSE,xlab="",ylab="")
+#   #axis(2)
+#   #mtext(text=c("Min","Low","middle","High","Max","NA"), line=1.8, las=2, side=4, at=c(50,500,900, 1400,1900,2300),adj = 1)
+#   #mtext(text=c("Down","Low","0","High","Up","NA"), line=0.5, las=2, side=2, outer = FALSE, at=c(50,500,900, 1400,1900,2300),adj = 1)
+#   mtext(text=c("Min","Medium","Max"), line=1.8, las=2, side=4, at=c(50,1150, 2300),adj = 1)
+#   mtext(text=c("Down","0","Up"), line=0.5, las=2, side=2, outer = FALSE, at=c(50,1150, 2300),adj = 1)
+# })
+
+output$CircosLegend <- renderImage({
+  # When input$n is 3, filename is ./images/image3.jpeg
+  filename <- paste(r_path,"/extdata/imgs/CircosLegend.png", sep="")
+
+  # Return a list containing the filename and alt text
+  list(src = filename,
+       contentType = 'image/png',
+       width = 200,
+       height = 250,
+       alt = paste("Image number"))
+
+}, deleteFile = FALSE)
 
 
 # pull user data to r_data$ListProfData
@@ -223,7 +239,8 @@ output$ui_Circomics <- renderUI({
 
                    conditionalPanel("input.CircosLegendID==true",
                                     wellPanel(
-                                      plotOutput("LegendCircos")
+                                      #plotOutput("LegendCircos")
+                                      imageOutput("CircosLegend")
                                     )
                                     #                    h4("Wheel Legend"),
                                     #                    p(span("Black", style="color:black"),": Non available data."),

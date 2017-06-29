@@ -1,8 +1,12 @@
-CHANGES IN VERSION 1.4.02 (30 May 2017)
+CHANGES IN VERSION 1.5.03 (31 May 2017)
+------------------------
+Change the color rang of Circular layout plot as in standards
+
+CHANGES IN VERSION 1.5.02 (30 May 2017)
 ------------------------
 update Correlation Methods
 
-CHANGES IN VERSION 1.4.01 (29 May 2017)
+CHANGES IN VERSION 1.5.01 (29 May 2017)
 ------------------------
 replace .libPath() by path.package('bioCancer') in portal.R file
 

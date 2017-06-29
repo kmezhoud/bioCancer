@@ -21,7 +21,7 @@
 #'   feet=10)
 #'}
 #'
-attriColorValue <- function(Value, df, colors=c(a,b,c, d,e),feet){
+attriColorValue <- function(Value, df, colors=c(a,b,c),feet){
   #df <- df *100
   df[is.na(df)] <- 0
   if(max(df,na.rm=TRUE)<1){
@@ -86,7 +86,7 @@ attriColorGene <- function(df){
   }else{
     colorls <- lapply(dfMeansOrCNA, function(x)
       attriColorValue(x, dfMeansOrCNA,
-                      colors=c("blue3","cyan3","white","yellow","red"),
+                      colors=c("blue3","white","red"),
                       feet=0.1))
   }
   return(colorls)

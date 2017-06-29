@@ -201,8 +201,6 @@ output$Enrichment <- renderUI({
                        #                        },
                        if('Mutation' %in% input$CircosDimensionID ){
 
-
-
                          tagList(
 
                            div(class="row",
