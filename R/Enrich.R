@@ -17,7 +17,7 @@
 #' rownames(ProfData) <- NULL
 #' clrRef <- attriColorValue(1.2,
 #' ProfData,
-#'  colors = c("blue", "white","yellow","red", "black"),
+#'  colors = c("blue3", "white","red"),
 #'   feet=10)
 #'}
 #'
