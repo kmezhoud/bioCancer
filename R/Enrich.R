@@ -1,5 +1,5 @@
 #' Attribute Color to Value
-#' @usage attriColorValue(Value, df, colors=c(a,b,c, d,e),feet)
+#' @usage attriColorValue(Value, df, colors=c(a,b,c),feet)
 #' @param Value integer
 #' @param df data frame with numeric values
 #' @param colors a vector of 5 colors
