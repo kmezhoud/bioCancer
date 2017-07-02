@@ -4,7 +4,7 @@
 \alias{attriColorValue}
 \title{Attribute Color to Value}
 \usage{
-attriColorValue(Value, df, colors=c(a,b,c, d,e),feet)
+attriColorValue(Value, df, colors=c(a,b,c),feet)
 }
 \arguments{
 \item{Value}{integer}
@@ -30,7 +30,7 @@ ProfData <- getProfileData(cgds,
 rownames(ProfData) <- NULL
 clrRef <- attriColorValue(1.2,
 ProfData,
- colors = c("blue", "white","yellow","red", "black"),
+ colors = c("blue3", "white","red"),
   feet=10)
 }
 

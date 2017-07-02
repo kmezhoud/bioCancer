@@ -15,3 +15,9 @@ dataframe with sample size for each selected study.
 \description{
 get samples size of sequensed genes
 }
+\examples{
+\dontrun{
+ sampleSize <- getSequensed_SampleSize(input$StudiesIDCircos)
+}
+
+}
