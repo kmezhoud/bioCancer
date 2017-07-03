@@ -134,14 +134,14 @@ saveStateOnRefresh <- function(session = session) {
 ## used for group_by and facet row/column
 # groupable_vars <- reactive({
 #   .getdata() %>%
-#     dplyr::summarise_each(funs(is.factor(.) || lubridate::is.Date(.) || (n_distinct(., na_rm = TRUE)/n()) < .25)) %>%
+#     dplyr::summarise_all(funs(is.factor(.) || lubridate::is.Date(.) || (n_distinct(., na_rm = TRUE)/n()) < .25)) %>%
 #     {which(. == TRUE)} %>%
 #     varnames()[.]
 # })
 
 groupable_vars <- reactive({
   .getdata() %>%
-    dplyr::summarise_each(funs(is.factor(.) || is.logical(.) || lubridate::is.Date(.) || is.integer(.) ||
+    dplyr::summarise_all(funs(is.factor(.) || is.logical(.) || lubridate::is.Date(.) || is.integer(.) ||
                         ((n_distinct(., na_rm = TRUE)/n()) < .30))) %>%
                         # ((n_distinct(., na_rm = TRUE)/n()) < .30 && !is.numeric(.)))) %>%
     {which(. == TRUE)} %>%
@@ -150,7 +150,7 @@ groupable_vars <- reactive({
 
 groupable_vars_nonum <- reactive({
   .getdata() %>%
-    dplyr::summarise_each(funs(is.factor(.) || is.logical(.) || lubridate::is.Date(.) || is.integer(.) ||
+    dplyr::summarise_all(funs(is.factor(.) || is.logical(.) || lubridate::is.Date(.) || is.integer(.) ||
                    is.character(.))) %>%
                         # ((n_distinct(., na_rm = TRUE)/n()) < .30 && !is.numeric(.)))) %>%
     {which(. == TRUE)} %>%
@@ -161,7 +161,7 @@ groupable_vars_nonum <- reactive({
 ## used in compare proportions
 two_level_vars <- reactive({
   .getdata() %>%
-    dplyr::summarise_each(funs(n_distinct(., na_rm = TRUE))) %>%
+    dplyr::summarise_all(funs(n_distinct(., na_rm = TRUE))) %>%
     { . == 2 } %>%
     which(.) %>%
     varnames()[.]
@@ -170,7 +170,7 @@ two_level_vars <- reactive({
 ## used in visualize - don't plot Y-variables that don't vary
 varying_vars <- reactive({
   .getdata() %>%
-    dplyr::summarise_each(funs(does_vary(.))) %>%
+    dplyr::summarise_all(funs(does_vary(.))) %>%
     as.logical %>%
     which %>%
     varnames()[.]
@@ -253,8 +253,8 @@ show_data_snippet <- function(dat = input$dataset, nshow = 7, title = "") {
   {if (is.character(dat) && length(dat) == 1) getdata(dat) else dat} %>%
     { n <<- nrow(.); . } %>%
     dplyr::slice(1:min(nshow,n)) %>%
-    mutate_each(funs(d2c)) %>%
-    mutate_each(funs(trunc_char)) %>%
+    dplyr::mutate_if_tmp(funs(d2c)) %>%
+    dplyr::mutate_if_tmp(funs(trunc_char)) %>%
     xtable::xtable(.) %>%
     print(type = 'html',  print.results = FALSE, include.rownames = FALSE,
           sanitize.text.function = identity,
@@ -347,9 +347,11 @@ register_plot_output <- function(fun_name, rfun_name,
   return(invisible())
 }
 
-plot_downloader <- function(plot_name, width = plot_width(),
-                            height = plot_height(), pre = ".plot_", po = "dl_") {
-
+plot_downloader <- function(plot_name,
+                            width = plot_width,
+                            height = plot_height,
+                            pre = ".plot_",
+                            po = "dl_") {
   ## link and output name
   lnm <- paste0(po, plot_name)
 
@@ -369,8 +371,13 @@ plot_downloader <- function(plot_name, width = plot_width(),
 
         ## download graphs in higher resolution than shown in GUI (504 dpi)
         pr <- 7
-        png(file=file, width = width*pr, height = height*pr, res=72*pr)
-          print(get(paste0(pre, plot_name))())
+        ## fix for https://github.com/radiant-rstats/radiant/issues/20
+        w <- if (any(c("reactiveExpr","function") %in% class(width))) width()*pr else width*pr
+        h <- if (any(c("reactiveExpr","function") %in% class(height))) height()*pr else height*pr
+
+        png(file=file, width = w, height = h, res=72*pr)
+
+                   print(get(paste0(pre, plot_name))())
         dev.off()
     }
   )
