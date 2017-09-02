@@ -5,9 +5,11 @@ author: "\\
         Nuclear Science Center of Tunisia, Nuclear Safety & Security Department"
 date: "`r Sys.Date()`"
 output: 
-  BiocStyle::html_document:
+  prettydoc::html_pretty:
     toc: true
-  BiocStyle::pdf_document:
+    theme: cayman
+    highlight: github
+  pdf_document:
     toc: true
 vignette: >
   %\VignetteIndexEntry{bioCancer: Interactive Multi-OMICS Cancers Data Visualization and Analysis}
@@ -17,7 +19,6 @@ vignette: >
 
 
 ```{r style, echo=FALSE, results="asis", message=FALSE}
-BiocStyle::markdown()
 knitr::opts_chunk$set(tidy = FALSE,
                       warning = FALSE,
                       message = FALSE)

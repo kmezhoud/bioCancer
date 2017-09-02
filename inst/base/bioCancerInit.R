@@ -253,8 +253,8 @@ show_data_snippet <- function(dat = input$dataset, nshow = 7, title = "") {
   {if (is.character(dat) && length(dat) == 1) getdata(dat) else dat} %>%
     { n <<- nrow(.); . } %>%
     dplyr::slice(1:min(nshow,n)) %>%
-    dplyr::mutate_if_tmp(funs(d2c)) %>%
-    dplyr::mutate_if_tmp(funs(trunc_char)) %>%
+    mutate_if(is_date, as.character) %>%
+    mutate_if(is.character, funs(strtrim(., 40))) %>%
     xtable::xtable(.) %>%
     print(type = 'html',  print.results = FALSE, include.rownames = FALSE,
           sanitize.text.function = identity,

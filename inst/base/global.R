@@ -153,3 +153,15 @@ js_head <-
   )
 
 
+
+
+## running local or on a server
+if (Sys.getenv('SHINY_PORT') == "") {
+  options(r_local = TRUE)
+  ## no limit to filesize locally
+  options(shiny.maxRequestSize = -1)
+} else {
+  options(r_local = FALSE)
+  ## limit upload filesize on server (10MB)
+  options(shiny.maxRequestSize = 10 * 1024^2)
+}

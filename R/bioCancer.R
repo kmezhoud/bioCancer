@@ -76,7 +76,8 @@
 
 bioCancer <- function(){
   if ("package:bioCancer" %in% search()){
-    shiny::runApp(paste0(system.file(package = "bioCancer", "bioCancer", sep="")), launch.browser = TRUE)
+    shiny::runApp(system.file( "bioCancer", package = "bioCancer"), launch.browser = TRUE)
+    #shiny::runApp(system.file("app", package = "bioCancer"), launch.browser = TRUE)
   }else{
     stop("Install and load bioCancer package before to run it.")
   }

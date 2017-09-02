@@ -1107,9 +1107,8 @@ dtab <- function(object, ...) UseMethod("dtab", object)
 #'
 #' @export
 rounddf <- function(tbl, dec = 3) {
-  mutate_each(tbl,
-              funs(if (is.double(.)) round(., dec) else .)
-  )
+  mutate_if(tbl, is.double, .funs = funs(round(., dec)))
+
 }
 
 

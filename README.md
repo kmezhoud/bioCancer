@@ -13,7 +13,7 @@ http://kmezhoud.github.io/bioCancer/
 
 #### Interactivities
 
-bioCancer is listening user setting. Results update immediately when inputs are changed (i.e., no separate dialog boxes).
+bioCancer is listening user setting. Results are updated immediately when inputs are changed (i.e., no separate dialog boxes).
 
 #### Context
 

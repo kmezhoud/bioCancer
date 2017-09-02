@@ -140,7 +140,7 @@ output$ui_data <- renderUI({
         tags$hr(),
 
         tabsetPanel(
-          id = "tabs_data",
+         id = "tabs_data",
 
           tabPanel("Portal", uiOutput("Portal")),
           tabPanel("Processing", uiOutput("Processing")),

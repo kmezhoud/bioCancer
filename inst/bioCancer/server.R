@@ -1,6 +1,10 @@
 ## SERVER FOR bioCancer PACKAGE
 shinyServer(function(input, output, session) {
 
+  ##  trace error
+   #options(warn=2, shiny.error= recover)
+
+
   # for cgdsr
 
   cgds <- cgdsr::CGDS("http://www.cbioportal.org/public-portal/")
