@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.5.06 (1 September 2017)
+------------------------
+dplyr::mutate_each()` is deprecated
+dply::summarise_each() is deprecated
+replace BiocStyle by prettydoc
+
+CHANGES IN VERSION 1.5.05 (1 September 2017)
+------------------------
+Warning in formals(fun) : argument is not a function
+Warning in body(fun) : argument is not a function
+
 CHANGES IN VERSION 1.5.04 (02 July 2017)
 ------------------------
 Fix setting plot size
