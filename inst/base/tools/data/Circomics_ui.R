@@ -14,7 +14,7 @@
 
 output$CircosLegend <- renderImage({
   # When input$n is 3, filename is ./images/image3.jpeg
-  filename <- paste(r_path,"/extdata/imgs/CircosLegend.png", sep="")
+  filename <- paste(path.package('bioCancer'),"/extdata/imgs/CircosLegend.png", sep="")
 
   # Return a list containing the filename and alt text
   list(src = filename,
@@ -76,27 +76,31 @@ output$ui_CircosDimension <- renderUI({
 
   Dimension <- c("CNA","Methylation", "mRNA","Mutation","miRNA","RPPA", "All" )
   selectizeInput("CircosDimensionID", label= "Select Dimension:", choices= Dimension,
-                 selected= "", multiple=TRUE)
+                 selected = "", multiple=TRUE)
 })
 
 output$StrListProfDataCircos <- renderPrint({
 
-  withProgress(message = 'loading Profiles Data... ', value = 0.1, {
+  withProgress(message = 'loading Profiles Data from cgdsr server... ', value = 0.1, {
     Sys.sleep(0.25)
     getListProfData(panel='Circomics',input$GeneListID)
   })
+
   ## don't use r_data$ListProfData => cause réinitiate wheel
-#      if(is.null(r_data$ListProfData)){
-#        c("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.")
-#     }else{
-#
-   c("STUDIES:", input$StudiesIDCircos,
-  "Genetic Profiles: mRNA, Methylation, CNA, miRNA, Mutations, RPPA",
-    "Gene List:",
-    r_data[[input$GeneListID]]
+  #      if(is.null(r_data$ListProfData)){
+  #        c("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.")
+  #     }else{
+  #
+  c("STUDIES:", input$StudiesIDCircos,
+    "Genetic Profiles: mRNA, Methylation, CNA, miRNA, Mutation, RPPA",
+    "Gene List:", input$GeneListID
   )
-# }
+  # }
 })
+
+
+
+
 
 output$ui_Circomics <- renderUI({
 
@@ -105,155 +109,205 @@ output$ui_Circomics <- renderUI({
   #,"prad_tcga_pub","ucec_tcga_pub"
 
   conditionalPanel("input.tabs_Enrichment == 'Circomics'",
+
                    wellPanel(
-                     selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=NULL, multiple = TRUE),
-                      conditionalPanel(condition = "input.StudiesIDCircos == null",
-                                       p("Select at less two studies",align="center",style = "color:red")
-                                       ),
-                  # if(length(input$StudiesIDCircos)==1){
+                     selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=Studies[,1],
+                                    selected = c("luad_tcga_pub","blca_tcga_pub"), multiple = TRUE),
+                     conditionalPanel(condition = "input.StudiesIDCircos == null",
+                                      h5("Select at less two studies",align="center",style = "color:red")
+                     ),
+                     # if(length(input$StudiesIDCircos)==1){
+
                      div(class="row",
+                         div(class="col-xs-8",
+                             conditionalPanel(condition = "input.StudiesIDCircos != null && input.ViewProfDataCircosID==false",
+                                              h5('Check for availability')),
+                             conditionalPanel(condition = "input.StudiesIDCircos != null && input.ViewProfDataCircosID==true",
+                                              h5('Check for availability', style = "color:#428bca")
+                             )
+                         ),
                          div(class="col-xs-4",
                              conditionalPanel(condition = "input.StudiesIDCircos != null",
-                             checkboxInput("ViewProfDataCircosID", "Availability", value = FALSE))
-                             ),
+                                              switchButton(inputId = "ViewProfDataCircosID",
+                                                           value = FALSE, col = "GB", type = "OO"))
+                         )
+                     ),
+                     div(class="row",
                          div(class="col-xs-8",
-                             conditionalPanel(condition = "input.pullUserDataButtonId==true",
-                                              p("+ User data",align="center", style = "color:blue")
+                             conditionalPanel(condition = "input.StudiesIDCircos != null && input.loadListProfDataCircosId ==false",
+                                              h5('Load genetic profiles')),
+                             conditionalPanel(condition = "input.StudiesIDCircos != null && input.loadListProfDataCircosId ==true",
+                                              h5('Load genetic profiles',  style = "color:#428bca"))
+                         ),
+                         div(class="col-xs-4",
+                             conditionalPanel(condition = "input.StudiesIDCircos != null",
+                                              switchButton(inputId = "loadListProfDataCircosId",
+                                                           value = FALSE, col = "GB", type = "OO")
                              )
                          )
                      ),
-                      div(class="row",
-                         div(class="col-xs-3",
-                             conditionalPanel(condition = "input.StudiesIDCircos != null",
-                            checkboxInput("loadListProfDataCircosId", "Load", value = FALSE))
-                            ),
-                         # div(class="col-xs-3",
-                         # conditionalPanel(condition = "input.StudiesIDCircos != null",
-                         #   actionButton('loadListProfDataCircosId', 'Load')
-                         # )
-                         #   ),
+                     div(class="row",
                          div(class="col-xs-8",
-                             conditionalPanel(condition= 'input.loadListProfDataCircosId == true',
-                                              actionButton('pushListProfData', 'Push for Processing',
-                                                           icon("arrow-up")
-                                                           )
-                             ))
+                             conditionalPanel(condition= 'input.loadListProfDataCircosId == true && input.pushListProfData == false',
+                                              h5('Import data to Workspace')),
+                             conditionalPanel(condition= 'input.loadListProfDataCircosId == true && input.pushListProfData == true',
+                                              h5('Import data to Workspace',  style = "color:#428bca"))
+                         ),
+                         div(class='col-xs-4',
+                             conditionalPanel(condition = 'input.loadListProfDataCircosId == true',
+                                              switchButton(inputId = "pushListProfData",
+                                                           value = FALSE, col = "GB", type = "OO")
+                             )
+                         )
+                     ),
+                     conditionalPanel(condition = "input.pushListProfData==true",
+                                      h5("The data sets are loaded to Workspace.",align="center", style = "color:#428bca")
+                     ),
+                     conditionalPanel(condition = "input.pullUserDataButtonId==true",
+                                      h5("+ User data",align="center", style = "color:blue;font-size:100%")),
+                     #}
+                     conditionalPanel("input.loadListProfDataCircosId == true",
+                                      wellPanel(
+                                        h4("Import to Workspace:"),
+                                        div(class="row",
+                                            div(class="col-xs-3",
+                                                checkboxInput('UserDataCNAID', 'CNA', FALSE)),
+                                            div(class="col-xs-3",
+                                                checkboxInput('UserDatamRNAID', 'mRNA', FALSE)),
+                                            div(class="col-xs-2",
+                                                checkboxInput('UserDataFreqMutID', 'Mut', FALSE)),
+                                            div(class="col-xs-2",
+                                                checkboxInput('UserDataMet27ID', 'Met27', FALSE))
+                                        ),
+                                        div(class="row",
+                                            div(class="col-xs-4",
+                                                checkboxInput('UserDataMet450ID', 'Met450', FALSE)),
+                                            div(class="col-xs-4",
+                                                checkboxInput('UserDatamiRNAID', 'miRNA', FALSE)),
+                                            div(class="col-xs-4",
+                                                checkboxInput('UserDataRPPAID', 'RPPA', FALSE))
+                                        ),
 
-                     ),
-                  conditionalPanel(condition = "input.pushListProfData==true",
-                                   p("The data sets are loaded to Processing panel.",align="center", style = "color:blue")
-                  )
-                   #}
-                     ),
+                                        conditionalPanel(condition="input.UserDataCNAID==true",
+                                                         uiOutput("uiPullUserDataCNA")
 
-                   wellPanel(
-                     h4("Pull from Processing Panel:"),
-                     div(class="row",
-                         div(class="col-xs-3",
-                             checkboxInput('UserDataCNAID', 'CNA', FALSE)),
-                         div(class="col-xs-3",
-                             checkboxInput('UserDatamRNAID', 'mRNA', FALSE)),
-                         div(class="col-xs-2",
-                             checkboxInput('UserDataFreqMutID', 'Mut', FALSE)),
+                                        ),
+                                        conditionalPanel(condition="input.UserDatamRNAID==true",
+                                                         uiOutput("uiPullUserDatamRNA")
+                                        ),
+                                        conditionalPanel(condition="input.UserDataMet27ID==true",
+                                                         uiOutput("uiPullUserDataMetHM27")
+                                        ),
+                                        conditionalPanel(condition="input.UserDataMet450ID==true",
+                                                         uiOutput("uiPullUserDataMetHM450")
+                                        ),
+                                        conditionalPanel(condition="input.UserDataFreqMutID==true",
+                                                         uiOutput("uiPullUserDataFreqMut")
+                                        ),
+                                        conditionalPanel(condition="input.UserDatamiRNAID==true",
+                                                         uiOutput("uiPullUserDatamiRNA")
+                                        ),
 
-                         div(class="col-xs-2",
-                             checkboxInput('UserDataMet27ID', 'Met27', FALSE))
-                     ),
-                     div(class="row",
-                         div(class="col-xs-4",
-                             checkboxInput('UserDataMet450ID', 'Met450', FALSE)),
-                         div(class="col-xs-4",
-                             checkboxInput('UserDatamiRNAID', 'miRNA', FALSE)),
-                         div(class="col-xs-4",
-                             checkboxInput('UserDataRPPAID', 'RPPA', FALSE))
-                     ),
+                                        conditionalPanel(condition="input.UserDataRPPAID==true",
+                                                         uiOutput("uiPullUserDataRPPA")
+                                        ),
+                                        # if(input$UserDataCNAID ||
+                                        #   input$UserDatamRNAID ||
+                                        #   input$UserDataMetHM27ID ||
+                                        #   input$UserDataMetHM450ID ||
+                                        #   input.UserDataFreqMutID ||
+                                        #   input.UserDatamiRNAID||
+                                        #  input$UserDataRPPAID){
+                                        div(class="row",
+                                            div(class="col-xs-8",
+                                                conditionalPanel(condition = "input.StudiesIDCircos != null && input.pullUserDataButtonId ==false",
+                                                                 h5('Merge user data to wheel')),
+                                                conditionalPanel(condition = "input.StudiesIDCircos != null && input.pullUserDataButtonId ==true",
+                                                                 h5('Merge User data to wheel',  style = "color:#428bca"))
+                                            ),
+                                            div(class="col-xs-4",
+                                                conditionalPanel(condition = "input.StudiesIDCircos != null",
+                                                                 switchButton(inputId = "pullUserDataButtonId",
+                                                                              value = FALSE, col = "GB", type = "OO")
+                                                )
+                                            )
+                                        ),
+                                        div(class="row",
+                                            div(class="col-xs-6",
+                                                actionButton('pullUserDataButtonId', 'Add to wheel', icon('arrow-down'),style='padding:4px; font-size:80%')),
+                                            div(class="col-xs-6",
+                                                #checkboxInput("getlistProfDataCircosID", "Load", value = FALSE))
+                                                actionButton('UnpullUserDataButtonId', 'Remove',style='padding:4px; font-size:80%')
+                                            )
+                                            #checkboxInput('confirmPullUserDataID', 'Confirm Pull', FALSE)
+                                        )
+                                        # }
+                                      ),
+                                      #conditionalPanel(condition= 'input.loadListProfDataCircosId == true',
+                                      wellPanel(
+                                        ################
+                                        radioButtons("CircosDimensionID", "Choose Dimensions:",           #checkboxGroupInput
+                                                     choiceNames =
+                                                       list("Copy Number Alteration","Methylation HM27 HM450","mRNA expression",
+                                                            "Mutation","miRNA expression", "RPPA", "ALL"),
+                                                     choiceValues =
+                                                       list("CNA","Met", "mRNA", "Mutation", "miRNA", "RPPA", "All")
+                                                     ,selected = character(0)
+                                        )
 
-                     conditionalPanel(condition="input.UserDataCNAID==true",
-                                      uiOutput("uiPullUserDataCNA")
+                                        # uiOutput("ui_CircosDimension")
 
-                     ),
-                     conditionalPanel(condition="input.UserDatamRNAID==true",
-                                      uiOutput("uiPullUserDatamRNA")
-                     ),
-                     conditionalPanel(condition="input.UserDataMet27ID==true",
-                                      uiOutput("uiPullUserDataMetHM27")
-                     ),
-                     conditionalPanel(condition="input.UserDataMet450ID==true",
-                                      uiOutput("uiPullUserDataMetHM450")
-                     ),
-                     conditionalPanel(condition="input.UserDataFreqMutID==true",
-                                      uiOutput("uiPullUserDataFreqMut")
-                     ),
-                     conditionalPanel(condition="input.UserDatamiRNAID==true",
-                                      uiOutput("uiPullUserDatamiRNA")
-                     ),
-
-                     conditionalPanel(condition="input.UserDataRPPAID==true",
-                                      uiOutput("uiPullUserDataRPPA")
-                     ),
-                     # if(input$UserDataCNAID ||
-                     #   input$UserDatamRNAID ||
-                     #   input$UserDataMetHM27ID ||
-                     #   input$UserDataMetHM450ID ||
-                     #   input.UserDataFreqMutID ||
-                     #   input.UserDatamiRNAID||
-                     #  input$UserDataRPPAID){
-                                      div(class="row",
-                                          div(class="col-xs-6",
-                                              actionButton('pullUserDataButtonId', 'Add to wheel', icon('arrow-down'))),
-                                          div(class="col-xs-6",
-                                              #checkboxInput("getlistProfDataCircosID", "Load", value = FALSE))
-                                              actionButton('UnpullUserDataButtonId', 'Remove')
-                                          )
-                                          #checkboxInput('confirmPullUserDataID', 'Confirm Pull', FALSE)
+                                        #
                                       )
-                    # }
-                   ),
+
+                                      #)
+                     ),
 
 
-                   conditionalPanel(condition= 'input.loadListProfDataCircosId == true',
-                                    uiOutput("ui_CircosDimension")
-                                    #uiOutput("ui_SaveCircos")
-                   ),
 
-                   #                    conditionalPanel("input.CircosDimensionID == 'All'",
-                   #                                     #plot_downloader("SaveMetabologram_All", pre = ""),
-                   #                                     downloadButton('Save_Metabologram_All', 'All')
-                   #
-                   #                    ),
 
-                   checkboxInput("CircosLegendID", "Legend", value=FALSE),
-                   #                    radioButtons(inputId = "WheelID", label = "Wheel Style:",
-                   #                                 c("Summary"="init" ,"Zoom" = "Zoom",  "Static" = "Static"),
-                   #                                 selected = "", inline = TRUE),
+                     #################
 
-                   #                    radioButtons(inputId = "saveWheelID", label = "Save Wheel:",
-                   #                                 c("SVG" = "SVG", "Gif" = "Gif"),
-                   #                                 selected = "SVG", inline = TRUE),
-                   #
-                   #                    conditionalPanel(condition = "input.saveWheelID == 'SVG'",
-                   #                                     downloadButton('SaveSVG', 'SVG')),
-                   #
-                   #                    conditionalPanel(condition = "input.saveWheelID == 'Gif'",
-                   #                                     downloadButton("SaveGif")),
+                     #                    conditionalPanel("input.CircosDimensionID == 'All'",
+                     #                                     #plot_downloader("SaveMetabologram_All", pre = ""),
+                     #                                     downloadButton('Save_Metabologram_All', 'All')
+                     #
+                     #                    ),
 
-                   conditionalPanel("input.CircosLegendID==true",
-                                    wellPanel(
+                     checkboxInput("CircosLegendID", "Legend", value=FALSE),
+                     #                    radioButtons(inputId = "WheelID", label = "Wheel Style:",
+                     #                                 c("Summary"="init" ,"Zoom" = "Zoom",  "Static" = "Static"),
+                     #                                 selected = "", inline = TRUE),
+
+                     #                    radioButtons(inputId = "saveWheelID", label = "Save Wheel:",
+                     #                                 c("SVG" = "SVG", "Gif" = "Gif"),
+                     #                                 selected = "SVG", inline = TRUE),
+                     #
+                     #                    conditionalPanel(condition = "input.saveWheelID == 'SVG'",
+                     #                                     downloadButton('SaveSVG', 'SVG')),
+                     #
+                     #                    conditionalPanel(condition = "input.saveWheelID == 'Gif'",
+                     #                                     downloadButton("SaveGif")),
+
+
+                     conditionalPanel("input.CircosLegendID==true",
+                                      #               wellPanel(
                                       #plotOutput("LegendCircos")
                                       imageOutput("CircosLegend")
-                                    )
-                                    #                    h4("Wheel Legend"),
-                                    #                    p(span("Black", style="color:black"),": Non available data."),
-                                    #                    p(span("White", style="color:black"),": Non significant rate."),
-                                    #                    p(span("Cyan", style="color:deepskyblue"),": Middle Negative significant rate."),
-                                    #                    p(span("Blue", style="color:blue"),": Negative significant rate."),
-                                    #                    p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
-                                    #                    p(span("Red", style="color:red"),": Positive significant rate.")
-                   ),
+                                      #                )
+                                      #                    h4("Wheel Legend"),
+                                      #                    p(span("Black", style="color:black"),": Non available data."),
+                                      #                    p(span("White", style="color:black"),": Non significant rate."),
+                                      #                    p(span("Cyan", style="color:deepskyblue"),": Middle Negative significant rate."),
+                                      #                    p(span("Blue", style="color:blue"),": Negative significant rate."),
+                                      #                    p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
+                                      #                    p(span("Red", style="color:red"),": Positive significant rate.")
+                     ),
 
-                   help_modal_km('Circomics','CircomicsHelp',inclMD(file.path(r_path,"base/tools/help/Circomics.md")))
+                     help_modal_km('Circomics','CircomicsHelp',inclMD(file.path(r_path,"base/tools/help/Circomics.md")))
+
+                   )
   )
-
 })
 
 ## Load Profile data in datasets to Processing panel
@@ -274,11 +328,13 @@ observe({
     # sorting files alphabetically
     #r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
     #updateSelectInput(session, "dataset", label = "Datasets:",
-     #                 choices = r_data$datasetlist,
-      #                selected = "")
+    #                 choices = r_data$datasetlist,
+    #                selected = "")
 
   })
 })
+
+
 
 # observe({
 #

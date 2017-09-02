@@ -15,38 +15,64 @@ output$ui_Classifier <- renderUI({
 
     #conditionalPanel("input.tabs_Enrichment == 'Classifier'",
 
-                     selectizeInput('StudiesIDClassifier', 'Studies  to Classify', choices=NULL, multiple = TRUE),
+    selectizeInput('StudiesIDClassifier', 'Studies  to Classify', choices=NULL, multiple = TRUE),
 
-                     # selectizeInput(inputId = "ClassID", label="Sampling",
-                     #                choices= c("None"="None","Samples"="Samples"), #,"Classifier" = "Classifier"
-                     #                multiple=FALSE
-                     # ),
-                     div(class="col-xs-6",
-                         conditionalPanel("input.StudiesIDClassifier != null",
-                         checkboxInput('runSamplingBox', 'Sampling')
-                     )),
-                     tags$hr(),
-                     #conditionalPanel( "input.ClassID == 'Samples'",
-                     conditionalPanel( "input.runSamplingBox == true ",
-                                       div(class="col-xs-6",
-                                           numericInput("SampleSizeClassifierID",
-                                                        "Samples",
-                                                        "50",min = 0, max = 200 , step = 10)),
-                                       div(class="col-xs-6",
-                                           numericInput("ClassifierThresholdID",
-                                                        "PostProb",
-                                                        "0.95",min = 0.9, max = 1 , step = 0.01)),
+    # selectizeInput(inputId = "ClassID", label="Sampling",
+    #                choices= c("None"="None","Samples"="Samples"), #,"Classifier" = "Classifier"
+    #                multiple=FALSE
+    # ),
 
-                                       conditionalPanel("input.runSamplingBox == true",
-                                       div(class="col-xs-12",
-                                            checkboxInput('runClassificationBox', 'Classification')
+    div(class="row",
+        div(class="col-xs-8",
+            conditionalPanel("input.StudiesIDClassifier != null  && input.runSamplingBox==false",
+                             h5('Sampling')),
+            conditionalPanel("input.StudiesIDClassifier != null && input.runSamplingBox==true",
+                             h5('Sampling', style = "color:#428bca")
+            )
+        ),
+        div(class="col-xs-4",
+            conditionalPanel("input.StudiesIDClassifier != null",
+                             switchButton(inputId = "runSamplingBox",
+                                          value = FALSE, col = "GB", type = "OO"))
+        )
+    ),
+    # tags$hr(),
+    #conditionalPanel( "input.ClassID == 'Samples'",
+    conditionalPanel( "input.runSamplingBox == true ",
+                      div(class="col-xs-6",
+                          numericInput("SampleSizeClassifierID",
+                                       "Samples",
+                                       "50",min = 0, max = 200 , step = 10)),
+                      div(class="col-xs-6",
+                          numericInput("ClassifierThresholdID",
+                                       "PostProb",
+                                       "0.95",min = 0.9, max = 1 , step = 0.01)),
+
+                      conditionalPanel("input.runSamplingBox == true",
+                                       #div(class="col-xs-12",
+                                       #     checkboxInput('runClassificationBox', 'Classification')
+                                       # ),
+
+                                       div(class="row",
+                                           div(class="col-xs-8",
+                                               conditionalPanel("input.runSamplingBox == true  && input.runClassificationBox==false",
+                                                                h5('Run classification')),
+                                               conditionalPanel("input.StudiesIDClassifier != null && input.runClassificationBox==true",
+                                                                h5('Run classification', style = "color:#428bca")
+                                               )
+                                           ),
+                                           div(class="col-xs-4",
+                                               conditionalPanel("input.runSamplingBox == true",
+                                                                switchButton(inputId = "runClassificationBox",
+                                                                             value = FALSE, col = "GB", type = "OO"))
                                            )
                                        )
+                      )
 
-                     ),
-                     br(),
+    ),
+    br(),
 
-  #  ),
+    #  ),
     #conditionalPanel("input.ClassID=='Classifier'",
     conditionalPanel("input.runClassificationBox == true",
 
@@ -57,6 +83,10 @@ output$ui_Classifier <- renderUI({
     ),
     br(),
     help_modal_km('Classification','ClassifierHelp',inclMD(file.path(r_path,"base/tools/help/Classifier.md")))
+    # help_and_report(modal_title = "Classifier", fun_name = "ClassifierHelp",
+    #                 author = "Karim Mezhoud",
+    #                 help_file = inclRmd(file.path(
+    #                   getOption("radiant.path.bioCancer"),"app/tools/help/Classifier.md")))
   )
 })
 

@@ -172,6 +172,8 @@ output$Portal <- renderUI({
 })
 
 output$Enrichment <- renderUI({
+tagList(
+  includeCSS(file.path(path.package('bioCancer'),"base/www/switchButton.css")),
 
   tabsetPanel(id = "tabs_Enrichment",
               tabPanel("Circomics",
@@ -193,8 +195,16 @@ output$Enrichment <- renderUI({
                        #                          plot_downloader("SaveMetabologram_mRNA", pre = "")
                        #                        },
                        if('mRNA' %in% input$CircosDimensionID ){
-                         # h3("Gene Expression")
+                         tagList(
+                           div(class="row",
+                               div(class="col-xs-6",
+                                   DT::dataTableOutput(outputId = "Sequenced_SampleSize")),
+                               div(class="col-xs-6",
+                                   DT::dataTableOutput(outputId = "mRNA_mean"))
+                           ),
+                         #h3("Gene Expression"),
                          coffeewheelOutput('getCoffeeWheel_mRNA', width = 600, height = 600)
+                         )
                        },
                        #                        if('Mutation' %in% input$CircosDimensionID ){
                        #                          plot_downloader("SaveMetabologram_Mut", pre = "")
@@ -241,7 +251,7 @@ output$Enrichment <- renderUI({
                          coffeewheelOutput('getCoffeeWheel_All', width = 800, height = 800)
 
                        },
-                       conditionalPanel(condition = "input.loadListProfDataCircosId ==true",
+                       conditionalPanel(condition = "input.loadListProfDataCircosId == true ", #&& input.CircosDimensionID == null
                                         h3("Loaded Profiles Data", align="center"),
                                         verbatimTextOutput("StrListProfDataCircos")
                        ),
@@ -394,7 +404,7 @@ output$Enrichment <- renderUI({
               # )
 
   )
-
+)
 
 })
 
