@@ -182,14 +182,34 @@ tagList(
                        #                          plot_downloader("SaveMetabologram_CNA", pre = "")
                        #                        },
                        if('CNA' %in% input$CircosDimensionID ){
+                         tagList(
+                           div(class="row",
+                               div(class="col-xs-6",
+                                   DT::dataTableOutput(outputId = "Sequenced_SampleSize")),
+                               div(class="col-xs-6",
+                                   DT::dataTableOutput(outputId = "CNA_Max"))
+                           ),
+                           column(12, align="center",
                          coffeewheelOutput('getCoffeeWheel_CNA', width = 600, height = 600)
+                           )
+                         )
                        },
+                       # if('Methylation' %in% input$CircosDimensionID ){
+                       #   plot_downloader("SaveMetabologram_Met", pre = "")
+                       # },
                        if('Methylation' %in% input$CircosDimensionID ){
-                         plot_downloader("SaveMetabologram_Met", pre = "")
-                       },
-                       if('Methylation' %in% input$CircosDimensionID ){
+                         tagList(
+                           div(class="row",
+                               div(class="col-xs-6",
+                                   DT::dataTableOutput(outputId = "Sequenced_SampleSize")),
+                               div(class="col-xs-6",
+                                   DT::dataTableOutput(outputId = "Methylation_mean"))
+                           ),
                          #  h3("Correlation of silencing gene by Methylation: (0:1)")
+                         column(12, align="center",
                          coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
+                         )
+                         )
                        },
                        #                        if('mRNA' %in% input$CircosDimensionID ){
                        #                          plot_downloader("SaveMetabologram_mRNA", pre = "")
@@ -203,7 +223,9 @@ tagList(
                                    DT::dataTableOutput(outputId = "mRNA_mean"))
                            ),
                          #h3("Gene Expression"),
+                         column(12, align="center",
                          coffeewheelOutput('getCoffeeWheel_mRNA', width = 600, height = 600)
+                         )
                          )
                        },
                        #                        if('Mutation' %in% input$CircosDimensionID ){
@@ -224,7 +246,9 @@ tagList(
                          h3(paste0("Mutation Percentage: (Min = ", min(r_data$Freq_DfMutData, na.rm = TRUE) ,
                                    "%, Max = ", max(r_data$Freq_DfMutData, na.rm = TRUE)  ,"%)", sep=""),  align="center"),
 
+                         column(12, align="center",
                          coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
+                         )
                          )
                        },
                        #                        if('miRNA' %in% input$CircosDimensionID ){
@@ -233,7 +257,9 @@ tagList(
 
                        if('miRNA' %in% input$CircosDimensionID ){
                          #h3("Protein phosphorylation:")
+                         column(12, align="center",
                          coffeewheelOutput('getCoffeeWheel_miRNA', width = 600, height = 600)
+                         )
                        },
                        #                        if('RPPA' %in% input$CircosDimensionID ){
                        #                          plot_downloader("SaveMetabologram_RPPA", pre = "")
@@ -241,15 +267,18 @@ tagList(
 
                        if('RPPA' %in% input$CircosDimensionID ){
                          #h3("Protein phosphorylation:")
+                         column(12, align="center",
                          coffeewheelOutput('getCoffeeWheel_RPPA', width = 600, height = 600)
+                         )
                        },
                        if('All' %in% input$CircosDimensionID ){
                          plot_downloader("SaveMetabologram_All", pre = "")
                        },
                        if('All' %in% input$CircosDimensionID ){
                          #h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)")
+                         column(12, align="center",
                          coffeewheelOutput('getCoffeeWheel_All', width = 800, height = 800)
-
+                         )
                        },
                        conditionalPanel(condition = "input.loadListProfDataCircosId == true ", #&& input.CircosDimensionID == null
                                         h3("Loaded Profiles Data", align="center"),

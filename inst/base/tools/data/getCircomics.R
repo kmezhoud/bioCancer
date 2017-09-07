@@ -116,7 +116,7 @@ output$getCoffeeWheel_CNA <- renderCoffeewheel({
     Sys.sleep(0.25)
 
     CoffeewheelTreeCNAData <- reStrDisease(r_data$ListProfData$CNA)
-    title<- paste("Copy Number Alteration [-2, +2]")
+    title<- paste("The most frequent Copy Number Alteration [-2, +2]")
     coffeewheel(CoffeewheelTreeCNAData, width=600, height=600,main=title)
   })
 
@@ -343,8 +343,33 @@ output$FreqMutSummary <- DT::renderDataTable({
 output$mRNA_mean <- DT::renderDataTable({
   dat <- lapply(r_data$ListProfData$Expression, function(x) colMeans(x))
   dat <- as.data.frame(dat)
+  dat <- round(dat, digits = 0)
   DT::datatable(dat,
                 caption="Table 2: Means of mRNA expression",
+                autoHideNavigation = getOption("DT.autoHideNavigation")
+  )
+})
+output$CNA_Max <- DT::renderDataTable({
+  ls <- lapply(r_data$ListProfData$CNA,function(x) apply(x,2, function(y) as.data.frame(table(y[order(y)]))))
+  WhichMax <- lapply(ls, function(x) as.data.frame(lapply(x, function(y) y[,1][which(y[,2]== max(y[,2]))])))
+  genes_names <- lapply(WhichMax, function(x) names(x))[1]
+  names(genes_names) <- 'Genes'
+  WhichMax <- lapply(WhichMax, function(x) as.numeric(as.matrix(x)))
+  WhichMax <- as.data.frame(WhichMax)
+  dat <- cbind(Genes= genes_names , WhichMax )
+  DT::datatable(dat,
+                caption="Table 2: The most frequent CNA prolife",
+                autoHideNavigation = getOption("DT.autoHideNavigation")
+  )
+})
+
+output$Methylation_mean <- DT::renderDataTable({
+  #dat <- list(r_data$ListMetData,r_data$ListProfData$Met_HM450)
+  dat <- lapply(r_data$ListMetData, function(x) lapply(x, function(y) colMeans(y)))
+  dat <- as.data.frame(dat)
+  dat <- round(dat, digits = 3)
+  DT::datatable(dat,
+                caption="Table 2: Correlation of silencing gene by Methylation: (0:1)",
                 autoHideNavigation = getOption("DT.autoHideNavigation")
   )
 })

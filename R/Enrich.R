@@ -73,7 +73,7 @@ attriColorGene <- function(df){
     names(dfMeansOrCNA) <- namedfMeansOrCNA
 
   }else if(all(apply(df,2, function(x)class(x)=='numeric'))==TRUE){
-    ## Compute mean of FreqMutData and mRNA Expression
+    ## Compute mean of FreqMutData and mRNA Expression, rppa
     dfMeansOrCNA <-apply(df,2,function(x) mean(x, na.rm=TRUE))
     dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
   }
@@ -87,7 +87,7 @@ attriColorGene <- function(df){
     colorls <- lapply(dfMeansOrCNA, function(x)
       attriColorValue(x, dfMeansOrCNA,
                       colors=c("blue3","white","red"),
-                      feet=0.1))
+                      feet=0.01))
   }
   return(colorls)
 }

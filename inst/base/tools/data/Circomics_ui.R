@@ -246,16 +246,16 @@ output$ui_Circomics <- renderUI({
                                       #conditionalPanel(condition= 'input.loadListProfDataCircosId == true',
                                       wellPanel(
                                         ################
-                                        radioButtons("CircosDimensionID", "Choose Dimensions:",           #checkboxGroupInput
-                                                     choiceNames =
-                                                       list("Copy Number Alteration","Methylation HM27 HM450","mRNA expression",
-                                                            "Mutation","miRNA expression", "RPPA", "ALL"),
-                                                     choiceValues =
-                                                       list("CNA","Met", "mRNA", "Mutation", "miRNA", "RPPA", "All")
-                                                     ,selected = character(0)
-                                        )
+                                        # radioButtons("CircosDimensionID", "Choose Dimensions:",           #checkboxGroupInput
+                                        #              choiceNames =
+                                        #                list("Copy Number Alteration","Methylation HM27 HM450","mRNA expression",
+                                        #                     "Mutation","miRNA expression", "RPPA", "ALL"),
+                                        #              choiceValues =
+                                        #                list("CNA","Met", "mRNA", "Mutation", "miRNA", "RPPA", "All")
+                                        #              ,selected = character(0)
+                                        # )
 
-                                        # uiOutput("ui_CircosDimension")
+                                         uiOutput("ui_CircosDimension")
 
                                         #
                                       )
