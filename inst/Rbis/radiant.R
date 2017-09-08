@@ -452,7 +452,7 @@ viewdata <- function(dataset,
 
   shinyApp(
     ui = fluidPage(title = title,
-                   includeCSS(file.path(system.file(package = "radiant.data"),"app/www/style.css")),
+                   includeCSS(file.path(r_path,"base/www/style.css")),
                    fluidRow(DT::dataTableOutput("tbl")),
                    actionButton("stop", "Stop", class = "btn-danger", onclick = "window.close();")
     ),

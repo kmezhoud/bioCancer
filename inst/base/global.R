@@ -107,7 +107,7 @@ file.path(normalizePath("~"),"r_sessions") %>% {if (!file.exists(.)) dir.create(
 addResourcePath("figures", file.path(r_path,"base/tools/help/figures"))
 addResourcePath("imgs", file.path(r_path,"base/www/imgs/"))
 addResourcePath("js", file.path(r_path,"base/www/js/"))
-addResourcePath("rmarkdown", file.path(r_path,"base/www/rmarkdown/"))
+#addResourcePath("rmarkdown", file.path(r_path,"base/www/rmarkdown/"))
 
 
 #,theme= shinythemes::shinytheme("cerulean")

@@ -14,7 +14,7 @@ Depends:
     RCurl,
     XML
 Imports:
-    radiant.data (>= 0.8.7.1),
+    radiant.data (>= 0.8.1),
     dplyr (>= 0.7.0),
     htmlwidgets,
     Biobase,
