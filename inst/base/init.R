@@ -392,24 +392,11 @@ if (!is.null(r_state$nav_radiant)) {
 }
 
 ## 'sourcing' radiant's package functions in the server.R environment
-if (!"package:bioCancer" %in% search()) {
-  ## for shiny-server
-  if (r_path == "..") {
-    for (file in list.files("../../R",
-                            pattern="\\.(r|R)$",
-                            full.names = TRUE)) {
-
-      source(file, encoding = r_encoding, local = TRUE)
-    }
-  } else {
-    ## for shinyapps.io
-    copy_all(bioCancer)
-    set_class <- set_class         ## needed but not clear why
-    environment(set_class) <- environment() ## needed but not clear why
-  }
+if (!"package:bioCancer" %in% search() && getOption("radiant.path.bioCancer") == "..") {
+  ## for shiny-server and development
+  for (file in list.files("../../R", pattern="\\.(r|R)$", full.names = TRUE))
+    source(file, encoding = getOption("radiant.encoding"), local = TRUE)
 } else {
   ## for use with launcher
-  copy_all(bioCancer)
-  set_class <- set_class         ## needed but not clear why
-  environment(set_class) <- environment() ## needed but not clear why
+  radiant.data::copy_all(bioCancer)
 }

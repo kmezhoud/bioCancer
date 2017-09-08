@@ -1,8 +1,8 @@
-#######################################
-# Manage datasets in/out of Radiant
-#######################################
-
-output$ui_fileUploadManage <- renderUI({
+# #######################################
+# # Manage datasets in/out of Radiant
+# #######################################
+#
+output$ui_fileUpload <- renderUI({
 
   if (is.null(input$dataType)) return()
   if (input$dataType == "csv") {
@@ -29,127 +29,127 @@ output$ui_fileUploadManage <- renderUI({
     ))
   }
 })
+#
+# output$ui_clipboard_load <- renderUI({
+#   if (r_local) {
+#     actionButton('loadClipData', 'Paste data')
+#   } else {
+#     tagList(
+#       tags$textarea(class="form-control", id="load_cdata", rows="5"),
+#       actionButton('loadClipData', 'Paste data')
+#     )
+#   }
+# })
+#
+# output$ui_clipboard_save <- renderUI({
+#   if (r_local) {
+#     actionButton('saveClipData', 'Copy data')
+#   } else {
+#     tagList(
+#       "<label>Add data description:</label><br>" %>% HTML,
+#       tags$textarea(class="form-control", id="save_cdata",
+#                     rows="5",
+#                     capture.output(write.table(.getdata(), file = "", row.names = FALSE,
+#                                                sep = "\t")) %>%
+#                       paste(collapse = "\n"))
+#     )
+#   }
+# })
+#
+# output$ui_Manage <- renderUI({
+#   tagList(
+#     wellPanel(
+#       selectInput("dataType", label = "Load data of type:",
+#                   c("rda" = "rda", "rds" = "rds", "state" = "state", "csv" = "csv",
+#                     "clipboard" = "clipboard","examples" = "examples",
+#                     "rda (url)" = "url_rda", "csv (url)" = "url_csv"),
+#                   selected = "rda"),
+#       conditionalPanel(condition = "input.dataType != 'clipboard' &&
+#                                     input.dataType != 'examples'",
+#                        conditionalPanel("input.dataType == 'csv' | input.dataType == 'url_csv'",
+#                                         with(tags, table(td(checkboxInput('man_header', 'Header', TRUE)),
+#                                                          td(HTML("&nbsp;&nbsp;")),
+#                                                          td(checkboxInput('man_str_as_factor', 'Str. as Factor', FALSE)))),
+#                                         radioButtons('man_sep', "Separator:", c(Comma=',', Semicolon=';', Tab='\t'),
+#                                                      ',', inline = TRUE),
+#                                         radioButtons('man_dec', "Decimal:", c(Period='.', Comma=','),
+#                                                      '.', inline = TRUE)
+#                        ),
+#                        uiOutput("ui_fileUploadManage")
+#       ),
+#       conditionalPanel(condition = "input.dataType == 'clipboard'",
+#                        uiOutput("ui_clipboard_load")
+#       ),
+#       conditionalPanel(condition = "input.dataType == 'examples'",
+#                        actionButton('loadExampleData', 'Load examples')
+#       ),
+#       conditionalPanel(condition = "input.dataType == 'state'",
+#                        fileInput('uploadState', 'Load previous app state:',  accept = ".rda"),
+#                        uiOutput("refreshOnUpload")
+#       )
+#     ),
+#     wellPanel(
+#       selectInput("saveAs", label = "Save data:",
+#                   c("rda" = "rda", "rds" = "rds", "csv" = "csv",
+#                     "clipboard" = "clipboard", "state" = "state"),
+#                   selected = "rda"),
+#       conditionalPanel(condition = "input.saveAs == 'clipboard'",
+#                        uiOutput("ui_clipboard_save")
+#       ),
+#       conditionalPanel(condition = "input.saveAs != 'clipboard' &&
+#                                     input.saveAs != 'state'",
+#                        downloadButton('downloadData', 'Save')
+#       ),
+#       conditionalPanel(condition = "input.saveAs == 'state'",
+#                        HTML("<label>Save current app state:</label><br/>"),
+#                        downloadButton('saveState', 'Save')
+#       )
+#     ),
+#     wellPanel(
+#       checkboxInput('man_show_remove', 'Remove data from memory', FALSE),
+#       conditionalPanel(condition = "input.man_show_remove == true",
+#                        uiOutput("uiRemoveDataset"),
+#                        actionButton('removeDataButton', 'Remove data')
+#       )
+#     ),
+#     help_modal('Manage','manageHelp',inclMD(file.path(r_path,"base/tools/help/manage.md")))
+#   )
+# })
 
-output$ui_clipboard_load <- renderUI({
-  if (r_local) {
-    actionButton('loadClipData', 'Paste data')
-  } else {
-    tagList(
-      tags$textarea(class="form-control", id="load_cdata", rows="5"),
-      actionButton('loadClipData', 'Paste data')
-    )
-  }
-})
-
-output$ui_clipboard_save <- renderUI({
-  if (r_local) {
-    actionButton('saveClipData', 'Copy data')
-  } else {
-    tagList(
-      "<label>Add data description:</label><br>" %>% HTML,
-      tags$textarea(class="form-control", id="save_cdata",
-                    rows="5",
-                    capture.output(write.table(.getdata(), file = "", row.names = FALSE,
-                                               sep = "\t")) %>%
-                      paste(collapse = "\n"))
-    )
-  }
-})
-
-output$ui_Manage <- renderUI({
-  tagList(
-    wellPanel(
-      selectInput("dataType", label = "Load data of type:",
-                  c("rda" = "rda", "rds" = "rds", "state" = "state", "csv" = "csv",
-                    "clipboard" = "clipboard","examples" = "examples",
-                    "rda (url)" = "url_rda", "csv (url)" = "url_csv"),
-                  selected = "rda"),
-      conditionalPanel(condition = "input.dataType != 'clipboard' &&
-                                    input.dataType != 'examples'",
-                       conditionalPanel("input.dataType == 'csv' | input.dataType == 'url_csv'",
-                                        with(tags, table(td(checkboxInput('man_header', 'Header', TRUE)),
-                                                         td(HTML("&nbsp;&nbsp;")),
-                                                         td(checkboxInput('man_str_as_factor', 'Str. as Factor', FALSE)))),
-                                        radioButtons('man_sep', "Separator:", c(Comma=',', Semicolon=';', Tab='\t'),
-                                                     ',', inline = TRUE),
-                                        radioButtons('man_dec', "Decimal:", c(Period='.', Comma=','),
-                                                     '.', inline = TRUE)
-                       ),
-                       uiOutput("ui_fileUploadManage")
-      ),
-      conditionalPanel(condition = "input.dataType == 'clipboard'",
-                       uiOutput("ui_clipboard_load")
-      ),
-      conditionalPanel(condition = "input.dataType == 'examples'",
-                       actionButton('loadExampleData', 'Load examples')
-      ),
-      conditionalPanel(condition = "input.dataType == 'state'",
-                       fileInput('uploadState', 'Load previous app state:',  accept = ".rda"),
-                       uiOutput("refreshOnUpload")
-      )
-    ),
-    wellPanel(
-      selectInput("saveAs", label = "Save data:",
-                  c("rda" = "rda", "rds" = "rds", "csv" = "csv",
-                    "clipboard" = "clipboard", "state" = "state"),
-                  selected = "rda"),
-      conditionalPanel(condition = "input.saveAs == 'clipboard'",
-                       uiOutput("ui_clipboard_save")
-      ),
-      conditionalPanel(condition = "input.saveAs != 'clipboard' &&
-                                    input.saveAs != 'state'",
-                       downloadButton('downloadData', 'Save')
-      ),
-      conditionalPanel(condition = "input.saveAs == 'state'",
-                       HTML("<label>Save current app state:</label><br/>"),
-                       downloadButton('saveState', 'Save')
-      )
-    ),
-    wellPanel(
-      checkboxInput('man_show_remove', 'Remove data from memory', FALSE),
-      conditionalPanel(condition = "input.man_show_remove == true",
-                       uiOutput("uiRemoveDataset"),
-                       actionButton('removeDataButton', 'Remove data')
-      )
-    ),
-    help_modal('Manage','manageHelp',inclMD(file.path(r_path,"base/tools/help/manage.md")))
-  )
-})
-
-## updating the dataset description
-observeEvent(input$updateDescr, {
-  isolate({
-    r_data[[paste0(input$dataset,"_descr")]] <- input$man_data_descr
-    attr(r_data[[input$dataset]],"description") <- input$man_data_descr
-    updateCheckboxInput(session = session, "man_add_descr",
-                        "Add/edit data description", FALSE)
-  })
-})
-
-output$dataDescriptionHTML <- renderUI({
-  r_data[[paste0(input$dataset,"_descr")]] %>%
-    descr_out('html') %>%
-    HTML
-})
-
-output$dataDescriptionMD <- renderUI({
-  tagList(
-    "<label>Add data description:</label><br>" %>% HTML,
-    tags$textarea(class="form-control", id="man_data_descr",
-                  rows="15", style="width:650px;",
-                  descr_out(r_data[[paste0(input$dataset,"_descr")]], 'md'))
-  )
-})
-
-
-# removing datasets
-output$uiRemoveDataset <- renderUI({
-  selectInput(inputId = "removeDataset", label = NULL,
-              choices = r_data$datasetlist, selected = NULL, multiple = TRUE,
-              size = length(r_data$datasetlist), selectize = FALSE
-  )
-})
-
+# ## updating the dataset description
+# observeEvent(input$updateDescr, {
+#   isolate({
+#     r_data[[paste0(input$dataset,"_descr")]] <- input$man_data_descr
+#     attr(r_data[[input$dataset]],"description") <- input$man_data_descr
+#     updateCheckboxInput(session = session, "man_add_descr",
+#                         "Add/edit data description", FALSE)
+#   })
+# })
+#
+# output$dataDescriptionHTML <- renderUI({
+#   r_data[[paste0(input$dataset,"_descr")]] %>%
+#     descr_out('html') %>%
+#     HTML
+# })
+#
+# output$dataDescriptionMD <- renderUI({
+#   tagList(
+#     "<label>Add data description:</label><br>" %>% HTML,
+#     tags$textarea(class="form-control", id="man_data_descr",
+#                   rows="15", style="width:650px;",
+#                   descr_out(r_data[[paste0(input$dataset,"_descr")]], 'md'))
+#   )
+# })
+#
+#
+# # removing datasets
+# output$uiRemoveDataset <- renderUI({
+#   selectInput(inputId = "removeDataset", label = NULL,
+#               choices = r_data$datasetlist, selected = NULL, multiple = TRUE,
+#               size = length(r_data$datasetlist), selectize = FALSE
+#   )
+# })
+#
 observeEvent(input$removeDataButton, {
   # removing datasets
   isolate({
@@ -172,299 +172,299 @@ observeEvent(input$removeDataButton, {
   })
 })
 
-# 'saving' data to clipboard
-observeEvent(input$saveClipData, {
-  isolate({
-    saveClipboardData()
-    updateRadioButtons(session = session, inputId = "saveAs", selected = "rda")
-  })
-})
-
-output$downloadData <- downloadHandler(
-  filename = function() { paste0(input$dataset,'.',input$saveAs) },
-  content = function(file) {
-
-    ext <- input$saveAs
-    robj <- input$dataset
-
-    if (ext == 'rda') {
-      if (!is.null(input$man_data_descr) && input$man_data_descr != "") {
-        # save data description
-        dat <- .getdata()
-        attr(dat,"description") <- r_data[[paste0(robj,"_descr")]]
-        assign(robj, dat)
-        save(list = robj, file = file)
-      } else {
-        assign(robj, .getdata())
-        save(list = robj, file = file)
-      }
-    } else if (ext == 'rds') {
-      if (!is.null(input$man_data_descr) && input$man_data_descr != "") {
-        # save data description
-        dat <- .getdata()
-        attr(dat,"description") <- r_data[[paste0(robj,"_descr")]]
-        saveRDS(dat, file = file)
-      } else {
-        saveRDS(.getdata(), file = file)
-      }
-    } else if (ext == 'csv') {
-      write.csv(.getdata(), file, row.names = FALSE)
-      ## some weirdness going on here with the number of digits written to file
-      # write_csv(.getdata(), file)
-    }
-  }
-)
-
-# loading data
-observeEvent(input$uploadfile, {
-  # loading files from disk
-  isolate({
-    inFile <- input$uploadfile
-    if (is.null(inFile)) return()
-    # iterating through the files to upload
-    for (i in 1:(dim(inFile)[1]))
-      loadUserData(inFile[i,'name'], inFile[i,'datapath'], input$dataType,
-                   header = input$man_header,
-                   man_str_as_factor = input$man_str_as_factor,
-                   sep = input$man_sep, dec = input$man_dec)
-
-    updateSelectInput(session, "dataset", label = "Datasets:",
-                      choices = r_data$datasetlist,
-                      selected = r_data$datasetlist[1])
-  })
-})
-
-observeEvent(input$url_rda_load, {
-  ## loading rda file from url
-  ## https://vnijs.github.io/radiant/examples/houseprices.rda
-  isolate({
-    if (input$url_rda == "") return()
-    objname <- "rda_url"
-    con <- curl::curl(input$url_rda)
-    try(open(con), silent = TRUE)
-    if (is(con, 'try-error')) {
-      upload_error_handler(objname, "### There was an error loading the r-data file from the provided url.")
-    } else {
-      robjname <- load(con)
-      if (length(robjname) > 1) {
-        if (sum(robjname %in% c("r_state", "r_data")) == 2) {
-          upload_error_handler(objname,"### To restore app state from a state-file please choose the 'state' option from the dropdown.")
-        } else {
-          upload_error_handler(objname,"### More than one R object is contained in the specified data file.")
-        }
-      } else {
-        r_data[[objname]] <- as.data.frame(get(robjname))
-        r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
-        r_data[['datasetlist']] <- c(objname, r_data[['datasetlist']]) %>% unique
-        updateSelectInput(session, "dataset", label = "Datasets:",
-                          choices = r_data$datasetlist,
-                          selected = r_data$datasetlist[1])
-      }
-    }
-    close(con)
-  })
-})
-
-observeEvent(input$url_csv_load, {
-  ## loading csv file from url
-  ## https://vnijs.github.io/radiant/examples/houseprices.csv
-  isolate({
-    objname <- "csv_url"
-    if (input$url_csv == "") return()
-    con <- curl::curl(input$url_csv)
-    try(open(con), silent = TRUE)
-    if (is(con, 'try-error')) {
-      upload_error_handler(objname, "### There was an error loading the csv file from the provided url.")
-    } else {
-
-      dat <- try(read.table(con, header = input$man_header, comment.char = "",
-                            quote = "\"", fill = TRUE, stringsAsFactors = input$man_str_as_factor,
-                            sep = input$man_sep, dec = input$man_dec), silent = TRUE)
-
-      if (is(dat, 'try-error')) {
-        upload_error_handler(objname, "### There was an error loading the csv file from the provided url.")
-      } else {
-        dat <- {if (input$man_str_as_factor) factorizer(dat) else dat} %>% as.data.frame
-        r_data[[paste0(objname,"_descr")]] <- ""
-      }
-
-      r_data[[objname]] <- dat
-      r_data[['datasetlist']] <- c(objname, r_data[['datasetlist']]) %>% unique
-
-      updateSelectInput(session, "dataset", label = "Datasets:",
-                        choices = r_data$datasetlist,
-                        selected = r_data$datasetlist[1])
-    }
-    close(con)
-  })
-})
-
-
-## loading all examples files (linked to help files)
-observeEvent(input$loadExampleData, {
-
-  isolate({
-
-    # loading data bundled with bioCancer
-    data_path <- file.path(r_path,"base/data/")
-    examples <- list.files(data_path)
-
-    for (ex in examples) loadUserData(ex, file.path(data_path,ex), 'rda')
-
-    # loading data available for Rady students
-    data_path <- "data/"
-    examples <- list.files(data_path)
-
-    for (ex in examples) loadUserData(ex, file.path(data_path,ex), 'rda')
-
-    # sorting files alphabetically
-    r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
-
-    updateSelectInput(session, "dataset", label = "Datasets:",
-                      choices = r_data$datasetlist,
-                      selected = r_data$datasetlist[1])
-  })
-})
-
-observeEvent(input$loadClipData, {
-  ## reading data from clipboard
-  isolate({
-    loadClipboardData()
-    # updateRadioButtons(session = session, inputId = "dataType", selected = "rda")
-    updateSelectInput(session = session, inputId = "dataType", selected = "rda")
-    updateSelectInput(session, "dataset", label = "Datasets:",
-                      choices = r_data$datasetlist, selected = "copy_and_paste")
-  })
-})
-
-#######################################
-# Load previous state
-#######################################
-observe({
-  inFile <- input$uploadState
-  if (!is.null(inFile)) {
-    isolate({
-      tmpEnv <- new.env()
-      load(inFile$datapath, envir=tmpEnv)
-
-      ## remove characters the may cause problems in shinyAce
-      if (!is.null(tmpEnv$r_state$rmd_report))
-        tmpEnv$r_state$rmd_report %<>% gsub("[\x80-\xFF]", "", .) %>% gsub("\r","\n",.)
-
-      r_sessions[[r_ssuid]] <- list(
-        r_data = tmpEnv$r_data,
-        r_state = tmpEnv$r_state,
-        timestamp = Sys.time()
-      )
-
-      rm(tmpEnv)
-    })
-  }
-})
-
-output$refreshOnUpload <- renderUI({
-  inFile <- input$uploadState
-  if (!is.null(inFile)) {
-    # Joe Cheng: https://groups.google.com/forum/#!topic/shiny-discuss/Olr8m0JwMTo
-    tags$script("window.location.reload();")
-  }
-})
-
-#######################################
-# Save state
-#######################################
-saveState <- function(filename) {
-  isolate({
-    LiveInputs <- reactiveValuesToList(input)
-    r_state[names(LiveInputs)] <- LiveInputs
-    r_data <- reactiveValuesToList(r_data)
-    save(r_state, r_data , file = filename)
-  })
-}
-
-output$saveState <- downloadHandler(
-  filename = function() { paste0("bioCancer-state-",Sys.Date(),".rda") },
-  content = function(file) {
-    saveState(file)
-  }
-)
-
-#######################################
-# Loading data into memory
-#######################################
-observeEvent(input$renameButton, {
-  if (is_empty(input$data_rename)) return()
-  isolate({
-    ## use pryr::object_size to see that the size of the list doesn't change
-    ## when you assign a list element another name
-    r_data[[input$data_rename]] <- r_data[[input$dataset]]
-    r_data[[input$dataset]] <- NULL
-    r_data[[paste0(input$data_rename,"_descr")]] <- r_data[[paste0(input$dataset,"_descr")]]
-    r_data[[paste0(input$dataset,"_descr")]] <- NULL
-
-    ind <- which(input$dataset == r_data[['datasetlist']])
-    r_data[['datasetlist']][ind] <- input$data_rename
-
-    updateSelectInput(session, "dataset", label = "Datasets:", choices = r_data$datasetlist,
-                      selected = input$data_rename)
-  })
-})
-
-output$ui_datasets <- renderUI({
-  ## Drop-down selection of active dataset
-  tagList(
-    selectInput(inputId = "dataset", label = "Datasets:", choices = r_data$datasetlist,
-                selected = state_init("dataset"), multiple = FALSE),
-
-    conditionalPanel(condition = "input.tabs_Processing == 'Manage'",
-
-                     checkboxInput("man_add_descr","Add/edit data description", FALSE),
-                     conditionalPanel(condition = "input.man_add_descr == true",
-                                      actionButton('updateDescr', 'Update description')
-                     ),
-                     checkboxInput("man_rename_data","Rename data", FALSE),
-                     conditionalPanel(condition = "input.man_rename_data == true",
-                                      uiOutput("uiRename")
-                     )
-    )
-  )
-})
-
-output$uiRename <- renderUI({
-  tags$table(
-    tags$td(textInput("data_rename", NULL, input$dataset)),
-    tags$td(actionButton('renameButton', 'Rename'), style="padding-top:5px;")
-  )
-})
-
-output$htmlDataExample <- renderText({
-  if (inherits(try(  if (is.null(.getdata())) return(), silent=TRUE),"try-error")){
- }else{
-    if (is.null(.getdata())) return()
-  }
-
-  ## Show only the first 10 (or 20) rows
-  if (inherits(try(
-    r_data[[paste0(input$dataset,"_descr")]] %>%
-    { is_empty(.) %>% ifelse (., 20, 10) } %>%
-    show_data_snippet(nshow = .)
-    , silent=TRUE),"try-error")){
-
-  }else{
-  r_data[[paste0(input$dataset,"_descr")]] %>%
-  { is_empty(.) %>% ifelse (., 20, 10) } %>%
-    show_data_snippet(nshow = .)
-  }
-})
-
-
-##################
-
-
-## get Gene List in side bar panel
-#updateSelectizeInput(session, 'GeneListID', choices= names(GeneLists))
-# output$ui_GeneList <- renderUI({
-#   selectInput("GeneListID", "Gene List Examples", r_data$genelist)
+# # 'saving' data to clipboard
+# observeEvent(input$saveClipData, {
+#   isolate({
+#     saveClipboardData()
+#     updateRadioButtons(session = session, inputId = "saveAs", selected = "rda")
+#   })
 # })
-
-##################
+#
+# output$downloadData <- downloadHandler(
+#   filename = function() { paste0(input$dataset,'.',input$saveAs) },
+#   content = function(file) {
+#
+#     ext <- input$saveAs
+#     robj <- input$dataset
+#
+#     if (ext == 'rda') {
+#       if (!is.null(input$man_data_descr) && input$man_data_descr != "") {
+#         # save data description
+#         dat <- .getdata()
+#         attr(dat,"description") <- r_data[[paste0(robj,"_descr")]]
+#         assign(robj, dat)
+#         save(list = robj, file = file)
+#       } else {
+#         assign(robj, .getdata())
+#         save(list = robj, file = file)
+#       }
+#     } else if (ext == 'rds') {
+#       if (!is.null(input$man_data_descr) && input$man_data_descr != "") {
+#         # save data description
+#         dat <- .getdata()
+#         attr(dat,"description") <- r_data[[paste0(robj,"_descr")]]
+#         saveRDS(dat, file = file)
+#       } else {
+#         saveRDS(.getdata(), file = file)
+#       }
+#     } else if (ext == 'csv') {
+#       write.csv(.getdata(), file, row.names = FALSE)
+#       ## some weirdness going on here with the number of digits written to file
+#       # write_csv(.getdata(), file)
+#     }
+#   }
+# )
+#
+# # loading data
+# observeEvent(input$uploadfile, {
+#   # loading files from disk
+#   isolate({
+#     inFile <- input$uploadfile
+#     if (is.null(inFile)) return()
+#     # iterating through the files to upload
+#     for (i in 1:(dim(inFile)[1]))
+#       loadUserData(inFile[i,'name'], inFile[i,'datapath'], input$dataType,
+#                    header = input$man_header,
+#                    man_str_as_factor = input$man_str_as_factor,
+#                    sep = input$man_sep, dec = input$man_dec)
+#
+#     updateSelectInput(session, "dataset", label = "Datasets:",
+#                       choices = r_data$datasetlist,
+#                       selected = r_data$datasetlist[1])
+#   })
+# })
+#
+# observeEvent(input$url_rda_load, {
+#   ## loading rda file from url
+#   ## https://vnijs.github.io/radiant/examples/houseprices.rda
+#   isolate({
+#     if (input$url_rda == "") return()
+#     objname <- "rda_url"
+#     con <- curl::curl(input$url_rda)
+#     try(open(con), silent = TRUE)
+#     if (is(con, 'try-error')) {
+#       upload_error_handler(objname, "### There was an error loading the r-data file from the provided url.")
+#     } else {
+#       robjname <- load(con)
+#       if (length(robjname) > 1) {
+#         if (sum(robjname %in% c("r_state", "r_data")) == 2) {
+#           upload_error_handler(objname,"### To restore app state from a state-file please choose the 'state' option from the dropdown.")
+#         } else {
+#           upload_error_handler(objname,"### More than one R object is contained in the specified data file.")
+#         }
+#       } else {
+#         r_data[[objname]] <- as.data.frame(get(robjname))
+#         r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
+#         r_data[['datasetlist']] <- c(objname, r_data[['datasetlist']]) %>% unique
+#         updateSelectInput(session, "dataset", label = "Datasets:",
+#                           choices = r_data$datasetlist,
+#                           selected = r_data$datasetlist[1])
+#       }
+#     }
+#     close(con)
+#   })
+# })
+#
+# observeEvent(input$url_csv_load, {
+#   ## loading csv file from url
+#   ## https://vnijs.github.io/radiant/examples/houseprices.csv
+#   isolate({
+#     objname <- "csv_url"
+#     if (input$url_csv == "") return()
+#     con <- curl::curl(input$url_csv)
+#     try(open(con), silent = TRUE)
+#     if (is(con, 'try-error')) {
+#       upload_error_handler(objname, "### There was an error loading the csv file from the provided url.")
+#     } else {
+#
+#       dat <- try(read.table(con, header = input$man_header, comment.char = "",
+#                             quote = "\"", fill = TRUE, stringsAsFactors = input$man_str_as_factor,
+#                             sep = input$man_sep, dec = input$man_dec), silent = TRUE)
+#
+#       if (is(dat, 'try-error')) {
+#         upload_error_handler(objname, "### There was an error loading the csv file from the provided url.")
+#       } else {
+#         dat <- {if (input$man_str_as_factor) factorizer(dat) else dat} %>% as.data.frame
+#         r_data[[paste0(objname,"_descr")]] <- ""
+#       }
+#
+#       r_data[[objname]] <- dat
+#       r_data[['datasetlist']] <- c(objname, r_data[['datasetlist']]) %>% unique
+#
+#       updateSelectInput(session, "dataset", label = "Datasets:",
+#                         choices = r_data$datasetlist,
+#                         selected = r_data$datasetlist[1])
+#     }
+#     close(con)
+#   })
+# })
+#
+#
+# ## loading all examples files (linked to help files)
+# observeEvent(input$loadExampleData, {
+#
+#   isolate({
+#
+#     # loading data bundled with bioCancer
+#     data_path <- file.path(r_path,"base/data/")
+#     examples <- list.files(data_path)
+#
+#     for (ex in examples) loadUserData(ex, file.path(data_path,ex), 'rda')
+#
+#     # loading data available for Rady students
+#     data_path <- "data/"
+#     examples <- list.files(data_path)
+#
+#     for (ex in examples) loadUserData(ex, file.path(data_path,ex), 'rda')
+#
+#     # sorting files alphabetically
+#     r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
+#
+#     updateSelectInput(session, "dataset", label = "Datasets:",
+#                       choices = r_data$datasetlist,
+#                       selected = r_data$datasetlist[1])
+#   })
+# })
+#
+# observeEvent(input$loadClipData, {
+#   ## reading data from clipboard
+#   isolate({
+#     loadClipboardData()
+#     # updateRadioButtons(session = session, inputId = "dataType", selected = "rda")
+#     updateSelectInput(session = session, inputId = "dataType", selected = "rda")
+#     updateSelectInput(session, "dataset", label = "Datasets:",
+#                       choices = r_data$datasetlist, selected = "copy_and_paste")
+#   })
+# })
+#
+# #######################################
+# # Load previous state
+# #######################################
+# observe({
+#   inFile <- input$uploadState
+#   if (!is.null(inFile)) {
+#     isolate({
+#       tmpEnv <- new.env()
+#       load(inFile$datapath, envir=tmpEnv)
+#
+#       ## remove characters the may cause problems in shinyAce
+#       if (!is.null(tmpEnv$r_state$rmd_report))
+#         tmpEnv$r_state$rmd_report %<>% gsub("[\x80-\xFF]", "", .) %>% gsub("\r","\n",.)
+#
+#       r_sessions[[r_ssuid]] <- list(
+#         r_data = tmpEnv$r_data,
+#         r_state = tmpEnv$r_state,
+#         timestamp = Sys.time()
+#       )
+#
+#       rm(tmpEnv)
+#     })
+#   }
+# })
+#
+# output$refreshOnUpload <- renderUI({
+#   inFile <- input$uploadState
+#   if (!is.null(inFile)) {
+#     # Joe Cheng: https://groups.google.com/forum/#!topic/shiny-discuss/Olr8m0JwMTo
+#     tags$script("window.location.reload();")
+#   }
+# })
+#
+# #######################################
+# # Save state
+# #######################################
+# saveState <- function(filename) {
+#   isolate({
+#     LiveInputs <- reactiveValuesToList(input)
+#     r_state[names(LiveInputs)] <- LiveInputs
+#     r_data <- reactiveValuesToList(r_data)
+#     save(r_state, r_data , file = filename)
+#   })
+# }
+#
+# output$saveState <- downloadHandler(
+#   filename = function() { paste0("bioCancer-state-",Sys.Date(),".rda") },
+#   content = function(file) {
+#     saveState(file)
+#   }
+# )
+#
+# #######################################
+# # Loading data into memory
+# #######################################
+# observeEvent(input$renameButton, {
+#   if (is_empty(input$data_rename)) return()
+#   isolate({
+#     ## use pryr::object_size to see that the size of the list doesn't change
+#     ## when you assign a list element another name
+#     r_data[[input$data_rename]] <- r_data[[input$dataset]]
+#     r_data[[input$dataset]] <- NULL
+#     r_data[[paste0(input$data_rename,"_descr")]] <- r_data[[paste0(input$dataset,"_descr")]]
+#     r_data[[paste0(input$dataset,"_descr")]] <- NULL
+#
+#     ind <- which(input$dataset == r_data[['datasetlist']])
+#     r_data[['datasetlist']][ind] <- input$data_rename
+#
+#     updateSelectInput(session, "dataset", label = "Datasets:", choices = r_data$datasetlist,
+#                       selected = input$data_rename)
+#   })
+# })
+#
+# output$ui_datasets <- renderUI({
+#   ## Drop-down selection of active dataset
+#   tagList(
+#     selectInput(inputId = "dataset", label = "Datasets:", choices = r_data$datasetlist,
+#                 selected = state_init("dataset"), multiple = FALSE),
+#
+#     conditionalPanel(condition = "input.tabs_Processing == 'Manage'",
+#
+#                      checkboxInput("man_add_descr","Add/edit data description", FALSE),
+#                      conditionalPanel(condition = "input.man_add_descr == true",
+#                                       actionButton('updateDescr', 'Update description')
+#                      ),
+#                      checkboxInput("man_rename_data","Rename data", FALSE),
+#                      conditionalPanel(condition = "input.man_rename_data == true",
+#                                       uiOutput("uiRename")
+#                      )
+#     )
+#   )
+# })
+#
+# output$uiRename <- renderUI({
+#   tags$table(
+#     tags$td(textInput("data_rename", NULL, input$dataset)),
+#     tags$td(actionButton('renameButton', 'Rename'), style="padding-top:5px;")
+#   )
+# })
+#
+# output$htmlDataExample <- renderText({
+#   if (inherits(try(  if (is.null(.getdata())) return(), silent=TRUE),"try-error")){
+#  }else{
+#     if (is.null(.getdata())) return()
+#   }
+#
+#   ## Show only the first 10 (or 20) rows
+#   if (inherits(try(
+#     r_data[[paste0(input$dataset,"_descr")]] %>%
+#     { is_empty(.) %>% ifelse (., 20, 10) } %>%
+#     show_data_snippet(nshow = .)
+#     , silent=TRUE),"try-error")){
+#
+#   }else{
+#   r_data[[paste0(input$dataset,"_descr")]] %>%
+#   { is_empty(.) %>% ifelse (., 20, 10) } %>%
+#     show_data_snippet(nshow = .)
+#   }
+# })
+#
+#
+# ##################
+#
+#
+# ## get Gene List in side bar panel
+# #updateSelectizeInput(session, 'GeneListID', choices= names(GeneLists))
+# # output$ui_GeneList <- renderUI({
+# #   selectInput("GeneListID", "Gene List Examples", r_data$genelist)
+# # })
+#
+# ##################

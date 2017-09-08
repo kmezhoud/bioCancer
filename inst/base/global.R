@@ -1,6 +1,15 @@
-# library(shiny)
-# library(magrittr)
+## Must be in global.R before sourcing from bioCancer
+options(radiant.path.data = system.file(package = "radiant.data"))
+source(file.path(getOption("radiant.path.data"), "app/global.R"),
+       encoding = getOption("radiant.encoding", default = "UTF-8"), local = TRUE)
 
+## Setting bioCnacer package path
+options(radiant.path.bioCancer = system.file(package = "bioCancer"))
+
+## set example data
+options(radiant.example.data = "bioCancer")
+
+                                                          ############################
 ## turn off warnings globally
 # options(warn=-1)
 

@@ -6,6 +6,32 @@
 #' @export
 set_class <- `class<-`
 
+#' Alias used to add an attribute
+#'
+#' @param x Object
+#' @param which Attribute name
+#' @param value Value to set
+#
+#' @examples
+#' foo <- data.frame(price = 1:5) %>% set_attr("desc", "price set in experiment ...")
+#'
+#' @export
+set_attr <- function(x, which, value) `attr<-`(x, which, value)
+
+#' Copy attributes from on object to another
+#'
+#' @param to Object to copy attributes to
+#' @param from Object to copy attributes from
+#' @param attr Vector of attributes. If missing all attributes will be copied
+#
+#' @export
+copy_attr <- function(to, from, attr) {
+  if (missing(attr)) attr <- attributes(from)
+  for (i in attr)
+    to <- set_attr(to, i, attributes(from)[[i]])
+  to
+}
+
 #' Add stars '***' to a data.frame (from broom's `tidy` function) based on p.values
 #'
 #' @details Add stars to output from broom's `tidy` function
@@ -142,26 +168,29 @@ getdata <- function(dataset,
 
 #' Convert character to factors as needed
 #'
-#' @param dat Data.frame
+#' @param dat Data frame
 #' @param safx Values to levels ratio
 #'
-#' @return Data.frame with factors
+#' @return Data frame with factors
 #'
 #' @export
-factorizer <- function(dat, safx = 20) {
+factorizer <- function(dat, safx = 30) {
   isChar <- sapply(dat, is.character)
   if (sum(isChar) == 0) return(dat)
-    toFct <-
-      dplyr::select(dat, which(isChar)) %>%
-      summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < (1/safx))) %>%
-      dplyr::select(which(. == TRUE)) %>% names
+  fab <- function(x) {
+    n <- length(x)
+    if (n < 101) return(TRUE)
+    nd <- length(unique(x))
+    nd < 100 && (nd/n < (1/safx))
+  }
+  toFct <-
+    dplyr::select(dat, which(isChar)) %>%
+    dplyr::summarise_all(funs(fab)) %>%
+    dplyr::select(which(. == TRUE)) %>%
+    names
   if (length(toFct) == 0) return(dat)
 
-  ## not using due to https://github.com/hadley/dplyr/issues/1238
-  ## Seems fixed in dev version of dplyr
-  # rmiss <- . %>% ifelse (is.na(.), "[Empty]", .) %>% ifelse (. == "", "[Empty]", .)
-  # mutate_each_(dat, funs(rmiss), vars = toFct)  %>%  # replace missing levels
-  mutate_each_(dat, funs(as.factor), vars = toFct)
+  mutate_at(dat, .vars = toFct, .funs = funs(as.factor))
 }
 
 #' Load an rda or rds file and add it to the bioCancer data list (r_data) if available
@@ -242,34 +271,44 @@ saver <- function(objname, file) {
 #' Load a csv file with read.csv and read_csv
 #'
 #' @param fn File name string
+#' @param .csv Use read.csv instead of read_csv to load file (default is FALSE)
 #' @param header Header in file (TRUE, FALSE)
 #' @param sep Use , (default) or ; or \\t
 #' @param dec Decimal symbol. Use . (default) or ,
+#' @param n_max Maximum number of rows to read
 #' @param saf Convert character variables to factors if (1) there are less than 100 distinct values (2) there are X (see safx) more values than levels
 #' @param safx Values to levels ratio
 #'
-#' @return Data.frame with (some) variables converted to factors
+#' @return Data frame with (some) variables converted to factors
 #'
 #' @export
-loadcsv <- function(fn, header = TRUE, sep = ",", dec = ".", saf = TRUE, safx = 20) {
+loadcsv <- function(fn, .csv = FALSE, header = TRUE, sep = ",", dec = ".", n_max = Inf, saf = TRUE, safx = 20) {
 
-  cn <- try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE, nrows = 1), silent = TRUE)
-  # dat <- try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
-  try(read_delim(fn, sep, col_names = colnames(cn), skip = header), silent = TRUE) %>%
-    {if (is(., 'try-error') || nrow(readr::problems(.)) > 0)
-       try(read.table(fn, header = header, sep = sep, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE), silent = TRUE)
-     else . } %>%
-    {if (is(., 'try-error'))
-       return("### There was an error loading the data. Please make sure the data are in either rda or csv format.")
-     else .} %>%
-    {if (saf) factorizer(., safx) else . } %>% as.data.frame
+  rprob <- ""
+  n_max <- if (is_not(n_max) || n_max == -1) Inf else n_max
 
-  ## workaround for https://github.com/rstudio/DT/issues/161
-  # isDate <- sapply(dat, is.Date)
-  # if (sum(isDate) == 0) return(dat)
-  # for (i in colnames(dat)[isDate]) dat[[i]] %<>% as.POSIXct %>% as.Date
+  if (.csv == FALSE) {
+    cn <- read.table(fn, header = header, sep = sep, dec = dec, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE, nrows = 1)
+    dat <- sshhr(try(readr::read_delim(fn, sep, locale = readr::locale(decimal_mark = dec, grouping_mark = sep), col_names = colnames(cn), skip = header, n_max = n_max), silent = TRUE))
+    if (!is(dat, "try-error")) {
+      prb <- readr::problems(dat)
+      if (nrow(prb) > 0) {
+        tab_big <- "class='table table-condensed table-hover' style='width:70%;'"
+        rprob <- knitr::kable(prb[1:(min(nrow(prb):10)),, drop = FALSE], align = 'l', format = 'html', table.attr = tab_big, caption = "Read issues (max 10 rows shown): Consider selecting read.csv to read the file (see check-box on the left). To reload the file you may need to refresh the browser first")
+      }
+      rm(prb)
+    }
+  } else {
+    dat <- sshhr(try(read.table(fn, header = header, sep = sep, dec = dec, comment.char = "", quote = "\"", fill = TRUE, stringsAsFactors = FALSE, nrows = n_max), silent = TRUE))
+    rprob <- "Used read.csv to load file"
+  }
 
-  # dat
+  if (is(dat, "try-error")) return("### There was an error loading the data. Please make sure the data are in csv format.")
+  if (saf) dat <- factorizer(dat)
+  dat %>%
+    as.data.frame(.) %>%
+    {set_colnames(., make.names(colnames(.)))} %>%
+    set_attr("description", rprob)
 }
 
 #' Load a csv file with from a url
@@ -378,14 +417,14 @@ changedata <- function(dataset,
 # dat$new <- NA
 # dat$new[1:10] <- 1:10
 
-#' View data
+#' View data in a shiny-app
 #'
 #' @details View, search, sort, etc. your data
 #'
-#' @param dataset Name of the dataframe to change
+#' @param dataset Data.frame or name of the dataframe to view
 #' @param vars Variables to show (default is all)
 #' @param filt Filter to apply to the specified dataset. For example "price > 10000" if dataset is "diamonds" (default is "")
-#' @param rows dplyr::select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
+#' @param rows Select rows in the specified dataset. For example "1:10" for the first 10 rows or "n()-10:n()" for the last 10 rows (default is NULL)
 #' @param na.rm Remove rows with missing values (default is FALSE)
 #'
 #' @examples
@@ -403,42 +442,35 @@ viewdata <- function(dataset,
                      na.rm = FALSE) {
 
   ## based on http://rstudio.github.io/DT/server.html
-  dat <- getdata(dataset, vars, filt = filt, rows = rows, na.rm = FALSE)
+  dat <- getdata(dataset, vars, filt = filt, rows = rows, na.rm = na.rm)
   title <- if (is_string(dataset)) paste0("DT:", dataset) else "DT"
+  fbox <- if (nrow(dat) > 5e6) "none" else list(position = "top")
 
-  if (nrow(dat) > 5000000) {
-    fbox <- "none"
-  } else {
-    fbox <- list(position = "top")
-    dc <- getclass(dat)
-    if ("factor" %in% dc) {
-      toChar <- sapply(dplyr::select(dat, which(dc == "factor")), function(x) length(levels(x))) > 100
-      if (any(toChar))
-        dat <- mutate_each_(dat, funs(as.character), vars = names(toChar)[toChar])
-    }
-  }
+  isBigFct <- sapply(dat, function(x) is.factor(x) && length(levels(x)) > 1000)
+  if (sum(isBigFct) > 0)
+    dat[,isBigFct] <- select(dat, which(isBigFct)) %>% mutate_all(funs(as.character))
 
   shinyApp(
     ui = fluidPage(title = title,
-      includeCSS(file.path(system.file(package = "bioCancer"),"base/www/style.css")),
-      fluidRow(DT::dataTableOutput("tbl")),
-      tags$button(id = "stop", type = "button",
-                  class = "btn btn-danger action-button shiny-bound-input",
-                  onclick = "window.close();", "Stop")
+                   includeCSS(file.path(system.file(package = "radiant.data"),"app/www/style.css")),
+                   fluidRow(DT::dataTableOutput("tbl")),
+                   actionButton("stop", "Stop", class = "btn-danger", onclick = "window.close();")
     ),
     server = function(input, output, session) {
       widget <- DT::datatable(dat, selection = "none",
-        rownames = FALSE, style = "bootstrap",
-        filter = fbox, escape = FALSE,
-        # extensions = 'KeyTable'# ,
-        options = list(
-          search = list(regex = TRUE),
-          columnDefs = list(list(className = 'dt-center', targets = "_all")),
-          autoWidth = TRUE,
-          processing = FALSE,
-          pageLength = 10,
-          lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-        )
+                              rownames = FALSE, style = "bootstrap",
+                              filter = fbox, escape = FALSE,
+                              extensions = "KeyTable",
+                              options = list(
+                                keys = TRUE,
+                                search = list(regex = TRUE),
+                                columnDefs = list(list(orderSequence = c("desc", "asc"), targets = "_all"),
+                                                  list(className = "dt-center", targets = "_all")),
+                                autoWidth = TRUE,
+                                processing = FALSE,
+                                pageLength = 10,
+                                lengthMenu = list(c(5, 10, 25, 50, -1), c("5","10","25","50","All"))
+                              )
       )
       output$tbl <- DT::renderDataTable(widget)
       observeEvent(input$stop, {stopApp("Stopped viewdata")})
@@ -985,104 +1017,174 @@ ci_perc <- function(dat, alt = "two.sided", cl = .95) {
   quantile(dat, probs = probs)
 }
 
-#' Print a data.frame with a specified number of decimal places
+#' #' Print a data.frame with a specified number of decimal places
+#' #'
+#' #' @param tbl Data.frame
+#' #' @param dec Number of decimal places
+#' #' @param perc Display numbers as percentages (TRUE or FALSE)
+#' #'
+#' #' @return Data.frame for printing
+#' #'
+#' #' @examples
+#' #' data.frame(x = c("a","b"), y = c(1L, 2L), z = c(-0.0005, 3)) %>%
+#' #'   dfprint(dec = 3)
+#' #'
+#' #' @export
+#' dfprint <- function(tbl, dec = 3, perc = FALSE) {
+#'   if (perc) {
+#'     tbl %<>% mutate_each(
+#'       funs(if (is.numeric(.)) . * 100L else .)
+#'     )
+#'   }
 #'
-#' @param tbl Data.frame
-#' @param dec Number of decimal places
-#' @param perc Display numbers as percentages (TRUE or FALSE)
+#'   frm <- if (perc) "f%%" else "f"
+#'   tbl %>%
+#'   mutate_each(
+#'     funs(if (is.double(.)) sprintf(paste0("%.", dec ,frm), .) else .)
+#'   )
 #'
-#' @return Data.frame for printing
-#'
-#' @examples
-#' data.frame(x = c("a","b"), y = c(1L, 2L), z = c(-0.0005, 3)) %>%
-#'   dfprint(dec = 3)
-#'
-#' @export
-dfprint <- function(tbl, dec = 3, perc = FALSE) {
-  if (perc) {
-    tbl %<>% mutate_each(
-      funs(if (is.numeric(.)) . * 100L else .)
-    )
-  }
+#' }
 
-  frm <- if (perc) "f%%" else "f"
-  tbl %>%
-  mutate_each(
-    funs(if (is.double(.)) sprintf(paste0("%.", dec ,frm), .) else .)
-  )
+#' #' Print a number with a specified number of decimal places, thousand sep, and a symbol
+#' #'
+#' #' @param x Number or vector
+#' #' @param dec Number of decimal places
+#' #' @param sym Symbol to use
+#' #' @param perc Display number as a percentage
+#' #'
+#' #' @return Character (vector) in the desired format
+#' #'
+#' #' @examples
+#' #' nrprint(2000, "$")
+#' #' nrprint(2000, dec = 4)
+#' #' nrprint(.05, perc = TRUE)
+#' #' nrprint(c(.1, .99), perc = TRUE)
+#' #' nrprint(data.frame(a = c(.1, .99)), perc = TRUE)
+#' #' nrprint(data.frame(a = 1000), sym = "$", dec = 0)
+#' #'
+#' #' @export
+#' nrprint <- function(x, sym = "", dec = 2, perc = FALSE) {
+#'   if ("data.frame" %in% class(x)) x <- x[[1]]
+#'   if (perc)
+#'     paste0(sym, formatC(100 * x, digits = dec, big.mark = ",", format = "f"), "%")
+#'   else
+#'     paste0(sym, formatC(x, digits = dec, big.mark = ",", format = "f"))
+#' }
 
-}
+#' #' Round double in a data.frame to a specified number of decimal places
+#' #'
+#' #' @param tbl Data.frame
+#' #' @param dec Number of decimal places
+#' #'
+#' #' @return Data.frame for viewing
+#' #'
+#' #' @examples
+#' #' data.frame(x = c("a","b"), y = c(1L, 2L), z = c(-0.0005, 3.1)) %>%
+#' #'   dfround(dec = 3)
+#' #' @export
+#' dfround <- function(tbl, dec = 3) {
+#'   tbl %>%
+#'   mutate_each(
+#'     funs(if (is.double(.)) round(., dec) else .)
+#'   )
+#' }
 
-#' Print a number with a specified number of decimal places, thousand sep, and a symbol
+#' Find a user's Dropbox folder
 #'
-#' @param x Number or vector
-#' @param dec Number of decimal places
-#' @param sym Symbol to use
-#' @param perc Display number as a percentage
+#' @param account If multiple accounts exist specifies the one to use. By default, the first account listed is used
 #'
-#' @return Character (vector) in the desired format
-#'
-#' @examples
-#' nrprint(2000, "$")
-#' nrprint(2000, dec = 4)
-#' nrprint(.05, perc = TRUE)
-#' nrprint(c(.1, .99), perc = TRUE)
-#' nrprint(data.frame(a = c(.1, .99)), perc = TRUE)
-#' nrprint(data.frame(a = 1000), sym = "$", dec = 0)
-#'
-#' @export
-nrprint <- function(x, sym = "", dec = 2, perc = FALSE) {
-  if ("data.frame" %in% class(x)) x <- x[[1]]
-  if (perc)
-    paste0(sym, formatC(100 * x, digits = dec, big.mark = ",", format = "f"), "%")
-  else
-    paste0(sym, formatC(x, digits = dec, big.mark = ",", format = "f"))
-}
-
-#' Round double in a data.frame to a specified number of decimal places
-#'
-#' @param tbl Data.frame
-#' @param dec Number of decimal places
-#'
-#' @return Data.frame for viewing
-#'
-#' @examples
-#' data.frame(x = c("a","b"), y = c(1L, 2L), z = c(-0.0005, 3.1)) %>%
-#'   dfround(dec = 3)
-#' @export
-dfround <- function(tbl, dec = 3) {
-  tbl %>%
-  mutate_each(
-    funs(if (is.double(.)) round(., dec) else .)
-  )
-}
-
-#' Find a users dropbox directory
-#'
-#' @param folder If multiple folders are present select which one to use. The first folder listed is used by default.
-#'
-#' @return Path to users personal dropbox directory
+#' @return Path to Dropbox account
 #'
 #' @importFrom jsonlite fromJSON
 #'
 #' @export
-find_dropbox <- function(folder = 1) {
-  if (file.exists("~/.dropbox/info.json")) {
-    fp <- normalizePath("~/.dropbox/info.json", winslash = "/")
+find_dropbox <- function(account = 1) {
+
+  if (length(account) >  1)
+    stop("find_dropbox can only return the path for one account at a time")
+
+  os_type <- Sys.info()["sysname"]
+  if (os_type == "Windows") {
+    fp <- file.path(Sys.getenv("APPDATA"),"Dropbox/info.json") %>% gsub("\\\\","/",.)
+    if (!file.exists(fp)) {
+      fp <- file.path(Sys.getenv("LOCALAPPDATA"),"Dropbox/info.json") %>%
+        gsub("\\\\","/",.)
+    }
+  } else if (os_type == "Darwin") {
+    fp <- "~/.dropbox/info.json"
+  } else {
+    fp <- "~/.dropbox/info.json"
+  }
+
+  if (file.exists(fp)) {
+    fp <- normalizePath(fp, winslash = "/")
     dbinfo <- jsonlite::fromJSON(fp)
-    ldb <- length(dbinom)
+    ldb <- length(dbinfo)
     if (ldb > 1)
-      message("Multiple dropbox folders found. By default the first folder is used.\nTo select, for example, the third folder use 'find_dropbox(3)'")
-    if (folder > ldb) stop(paste0("Invalid folder number. Choose a folder number between 1 and ", ldb))
-    normalizePath(jsonlite::fromJSON(fp)[[folder]]$path)
+      message("Multiple dropbox folders found. By default the first folder is used.\nTo select, for example, the third dropbox folder use find_dropbox(3).\nAlternatively, specify the type of dropbox account, e.g., find_dropbox('personal')")
+    if (is.numeric(account) && account > ldb) {
+      stop(paste0("Invalid account number. Choose a number between 1 and ", ldb))
+    } else if (is.character(account) && !account %in% names(dbinfo)) {
+      stop(paste0("Invalid account type. Choose ", paste0(names(dbinfo), collapse = " or ")))
+    } else {
+      normalizePath(dbinfo[[account]]$path, winslash = "/")
+    }
   } else if (file.exists("~/Dropbox")) {
     normalizePath("~/Dropbox", winslash = "/")
   } else if (file.exists("~/../Dropbox")) {
     normalizePath("~/../Dropbox", winslash = "/")
-  } else if (file.exists("~/../gmail/Dropbox")) {
-    normalizePath("~/../gmail/Dropbox", winslash = "/")
   } else {
-    stop("Could not find a Drobox folder")
+    stop("Failed to uncover the path to a Dropbox account")
+  }
+}
+
+#' Find a user's Google Drive folder
+#'
+#' @return Path to Google Drive folder
+#'
+#' @export
+find_gdrive <- function() {
+
+  os_type <- Sys.info()["sysname"]
+  if (os_type == "Windows") {
+    fp <- file.path(Sys.getenv("LOCALAPPDATA"),"Google/Drive/sync_config.db") %>%
+      gsub("\\\\","/",.)
+  } else if (os_type == "Darwin") {
+    fp <- "~/Library/Application Support/Google/Drive/user_default/sync_config.db"
+  } else if (os_type == "Linux") {
+    ## http://www.techrepublic.com/article/how-to-mount-your-google-drive-on-linux-with-google-drive-ocamlfuse/
+    ## Linux update suggested by Chris Armstrong (https://github.com/chrisarm)
+    fp <- normalizePath("~/google_drive")
+    if(file.exists(file.path(fp, ".grive"))){
+      return(fp)
+    } else {
+      stop("Please install grive2 and use '~/google_drive' as your grive directory (http://www.techrepublic.com/article/how-to-sync-your-google-cloud-on-linux-with-grive2/)", call. = FALSE)
+    }
+  } else {
+    stop("find_gdrive not supported on this platform", call. = FALSE)
+  }
+
+  if (file.exists(fp)) {
+    if (!requireNamespace("DBI", quietly = TRUE)) {
+      stop("DBI package is needed for this function to work. Please install it", call. = FALSE)
+      if (!requireNamespace("RSQLite", quietly = TRUE)) {
+        stop("RSQLite package is needed for this function to work. Please install it", call. = FALSE)
+      }
+    }
+
+    fp <- normalizePath(fp, winslash = "/")
+    con <- DBI::dbConnect(RSQLite::SQLite(), fp)
+    ret <- DBI::dbGetQuery(con, 'select data_value from data where entry_key = "local_sync_root_path"') %>%
+      as.character %>%
+      normalizePath(winslash = "/")
+    DBI::dbDisconnect(con)
+    return(ret)
+  } else if (file.exists("~/Google Drive")) {
+    normalizePath("~/Google Drive", winslash = "/")
+  } else if (file.exists("~/../Google Drive")) {
+    normalizePath("~/../Google Drive", winslash = "/")
+  } else {
+    stop("Failed to uncover the path to a Google Drive folder")
   }
 }
 

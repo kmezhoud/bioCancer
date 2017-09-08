@@ -13,14 +13,14 @@
 #' @docType package
 #' @importFrom dplyr add_rownames combine collect combine collapse collect full_join
 #' @importFrom dplyr inner_join left_join mutate n_distinct rename right_join
-#' @importFrom dplyr select select_ slice slice_ mutate_each
+#' @importFrom dplyr select select_ slice slice_
 #' @importFrom plyr ldply ddply adply arrange desc
 #' @import ggplot2
 #' @import DiagrammeR
 #' @importFrom knitr knit2html
 #' @importFrom pryr where
 #' @importFrom magrittr %<>% %T>% %$% set_rownames set_colnames set_names divide_by add extract2
-#' @importFrom lubridate is.Date is.POSIXt now year month wday week hour minute second ymd mdy dmy ymd_hms hms hm as.duration parse_date_time
+#' @importFrom lubridate is.Date is.POSIXt now year week hour minute second ymd mdy dmy ymd_hms hms hm as.duration parse_date_time
 #' @importFrom broom tidy glance
 #' @importFrom tidyr gather_ gather separate
 #' @importFrom gridExtra arrangeGrob
@@ -72,6 +72,7 @@
 #' @importFrom XML xmlInternalTreeParse
 #' @importFrom visNetwork renderVisNetwork visNetwork visNodes visEdges visOptions
 #' @importFrom visNetwork visHierarchicalLayout visExport visLegend visPhysics visNetworkOutput visExport
+#' @import radiant.data
 #' @export
 
 bioCancer <- function(){

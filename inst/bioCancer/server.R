@@ -5,6 +5,25 @@ shinyServer(function(input, output, session) {
    #options(warn=2, shiny.error= recover)
 
 
+  ############################################
+  #    SOURCING FROM  radiant.data PACKAGE   #
+  ############################################
+
+  ## source shared functions
+ # source(file.path(getOption("radiant.path.data"),"app/init.R"),
+  #       encoding = getOption("radiant.encoding"), local = TRUE)
+
+  #source(file.path(getOption("radiant.path.data"),"app/radiant.R"),
+   #      encoding = getOption("radiant.encoding"), local = TRUE)
+  #source("help.R", encoding = getOption("radiant.encoding"), local = TRUE)
+
+  ## source data & app tools from radiant.data
+  for (file in list.files(c(file.path(getOption("radiant.path.data"),"app/tools/data"),
+                            file.path(getOption("radiant.path.data"),"app/tools/data")
+  ),
+  pattern="\\.(r|R)$", full.names = TRUE))
+    source(file, encoding = getOption("radiant.encoding"), local = TRUE)
+
   # for cgdsr
 
   cgds <- cgdsr::CGDS("http://www.cbioportal.org/public-portal/")

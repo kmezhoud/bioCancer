@@ -49,18 +49,6 @@ saveClipboardData <- function() {
   }
 }
 
-factorizer <- function(dat) {
-  isChar <- sapply(dat,is.character)
-  if (sum(isChar) == 0) return(dat)
-  toFct <-
-    dplyr::select(dat, which(isChar)) %>%
-    dplyr::summarise_each(funs(n_distinct(.) < 100 & (n_distinct(.)/length(.)) < .1)) %>%
-    dplyr::select(which(. == TRUE)) %>% names
-  # summarise_each(funs(n_distinct)) %>%
-  # dplyr::select(which(. < 100 & ((. / nrow(dat)) < .1))) %>% names
-  if (length(toFct) == 0) return(dat)
-  mutate_each_(dat, funs(as.factor), vars = toFct)
-}
 
 ################# Load dataframe (Clinical data, Profile Data, ...) in Datasets
 loadInDatasets <- function(fname, header= TRUE){

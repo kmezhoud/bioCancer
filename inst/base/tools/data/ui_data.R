@@ -466,7 +466,7 @@ output$Processing <- renderUI({
               ),
               tabPanel("Explore",
                        downloadLink("dl_explore_tab", "", class = "fa fa-download alignright"),
-                       DT::dataTableOutput("explorer")),
+                       DT::dataTableOutput("explore")),
               tabPanel("Transform",
                        htmlOutput("transform_data"),
                        verbatimTextOutput("transform_summary"),
