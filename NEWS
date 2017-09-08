@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.5.09 (08 September 2017)
+------------------------
+delete /figures
+
 CHANGES IN VERSION 1.5.09 (07 September 2017)
 ------------------------
 cleanup ui_radiant, /Rbis, /quant, /bioCancer
