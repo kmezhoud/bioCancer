@@ -22,6 +22,4 @@ for (file in list.files(paste0(system.file(package ="bioCancer"),"/Rbis"),
 
   source(file, encoding = r_encoding, local = TRUE)
 }
-
-addResourcePath("figures_marketing", file.path(r_path,"bioCancer/tools/help/figures/"))
 addResourcePath("figures_quant", file.path(r_path,"quant/tools/help/figures/"))
