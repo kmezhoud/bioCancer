@@ -83,3 +83,33 @@ bioCancer <- function(){
     stop("Install and load bioCancer package before to run it.")
   }
 }
+
+#' Default dataset of bioCancer
+#'
+#' @author Karim Mezhoud \email{kmezhoud@gmail.com}
+"epiGenomics"
+
+#' Example of Copy Number Alteration (CNA) dataset
+#'
+#' @author Karim Mezhoud \email{kmezhoud@gmail.com}
+"user_CNA"
+
+#' Example of Methylation HM27 dataset
+#'
+#' @author Karim Mezhoud \email{kmezhoud@gmail.com}
+"user_MetHM27"
+
+#' Example of Methylation HM450 dataset
+#'
+#' @author Karim Mezhoud \email{kmezhoud@gmail.com}
+"user_MetHM450"
+
+#' Example of Mutation dataset
+#'
+#' @author Karim Mezhoud \email{kmezhoud@gmail.com}
+"user_Mut"
+
+#' Example of mRNA expression dataset
+#'
+#' @author Karim Mezhoud \email{kmezhoud@gmail.com}
+"user_mRNA"
