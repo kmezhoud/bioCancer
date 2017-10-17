@@ -32,20 +32,26 @@ shinyServer(function(input, output, session) {
 
   ## get Cases in side bar panel
   output$ui_Cases <- renderUI({
+    shiny::withProgress(message = 'loading Cases from cgdsr server...', value = 0.1, {
+      Sys.sleep(0.25)
     CaseLists <- cgdsr::getCaseLists(cgds,input$StudiesID)[,1]
     selectInput("CasesID", "Cases for selected study",
                 choices= CaseLists,
                 selected = CaseLists[2]
                 )
+    })
   })
 
   ## get Genetic Profiles in side bar panel
   output$ui_GenProfs <- renderUI({
+    shiny::withProgress(message = 'loading Genetics Profiles from cgdsr server...', value = 0.1, {
+      Sys.sleep(0.25)
     GeneticProfiles <- cgdsr::getGeneticProfiles(cgds,input$StudiesID)[,1]
     selectInput("GenProfID", "Genetic Profiles",
                 choices = GeneticProfiles,
                 selected = GeneticProfiles[3]
                 )
+    })
   })
 
 

@@ -34,7 +34,7 @@ User can `remove` and `pull` him data for all existing dimension.
 
 
 ##### Format of user data
-Mutation: A data frame with at less two column named `gene_symbol` and `mutation`.
+Mutation: A data frame with at less three columns named `gene_symbol` and `mutation_type` and `amino_acid_change`.
 All other dimensions: A data frame with:
 first column named `id.` that has the study/cancer reference
 the remain columns named by the `gene symbol` and have the value of the dimension for each study.

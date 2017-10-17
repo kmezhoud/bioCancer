@@ -58,9 +58,8 @@ attriColorValue <- function(Value, df, colors=c(a,b,c),feet){
 #' }
 #' @export
 attriColorGene <- function(df){
-
-  if(all(apply(df,2, function(x)class(x)=='integer'))==TRUE
-  ){
+  # for CNA dataframe
+  if(all(apply(df,2, function(x)class(x)=='integer'))==TRUE){
     ListFreqCNA <- apply(df,2,
                          function(x) as.data.frame(table(x[order(x)])))
     print("getting the most frequent CNA categorie...")
@@ -72,22 +71,35 @@ attriColorGene <- function(df){
     dfMeansOrCNA <- as.numeric(as.matrix(dfMeansOrCNA))
     names(dfMeansOrCNA) <- namedfMeansOrCNA
 
-  }else if(all(apply(df,2, function(x)class(x)=='numeric'))==TRUE){
-    ## Compute mean of FreqMutData and mRNA Expression, rppa
-    dfMeansOrCNA <-apply(df,2,function(x) mean(x, na.rm=TRUE))
-    dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
-  }
-
-  ## Set colors if all value are 0 set only black
-  if(all(dfMeansOrCNA=="0")||all(dfMeansOrCNA=="NaN")){
-    colorls <- lapply(dfMeansOrCNA, function(x)
-      attriColorValue(x, dfMeansOrCNA, colors=c("white"), feet=0.1))
-    print("setting black color for empty data...")
-  }else{
     colorls <- lapply(dfMeansOrCNA, function(x)
       attriColorValue(x, dfMeansOrCNA,
                       colors=c("blue3","white","red"),
                       feet=0.01))
+         # for numeric dataframe
+  }else if(all(apply(df,2, function(x)class(x)=='numeric'))==TRUE){
+    ## Compute mean of FreqMutData and mRNA Expression, rppa
+    dfMeansOrCNA <-apply(df,2,function(x) mean(x, na.rm=TRUE))
+    dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
+
+    if(all(dfMeansOrCNA=="0")||all(dfMeansOrCNA=="NaN")){
+      ## Set colors if all value are 0 set only black
+      colorls <- lapply(dfMeansOrCNA, function(x)
+        attriColorValue(x, dfMeansOrCNA, colors=c("white"), feet=0.1))
+      print("setting black color for empty data...")
+    }else{
+      colorls <- lapply(dfMeansOrCNA, function(x)
+        attriColorValue(x, dfMeansOrCNA,
+                        colors=c("blue3","white","red"),
+                        feet=0.01))
+    }
+  }else if(length(which(sapply(df, is.factor)))!=0 || length(which(sapply(df, is.character))) !=0){
+    ## built empty data frame with gene Symbol in colnames
+    df <- as.data.frame(setNames(replicate(length(colnames(df)),numeric(1),
+                                                   simplify = FALSE), colnames(df)[order(colnames(df))]))
+    ## set black for dataframe with character and/or factor values (not appropriate datafame)
+    colorls <- lapply(df, function(x)
+      attriColorValue(x, df, colors=c("black"), feet=0.1))
+    print("setting black color for non appropriate dataframe...")
   }
   return(colorls)
 }
@@ -243,7 +255,7 @@ getFreqMutData <- function(list, geneListLabel){
   if(is.null(list)){stop("Select a less one Study.")}
 
   Freq_ListMutData <- lapply(list,
-                              function(x) UnifyRowNames(x, GeneList))
+                             function(x) UnifyRowNames(x, GeneList))
 
   ## convert the list of correlation matrices to Array
   Freq_ArrayMutData <- array(unlist( Freq_ListMutData),
@@ -265,7 +277,7 @@ getFreqMutData <- function(list, geneListLabel){
            colnames(Freq_ListMutData[[1]]),
            names(Freq_ListMutData))
   }
-#   ?getListProfData(Genes= empty)
+  #   ?getListProfData(Genes= empty)
   if(dim(Freq_ArrayMutData)[3]==1){
     Freq_DfMutData <- as.numeric(Freq_ArrayMutData[,2,])
     names(Freq_DfMutData) <- names(Freq_ArrayMutData[,2,])
@@ -469,10 +481,10 @@ getSequensed_SampleSize <- function(StudyID){
 
   checked_Studies <- StudyID #input$StudiesIDCircos
   # get Cases for selected Studies
- dat <-
+  dat <-
     unname(
-    as.data.frame(apply(as.data.frame(paste(checked_Studies, "_sequenced", sep="")), 1,
-                                              function(x) nrow(cgdsr::getClinicalData(cgds,x))))
+      as.data.frame(apply(as.data.frame(paste(checked_Studies, "_sequenced", sep="")), 1,
+                          function(x) nrow(cgdsr::getClinicalData(cgds,x))))
     )
 
   rownames(dat) <-  StudyID
@@ -480,7 +492,7 @@ getSequensed_SampleSize <- function(StudyID){
   ## remove rownames to column
   dat <- dat %>% tibble::rownames_to_column("Studies")
 
- return(dat)
+  return(dat)
 }
 
 

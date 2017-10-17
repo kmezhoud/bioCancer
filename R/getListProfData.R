@@ -327,8 +327,8 @@ getListProfData <- function(panel, geneListLabel){
     #r_data[['Freq_DfMutData']] <- getFreqMutData(list = r_data$ListMutData,input$GeneListID)
 
     #ListProfData_bkp <<- ListProfData
-    #   ListMetData_bkp <<- ListMetData
-    #   ListMutData_bkp <<- ListMutData
+     # ListMetData_bkp <<- ListMetData
+      # ListMutData_bkp <<- ListMutData
     #   ListCNAData_bkp <<- ListProfData$CNA
 
     #     print("Start Ordering ...")

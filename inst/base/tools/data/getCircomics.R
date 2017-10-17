@@ -25,45 +25,64 @@ output$CircomicsHowto <- renderPrint({
 observe({
   if (not_pressed(input$pullUserDataButtonId)) return()
   isolate({
-    if(input$UserDataCNAID){
-       r_data$ListProfData$CNA[['UserData']] <- r_data[[input$UserData_CNA_id]][-1] # [-1] rm first column
+    if('CNA' %in% input$userDataID ){
+      #if(ncol(r_data[[input$UserData_CNA_id]]) -1 == length(r_data[[input$GeneListID]])){
+      if(all(apply(r_data[[input$UserData_CNA_id]][-1],2, function(x)class(x)=='integer'))){
+        r_data$ListProfData$CNA[['UserData']] <- r_data[[input$UserData_CNA_id]][-1] # [-1] rm first column
+        # }
+      }
     }
-    if(input$UserDatamRNAID){
-       r_data$ListProfData$Expression[['UserData']] <- r_data[[input$UserData_mRNA_id]][-1]
+    if('mRNA' %in% input$userDataID ){
+      if(all(apply(r_data[[input$UserData_mRNA_id]][-1],2, function(x)class(x)=='numeric'))){
+        r_data$ListProfData$Expression[['UserData']] <- r_data[[input$UserData_mRNA_id]][-1]
+      }
     }
-    if(input$UserDataMet27ID){
-      r_data$ListProfData$Met_HM27[['UserData']] <- r_data[[input$UserData_MetHM27_id]][-1]
-      r_data$ListMetData$HM27[['UserData']] <- r_data[[input$UserData_MetHM27_id]][-1]
+    if('MetHM27' %in% input$userDataID ){
+      if(all(apply(r_data[[input$UserData_MetHM27_id]][-1],2, function(x)class(x)=='numeric'))){
+        r_data$ListProfData$Met_HM27[['UserData']] <- r_data[[input$UserData_MetHM27_id]][-1]
+        r_data$ListMetData$HM27[['UserData']] <- r_data[[input$UserData_MetHM27_id]][-1]
+      }
     }
-    if(input$UserDataMet450ID){
-      r_data$ListProfData$Met_HM450[['UserData']] <- r_data[[input$UserData_MetHM450_id]][-1]
-      r_data$ListMetData$HM450[['UserData']] <- r_data[[input$UserData_MetHM450_id]][-1]
+    if( 'MetHM450' %in% input$userDataID2){
+      if(all(apply(r_data[[input$UserData_MetHM450_id]][-1],2, function(x)class(x)=='numeric'))){
+        r_data$ListProfData$Met_HM450[['UserData']] <- r_data[[input$UserData_MetHM450_id]][-1]
+        r_data$ListMetData$HM450[['UserData']] <- r_data[[input$UserData_MetHM450_id]][-1]
+      }
     }
-    if(input$UserDatamiRNAID){
-      r_data$ListProfData$miRNA[['UserData']] <- r_data[[input$UserData_miRNA_id]][-1]
+    if( 'miRNA' %in% input$userDataID2){
+      if(all(apply(r_data[[input$UserData_miRNA_id]][-1],2, function(x)class(x)=='numeric'))){
+        r_data$ListProfData$miRNA[['UserData']] <- r_data[[input$UserData_miRNA_id]][-1]
+      }
     }
-    if(input$UserDataRPPAID){
-      r_data$ListProfData$RPPA[['UserData']] <- r_data[[input$UserData_RPPA_id]][-1]
+    if( 'RPPA' %in% input$userDataID2){
+      if(all(apply(r_data[[input$UserData_RPPA_id]][-1],2, function(x)class(x)=='numeric'))){
+        r_data$ListProfData$RPPA[['UserData']] <- r_data[[input$UserData_RPPA_id]][-1]
+      }
     }
-    if(input$UserDataFreqMutID){
-      r_data$ListMutData[['UserData']] <- r_data[[input$UserData_FreqMut_id]][-1]
+    if( 'Mutation' %in% input$userDataID){
+      # gene_symbol mutation_type amino_acid_change
+      ## works for a list of data frame
+      #if(any(sapply(r_data[[input$UserData_FreqMut_id]], function(x) sapply(names(x), function(y) grepl(paste("gene_symbol","mutation_type", "amino_acid_change", sep = "|"), y))))){
+        if(length(grep('TRUE',sapply(names(r_data[[input$UserData_FreqMut_id]]), function(y) grepl(paste("gene_symbol","mutation_type", "amino_acid_change", sep = "|"), y))))==3){
+       r_data$ListMutData[['UserData']] <- r_data[[input$UserData_FreqMut_id]][-1]
+      }
     }
   })
 })
 
 observe({
-  if (not_pressed(input$UnpullUserDataButtonId)) return()
-  isolate({
-     r_data$ListProfData$CNA[['UserData']] <- NULL
-     r_data$ListProfData$Expression[['UserData']] <- NULL
-     r_data$ListProfData$Met_HM27[['UserData']] <- NULL
-     r_data$ListMetData$HM27[['UserData']] <- NULL
-     r_data$ListProfData$Met_HM450[['UserData']] <- NULL
-     r_data$ListMetData$HM450[['UserData']] <- NULL
-     r_data$ListProfData$miRNA[['UserData']] <- NULL
-     r_data$ListProfData$RPPA[['UserData']] <- NULL
-     r_data$ListMutData[['UserData']] <- NULL
-  })
+  if (not_pressed(input$pullUserDataButtonId)) #return()
+    isolate({
+      r_data$ListProfData$CNA[['UserData']] <- NULL
+      r_data$ListProfData$Expression[['UserData']] <- NULL
+      r_data$ListProfData$Met_HM27[['UserData']] <- NULL
+      r_data$ListMetData$HM27[['UserData']] <- NULL
+      r_data$ListProfData$Met_HM450[['UserData']] <- NULL
+      r_data$ListMetData$HM450[['UserData']] <- NULL
+      r_data$ListProfData$miRNA[['UserData']] <- NULL
+      r_data$ListProfData$RPPA[['UserData']] <- NULL
+      r_data$ListMutData[['UserData']] <- NULL
+    })
 })
 
 
@@ -174,7 +193,7 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
     TreeMutData <- reStrDisease(listMut_df)
     coffeewheel(TreeMutData, width=700, height=600
                 #,main= paste0("Mutation Frequency: (Min = ", min(r_data$Freq_DfMutData) ,", Max = ", max(r_data$Freq_DfMutData)  ,")", sep="")
-                )
+    )
   })
 
 })
@@ -305,7 +324,7 @@ output$CircosAvailability <- DT::renderDataTable({
                     lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
                   )
     )%>%  DT::formatStyle(names(dat),
-                      color = DT::styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
+                          color = DT::styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
 
 
 
@@ -319,13 +338,13 @@ output$Sequenced_SampleSize <- DT::renderDataTable({
   shiny::withProgress(message = 'Computing Sample sizes...', value = 0.1, {
     Sys.sleep(0.25)
 
-  dat <- getSequensed_SampleSize(StudyID = input$StudiesIDCircos)
+    dat <- getSequensed_SampleSize(StudyID = input$StudiesIDCircos)
 
-  DT::datatable(dat,
-                caption= "Table 1: Sample Sizes by study",
-                autoHideNavigation = getOption("DT.autoHideNavigation")
-                )
-})
+    DT::datatable(dat,
+                  caption= "Table 1: Sample Sizes by study",
+                  autoHideNavigation = getOption("DT.autoHideNavigation")
+    )
+  })
 })
 
 output$FreqMutSummary <- DT::renderDataTable({
@@ -335,14 +354,17 @@ output$FreqMutSummary <- DT::renderDataTable({
   # FreqIn <- as.data.frame(r_data$Freq_DfMutData)
   # dat <- cbind("Genes"= rnames, r_data$Freq_DfMutData)
   DT::datatable(r_data$Freq_DfMutData,
-            caption="Table 2: Percentage (%) of mutation by gene in each study",
-            autoHideNavigation = getOption("DT.autoHideNavigation")
-            )
+                caption="Table 2: Percentage (%) of mutation by gene in each study",
+                autoHideNavigation = getOption("DT.autoHideNavigation")
+  )
 })
 
 output$mRNA_mean <- DT::renderDataTable({
+  # if (inherits(try(lapply(r_data$ListProfData$Expression, function(x) lapply(x, function(y) colMeans(y))), silent=TRUE),"try-error")){
+  #   r_data$ListProfData$ListMetData[['UserData']] <- NULL
+  # }
   dat <- lapply(r_data$ListProfData$Expression, function(x) colMeans(x))
-  dat <- as.data.frame(dat)
+  dat <- as.data.frame(do.call(cbind,dat))
   dat <- round(dat, digits = 0)
   DT::datatable(dat,
                 caption="Table 2: Means of mRNA expression",
@@ -350,20 +372,29 @@ output$mRNA_mean <- DT::renderDataTable({
   )
 })
 output$CNA_Max <- DT::renderDataTable({
+  # check if all dataframe have interger in each column
+  #if(all(sapply((lapply(r_data$ListProfData$CNA,function(x) sapply(x, function(y) class(y)=='integer'))), function(f) all()))){
+  #if (inherits(try(lapply(r_data$ListProfData$CNA,function(x) apply(x,2, function(y) as.data.frame(table(y[order(y)])))), silent=TRUE),"try-error")){
+  # r_data$ListProfData$CNA[['UserData']] <- NULL
+  #}
   ls <- lapply(r_data$ListProfData$CNA,function(x) apply(x,2, function(y) as.data.frame(table(y[order(y)]))))
-  WhichMax <- lapply(ls, function(x) as.data.frame(lapply(x, function(y) y[,1][which(y[,2]== max(y[,2]))])))
+  WhichMax <- lapply(ls, function(x) as.data.frame(do.call(cbind,lapply(x, function(y) y[,1][which(y[,2]== max(y[,2]))]))))
   genes_names <- lapply(WhichMax, function(x) names(x))[1]
   names(genes_names) <- 'Genes'
   WhichMax <- lapply(WhichMax, function(x) as.numeric(as.matrix(x)))
-  WhichMax <- as.data.frame(WhichMax)
+  WhichMax <-   as.data.frame(do.call(cbind, WhichMax))  # as.data.frame(WhichMax)
   dat <- cbind(Genes= genes_names , WhichMax )
   DT::datatable(dat,
                 caption="Table 2: The most frequent CNA prolife",
                 autoHideNavigation = getOption("DT.autoHideNavigation")
   )
+  # }
 })
 
 output$Methylation_mean <- DT::renderDataTable({
+  # if (inherits(try(lapply(r_data$ListMetData, function(x) lapply(x, function(y) colMeans(y))), silent=TRUE),"try-error")){
+  # r_data$ListProfData$ListMetData[['UserData']] <- NULL
+  # }
   #dat <- list(r_data$ListMetData,r_data$ListProfData$Met_HM450)
   dat <- lapply(r_data$ListMetData, function(x) lapply(x, function(y) colMeans(y)))
   dat <- as.data.frame(dat)

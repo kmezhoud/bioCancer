@@ -98,8 +98,78 @@ output$StrListProfDataCircos <- renderPrint({
   # }
 })
 
+output$ui_userDataMergeDimension <- renderUI({
+  tagList(
+    if('CNA' %in% input$userDataID){
+      uiOutput("uiPullUserDataCNA")
+    },
+    if('mRNA' %in% input$userDataID){
+      uiOutput("uiPullUserDatamRNA")
+    },
+    if('Mutation' %in% input$userDataID){
+      uiOutput("uiPullUserDataFreqMut")
+    },
+    if('MetHM27' %in% input$userDataID){
+      uiOutput("uiPullUserDataMetHM27")
+    },
+    if('MetHM450' %in% input$userDataID2){
+      uiOutput("uiPullUserDataMetHM450")
+    },
+    if('miRNA' %in% input$userDataID2){
+      uiOutput("uiPullUserDatamiRNA")
+    },
+    if('RPPA' %in% input$userDataID2){
+      uiOutput("uiPullUserDataRPPA")
+    }
+  )
+  # conditionalPanel(condition="input.userDataID== 'mRNA'",
+  #                  uiOutput("uiPullUserDatamRNA")
+  # )
+  # conditionalPanel(condition="input.userDataID== 'MetHM27'",
+  #                  uiOutput("uiPullUserDataMetHM27")
+  # )
+  # conditionalPanel(condition="input.userDataID== 'MetHM450'",
+  #                  uiOutput("uiPullUserDataMetHM450")
+  # )
+  # conditionalPanel(condition="input.userDataID2== 'Mutation'",
+  #                  uiOutput("uiPullUserDataFreqMut")
+  # )
+  # conditionalPanel(condition="input.userDataID2== 'miRNA'",
+  #                  uiOutput("uiPullUserDatamiRNA")
+  # )
+  # conditionalPanel(condition="input.userDataID2== 'RPPA'",
+  #                  uiOutput("uiPullUserDataRPPA")
+  # )
+})
 
 
+output$ui_userDataMergeSwithButton <- renderUI({
+  if(!is.null(input$userDataID) || !is.null(input$userDataID2)){
+    div(class="row",
+        div(class="col-xs-8",
+            conditionalPanel(condition = "input.StudiesIDCircos != null && input.pullUserDataButtonId ==false",
+                             h5('Merge user data to wheel')),
+            conditionalPanel(condition = "input.StudiesIDCircos != null && input.pullUserDataButtonId ==true",
+                             h5('Merge User data to wheel',  style = "color:#428bca"))
+        ),
+        div(class="col-xs-4",
+            conditionalPanel(condition = "input.StudiesIDCircos != null",
+                             switchButton(inputId = "pullUserDataButtonId",
+                                          value = FALSE, col = "GB", type = "OO")
+            )
+        )
+    )
+  }
+})
+
+output$ui_bad_userData_message <- renderUI({
+   # if user data is in ListProfData
+  if(any(grepl('UserData', lapply(r_data$ListProfData, function(x) names(x)))) || any(grepl('UserData', names(r_data$ListMutData)))){
+    h5("+ User data",align="center", style = "color:#428bca;font-size:100%")
+  }else{
+    h5(" select correct User data",align="center", style = "color:red;font-size:100%")
+  }
+})
 
 
 output$ui_Circomics <- renderUI({
@@ -164,86 +234,13 @@ output$ui_Circomics <- renderUI({
                                       h5("The data sets are loaded to Workspace.",align="center", style = "color:#428bca")
                      ),
                      conditionalPanel(condition = "input.pullUserDataButtonId==true",
-                                      h5("+ User data",align="center", style = "color:blue;font-size:100%")),
+                     #
+                                      uiOutput("ui_bad_userData_message")
+                     #
+                     ),
                      #}
+
                      conditionalPanel("input.loadListProfDataCircosId == true",
-                                      wellPanel(
-                                        h4("Import to Workspace:"),
-                                        div(class="row",
-                                            div(class="col-xs-3",
-                                                checkboxInput('UserDataCNAID', 'CNA', FALSE)),
-                                            div(class="col-xs-3",
-                                                checkboxInput('UserDatamRNAID', 'mRNA', FALSE)),
-                                            div(class="col-xs-2",
-                                                checkboxInput('UserDataFreqMutID', 'Mut', FALSE)),
-                                            div(class="col-xs-2",
-                                                checkboxInput('UserDataMet27ID', 'Met27', FALSE))
-                                        ),
-                                        div(class="row",
-                                            div(class="col-xs-4",
-                                                checkboxInput('UserDataMet450ID', 'Met450', FALSE)),
-                                            div(class="col-xs-4",
-                                                checkboxInput('UserDatamiRNAID', 'miRNA', FALSE)),
-                                            div(class="col-xs-4",
-                                                checkboxInput('UserDataRPPAID', 'RPPA', FALSE))
-                                        ),
-
-                                        conditionalPanel(condition="input.UserDataCNAID==true",
-                                                         uiOutput("uiPullUserDataCNA")
-
-                                        ),
-                                        conditionalPanel(condition="input.UserDatamRNAID==true",
-                                                         uiOutput("uiPullUserDatamRNA")
-                                        ),
-                                        conditionalPanel(condition="input.UserDataMet27ID==true",
-                                                         uiOutput("uiPullUserDataMetHM27")
-                                        ),
-                                        conditionalPanel(condition="input.UserDataMet450ID==true",
-                                                         uiOutput("uiPullUserDataMetHM450")
-                                        ),
-                                        conditionalPanel(condition="input.UserDataFreqMutID==true",
-                                                         uiOutput("uiPullUserDataFreqMut")
-                                        ),
-                                        conditionalPanel(condition="input.UserDatamiRNAID==true",
-                                                         uiOutput("uiPullUserDatamiRNA")
-                                        ),
-
-                                        conditionalPanel(condition="input.UserDataRPPAID==true",
-                                                         uiOutput("uiPullUserDataRPPA")
-                                        ),
-                                        # if(input$UserDataCNAID ||
-                                        #   input$UserDatamRNAID ||
-                                        #   input$UserDataMetHM27ID ||
-                                        #   input$UserDataMetHM450ID ||
-                                        #   input.UserDataFreqMutID ||
-                                        #   input.UserDatamiRNAID||
-                                        #  input$UserDataRPPAID){
-                                        div(class="row",
-                                            div(class="col-xs-8",
-                                                conditionalPanel(condition = "input.StudiesIDCircos != null && input.pullUserDataButtonId ==false",
-                                                                 h5('Merge user data to wheel')),
-                                                conditionalPanel(condition = "input.StudiesIDCircos != null && input.pullUserDataButtonId ==true",
-                                                                 h5('Merge User data to wheel',  style = "color:#428bca"))
-                                            ),
-                                            div(class="col-xs-4",
-                                                conditionalPanel(condition = "input.StudiesIDCircos != null",
-                                                                 switchButton(inputId = "pullUserDataButtonId",
-                                                                              value = FALSE, col = "GB", type = "OO")
-                                                )
-                                            )
-                                        ),
-                                        div(class="row",
-                                            div(class="col-xs-6",
-                                                actionButton('pullUserDataButtonId', 'Add to wheel', icon('arrow-down'),style='padding:4px; font-size:80%')),
-                                            div(class="col-xs-6",
-                                                #checkboxInput("getlistProfDataCircosID", "Load", value = FALSE))
-                                                actionButton('UnpullUserDataButtonId', 'Remove',style='padding:4px; font-size:80%')
-                                            )
-                                            #checkboxInput('confirmPullUserDataID', 'Confirm Pull', FALSE)
-                                        )
-                                        # }
-                                      ),
-                                      #conditionalPanel(condition= 'input.loadListProfDataCircosId == true',
                                       wellPanel(
                                         ################
                                         # radioButtons("CircosDimensionID", "Choose Dimensions:",           #checkboxGroupInput
@@ -255,12 +252,68 @@ output$ui_Circomics <- renderUI({
                                         #              ,selected = character(0)
                                         # )
 
-                                         uiOutput("ui_CircosDimension")
+                                        uiOutput("ui_CircosDimension")
 
                                         #
                                       )
 
-                                      #)
+                     ),
+
+                     conditionalPanel("input.CircosDimensionID != null",
+                                      wellPanel(
+                                        h4("Merge user data to wheel:"),
+                                        div(class="row",
+                                            div(class="col-xs-6",
+                                                checkboxGroupInput("userDataID", label = NULL,
+                                                                   choices =
+                                                                     list("CNA", "mRNA","Mutation","MetHM27")
+                                                )
+                                            ),
+                                            div(class="col-xs-6",
+                                                checkboxGroupInput("userDataID2", label= NULL,
+                                                                   choices =
+                                                                     list("MetHM450", "miRNA", "RPPA")
+                                                )
+                                            )
+                                        ),
+                                        # div(class="row",
+                                        #     div(class="col-xs-3",
+                                        #         checkboxInput('UserDataCNAID', 'CNA', FALSE)),
+                                        #     div(class="col-xs-3",
+                                        #         checkboxInput('UserDatamRNAID', 'mRNA', FALSE)),
+                                        #     div(class="col-xs-2",
+                                        #         checkboxInput('UserDataFreqMutID', 'Mut', FALSE)),
+                                        #     div(class="col-xs-2",
+                                        #         checkboxInput('UserDataMet27ID', 'Met27', FALSE))
+                                        # ),
+                                        # div(class="row",
+                                        #     div(class="col-xs-4",
+                                        #         checkboxInput('UserDataMet450ID', 'Met450', FALSE)),
+                                        #     div(class="col-xs-4",
+                                        #         checkboxInput('UserDatamiRNAID', 'miRNA', FALSE)),
+                                        #     div(class="col-xs-4",
+                                        #         checkboxInput('UserDataRPPAID', 'RPPA', FALSE))
+                                        # ),
+
+                                        uiOutput("ui_userDataMergeDimension"),
+
+                                        uiOutput("ui_userDataMergeSwithButton")
+
+
+                                        # div(class="row",
+                                        #     div(class="col-xs-6",
+                                        #         actionButton('pullUserDataButtonId', 'Add to wheel', icon('arrow-down'),style='padding:4px; font-size:80%')),
+                                        #     div(class="col-xs-6",
+                                        #         #checkboxInput("getlistProfDataCircosID", "Load", value = FALSE))
+                                        #         actionButton('UnpullUserDataButtonId', 'Remove',style='padding:4px; font-size:80%')
+                                        #     )
+                                        #     #checkboxInput('confirmPullUserDataID', 'Confirm Pull', FALSE)
+                                        # )
+                                        # }
+                                      )
+
+
+
                      ),
 
 

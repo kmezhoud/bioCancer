@@ -1,6 +1,11 @@
+CHANGES IN VERSION 1.5.11 (16 November 2017)
+------------------------
+add switch button to ui_circomics
+improuve circomics functions
+
 CHANGES IN VERSION 1.5.09 (08 September 2017)
 ------------------------
-delete /figures
+delete commented files and figures
 
 CHANGES IN VERSION 1.5.09 (07 September 2017)
 ------------------------
