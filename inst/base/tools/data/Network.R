@@ -179,13 +179,35 @@ getAnnoGeneSet_df <- function(genelist,type){
   ## Query GeneSet Annotation
   AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type)
 
+  if(nrow(AnnoGeneSet)== 0){
+    GeneSet_df <- data.frame(from = "",
+                             to = "",
+                             title= "",
+                             arrows= "",
+                             width = "0",
+                             dashes = TRUE,
+                             smooth = FALSE,
+                             shadow = FALSE
+                             #length = NULL
+    )
+  }else{
+
   ## Filter significant annotation using FDR
   AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < input$GeneSetFDRID,]  #input$GeneSetFDRID
 
   r_data[['AnnoGeneSet']] <- AnnoGeneSet
 
   if(nrow(AnnoGeneSet)== 0){
-    GeneSet_df <- data.frame(title = "")
+    GeneSet_df <- data.frame(from = "",
+                             to = "",
+                             title= "",
+                             arrows= "",
+                             width = "0",
+                             dashes = TRUE,
+                             smooth = FALSE,
+                             shadow = FALSE
+                             #length = NULL
+    )
   } else{
 
     #r_data[['MinGeneSetFDR']] <- min(AnnoGeneSet$fdr, na.rm = TRUE)
@@ -212,6 +234,7 @@ getAnnoGeneSet_df <- function(genelist,type){
     )
 
   }
+  }
   return(GeneSet_df)
 }
 
@@ -222,12 +245,12 @@ output$network <- visNetwork::renderVisNetwork({
   edges <- Edges_df()
   nodes <-  Node_df(genelist = GeneList, freqIn = r_data$FreqIn)
 
-  if(input$NodeAttri_ReactomeID == 'Freq. Interaction'){ #input$NodeAttri_NetworkID
-    ## Nodes Frequncy interaction Attributes
-    value <- Node_df_FreqIn(genelist = GeneList, freqIn = r_data$FreqIn)
-    nodes[['value']] <- value
-  }
-  if(input$NodeAttri_ReactomeID == 'FreqInt./GeneSet'||input$NodeAttri_ReactomeID == 'GeneSet'){ #input$NodeAttri_NetworkID
+  # if(input$NodeAttri_ReactomeID == 'Freq. Interaction'){ #input$NodeAttri_NetworkID
+  #   ## Nodes Frequncy interaction Attributes
+  #   value <- Node_df_FreqIn(genelist = GeneList, freqIn = r_data$FreqIn)
+  #   nodes[['value']] <- value
+  # }
+  #if(input$NodeAttri_ReactomeID == 'FreqInt./GeneSet'||input$NodeAttri_ReactomeID == 'GeneSet'){ #input$NodeAttri_NetworkID
     ## Nodes Attributes
     value <- Node_df_FreqIn(GeneList, freqIn = r_data$FreqIn)
      nodes[['value']] <- value
@@ -254,7 +277,7 @@ output$network <- visNetwork::renderVisNetwork({
       nodes <- rbind(nodes, nodesForGeneSet)
      }
      #}
-  }
+  #}
 
   ###### Attributes from geNetClassifier
 

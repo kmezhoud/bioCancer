@@ -10,12 +10,22 @@ output$ui_FIsFilter <- renderUI({
 })
 
 output$ui_UseLinker <- renderUI({
-  UseLinkers <- c("FALSE", "TRUE")
-
-
-  selectizeInput("UseLinkerId", label = "Use Linkers:", choices = UseLinkers,
-                 selected = "FALSE", multiple = FALSE)
-
+  #UseLinkers <- c("FALSE", "TRUE")
+  #selectizeInput("UseLinkerId", label = "Use Linkers:", choices = UseLinkers,
+   #              selected = "FALSE", multiple = FALSE)
+  div(class="row",
+      div(class="col-xs-8",
+          conditionalPanel("input.UseLinkerId==false",
+                           h5('Add interesting genes')),
+          conditionalPanel("input.UseLinkerId==true",
+                           h5('Add interesting genes', style = "color:#428bca")
+          )
+      ),
+      div(class="col-xs-4",
+          switchButton(inputId = "UseLinkerId",
+                       value = FALSE, col = "GB", type = "OO")
+      )
+  )
 })
 
 
@@ -29,15 +39,15 @@ output$ui_ReacLayout <- renderUI({
 })
 
 
-output$ui_NodeAttri_ReactomeFI <- renderUI({
-  ReactomeEnrich <- c("None","Freq. Interaction", "GeneSet", "FreqInt./GeneSet")
-  selectizeInput("NodeAttri_ReactomeID", label= "From ReactomeFI:", choices= ReactomeEnrich,
-                 selected= "None", multiple=FALSE)
-})
+# output$ui_NodeAttri_ReactomeFI <- renderUI({
+#   ReactomeEnrich <- c("None","Freq. Interaction", "GeneSet", "FreqInt./GeneSet")
+#   selectizeInput("NodeAttri_ReactomeID", label= "From ReactomeFI:", choices= ReactomeEnrich,
+#                  selected= "None", multiple=FALSE)
+# })
 
 output$ui_AnnoGeneSet_ReactomeFI <- renderUI({
   type <- list('None','Pathway', 'Biological Process'=list('BP'),'Cellular Component'= list('CC'), 'Molecular Function' = list('MF'))
-  selectizeInput("TypeGeneSetID", label="Type of enrichment:", choices=type,
+  selectizeInput("TypeGeneSetID", label="Reactome GeneSet enrichment:", choices=type,
                  selected ="None", multiple=FALSE
   )
 })
@@ -53,9 +63,18 @@ output$ui_GeneSetFDR <- renderUI({
 })
 
 output$ui_NodeAttri_Classifier <- renderUI({
+
   ClassEnrich <- c("None","mRNA","Studies", "mRNA/Studies")
   selectizeInput("NodeAttri_ClassifierID", label= "From Classifier:", choices= ClassEnrich,
                  selected= "None", multiple=FALSE)
+
+})
+
+output$ui_No_Classifier_Run_message <- renderUI({
+  # if GeneClassifierdetails is not in r_data
+  if(exists("r_data") && is.null(r_data[['GenesClassDetails']])){
+    h5("Please run Classification before!",align="center", style = "color:red;font-size:100%")
+  }
 })
 
 output$ui_NodeAttri_ProfData <- renderUI({
@@ -107,18 +126,26 @@ output$ui_Reactome <- renderUI({
 
     wellPanel(
       wellPanel(
-      uiOutput("ui_NodeAttri_ReactomeFI"),
+      #uiOutput("ui_NodeAttri_ReactomeFI"),
 
-      conditionalPanel("input.NodeAttri_ReactomeID =='GeneSet' ||
-                       input.NodeAttri_ReactomeID =='FreqInt./GeneSet'",
+      #conditionalPanel("input.NodeAttri_ReactomeID =='GeneSet' ||
+       #                input.NodeAttri_ReactomeID =='FreqInt./GeneSet'",
                        uiOutput("ui_AnnoGeneSet_ReactomeFI"),
                        uiOutput("ui_GeneSetFDR")
+     # )
+),
+wellPanel(
+      #conditionalPanel(condition = "input.runClassificationBox==true",
+      uiOutput("ui_NodeAttri_Classifier"),
+      #)
+      conditionalPanel("input.NodeAttri_ClassifierID != 'None'",
+                       #                  input.runSamplingBox == false ||
+                       #                  input.NodeAttri_ClassifierID != 'None' &&
+                       #                  input.runSamplingBox == true &&
+                       #                  input.runClassificationBox == false",
+                       uiOutput('ui_No_Classifier_Run_message')
       )
 ),
-
-      #conditionalPanel(condition = "input.ClassID=='Classifier'",
-      uiOutput("ui_NodeAttri_Classifier"),
-      #),
       #  conditionalPanel(condition = "input.WheelID=='Zoom'",
       wellPanel(
         selectizeInput('StudiesIDReactome', 'From Which Studies', choices=NULL, multiple = TRUE),
@@ -192,13 +219,10 @@ output$ui_Reactome <- renderUI({
     ),
     help_modal_km('Networking','ReactomeHelp',inclMD(file.path(r_path,"base/tools/help/Reactome.md")))
 
-    # with(tags, table(
-    #   tr(
-    #     td(checkboxInput("ReacRunId", "Run" ,value = FALSE)),
-    #     td(h4("", align="center")),
-    #     td(checkboxInput("ReacLegendId", "Legend", value=FALSE))
-    #   ))),
-    #checkboxGroupInput(inputId="ReacRunId", label="", choices=c("Run","Legend"), inline = TRUE)
+# help_and_report(modal_title = "Networking", fun_name = "ReactomeHelp",
+#                 author = "Karim Mezhoud",
+#                 help_file = inclRmd(file.path(
+#                   getOption("radiant.path.bioCancer"),"app/tools/help/Reactome.md")))
   )
 })
 

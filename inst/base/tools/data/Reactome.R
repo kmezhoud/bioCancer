@@ -144,6 +144,12 @@ Edges_obj <- reactive({
     #Edges_obj <- Edges_obj[1:150,]
   })
   #Edges_objbkp <<- Edges_obj
+
+  ## Attribute number of interaction to size of nodes
+     GeneAttri_df <- Node_obj_FreqIn(GeneList)
+     #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
+     Edges_obj<- rbind(Edges_obj, GeneAttri_df)
+
   return(Edges_obj)
 })
 
@@ -153,7 +159,7 @@ getAnnoGeneSet_obj <- function(genelist,type, fdr){
   # type <- input$TypeGeneSetID
   #type <- match.arg(type)
   if (inherits(try(
-    Legend_GeneSet <- AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type),
+    AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type),   #Legend_GeneSet <-
     silent=TRUE),"try-error") ){
     GeneSet_obj <- data.frame(Gene1 = "",
                               Gene2 = "",
@@ -164,45 +170,61 @@ getAnnoGeneSet_obj <- function(genelist,type, fdr){
     )
     r_data[['AnnoGeneSet']] <- as.data.frame("Select type of enrichment.")
 
-  }else if(nrow(AnnoGeneSet)== 0){
-    GeneSet_obj <- data.frame(Gene1 = "",
-                              Gene2 = "",
-                              Direction = "",
-                              Annotation = "",
-                              arrowsize = "",
-                              Score = "")
-    r_data[['AnnoGeneSet']] <- as.data.frame("Select one type of enrichment.")
-
+    GeneSet_obj <- NULL
   }else{
     ## Query GeneSet Annotation
     AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type)
 
-   ## Filter significant annotation using FDR
-   AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < fdr,]
-   #AnnoGeneSetbkp <<- AnnoGeneSet
+    if(nrow(AnnoGeneSet)== 0){
+      GeneSet_obj <- data.frame(Gene1 = "",
+                                Gene2 = "",
+                                Direction = "",
+                                Annotation = "",
+                                arrowsize = "",
+                                Score = "")
+      r_data[['AnnoGeneSet']] <- as.data.frame("No GeneSet found.")
+      GeneSet_obj <- NULL
+    }else{
 
-   r_data[['AnnoGeneSet']] <- AnnoGeneSet
+      ## Filter significant annotation using FDR
+      AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < fdr,]
+      #AnnoGeneSetbkp <<- AnnoGeneSet
 
-    #r_data[['MinGeneSetFDR']] <- min(AnnoGeneSet$fdr, na.rm = TRUE)
+      if(nrow(AnnoGeneSet)== 0){
+        GeneSet_obj <- data.frame(Gene1 = "",
+                                  Gene2 = "",
+                                  Direction = "",
+                                  Annotation = "",
+                                  arrowsize = "",
+                                  Score = "")
+        r_data[['AnnoGeneSet']] <- as.data.frame("No GeneSet found.")
+        GeneSet_obj <- NULL
+      }else{
 
-    ## Split hits to a list
-    key0 <- strsplit(AnnoGeneSet$hits, ",")
+        r_data[['AnnoGeneSet']] <- AnnoGeneSet
 
-    ## from Martin Morgan  http://stackoverflow.com/questions/12837462/how-to-subset-data-with-advance-string-matching
+        #r_data[['MinGeneSetFDR']] <- min(AnnoGeneSet$fdr, na.rm = TRUE)
 
-    Index_Gene <- data.frame(index = rep(seq_along(key0), sapply(key0, length)),ID = unlist(key0))
-    #Index_Genebkp <<- Index_Gene
-    ## Maybe useful add GeneList with index and genes
-    #ref_GeneSet  <-  cbind(GeneSet = AnnoGeneSet_hits[subset[,1],2],subset)
+        ## Split hits to a list
+        key0 <- strsplit(AnnoGeneSet$hits, ",")
 
-    GeneSet_obj <- data.frame(Gene1 = paste(input$TypeGeneSetID,Index_Gene[,1], sep=""),
-                              Gene2 = "->",
-                              Direction = Index_Gene[,2],
-                              Annotation = "[arrowhead=none,",
-                              arrowsize = "color=Gray,",
-                              Score = "penwidth=0.2]"
-    )
+        ## from Martin Morgan  http://stackoverflow.com/questions/12837462/how-to-subset-data-with-advance-string-matching
 
+        Index_Gene <- data.frame(index = rep(seq_along(key0), sapply(key0, length)),ID = unlist(key0))
+        #Index_Genebkp <<- Index_Gene
+        ## Maybe useful add GeneList with index and genes
+        #ref_GeneSet  <-  cbind(GeneSet = AnnoGeneSet_hits[subset[,1],2],subset)
+
+        GeneSet_obj <- data.frame(Gene1 = paste(input$TypeGeneSetID,Index_Gene[,1], sep=""),
+                                  Gene2 = "->",
+                                  Direction = Index_Gene[,2],
+                                  Annotation = "[arrowhead=none,",
+                                  arrowsize = "color=Gray,",
+                                  Score = "penwidth=0.2]"
+        )
+
+      }
+    }
   }
   return(GeneSet_obj)
 }
@@ -219,8 +241,9 @@ output$dl_GeneSet_Legend <- shiny::downloadHandler(
 
 output$GeneSet_Legend <- DT::renderDataTable({
 
-  if(nrow(r_data$AnnoGeneSet)==0){
+  if(nrow(r_data$AnnoGeneSet)==1){ # 1 corresponds to r_data[['AnnoGeneSet']] <- as.data.frame("No GeneSet found.")
     dat  <- as.data.frame('There is no significant enrichment found. Change FDR.')
+    colnames(dat) <- 'There is no significant enrichment found. Change FDR.'
   }else{
     ## Attribute index to pathway
     if (inherits(try(
@@ -238,12 +261,13 @@ output$GeneSet_Legend <- DT::renderDataTable({
                                            seq_len(nrow(r_data$AnnoGeneSet)),
                                            sep=""),
                               r_data$AnnoGeneSet[,names(r_data$AnnoGeneSet) != "hits"])
-    }
 
-    #Legend_GeneSet_bkp <<- Legend_GeneSet
-    Legend_GeneSet[,4:7] <- round(Legend_GeneSet[,4:7], digits=2)
-    colnames(Legend_GeneSet)[c(3,4,6)] <- c("nhit","nGenes","pval")
-    dat <- Legend_GeneSet[,c(1,2,3,4,6,7)]
+
+      #Legend_GeneSet_bkp <<- Legend_GeneSet
+      Legend_GeneSet[,4:7] <- round(Legend_GeneSet[,4:7], digits=2)
+      colnames(Legend_GeneSet)[c(3,4,6)] <- c("nhit","nGenes","pval")
+      dat <- Legend_GeneSet[,c(1,2,3,4,6,7)]
+    }
   }
   r_data[['GeneSet_Legend']] <- dat
 
@@ -280,13 +304,13 @@ graph_obj <- reactive({
 
   Edges_obj <- Edges_obj()
 
-  if(input$NodeAttri_ReactomeID == 'Freq. Interaction'){
-    ## Nodes Attributes
-    GeneAttri_df <- Node_obj_FreqIn(GeneList)
-    #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
-    Edges_obj<- rbind(Edges_obj, GeneAttri_df)
-  }
-  if(input$NodeAttri_ReactomeID == 'FreqInt./GeneSet'){
+  # if(input$NodeAttri_ReactomeID == 'Freq. Interaction'){
+  #   ## Nodes Attributes
+  #   GeneAttri_df <- Node_obj_FreqIn(GeneList)
+  #   #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
+  #   Edges_obj<- rbind(Edges_obj, GeneAttri_df)
+  # }
+  #if(input$NodeAttri_ReactomeID == 'FreqInt./GeneSet'){
     ## Nodes Attributes
     GeneFreqIn_df <- Node_obj_FreqIn(GeneList)
     if(input$TypeGeneSetID =="None"){
@@ -303,9 +327,9 @@ graph_obj <- reactive({
       Edges_obj<- rbind(Edges_obj, GeneAttri_df)
     }
 
-  }
+ # }
 
-  if(input$NodeAttri_ReactomeID == 'GeneSet'){
+  #if(input$NodeAttri_ReactomeID == 'GeneSet'){
 
     if(input$TypeGeneSetID =="None"){
 
@@ -318,7 +342,7 @@ graph_obj <- reactive({
       Edges_obj <- rbind(Edges_obj, GeneSetAnno_df)
       # Edges_obj_bkp <<- Edges_obj
     }
-  }
+#  }
 
 
   if(input$NodeAttri_ClassifierID == 'mRNA'){
