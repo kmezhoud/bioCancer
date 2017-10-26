@@ -1,22 +1,23 @@
 Package: bioCancer
 Title: Interactive Multi-Omics Cancers Data Visualization and Analysis
-Version: 1.5.12
-Date: 2017-10-20
+Version: 1.6.00
+Date: 2017-11-26
 Authors@R: person("Karim", "Mezhoud", role=c("aut", "cre"), email="kmezhoud@gmail.com")
 Description: bioCancer is a Shiny App to visualize and analyse interactively
     Multi-Assays of Cancer Genomic Data.
 Depends:
-    magrittr (>= 1.5),
-    ggplot2 (>= 1.0.0),
-    lubridate (>= 1.3.3),
-    tidyr (>= 0.3.1),
-    cgdsr,
-    RCurl,
-    XML
+    R (>= 3.3.0),
+    radiant.data (>= 0.8.7.1),
+    cgdsr(>= 1.2.6),
+    XML(>= 3.98)
 Imports:
-    radiant.data (>= 0.8.1),
-    dplyr (>= 0.7.0),
-    htmlwidgets,
+    DT (>= 0.2),
+    dplyr (>= 0.7.2),
+    shiny (>= 1.0.5),
+    AlgDesign (>= 1.1.7.3),
+    import (>= 1.1.0),
+    methods,
+    shinythemes,
     Biobase,
     geNetClassifier,
     AnnotationFuncs,
@@ -25,41 +26,18 @@ Imports:
     clusterProfiler,
     reactome.db,
     ReactomePA,
-    plyr,
-    grDevices,
-    stats,
-    utils,
     DiagrammeR(>= 0.7),
     visNetwork,
-    car,
-    MASS (>= 7.3),
-    gridExtra (>= 2.0.0),
-    AlgDesign (>= 1.1.7.3),
-    psych (>= 1.4.8.11),
-    markdown (>= 0.7.4),
-    knitr (>= 1.8),
-    pryr (>= 0.1),
-    shiny (>= 0.13.2),
-    jsonlite (>= 0.9.17),
-    shinyAce (>= 0.1),
-    DT (>= 0.1),
-    readr (>= 0.1.1),
-    data.tree(>= 0.2.1),
-    scales(>= 0.2.5),
-    curl(>= 0.9.1),
-    covr (>= 1.2.0),
-    stringr (>= 1.0),
-    tibble,
-    wordcloud (>= 2.5),
-    ggdendro (>= 0.1.17),
-    broom (>= 0.3.7),
-    yaml(>= 2.1.13),
-    GPArotation
+    htmlwidgets,
+    plyr,
+    tibble
 Suggests:
-    prettydoc,
+    BiocStyle,
     rmarkdown,
+    knitr,
     testthat (>= 0.10.0)
-VignetteBuilder: knitr
+VignetteBuilder: 
+    knitr
 URL: http://kmezhoud.github.io/bioCancer
 BugReports: https://github.com/kmezhoud/bioCancer/issues
 License: AGPL-3 | file LICENSE

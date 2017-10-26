@@ -58,8 +58,9 @@ attriColorValue <- function(Value, df, colors=c(a,b,c),feet){
 #' }
 #' @export
 attriColorGene <- function(df){
-  # for CNA dataframe
-  if(all(apply(df,2, function(x)class(x)=='integer'))==TRUE){
+
+  if(all(apply(df,2, function(x)class(x)=='integer'))==TRUE
+  ){
     ListFreqCNA <- apply(df,2,
                          function(x) as.data.frame(table(x[order(x)])))
     print("getting the most frequent CNA categorie...")
@@ -71,35 +72,22 @@ attriColorGene <- function(df){
     dfMeansOrCNA <- as.numeric(as.matrix(dfMeansOrCNA))
     names(dfMeansOrCNA) <- namedfMeansOrCNA
 
+  }else if(all(apply(df,2, function(x)class(x)=='numeric'))==TRUE){
+    ## Compute mean of FreqMutData and mRNA Expression
+    dfMeansOrCNA <-apply(df,2,function(x) mean(x, na.rm=TRUE))
+    dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
+  }
+
+  ## Set colors if all value are 0 set only black
+  if(all(dfMeansOrCNA=="0")||all(dfMeansOrCNA=="NaN")){
+    colorls <- lapply(dfMeansOrCNA, function(x)
+      attriColorValue(x, dfMeansOrCNA, colors=c("white"), feet=0.1))
+    print("setting black color for empty data...")
+  }else{
     colorls <- lapply(dfMeansOrCNA, function(x)
       attriColorValue(x, dfMeansOrCNA,
                       colors=c("blue3","white","red"),
-                      feet=0.01))
-         # for numeric dataframe
-  }else if(all(apply(df,2, function(x)class(x)=='numeric'))==TRUE){
-    ## Compute mean of FreqMutData and mRNA Expression, rppa
-    dfMeansOrCNA <-apply(df,2,function(x) mean(x, na.rm=TRUE))
-    dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
-
-    if(all(dfMeansOrCNA=="0")||all(dfMeansOrCNA=="NaN")){
-      ## Set colors if all value are 0 set only black
-      colorls <- lapply(dfMeansOrCNA, function(x)
-        attriColorValue(x, dfMeansOrCNA, colors=c("white"), feet=0.1))
-      print("setting black color for empty data...")
-    }else{
-      colorls <- lapply(dfMeansOrCNA, function(x)
-        attriColorValue(x, dfMeansOrCNA,
-                        colors=c("blue3","white","red"),
-                        feet=0.01))
-    }
-  }else if(length(which(sapply(df, is.factor)))!=0 || length(which(sapply(df, is.character))) !=0){
-    ## built empty data frame with gene Symbol in colnames
-    df <- as.data.frame(setNames(replicate(length(colnames(df)),numeric(1),
-                                                   simplify = FALSE), colnames(df)[order(colnames(df))]))
-    ## set black for dataframe with character and/or factor values (not appropriate datafame)
-    colorls <- lapply(df, function(x)
-      attriColorValue(x, df, colors=c("black"), feet=0.1))
-    print("setting black color for non appropriate dataframe...")
+                      feet=0.1))
   }
   return(colorls)
 }
@@ -269,7 +257,7 @@ getFreqMutData <- function(list, geneListLabel){
                         names(Freq_ListMutData)),
                    silent=TRUE),"try-error")){
     p("There is a Study without Mutation Data.
-         Use Mutation Panel to verify mutations data for selected studies.",
+      Use Mutation Panel to verify mutations data for selected studies.",
       align="center", style = "color:blue")
   }else{
     dimnames(Freq_ArrayMutData) <-

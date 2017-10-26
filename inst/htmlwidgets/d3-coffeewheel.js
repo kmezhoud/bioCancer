@@ -1,6 +1,9 @@
 var initializeCoffeeWheel = function(data, el, width, height, partitionAttribute, mainTitle) {
 	  var minSize = Math.min(width, height)-20;
-
+	  
+	  /*  want to delete object before rendering an update object. doesn't work karim */
+	  delete initializeCoffeeWheel['el'];
+	  
     var div = d3.select(el);
     if(mainTitle.length > 0) {
       var mainTitleEl = div.append("h1")
@@ -47,7 +50,7 @@ var initializeCoffeeWheel = function(data, el, width, height, partitionAttribute
     }
 
     function colour(d) {
-      if (d.colour == undefined && d.children) {
+      if (d.colour === undefined && d.children) {
         // There is a maximum of two children!
         var colours = d.children.map(colour);
         var sum = { r: 0, g: 0, b: 0 };
@@ -80,15 +83,15 @@ var initializeCoffeeWheel = function(data, el, width, height, partitionAttribute
 
     // http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
     function brightness(rgb) {
-      return rgb.r * .299 + rgb.g * .587 + rgb.b * .114;
+      return rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114;
     }
 
     (function(json) {
       var assignSizes = function(node) {
-      	if(node.children == undefined || node.children.length < 1) {
+      	if(node.children === undefined || node.children.length < 1) {
       		return;
       	} else {
-      		var numOfChilds = node.children.length
+      		var numOfChilds = node.children.length;
       		for(var ci=0; ci < numOfChilds; ci++) {
       			var childNode = node.children[ci];
       			childNode.value = 1.0/numOfChilds;
@@ -151,7 +154,7 @@ var initializeCoffeeWheel = function(data, el, width, height, partitionAttribute
               var multiline = (d.name || "").split(" ").length > 1;
               return function() {
                 var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
-                    rotate = angle + (multiline ? -.5 : 0);
+                    rotate = angle + (multiline ? -0.5 : 0);
                 return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
               };
             })

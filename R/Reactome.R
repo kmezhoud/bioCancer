@@ -25,7 +25,7 @@
 #' @importFrom grDevices colorRampPalette colors
 #'
 attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
-
+  
   vector <- round(vector, digits = 0)
   Value <- round(Value, digits = 0)
   Max <- max(vector, na.rm=TRUE)
@@ -33,7 +33,7 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
   #   }
   my.colors <- grDevices::colorRampPalette(colors)
   #generates Max-Min colors from the color ramp
-
+  
   color.df <- data.frame(COLOR_VALUE=seq(Min,Max,feet), color.name=my.colors(length(seq(Min,Max,feet))))
   colorRef <- color.df[which(color.df[,1]==Value),2]
   #colorRef <- paste0(colorRef, collapse =",")
@@ -62,18 +62,18 @@ attriColorVector <- function(Value, vector, colors=c(a,b,c),feet){
 #' 2  MLH1       1  gbm_tcga  0.99703      256.3173        UP
 #' }
 Studies_obj <- function(df= df){
-
+  
   if(is.null(df)){
     msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
     stop(msgNoClassifier)
   }else{
     names(df) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
-
+    
     df$Gene2 <- "->"
     df$Annotation <- "[arrowhead = None,"
     df$arrowsize <- "color= Gray,alpha=80,"
     df$Score <- "penwidth= 0.2]"
-
+    
     V <- as.numeric(factor(df$Direction))
     set.seed(17)
     C <- sample(colors(),length(table(df$Direction)))
@@ -86,7 +86,7 @@ Studies_obj <- function(df= df){
     )
     df <- rbind(df, dfbis)
     #GenesClassDetails$class <- paste("penwidth=3,color =", C[V],"," ,sep=" ")
-
+    
     return(df)
   }
 }
@@ -114,26 +114,26 @@ Studies_obj <- function(df= df){
 #'  }
 #'
 Mutation_obj <- function(list, FreqMutThreshold, geneListLabel){
-
+  
   df <- getFreqMutData(list = list, geneListLabel)
-
+  
   if(is.null(df)){
     msgNoFreqMut <- paste("Mutation frequency is not found, please run gene Circomics before...")
     stop(msgNoFreqMut)
   }else{
-
+    
     df <- df[apply(df, 1, function(x) !all(is.na(x))),]
     c1 <- apply(df,1, function(x)max(x, na.rm=TRUE))
     c2 <- colnames(df)[apply(df,1, function(x)which.max(x))]
     c  <- cbind.data.frame(c2,round(c1, digits=2))
-
+    
     c <- c %>% tibble::rownames_to_column("Genes")
     colnames(c) <- c("Genes", "Disease", "Percentage")
-
+    
     V <- as.numeric(factor(c$Disease))
     set.seed(17)
     C <- sample(colors(),length(table(c$Disease)))
-
+    
     Mut <- cbind.data.frame(c,arrowsize=C[V])
     #BRCA1[shape = box, style= filled, fillcolor="#0007CD", color=red, penwidth=3, peripheries=2 ]
     #names(df) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
@@ -169,13 +169,13 @@ Mutation_obj <- function(list, FreqMutThreshold, geneListLabel){
 #'}
 #'
 attriShape2Gene <- function(gene, genelist){
-
+  
   if(gene %in% genelist){
     paste0(gene, "[shape = 'circle',", sep=" ")
   }else{
     paste0(gene, "[shape = 'box',", sep=" ")
   }
-
+  
 }
 
 
@@ -198,7 +198,7 @@ attriShape2Gene <- function(gene, genelist){
 #'}
 #'
 Node_obj_FreqIn <- function(geneList){
-
+  
   FreqIn <- r_data$FreqIn
   FreqIn$Genes<- unname(sapply(FreqIn$Genes,  function(x) attriShape2Gene(x, geneList)))
   FreqIn$FreqSum  <- FreqIn$FreqSum / 10
@@ -208,10 +208,10 @@ Node_obj_FreqIn <- function(geneList){
   FreqIn <- cbind(FreqIn, Arrowsize="alpha_fillcolor = 1,")
   FreqIn <- cbind(FreqIn, Score="fontsize=10]")
   names(FreqIn) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
-
+  
   GeneAttri <- FreqIn
   return(GeneAttri)
-
+  
 }
 
 #' Atrribute genes expression to color nodes
@@ -246,39 +246,39 @@ Node_obj_FreqIn <- function(geneList){
 #' nodeObj <- Node_obj_mRNA_Classifier(GeneList, GenesClassDetails)
 #'}
 Node_obj_mRNA_Classifier <- function(geneList,genesclassdetails){
-if(is.null(genesclassdetails)){
-  msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
-  stop(msgNoClassifier)
-}else{
-  GenesClassDetails <- merge(genesclassdetails, r_data$FreqIn, by="Genes")
-  GenesClassDetails <- GenesClassDetails[,!(names(GenesClassDetails) %in% "exprsUpDw")]
-  GenesClassDetails$FreqSum  <- GenesClassDetails$FreqSum / 10
-
-  GenesClassDetails$Genes <- unname(sapply(GenesClassDetails$Genes,  function(x) attriShape2Gene(x, geneList)))
-
-  ###GenesClassDetails$ranking <- paste("peripheries=",GenesClassDetails$ranking,"," ,sep=" ")
-  GenesClassDetails$ranking <- paste("peripheries=","1","," ,sep=" ")
-  V <- as.numeric(factor(GenesClassDetails$class))
-  set.seed(17)
-  C <- sample(colors(),length(table(GenesClassDetails$class)))
-
-  if(is.null(input$NodeAttri_ProfDataID)){
-    GenesClassDetails$class <- paste("penwidth=3,color =", C[V],"," ,sep=" ")
+  if(is.null(genesclassdetails)){
+    msgNoClassifier <- paste("Gene Classes Details is not found, please run gene Classifier before...")
+    stop(msgNoClassifier)
   }else{
-    GenesClassDetails$class <- paste("penwidth=3,color =", "white","," ,sep=" ")
+    GenesClassDetails <- merge(genesclassdetails, r_data$FreqIn, by="Genes")
+    GenesClassDetails <- GenesClassDetails[,!(names(GenesClassDetails) %in% "exprsUpDw")]
+    GenesClassDetails$FreqSum  <- GenesClassDetails$FreqSum / 10
+    
+    GenesClassDetails$Genes <- unname(sapply(GenesClassDetails$Genes,  function(x) attriShape2Gene(x, geneList)))
+    
+    ###GenesClassDetails$ranking <- paste("peripheries=",GenesClassDetails$ranking,"," ,sep=" ")
+    GenesClassDetails$ranking <- paste("peripheries=","1","," ,sep=" ")
+    V <- as.numeric(factor(GenesClassDetails$class))
+    set.seed(17)
+    C <- sample(colors(),length(table(GenesClassDetails$class)))
+    
+    if(is.null(input$NodeAttri_ProfDataID)){
+      GenesClassDetails$class <- paste("penwidth=3,color =", C[V],"," ,sep=" ")
+    }else{
+      GenesClassDetails$class <- paste("penwidth=3,color =", "white","," ,sep=" ")
+    }
+    GenesClassDetails$postProb <- "style = filled, fillcolor ='"
+    
+    GenesClassDetails$exprsMeanDiff <- sapply(GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
+    
+    GenesClassDetails$FreqSum <- paste0("',fixedsize = TRUE, width =",GenesClassDetails$FreqSum,", alpha_fillcolor =",GenesClassDetails$FreqSum,"]")
+    
+    # rename column to rbind with edge dataframe
+    names(GenesClassDetails) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
+    #GenesClassDetails_bkp <<- GenesClassDetails
+    GeneAttri <- GenesClassDetails
+    return(GeneAttri)
   }
-  GenesClassDetails$postProb <- "style = filled, fillcolor ='"
-
-  GenesClassDetails$exprsMeanDiff <- sapply(GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
-
-  GenesClassDetails$FreqSum <- paste0("',fixedsize = TRUE, width =",GenesClassDetails$FreqSum,", alpha_fillcolor =",GenesClassDetails$FreqSum,"]")
-
-  # rename column to rbind with edge dataframe
-  names(GenesClassDetails) <- c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")
-  #GenesClassDetails_bkp <<- GenesClassDetails
-  GeneAttri <- GenesClassDetails
-  return(GeneAttri)
-}
 }
 
 #' Attribute CNA data to node border
@@ -297,12 +297,12 @@ if(is.null(genesclassdetails)){
 #' nodeObj <- Node_obj_CNA_ProfData(ListProfDataCNA)
 #'}
 Node_obj_CNA_ProfData <- function(list){
-
+  
   ListDf <-lapply(list, function(x) apply(x, 2, function(y) as.data.frame(table(y[order(y)]))))
   ListDf2 <-   lapply(ListDf, function(x) lapply(x, function(y) y[,1][which(y[,2]== max(y[,2]))]))
   ListDf3 <- plyr::ldply(ListDf2, data.frame)
   MostFreqCNA_Df <- plyr::ldply(apply(ListDf3,2,function(x) names(which(max(table(x))==table(x))))[-1],data.frame)
-
+  
   #MostFreqCNA_Df$arrowsize <- paste(MostFreqCNA_Df[,1], MostFreqCNA_Df[,2], sep=":")
   MostFreqCNA_Df[,2] <- gsub("-1", "1, style=dashed", MostFreqCNA_Df[,2] )
   MostFreqCNA_Df[,2] <- gsub("-2", "2, style=dashed", MostFreqCNA_Df[,2] )
@@ -316,7 +316,7 @@ Node_obj_CNA_ProfData <- function(list){
   MostFreqCNA_Df$Annotation <- "="
   MostFreqCNA_Df$Score <- "]"
   MostFreqCNA_Df <- MostFreqCNA_Df[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
-
+  
   return(MostFreqCNA_Df)
 }
 
@@ -342,21 +342,21 @@ Node_obj_CNA_ProfData <- function(list){
 Node_obj_Met_ProfData <- function(list, type, threshold){
   #dfMeansOrCNA<-apply(df,2,function(x) mean(x, na.rm=TRUE))
   #dfMeansOrCNA <- round(dfMeansOrCNA, digits = 0)
-
+  
   Met_Obj <- lapply(list, function(x) apply(x,2,function(y) mean(y, na.rm=TRUE)))
   Met_Obj <- lapply(Met_Obj, function(x) round(x, digits = 2))
   Met_Obj <- plyr::ldply(Met_Obj)[,-1]
-
+  
   Met_Obj <- plyr::ldply(Met_Obj,function(x) (max(x, na.rm = TRUE)))
-
+  
   if(type == "HM450"){
     Met_Obj <- subset(Met_Obj, V1 > threshold)
   } else if( type == "HM27"){
     Met_Obj <- subset(Met_Obj, V1 > threshold)
   }
-
+  
   if(nrow(Met_Obj)== 0){
-
+    
   }else{
     Met_Obj$Gene1 <- Met_Obj$.id
     Met_Obj$Gene2 <- "["
@@ -365,7 +365,7 @@ Node_obj_Met_ProfData <- function(list, type, threshold){
     Met_Obj$arrowsize <- "invtriangle,"
     Met_Obj$Score <- "fixedsize=true]"
     Met_Obj <- Met_Obj[c("Gene1", "Gene2","Direction","Annotation","arrowsize" ,"Score")]
-
+    
     #lapply(ListProfData_bkp$Met_HM450, function(x) attriColorGene(x))
     return(Met_Obj)
   }
