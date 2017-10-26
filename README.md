@@ -33,7 +33,7 @@ It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a 
 
 ## Genes Classification and Biological terms Clustering
 
-<img src=".S4Video3.gif">
+<img src="S4Video3.gif">
 
 
 ## Network modeling example
