@@ -9,7 +9,7 @@
 
 [bioCancer](
 http://kmezhoud.github.io/bioCancer/
-) is a browser-based interface for Cancer Genomics Data analysis and visualization developped by [R](http://www.r-project.org/), and based on the [Shiny](http://www.rstudio.com/shiny/) package. Example of bioCancer server is hosted at http://46.101.227.144:3838/bioCancer/
+) is a browser-based interface for Cancer Genomics Data analysis and visualization developped by [R](http://www.r-project.org/), and based on the [Shiny](http://www.rstudio.com/shiny/) package. Example of bioCancer server is hosted at http://46.101.227.???:3838/bioCancer/
 
 #### Interactivities
 
@@ -21,26 +21,26 @@ bioCancer focuses on Cancer Genomics data visualisation and Genes Classification
 
 ## Circomics: Pull User genetic profiles with existing Cancer studies
 
-<img src="Circomics_demo.gif">
+<img src="./inst/extdata/Circomics_demo.gif">
 <!--
 It is inspired from [radiant](https://github.com/vnijs/radiant) developed by <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank">Dr. Vincent Nijs</a>. 
 -->
 
 ## Preprocessing and Plotting
 
-<img src="S3Video2.gif">
+<img src="./inst/extdata/S3Video2.gif">
 
 
 ## Genes Classification and Biological terms Clustering
 
-<img src="S4Video3.gif">
+<img src="./inst/extdata/S4Video3.gif">
 
 
 ## Network modeling example
 <!--
 ![Network modeling](./inst/extradata/imgs/demoReactome.gif)
 -->
-<img src="S5Video4.gif">
+<img src="./inst/extdata/S5Video4.gif">
 
 <!--
 ## Key features
