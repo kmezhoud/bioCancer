@@ -14,7 +14,7 @@ testthat::test_that("cgdsr connection",
 testthat::test_that("ReactomeFI connection",
                     {
                       checkEq = function(a,b) { if (identical(a,b)) "OK\n" else "FAILED!\n" }
-                      source(file.path(getOption("radiant.path.bioCancer"), "app/tools/bioCancer/getReactomeFUN.R"),
+                      source(file.path(getOption("radiant.path.bioCancer"), "tools/bioCancer/getReactomeFUN.R"),
                              encoding = getOption("radiant.encoding"), local = TRUE)
                       library(RCurl)
                       library(XML)
