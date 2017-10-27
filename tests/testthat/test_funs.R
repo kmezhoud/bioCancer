@@ -14,7 +14,7 @@ testthat::test_that("cgdsr connection",
 testthat::test_that("ReactomeFI connection",
                     {
                       checkEq = function(a,b) { if (identical(a,b)) "OK\n" else "FAILED!\n" }
-                      source(paste0(system.file(package = "bioCancer"), "/base/tools/data/getReactomeFUN.R"), encoding = "UTF-8", local = TRUE)
+                      source(paste0(getOption("radiant.path.bioCancer"), "tools/bioCancer/getReactomeFUN.R"), encoding = "UTF-8", local = TRUE)
                       library(RCurl)
                       library(XML)
                       ReactomeResult <- queryBuildNetwork(2013, genes = c("TP53","BRCA1"))
