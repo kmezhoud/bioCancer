@@ -18,7 +18,6 @@ testthat::test_that("ReactomeFI connection",
                              encoding = "UTF-8", local = TRUE)
                       # install.packages('RCurl')
                       # install.packages('XML')
-                      library('Rcurl', 'XML')
                       ReactomeResult <- queryBuildNetwork(2013, genes = c("TP53","BRCA1"))
                       cat('ReactomeFI connection... ',
                           checkEq(colnames(ReactomeResult), c("first.protein","second.protein"))

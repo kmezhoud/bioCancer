@@ -1,42 +1,26 @@
 language: r
+r:
+- bioc-devel
 #install:
 #sudo su - -c "R -e "install.packages('RCurl', repos='http://cran.rstudio.com/')""
-r:
-  - bioc-devel
-
+# r_binary_packages: car
 cache: packages
 bioc_required: true
 bioc_use_devel: true
 
-os:
-  - linux
-  - osx
+bioc_required: true
+
+sudo: required
 
 
-env:
-  global:
-    - _R_CHECK_FORCE_SUGGESTS_=False
-    - R_LIBS="http://cran.rstudio.com"
 
-r_packages:
-    - knitr
-    - rmarkdown
-    - covr
+#before_install:
+#./travis-tool.sh aptget_install r-cran-car
 
-## bioc_packages:
-##     - org.Hs.eg.db
-##     - DOSE
-##     - GOSemSim
 
-after_failure:
-  - ./travis-tool.sh dump_logs
 
-after_success:
-  - Rscript -e 'library(covr); codecov()'
 
-notifications:
-  email:
-    recipients: gcyu@connect.hku.hk
-    on_success: never
-    on_failure: always
-
+#r_github_packages:
+  #- trestletech/shinyAce
+  #- jimhester/covr
+  #- rstudio/DT
