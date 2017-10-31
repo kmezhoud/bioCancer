@@ -1,12 +1,8 @@
 language: r
-r:
-- bioc-devel
 #install:
-#sudo su - -c "R -e "install.packages('RCurl', repos='http://cran.rstudio.com/')""
+sudo su - -c "R -e "install.packages('RCurl', repos='http://cran.rstudio.com/')""
 # r_binary_packages: car
 cache: packages
-bioc_required: true
-bioc_use_devel: true
 
 bioc_required: true
 
