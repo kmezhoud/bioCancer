@@ -1,6 +1,6 @@
 language: r
 #install:
-sudo su - -c "R -e "install.packages('RCurl', repos='http://cran.rstudio.com/')""
+#sudo su - -c "R -e "install.packages('RCurl', repos='http://cran.rstudio.com/')""
 # r_binary_packages: car
 cache: packages
 
