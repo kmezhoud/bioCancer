@@ -35,15 +35,17 @@ shinyServer(function(input, output, session) {
   output$help_bioCancer_ui <- renderUI({
     sidebarLayout(
       sidebarPanel(
+        help_cBioPortal_panel,
+        help_enrichment_panel,
         help_data_panel,
-        help_bioCancer_panel,
         uiOutput("help_text"),
         width = 3
       ),
 
       mainPanel(
         HTML(paste0("<h2>Select help files to show and search</h2><hr>")),
-        htmlOutput("help_bioCancer"),
+        htmlOutput("help_cBioPortal"),
+        htmlOutput("help_enrichment"),
         htmlOutput("help_data")
       )
     )
@@ -85,8 +87,8 @@ shinyServer(function(input, output, session) {
   ## save state on refresh or browser close
   saveStateOnRefresh(session)
 
-  ## close browser when radiant.dose is stopped
-  ## close Rstudio when radiant.dose os stopped
+  # # close browser when bioCancer is stopped
+  # # close Rstudio when bioCancer os stopped
   # session$onSessionEnded(function() {
   #    stopApp()
   #    q("no")

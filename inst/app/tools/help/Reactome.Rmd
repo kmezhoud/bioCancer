@@ -57,20 +57,23 @@ User needs to
 * Set threshold from Sliders 
 
 #### Legend
+<!--
 <p align="center"><img src="figures/ReactomeLegend.png"></p>
+-->
 
 ![Reactome Legend](figures/ReactomeLegend.png)
 
 
 ### Interpretation
+![Reactome Network](figures/Reactome_Network.png)
 
-<p align="center"><img src="/figures/Reactome_Network.png"></p>
 
- <!---<img src="figures/Reactome_Network.png" alt="Smiley face" height="42" width="42"> 
- 
-  <figure>
-  <img src="figures/Reactome_Network.png" alt="The Pulpit Rock" width="304" height="228">
-</figure> 
+<!-- <p align="center"><img src="/figures/Reactome_Network.png"></p> -->
 
-![Reactome Network](figures/Reactome_Network.png)--->
+<!-- <img src="figures/Reactome_Network.png" alt="Smiley face" height="42" width="42">  -->
+
+<!--   <figure> -->
+<!--   <img src="figures/Reactome_Network.png" alt="The Pulpit Rock" width="304" height="228"> -->
+<!-- </figure>  -->
+
 

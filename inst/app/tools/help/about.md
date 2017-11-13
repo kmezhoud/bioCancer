@@ -90,7 +90,7 @@ numericInput("sm_comp_value", "Comparison value:", state_init('sm_comp_value',sm
 ## Acknowledgment
 
 
-The `Processing` panel of bioCancer is adapted from [radiant](https://github.com/vnijs/radiant). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
+The `Workspace` panel of bioCancer is adapted from [radiant.data](https://github.com/radiant-rstats/radiant.data). I would like to thank <a href="http://rady.ucsd.edu/faculty/directory/nijs/" target="\_blank"> Dr. Vincent Nijs</a> for sharing his work for R community.
 
 
 ## License
@@ -100,5 +100,5 @@ bioCancer is licensed under the <a href="http://www.tldrlegal.com/l/AGPL3" targe
 As a summary, the AGPLv3 license requires, attribution, including copyright and license information in copies of the software, stating changes if the code is modified, and disclosure of all source code.
 
 
-&copy; Karim Mezhoud (2016) <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="https://kmezhoud.github.io/bioCancer/base/images/80x15.png" /></a>
+&copy; Karim Mezhoud (2017) <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="https://kmezhoud.github.io/bioCancer/base/images/80x15.png" /></a>
 

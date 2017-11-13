@@ -6,12 +6,12 @@
 options(radiant.path.data = system.file(package = "radiant.data"))
 source(file.path(getOption("radiant.path.data"), "app/global.R"),
        encoding = getOption("radiant.encoding", default = "UTF-8"), local = TRUE)
-## sourcing functions from radiant.data radiant.R file 
+## sourcing functions from radiant.data radiant.R file
 #source(file.path(getOption("radiant.path.bioCancer"), "app/radiant.R"),
 #      encoding = getOption("radiant.encoding"), local = TRUE)
 
 
-## Setting bioCnacer package path
+## Setting bioCancer package path
 options(radiant.path.bioCancer = system.file(package = "bioCancer"))
 
 
@@ -19,6 +19,8 @@ options(radiant.path.bioCancer = system.file(package = "bioCancer"))
 options(radiant.nav_ui =
           list(windowTitle = "bioCancer" ,theme= shinythemes::shinytheme("simplex") , id = "nav_radiant",
                inverse = TRUE, collapsible = TRUE, tabPanel("Workspace", withMathJax(), uiOutput("ui_data"))))
+
+
 
 ## change help menu function
 ## function to generate help, must be in global because used in ui.R
@@ -45,7 +47,7 @@ help_menu <- function(hlp) {
     )
   )
 }
-## copy-right text
+## needed to change author in the helps of the Menu help
 options(radiant.help.cc = "&copy; Karim Mezhoud (2017) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/'
         target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a></br>")
 
@@ -59,9 +61,11 @@ ifelse (grepl("bioCancer", getwd()) && file.exists("../../inst") , "..",
 source(file.path(getOption("radiant.path.bioCancer"), "app/init.R"),
        encoding = getOption("radiant.encoding"), local = TRUE)
 
-
+## needed to change figures in helps
+addResourcePath("figures", file.path(getOption("radiant.path.bioCancer"), "app/tools/help/figures/"))
 addResourcePath("imgs", file.path(getOption("radiant.path.bioCancer"), "app/www/imgs/"))
 #addResourcePath("js", file.path(getOption("radiant.path.bioCancer"), "app/www/js/"))
 
 ## set example data
 options(radiant.example.data = "bioCancer")
+

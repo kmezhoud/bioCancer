@@ -21,7 +21,7 @@ output$pipeline <- renderUI({
 })
 
 output$overview <- renderImage({
-  
+
   list(src = file.path( getOption("radiant.path.bioCancer"),"app/tools/help/figures/overview_methods.png"),
        contentType = 'image/png',
        width = 600,
@@ -35,8 +35,8 @@ output$overview <- renderImage({
 output$dl_Studies_tab <- shiny::downloadHandler(
   filename = function() { paste0("Studies_tab.csv") },
   content = function(file) {
-    # append _rows_all to StudiesTable ID of the "Studies" dataframe 
-    getdata(Studies[input$StudiesTable_rows_all,], vars = NULL, 
+    # append _rows_all to StudiesTable ID of the "Studies" dataframe
+    getdata(Studies[input$StudiesTable_rows_all,], vars = NULL,
             rows = NULL,
             na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
@@ -49,14 +49,14 @@ output$ui_Studies <- renderUI({
                   author = "Karim Mezhoud",
                   help_file = inclRmd(file.path(
                     getOption("radiant.path.bioCancer"),"app/tools/help/Studies.md")))
-  
+
 })
 
 output$StudiesTable <- DT::renderDataTable({
   shiny::withProgress(message = 'loading Studies from cgdsr server...', value = 0.1, {
     Sys.sleep(0.25)
-    
+
   displayTable(Studies)
   })
-  
+
 })

@@ -15,7 +15,9 @@ It is also possible to summarize numerical variables. Select `FreqMut` from the 
 
 ![pivotr table](figures/pivotr.png)
 
+<!--
 <p align="center"><img src="figures/pivotr.png"></p>
+-->
 
 You can also create a bar chart based on the generated table (see image above). To download the table to _csv_ format or the plot to a _png_ format click the download icon on the right.
 
