@@ -65,6 +65,8 @@ source(file.path(getOption("radiant.path.bioCancer"), "app/init.R"),
 addResourcePath("figures", file.path(getOption("radiant.path.bioCancer"), "app/tools/help/figures/"))
 addResourcePath("imgs", file.path(getOption("radiant.path.bioCancer"), "app/www/imgs/"))
 #addResourcePath("js", file.path(getOption("radiant.path.bioCancer"), "app/www/js/"))
+#addResourcePath("js", file.path(getOption("radiant.path.bioCancer"), "htmlwidgets/"))
+#addResourcePath("js", file.path(getOption("radiant.path.bioCancer"), "htmlwidgets/tooltipster/"))
 
 ## set example data
 options(radiant.example.data = "bioCancer")

@@ -15,14 +15,14 @@
 output$CircosLegend <- renderImage({
   # When input$n is 3, filename is ./images/image3.jpeg
   filename <- paste(path.package('bioCancer'),"/extdata/imgs/CircosLegend.png", sep="")
-  
+
   # Return a list containing the filename and alt text
   list(src = filename,
        contentType = 'image/png',
        width = 200,
        height = 250,
        alt = paste("Image number"))
-  
+
 }, deleteFile = FALSE)
 
 
@@ -73,19 +73,19 @@ output$uiPullUserDataRPPA <- renderUI({
 
 
 output$ui_CircosDimension <- renderUI({
-  
+
   Dimension <- c("CNA","Methylation", "mRNA","Mutation","miRNA","RPPA", "All" )
   selectizeInput("CircosDimensionID", label= "Select Dimension:", choices= Dimension,
                  selected = "", multiple=TRUE)
 })
 
 output$StrListProfDataCircos <- renderPrint({
-  
+
   withProgress(message = 'loading Profiles Data from cgdsr server... ', value = 0.1, {
     Sys.sleep(0.25)
     getListProfData(panel='Circomics',input$GeneListID)
   })
-  
+
   ## don't use r_data$ListProfData => cause réinitiate wheel
   #      if(is.null(r_data$ListProfData)){
   #        c("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.")
@@ -173,13 +173,13 @@ output$ui_bad_userData_message <- renderUI({
 
 
 output$ui_Circomics <- renderUI({
-  
+
   ## get Studies for Circomics
   updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies[,1], selected = c("luad_tcga_pub","blca_tcga_pub"))
   #,"prad_tcga_pub","ucec_tcga_pub"
-  
+
   conditionalPanel("input.tabs_Enrichment == 'Circomics'",
-                   
+
                    wellPanel(
                      selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=Studies[,1],
                                     selected = c("luad_tcga_pub","blca_tcga_pub"), multiple = TRUE),
@@ -187,7 +187,7 @@ output$ui_Circomics <- renderUI({
                                       h5("Select at less two studies",align="center",style = "color:red")
                      ),
                      # if(length(input$StudiesIDCircos)==1){
-                     
+
                      div(class="row",
                          div(class="col-xs-8",
                              conditionalPanel(condition = "input.StudiesIDCircos != null && input.ViewProfDataCircosID==false",
@@ -239,7 +239,7 @@ output$ui_Circomics <- renderUI({
                                       #
                      ),
                      #}
-                     
+
                      conditionalPanel("input.loadListProfDataCircosId == true",
                                       wellPanel(
                                         ################
@@ -251,14 +251,14 @@ output$ui_Circomics <- renderUI({
                                         #                list("CNA","Met", "mRNA", "Mutation", "miRNA", "RPPA", "All")
                                         #              ,selected = character(0)
                                         # )
-                                        
+
                                         uiOutput("ui_CircosDimension")
-                                        
+
                                         #
                                       )
-                                      
+
                      ),
-                     
+
                      conditionalPanel("input.CircosDimensionID != null",
                                       wellPanel(
                                         h4("Merge user data to wheel:"),
@@ -294,12 +294,12 @@ output$ui_Circomics <- renderUI({
                                         #     div(class="col-xs-4",
                                         #         checkboxInput('UserDataRPPAID', 'RPPA', FALSE))
                                         # ),
-                                        
+
                                         uiOutput("ui_userDataMergeDimension"),
-                                        
+
                                         uiOutput("ui_userDataMergeSwithButton")
-                                        
-                                        
+
+
                                         # div(class="row",
                                         #     div(class="col-xs-6",
                                         #         actionButton('pullUserDataButtonId', 'Add to wheel', icon('arrow-down'),style='padding:4px; font-size:80%')),
@@ -311,27 +311,23 @@ output$ui_Circomics <- renderUI({
                                         # )
                                         # }
                                       )
-                                      
-                                      
-                                      
+
+
+
                      ),
-                     
-                     
-                     
-                     
                      #################
-                     
-                     #                    conditionalPanel("input.CircosDimensionID == 'All'",
-                     #                                     #plot_downloader("SaveMetabologram_All", pre = ""),
-                     #                                     downloadButton('Save_Metabologram_All', 'All')
-                     #
-                     #                    ),
-                     
+
+                                        # conditionalPanel("input.CircosDimensionID == 'All'",
+                                        #                  #plot_downloader("SaveMetabologram_All", pre = ""),
+                                        #                  downloadButton('Save_Metabologram_All', 'All')
+                                        #
+                                        # ),
+
                      checkboxInput("CircosLegendID", "Legend", value=FALSE),
                      #                    radioButtons(inputId = "WheelID", label = "Wheel Style:",
                      #                                 c("Summary"="init" ,"Zoom" = "Zoom",  "Static" = "Static"),
                      #                                 selected = "", inline = TRUE),
-                     
+
                      #                    radioButtons(inputId = "saveWheelID", label = "Save Wheel:",
                      #                                 c("SVG" = "SVG", "Gif" = "Gif"),
                      #                                 selected = "SVG", inline = TRUE),
@@ -341,8 +337,8 @@ output$ui_Circomics <- renderUI({
                      #
                      #                    conditionalPanel(condition = "input.saveWheelID == 'Gif'",
                      #                                     downloadButton("SaveGif")),
-                     
-                     
+
+
                      conditionalPanel("input.CircosLegendID==true",
                                       #               wellPanel(
                                       #plotOutput("LegendCircos")
@@ -356,20 +352,20 @@ output$ui_Circomics <- renderUI({
                                       #                    p(span("Yellow", style="color:gold"),": Middle Positive significant rate."),
                                       #                    p(span("Red", style="color:red"),": Positive significant rate.")
                      ),
-                     
+
                      help_and_report(modal_title = "Circomics", fun_name = "CircomicsHelp",
                                      author = "Karim Mezhoud",
                                      help_file = inclRmd(file.path(
                                        getOption("radiant.path.bioCancer"),"app/tools/help/Circomics.md")))
                    )
-  )    
+  )
 })
 
 ## Load Profile data in datasets to Processing panel
 observe({
   if (not_pressed(input$pushListProfData)) return()
   isolate({
-    
+
     loadInDatasets(fname="xCNA", header=TRUE)
     loadInDatasets(fname="xmRNA", header=TRUE)
     loadInDatasets(fname="xMetHM450", header=TRUE)
@@ -378,14 +374,14 @@ observe({
     loadInDatasets(fname="xFreqMut", header=TRUE)
     loadInDatasets(fname="xmiRNA", header=TRUE)
     loadInDatasets(fname="xRPPA", header=TRUE)
-    
+
     #### Updating datasets generate error with vars view tab
     # sorting files alphabetically
     #r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
     #updateSelectInput(session, "dataset", label = "Datasets:",
     #                 choices = r_data$datasetlist,
     #                selected = "")
-    
+
   })
 })
 

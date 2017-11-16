@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.6.02 (14 November 2017)
+------------------------
++ resolve conflicts renderMetabologram and renderCoffeewheel. redefine initCoffeewhell in /htmlwidges
++ report circomics widget to markdown document
++ Save static wheel as html and png (low resolution)
++ need  phantomJS to catupe html widget output as png file
+
 CHANGES IN VERSION 1.6.01 (13 November 2017)
 ------------------------
 + add helps to ? menu

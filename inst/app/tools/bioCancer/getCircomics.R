@@ -111,6 +111,7 @@ output$getCoffeeWheel_All <- renderCoffeewheel({
     #getListProfData(panel="Circomics")
     #Shiny.unbindAll()
     CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData)
+    r_data[['TreeListProfData']] <- CoffeewheelTreeProfData
     title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA")
     coffeewheel(CoffeewheelTreeProfData, width=600, height=600, partitionAttribute="value", main=title)
   })
@@ -124,6 +125,7 @@ output$getCoffeeWheel_Met <- renderCoffeewheel({
 
     #getListProfData()
     CoffeewheelTreeMetData <- reStrDimension(r_data$ListMetData)
+    r_data[['TreeMetData']] <- CoffeewheelTreeMetData
     title<- paste("Methylations: HM450 and HM27")
     coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main=title)
   })
@@ -137,6 +139,7 @@ output$getCoffeeWheel_CNA <- renderCoffeewheel({
 
     #getListProfData()
     CoffeewheelTreeCNAData <- reStrDisease(r_data$ListProfData$CNA)
+    r_data[['TreeCNAData']] <- CoffeewheelTreeCNAData
     title<- paste("Copy Number Alteration [-2, +2]")
     coffeewheel(CoffeewheelTreeCNAData, width=600, height=600,main=title)
   })
@@ -149,9 +152,10 @@ output$getCoffeeWheel_mRNA <- renderCoffeewheel({
     Sys.sleep(0.25)
 
     #getListProfData()
-    CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$Expression)
+    CoffeewheelTreeExpData <- reStrDisease(r_data$ListProfData$Expression)
+    r_data[['TreeMRNAData']] <- CoffeewheelTreeExpData
     title<- paste("mRNA expression")
-    coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main=title)
+    coffeewheel(CoffeewheelTreeExpData, width=600, height=600, main=title)
   })
 
 })
@@ -162,9 +166,10 @@ output$getCoffeeWheel_miRNA <- renderCoffeewheel({
     Sys.sleep(0.25)
 
     #getListProfData()
-    CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$miRNA)
+    CoffeewheelTreeMiRNAData <- reStrDisease(r_data$ListProfData$miRNA)
+    r_data[['TreeMiRNAData']] <- CoffeewheelTreeMiRNAData
     title<- paste("miRNA Expression")
-    coffeewheel(CoffeewheelTreeMetData, width=600, height=600, main= title)
+    coffeewheel(CoffeewheelTreeMiRNAData, width=600, height=600, main= title)
   })
 
 })
@@ -175,9 +180,10 @@ output$getCoffeeWheel_RPPA <- renderCoffeewheel({
     Sys.sleep(0.25)
 
     #getListProfData()
-    CoffeewheelTreeMetData <- reStrDisease(r_data$ListProfData$RPPA)
+    CoffeewheelTreeRPPAData <- reStrDisease(r_data$ListProfData$RPPA)
+    r_data[['TreeRPPAData']] <- CoffeewheelTreeRPPAData
     title<- paste("Reverse Phase Protein Arrays")
-    coffeewheel(CoffeewheelTreeMetData, width=600, height=600,main=title)
+    coffeewheel(CoffeewheelTreeRPPAData, width=600, height=600,main=title)
   })
 
 })
@@ -193,6 +199,7 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
     print("End getting Mutation Frequency...")
     listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
     TreeMutData <- reStrDisease(listMut_df)
+    r_data[['TreeMutData']] <- TreeMutData
     coffeewheel(TreeMutData, width=700, height=600
                 #,main= paste0("Mutation Frequency: (Min = ", min(r_data$Freq_DfMutData) ,", Max = ", max(r_data$Freq_DfMutData)  ,")", sep="")
     )
@@ -201,118 +208,31 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
 })
 
 
-# output$Save_Metabologram_All <- downloadHandler(
-#   filename = function() {
-#     paste(getwd(),"Metabologram_All.pdf", sep="/")
-#   },
-#   content = function(file) {
-#     #png(file)
-#     saveWidget(
-#     #file.copy(
-#    # pdf(file=file, width=12, height=8)
-#     #SaveMetabologram_All()
-#     #dev.off()
-#       #metabologramOutput('metabologram_All')
-#       CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData),
-#       title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA"),
-#       #coffeewheel(CoffeewheelTreeProfData, width=600, height=600, partitionAttribute="value", main=title)
-#       metabologram(CoffeewheelTreeProfData, width=600, height=600, main=title,
-#                    showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
-#                    legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-#       , file)
-#       #dev.off()
-#   }
-# )
+### render static circos "metabologram"
+output$metabologram_All <- renderMetabologram({
 
-#### Save circular layouts
+  CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
 
-# SaveMetabologram_CNA <- reactive({
-#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData$CNA)
-#   title<- paste("Copy Number Alateration")
-#   bioCancer::metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-# 
-# })
-# 
-# SaveMetabologram_Met <- reactive({
-#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListMetData)
-#   title<- paste("DNA Methylation")
-#   bioCancer::metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-# 
-# })
+  title<- paste("Wheel with selected Studies")
 
+  metabologram(CoffeewheelTreeData, width=600, height=600, main=title,
+               showLegend = FALSE, fontSize = 8, legendBreaks=c("Down", "0", "Up", "NA"),
+               legendColors=c("blue","white","red", "black") , legendText="Legend")
 
-# SaveMetabologram_mRNA <- reactive({
-#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData$Expression)
-#   title<- paste("mRNA expression")
-#   metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-#
-# })
-#
-#
-# SaveMetabologram_RPPA <- reactive({
-#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData$RPPA)
-#   title<- paste("Reverse Phase Protein Arrays")
-#   metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-#
-# })
-#
-# SaveMetabologram_RPPA <- reactive({
-#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData$miRNA)
-#   title<- paste("miRNA Expression")
-#   metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-#
-# })
-#
-# SaveMetabologram_All <- reactive({
-#   CoffeewheelTreeProfData <- reStrDimension(r_data$ListProfData)
-#   title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA")
-#   metabologram(CoffeewheelTreeProfData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-# 
-# })
-
-# SaveMetabologram_Mut <- reactive({
-#   Freq_DfMutData <- getFreqMutData(list = r_data$ListMutData)
-#   print("End getting Mutation Frequency...")
-#   listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
-#   TreeMutData <- reStrDisease(listMut_df)
-#   #coffeewheel(TreeMutData, width=600, height=600, main="Mutation Frequency: (Min,Max)")
-#   title<- paste("Mutation")
-#   metabologram(TreeMutData, width=800, height=800, main=title, showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"), legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-#
-# })
-
-# output$dl_metabologram <- downloadHandler(
-#   filename='plot.png',
-#   content= getmetabologram()
-# )
-
-# output$metabologram_All <- renderMetabologram({
-#
-#   CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
-#
-#   ### get Legend for static coffewheel
-#   #devtools::install_github("armish/metabologram")
-#   #library("metabologram")
-#   title<- paste("Wheel with selected Studies")
-#   metabologram(CoffeewheelTreeData, width=600, height=600, main=title,
-#                showLegend = TRUE, fontSize = 10, legendBreaks=c("NA","Min","Negative", "0", "Positive", "Max"),
-#                legendColors=c("black","blue","cyan","white","yellow","red") , legendText="Legend")
-# })
-
-
+})
 
 
 output$CircosAvailability <- DT::renderDataTable({
-  
+
   shiny::withProgress(message = 'Loading Data...', value = 0.1, {
     Sys.sleep(0.25)
     dat <- checkDimensions(panel="Circomics", StudyID= input$StudiesIDCircos )
     ## remove rownames to column
     dat <- dat %>% tibble::rownames_to_column("Samples")
-    
+
     # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
     action = DT::dataTableAjax(session, dat, rownames = FALSE)
-    
+
     DT::datatable(dat, filter = list(position = "top", clear = FALSE, plain = TRUE),
                   rownames = FALSE, style = "bootstrap", escape = FALSE,
                   # class = "compact",
@@ -327,21 +247,20 @@ output$CircosAvailability <- DT::renderDataTable({
                   )
     )%>%  DT::formatStyle(names(dat),
                           color = DT::styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
-    
-    
-    
-    
+
+
+
+
   })
 })
 
-
 output$Sequenced_SampleSize <- DT::renderDataTable({
-  
+
   shiny::withProgress(message = 'Computing Sample sizes...', value = 0.1, {
     Sys.sleep(0.25)
-    
+
     dat <- getSequensed_SampleSize(StudyID = input$StudiesIDCircos)
-    
+
     DT::datatable(dat,
                   caption= "Table 1: Sample Sizes by study",
                   autoHideNavigation = getOption("DT.autoHideNavigation")
@@ -405,4 +324,255 @@ output$Methylation_mean <- DT::renderDataTable({
                 caption="Table 2: Correlation of silencing gene by Methylation: (0:1)",
                 autoHideNavigation = getOption("DT.autoHideNavigation")
   )
+})
+
+
+## REPORT
+observeEvent(input$CircomicsHelp_report, {
+
+  cmdAll <- paste0("```{r}\n",
+                 paste0("if(is.null(r_data$TreeListProfData)){
+                         r_data[['TreeListProfData']] <- reStrDimension(r_data$ListProfData)
+                          }
+                         title<- paste('All genomics data available')
+                        wdgt <- metabologram(r_data$TreeListProfData, width=600, height=600, main=title,
+                         showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                         legendColors=c('blue','white','red', 'black') , legendText='Legend')
+                         wdgt
+                        ") ,
+                 "\n",
+                 "\n```\n"
+  )
+
+  cmdCNA <- paste0("```{r}\n",
+                   paste0("if(is.null(r_data$TreeCNAData)){
+                         r_data[['TreeCNAData']] <- reStrDisease(r_data$ListProfData$CNA)
+                          }
+                         title<- paste('Gene Copy Number Alteration')
+                        wdgt <- metabologram(r_data$TreeCNAData, width=600, height=600, main=title,
+                         showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                         legendColors=c('blue','white','red', 'black') , legendText='Legend')
+                         wdgt
+                        ") ,
+                   "\n",
+                   "\n```\n"
+  )
+
+  cmdMet <- paste0("```{r}\n",
+                   paste0("if(is.null(r_data$TreeMetData)){
+                          r_data[['TreeMetData']] <- reStrDimension(r_data$ListMetData)
+}
+  title<- paste('Methylation HM450, HM27')
+  wdgt <- metabologram(r_data$TreeMetData, width=600, height=600, main=title,
+  showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+  legendColors=c('blue','white','red', 'black') , legendText='Legend')
+  wdgt
+  ") ,
+                   "\n",
+                   "\n```\n"
+                   )
+
+  cmdMut <- paste0("```{r}\n",
+                   paste0("if(is.null(r_data$TreeMutData)){
+    Freq_DfMutData <- getFreqMutData(list = r_data$ListMutData, geneListLabel = input$GeneListID)
+    listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
+    r_data[['TreeMutData']] <- reStrDisease(listMut_df)
+}
+title<- paste('Mutation')
+wdgt <- metabologram(r_data$TreeMutData, width=600, height=600, main=title,
+showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+legendColors=c('blue','white','red', 'black') , legendText='Legend')
+wdgt
+") ,
+                   "\n",
+                   "\n```\n"
+                   )
+
+  cmdMRNA <- paste0("```{r}\n",
+                   paste0("if(is.null(r_data$TreeMRNAData)){
+                          r_data[['TreeMRNAData']] <- reStrDisease(r_data$ListProfData$Expression)
+}
+title<- paste('mRNA expression')
+wdgt <- metabologram(r_data$TreeMRNAData, width=600, height=600, main=title,
+showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+legendColors=c('blue','white','red', 'black') , legendText='Legend')
+wdgt
+") ,
+                   "\n",
+                   "\n```\n"
+                   )
+
+  cmdRPPA <- paste0("```{r}\n",
+                   paste0("if(is.null(r_data$TreeRPPAData)){
+                          r_data[['TreeRPPAData']] <- reStrDisease(r_data$ListProfData$RPPA)
+}
+title<- paste('RPPA')
+wdgt <- metabologram(r_data$TreeRPPAData, width=600, height=600, main=title,
+showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+legendColors=c('blue','white','red', 'black') , legendText='Legend')
+wdgt
+") ,
+                   "\n",
+                   "\n```\n"
+                   )
+
+  cmdMiRNA <- paste0("```{r}\n",
+                   paste0("if(is.null(r_data$TreeMiRNAData)){
+                          r_data[['TreeMiRNAData']] <- reStrDisease(r_data$ListProfData$miRNA)
+}
+title<- paste('miRNA')
+wdgt <- metabologram(r_data$TreeMiRNAData, width=600, height=600, main=title,
+showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+legendColors=c('blue','white','red', 'black') , legendText='Legend')
+wdgt
+") ,
+                   "\n",
+                   "\n```\n"
+                   )
+  update_report_fun(cmdAll)
+  update_report_fun(cmdCNA)
+  update_report_fun(cmdMet)
+  update_report_fun(cmdMut)
+  update_report_fun(cmdMRNA)
+  update_report_fun(cmdRPPA)
+  update_report_fun(cmdMiRNA)
+
+})
+
+## Save circular layouts as png
+
+# output$dl_metabologram_All <- shiny::downloadHandler(
+#   filename = function() { },
+#   content = function(file) {
+#
+#
+#
+#     wdgt <- metabologram(r_data$TreeListProfData, width=600, height=600, main='title',
+#                  showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+#                  legendColors=c('blue','white','red', 'black') , legendText='Legend')
+#     # temporarily switch to the temp dir, in case you do not have write
+#     # permission to the current working directory
+#     #owd <- setwd(tempdir())
+#     #on.exit(setwd(owd))
+#
+#      #widgetThumbnail(wdgt, "temp")
+#     saveWidget(wdgt, file="temp.html", selfcontained = F)
+#
+#
+#     webshot::webshot("temp.html", file = "Rplot.png",
+#                      cliprect = "viewport")
+#   }
+# )
+
+
+observeEvent(input$saveCircosAll, {
+  wdgt <- metabologram(r_data$TreeListProfData, width=1024, height=1024, main='title',
+                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       legendColors=c('blue','white','red', 'black') , legendText='Legend')
+  # temporarily switch to the temp dir, in case you do not have write
+  # permission to the current working directory
+  #owd <- setwd(tempdir())
+  #on.exit(setwd(owd))
+  setwd('~/')
+  widgetThumbnail(wdgt, "CircosAll")
+  showModal(modalDialog(
+    size = "s",
+    title = "save success : html, png",
+    paste0( " The file is saved successfully in ", getwd(), " folder as CircosAll.png file.", sep = "  ")
+  ))
+  #saveWidget(wdgt, file="temp.html", selfcontained = F)
+
+  #webshot::webshot("temp.html", file = "Rplot.png", cliprect = "viewport")
+  #file.copy("Rplot.png",file,overwrite = TRUE)
+  #download.file(owd , 'temp.png')
+})
+
+observeEvent(input$saveCircosMet, {
+  wdgt <- metabologram(r_data$TreeMetData, width=1024, height=1024, main='Methylation',
+                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       legendColors=c('blue','white','red', 'black') , legendText='Legend')
+
+  setwd('~/')
+  widgetThumbnail(wdgt, "CircosMet")
+  showModal(modalDialog(
+    size = "s",
+    title = "save success : html, png",
+    paste0( " The file is saved successfully in ", getwd(), " folder as CircosMet.png file.", sep = "  ")
+  ))
+
+})
+
+observeEvent(input$saveCircosCNA, {
+  wdgt <- metabologram(r_data$TreeCNAData, width=1024, height=1024, main='Copy Number Alteration',
+                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       legendColors=c('blue','white','red', 'black') , legendText='Legend')
+
+  setwd('~/')
+  widgetThumbnail(wdgt, "CircosCNA")
+  showModal(modalDialog(
+    size = "s",
+    title = "save success : html, png",
+    paste0( " The file is saved successfully in ", getwd(), " folder as CircosCNA.png file.", sep = " ")
+  ))
+
+})
+
+observeEvent(input$saveCircosMRNA, {
+  wdgt <- metabologram(r_data$TreeExpData, width=1024, height=1024, main='mRNA Expression',
+                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       legendColors=c('blue','white','red', 'black') , legendText='Legend')
+
+  setwd('~/')
+  widgetThumbnail(wdgt, "CircosMRNA")
+  showModal(modalDialog(
+    size = "s",
+    title = "save success : html, png",
+    paste0( " The file is saved successfully in ", getwd(), " folder as CircosMRNA.png file.", sep = " ")
+  ))
+
+})
+
+observeEvent(input$saveCircosMiRNA, {
+  wdgt <- metabologram(r_data$TreeMiRNAData, width=1024, height=1024, main='Micro RNA expression',
+                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       legendColors=c('blue','white','red', 'black') , legendText='Legend')
+
+  setwd('~/')
+  widgetThumbnail(wdgt, "CircosMiRNA")
+  showModal(modalDialog(
+    size = "s",
+    title = "save success : html, png",
+    paste0( " The file is saved successfully in ", getwd(), " folder as CircosMiRNA.png file.", sep = " ")
+  ))
+
+})
+
+observeEvent(input$saveCircosRPPA, {
+  wdgt <- metabologram(r_data$TreeRPPAData, width=1024, height=1024, main='Reverse Phase Protein Activity',
+                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       legendColors=c('blue','white','red', 'black') , legendText='Legend')
+
+  setwd('~/')
+  widgetThumbnail(wdgt, "CircosRPPA")
+  showModal(modalDialog(
+    size = "s",
+    title = "save success : html, png",
+    paste0( " The file is saved successfully in ", getwd(), " folder as CircosRPPA.png file.", sep = " ")
+  ))
+
+})
+
+observeEvent(input$saveCircosMut, {
+  wdgt <- metabologram(r_data$TreeMutData, width=1024, height=1024, main='Mutation',
+                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       legendColors=c('blue','white','red', 'black') , legendText='Legend')
+
+  setwd('~/')
+  widgetThumbnail(wdgt, "CircosMut")
+  showModal(modalDialog(
+    size = "s",
+    title = "save success : html, png",
+    paste0( " The file is saved successfully in ", getwd(), " folder as CircosMut.png file.", sep = " ")
+  ))
+
 })

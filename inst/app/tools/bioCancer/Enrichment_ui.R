@@ -1,5 +1,5 @@
 output$coffeewheels <- renderUI({
-  
+
   tagList(
     #                        if('CNA' %in% input$CircosDimensionID ){
     #                          plot_downloader("SaveMetabologram_CNA", pre = "")},
@@ -12,9 +12,11 @@ output$coffeewheels <- renderUI({
             div(class="col-xs-6",
                 DT::dataTableOutput(outputId = "CNA_Max"))
         ),
+        tagList(
+          actionButton("saveCircosCNA", "Save as png", style='padding:4px; font-size:80%'),
         column(12, align="center",
                coffeewheelOutput('getCoffeeWheel_CNA', width = 600, height = 600)
-        )
+        ))
       )
     },
     # if('Methylation' %in% input$CircosDimensionID ){
@@ -28,10 +30,12 @@ output$coffeewheels <- renderUI({
             div(class="col-xs-6",
                 DT::dataTableOutput(outputId = "Methylation_mean"))
         ),
+        tagList(
+          actionButton("saveCircosMet", "Save as png", style='padding:4px; font-size:80%'),
         #  h3("Correlation of silencing gene by Methylation: (0:1)")
         column(12, align="center",
                coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
-        )
+        ))
       )
     },
     #                        if('mRNA' %in% input$CircosDimensionID ){
@@ -45,62 +49,76 @@ output$coffeewheels <- renderUI({
             div(class="col-xs-6",
                 DT::dataTableOutput(outputId = "mRNA_mean"))
         ),
+        tagList(
+          actionButton("saveCircosMRNA", "Save as png", style='padding:4px; font-size:80%'),
         #h3("Gene Expression"),
         column(12, align="center",
                coffeewheelOutput('getCoffeeWheel_mRNA', width = 600, height = 600)
-        )
+        ))
       )
     },
     #                        if('Mutation' %in% input$CircosDimensionID ){
     #                          plot_downloader("SaveMetabologram_Mut", pre = "")
     #                        },
     if('Mutation' %in% input$CircosDimensionID ){
-      
+
       tagList(
-        
+
         div(class="row",
             div(class="col-xs-6",
                 DT::dataTableOutput(outputId = "Sequenced_SampleSize")),
             div(class="col-xs-6",
                 DT::dataTableOutput(outputId = "FreqMutSummary"))
         ),
-        
-        
+
+
         h3(paste0("Mutation Percentage: (Min = ", min(r_data$Freq_DfMutData, na.rm = TRUE) ,
                   "%, Max = ", max(r_data$Freq_DfMutData, na.rm = TRUE)  ,"%)", sep=""),  align="center"),
-        
+        tagList(
+          actionButton("saveCircosMut", "Save as png", style='padding:4px; font-size:80%'),
+
         column(12, align="center",
                coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
-        )
+        ))
       )
     },
     #                        if('miRNA' %in% input$CircosDimensionID ){
     #                          plot_downloader("SaveMetabologram_miRNA", pre = "")
     #                        },
-    
+
     if('miRNA' %in% input$CircosDimensionID ){
+      tagList(
+        actionButton("saveCircosMiRNA", "Save as png", style='padding:4px; font-size:80%'),
       #h3("Protein phosphorylation:")
       column(12, align="center",
              coffeewheelOutput('getCoffeeWheel_miRNA', width = 600, height = 600)
-      )
+      ))
     },
     #                        if('RPPA' %in% input$CircosDimensionID ){
     #                          plot_downloader("SaveMetabologram_RPPA", pre = "")
     #                        },
-    
+
     if('RPPA' %in% input$CircosDimensionID ){
+      tagList(
+        actionButton("saveCircosRPPA", "Save as png", style='padding:4px; font-size:80%'),
       #h3("Protein phosphorylation:")
       column(12, align="center",
              coffeewheelOutput('getCoffeeWheel_RPPA', width = 600, height = 600)
+      )
       )
     },
     # if('All' %in% input$CircosDimensionID ){
     #   plot_downloader("SaveMetabologram_All", pre = "")
     # },
     if('All' %in% input$CircosDimensionID ){
+      tagList(
+      actionButton("saveCircosAll", "Save as png", style='padding:4px; font-size:80%'),
       #h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)")
       column(12, align="center",
+             #downloadLink("dl_metabologram_All"),
+             #plot_downloader("dl_metabologram_All", pre = ""),
              coffeewheelOutput('getCoffeeWheel_All', width = 800, height = 800)
+      )
       )
     }
   )
@@ -112,29 +130,34 @@ output$Enrichment <- renderUI({
     includeCSS(file.path(getOption("radiant.path.data"),"app/www/style.css")),
     sidebarLayout(
       sidebarPanel(
-        
+
         selectizeInput("GeneListIDEnrichment", "Gene List:", input$GeneListID),
-        
+
         conditionalPanel("input.tabs_Enrichment == 'Circomics'",
                          uiOutput("ui_Circomics")),
         conditionalPanel("input.tabs_Enrichment == 'Classifier'",
                          uiOutput("ui_Classifier")),
         conditionalPanel("input.tabs_Enrichment == 'Networking'",
                         uiOutput("ui_Reactome"))
-        
+
       ),
       mainPanel(
         tabsetPanel(id = "tabs_Enrichment",
-                    
+
                     tabPanel("Circomics",
                              tags$hr(),
-                             
+
                              uiOutput('coffeewheels'),
-                             
+                             conditionalPanel("input.CircosDimensionID == 'All'",
+                             column(12, align="center",
+
+                             metabologramOutput('metabologram_All'))
+                             ),
+
                              conditionalPanel(condition = "input.loadListProfDataCircosId == true",# && input.CircosDimensionID == null ",
                                               h3("Loaded Profiles Data", align="center"),
                                               verbatimTextOutput("StrListProfDataCircos")
-                                              
+
                              ),
                              conditionalPanel(condition = "input.ViewProfDataCircosID==true",
                                               h3("Available Profiles data in select Studies", align="center"),
@@ -143,9 +166,9 @@ output$Enrichment <- renderUI({
                              conditionalPanel("input.loadListProfDataCircosId==false",
                                               verbatimTextOutput("CircomicsHowto")
                              )
-                             
+
                     ),
-                    
+
                     #               tabPanel("Network",
                     #                        h3("Simple Network"),
                     #                        networkD3::simpleNetworkOutput("simpleNetwork"),
@@ -266,7 +289,7 @@ output$Enrichment <- renderUI({
 
 
                              )
-                    # 
+                    #
                     #          #                    conditionalPanel(condition = "input.getlistProfDataID == 'Availability'",
                     #          #                                     h3("Available Profiles data in select Studies", align="center"),
                     #          #                                     DT::dataTableOutput(outputId ="ReactomeView")),
@@ -275,15 +298,15 @@ output$Enrichment <- renderUI({
                     #          #                                     h3("Load Profiles Data", align="center"),
                     #          #                                     verbatimTextOutput("StrListProfData")
                     #          #                   )
-                    # 
-                    # 
+                    #
+                    #
                      )
                     # # tabPanel("Network",
                     # #          conditionalPanel( condition = "input.NetworkRunId== true",
                     # #          visNetworkOutput("network",height = "600px")
                     # #          )
                     # # )
-                    
+
         )
       )
     )

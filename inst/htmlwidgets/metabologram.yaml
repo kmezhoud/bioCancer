@@ -5,10 +5,10 @@ dependencies:
     src: htmlwidgets/
     script: d3.min.js
  - 
-    name: coffee-wheel
+    name: metabologram
     version: 0.1.2
     src: htmlwidgets/
-    script: d3-coffeewheel.js
+    script: d3-metabologram.js
  - 
     name: jquery
     version: 2.1.3
