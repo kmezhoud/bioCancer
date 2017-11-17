@@ -4,7 +4,7 @@
 \alias{widgetThumbnail}
 \title{Capture html output widget as .png in R}
 \usage{
-widgetThumbnail(p, thumbName, width = 1024, height = 1024)
+widgetThumbnail(p, thumbName, width = 600, height = 600)
 }
 \arguments{
 \item{p}{is the html widget}
@@ -34,6 +34,6 @@ networkData <- data.frame(src, target)
 # Plot
 plot = simpleNetwork(networkData)
 # Save html as png
-widgetThumbnail(p = plot, thumbName = "plot", width = 1024, height = 1024)
+widgetThumbnail(p = plot, thumbName = "plot", width = 600, height = 600)
 }
 }
