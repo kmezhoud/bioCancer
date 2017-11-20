@@ -1,7 +1,11 @@
 # bioCancer - Interactive Multi-OMICS Cancers Data Visualization and Analysis
 
+[![BuildStatus](http://www.bioconductor.org/shields/build/devel/bioc/bioCancer.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/bioCancer/)
+[![Linux/Mac Travis Build Status](https://img.shields.io/travis/kmezhoud/bioCancer/master.svg?label=Mac%20OSX%20%26%20Linux)](https://travis-ci.org/kmezhoud/bioCancer)
+[![AppVeyor Build Status](https://img.shields.io/appveyor/ci/kmezhoud/bioCancer/master.svg?label=Windows)](https://ci.appveyor.com/project/kmezhoud/bioCancer)
+
 [![Travis-CI Build Status](https://travis-ci.org/kmezhoud/bioCancer.svg?branch=master)](https://travis-ci.org/kmezhoud/bioCancer)
-[![releaseVersion](https://img.shields.io/badge/release%20version-3.2.11-green.svg?style=flat)](https://bioconductor.org/packages/bioCancer) [![develVersion](https://img.shields.io/badge/devel%20version-3.3.6-green.svg?style=flat)](https://github.com/bioCancer)
+[![releaseVersion](https://img.shields.io/badge/release%20version-1.6.00-green.svg?style=flat)](https://bioconductor.org/packages/bioCancer) [![develVersion](https://img.shields.io/badge/devel%20version-1.7.04-green.svg?style=flat)](https://github.com/bioCancer)
 [![Bioc](http://www.bioconductor.org/shields/years-in-bioc/bioCancer.svg)](https://www.bioconductor.org/packages/devel/bioc/html/bioCancer.html#since)
 [![total](https://img.shields.io/badge/downloads-1594/total-blue.svg?style=flat)](https://bioconductor.org/packages/stats/bioc/bioCancer)
 <!--[![Coverage Status](https://img.shields.io/coveralls/kmezhoud/bioCancer.svg)](https://coveralls.io/r/kmezhoud/bioCancer?branch=master) -->
