@@ -2,11 +2,11 @@
 output$ui_FIsFilter <- renderUI({
   FIs_Att <- c("activat","inhibit","predicted","catalyze","reaction","phosphoryl","regulat","express",
                "complex","regulat","binding","compound","input","dissociation","indirect","ubiquitinated" )
-  
-  
+
+
   selectizeInput("FIs_AttId", label = "FIs Attributes:", choices = FIs_Att,
                  selected = state_multiple("FIs_AttId",FIs_Att, "activat"), multiple = TRUE)
-  
+
 })
 
 output$ui_UseLinker <- renderUI({
@@ -31,11 +31,11 @@ output$ui_UseLinker <- renderUI({
 
 output$ui_ReacLayout <- renderUI({
   Layouts <- c("dot","neato","twopi","circo")
-  
-  
+
+
   selectizeInput("ReacLayoutId", label = "Layouts:", choices = Layouts,
                  selected = "dot", multiple = FALSE)
-  
+
 })
 
 
@@ -63,11 +63,11 @@ output$ui_GeneSetFDR <- renderUI({
 })
 
 output$ui_NodeAttri_Classifier <- renderUI({
-  
+
   ClassEnrich <- c("None","mRNA","Studies", "mRNA/Studies")
   selectizeInput("NodeAttri_ClassifierID", label= "From Classifier:", choices= ClassEnrich,
                  selected= "None", multiple=FALSE)
-  
+
 })
 
 output$ui_No_Classifier_Run_message <- renderUI({
@@ -78,7 +78,7 @@ output$ui_No_Classifier_Run_message <- renderUI({
 })
 
 output$ui_NodeAttri_ProfData <- renderUI({
-  
+
   Dimension <- c("None","CNA","Met_HM27", "Met_HM450","Mutation" )
   selectizeInput("NodeAttri_ProfDataID", label= "Select Profiles Data:", choices= Dimension,
                  selected= "None", multiple=TRUE)
@@ -89,7 +89,7 @@ output$ui_Freq_MutSlider <- renderUI({
   sliderInput("FreqMutSliderID", "Mutation Percentage", 25, min = 1,
               max = 100, step = 1)
   #)
-  
+
 })
 
 output$ui_MetSliderHM450 <- renderUI({
@@ -107,9 +107,9 @@ output$ui_MetSliderHM27 <- renderUI({
 output$ui_Reactome <- renderUI({
   updateSelectizeInput(session, 'StudiesIDReactome', choices = Studies[,1],
                        selected = c("brca_tcga","gbm_tcga","lihc_tcga","lusc_tcga"))
-  
+
   tagList(
-    conditionalPanel(condition = "input.ReacRunId==true",
+    conditionalPanel(condition = "input.plotDiagrammeRSwithButtonId==true",
                      actionButton("ReacGeneListId", "load Reactome Genes")
     ),
     h4("Edges Attributes:", style= "color:blue"),
@@ -117,29 +117,29 @@ output$ui_Reactome <- renderUI({
       uiOutput("ui_FIsFilter"),
       uiOutput("ui_UseLinker"),
       uiOutput("ui_ReacLayout")
-      
+
     ),
     ## Attributes Nodes from geNetClassifier (Only if Class is pressed)
     # conditionalPanel(condition = "input.ClassID == 'Samples'",
     h4("Nodes Attributes:", style= "color:blue"),
-    
-    
+
+
     wellPanel(
       wellPanel(
         #uiOutput("ui_NodeAttri_ReactomeFI"),
-        
+
         #conditionalPanel("input.NodeAttri_ReactomeID =='GeneSet' ||
         #                input.NodeAttri_ReactomeID =='FreqInt./GeneSet'",
         uiOutput("ui_AnnoGeneSet_ReactomeFI"),
         uiOutput("ui_GeneSetFDR")
         # )
       ),
-      
+
       wellPanel(
         #conditionalPanel(condition = "input.runClassificationBox==true",
         uiOutput("ui_NodeAttri_Classifier"),
         #),
-        conditionalPanel("input.NodeAttri_ClassifierID != 'None'", 
+        conditionalPanel("input.NodeAttri_ClassifierID != 'None'",
         #                  input.runSamplingBox == false ||
         #                  input.NodeAttri_ClassifierID != 'None' &&
         #                  input.runSamplingBox == true &&
@@ -150,26 +150,26 @@ output$ui_Reactome <- renderUI({
       #  conditionalPanel(condition = "input.WheelID=='Zoom'",
       wellPanel(
         selectizeInput('StudiesIDReactome', 'From Which Studies', choices=NULL, multiple = TRUE),
-        
+
         div(class="row",
             div(class="col-xs-6",
                 checkboxInput("ViewProfDataReactomeID", "Availability", value = FALSE)),
             div(class="col-xs-6",
                 checkboxInput("getlistProfDataIDReactome", "Load", value = FALSE))
         ),
-        
-        
+
+
         #           radioButtons(inputId = "getlistProfDataIDReactome", label = "Profile Data",
         #                        c("Availability"="Availability" ,"Load"="Load"),
         #                        selected = "", inline = TRUE),
-        
-        
-        
+
+
+
         conditionalPanel(condition= "input.getlistProfDataIDReactome==true",
                          uiOutput("ui_NodeAttri_ProfData")
         ),
-        
-        
+
+
         #),
         #                 )
         conditionalPanel(condition ="input.getlistProfDataIDReactome==true",
@@ -195,31 +195,36 @@ output$ui_Reactome <- renderUI({
       #conditionalPanel(condition ="input.NodeAttri_ClassID =='All'",
       #                uiOutput("ui_Freq_MutSlider2")
       #),
+      uiOutput("ui_plotDiagrammerSwithButton"),
+
       div(class="row",
           div(class="col-xs-4",
-              checkboxInput("ReacRunId", label = p("Plot", style="color:blue"), value = FALSE)),
-          div(class="col-xs-4",
               checkboxInput("ReacLegendId", "Legend", value=FALSE)
+              ),
+          div(class="col-xs-4"
+              #checkboxInput("ReacRunId", label = p("Plot", style="color:blue"), value = FALSE)
           )
       )
-      
+
     ),
-    
+
     tagList(
       h4("Dynamic Network:", style="color:blue"),
       wellPanel(
         uiOutput("ui_visPhysic"),
-        div(class="row",
-            div(class="col-xs-4",
-                checkboxInput("NetworkRunId", label = p("Plot", style= "color:blue"),value = FALSE)),
-            div(class="col-xs-4"
-                #checkboxInput("ReacLegendId", "Legend", value=FALSE)
-            )
-        )
+        uiOutput("ui_plotVisNetworkSwithButton")
+
+        # div(class="row",
+        #     div(class="col-xs-4",
+        #         checkboxInput("NetworkRunId", label = p("Plot", style= "color:blue"),value = FALSE)),
+        #     div(class="col-xs-4"
+        #         #checkboxInput("ReacLegendId", "Legend", value=FALSE)
+        #     )
+        # )
       )
     ),
     #help_modal_km('Networking','ReactomeHelp',inclMD(file.path(r_path,"base/tools/help/Reactome.md")))
-    
+
     help_and_report(modal_title = "Networking", fun_name = "ReactomeHelp",
                     author = "Karim Mezhoud",
                     help_file = inclRmd(file.path(
@@ -239,7 +244,7 @@ output$ReactomeAvailability <- DT::renderDataTable({
     # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
     displayTable(dat) %>%  DT::formatStyle(names(dat),
                                            color = DT::styleEqual("No", 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
-    
+
   })
 })
 
@@ -259,7 +264,7 @@ output$StrListProfDataReactome <- renderPrint({
     #str(r_data$ListProfData)
     #str(r_data$ListMutData)
   }
-  
+
 })
 
 
@@ -269,9 +274,43 @@ observe({
   if (not_pressed(input$ReacGeneListId)) return()
   isolate({
     r_data[['genelist']] <- c(r_data[['genelist']], 'Reactome_GeneList') %>% unique
-    
+
   })
 })
 
 
 
+output$ui_plotVisNetworkSwithButton <- renderUI({
+    div(class="row",
+        div(class="col-xs-8",
+            conditionalPanel(condition = " input.plotVisNetworkSwithButtonId ==false",
+                             h5('Run VisNetwork')),
+            conditionalPanel(condition = " input.plotVisNetworkSwithButtonId ==true",
+                             h5('Run VisNetwork',  style = "color:#428bca"))
+        ),
+        div(class="col-xs-4",
+                             switchButton(inputId = "plotVisNetworkSwithButtonId",
+                                          value = FALSE, col = "GB", type = "OO")
+
+        )
+    )
+
+})
+
+
+output$ui_plotDiagrammerSwithButton <- renderUI({
+  div(class="row",
+      div(class="col-xs-8",
+          conditionalPanel(condition = " input.plotDiagrammeRSwithButtonId ==false",
+                           h5('Run DiagrammeR')),
+          conditionalPanel(condition = " input.plotDiagrammeRSwithButtonId ==true",
+                           h5('Run DiagrammeR',  style = "color:#428bca"))
+      ),
+      div(class="col-xs-4",
+          switchButton(inputId = "plotDiagrammeRSwithButtonId",
+                       value = FALSE, col = "GB", type = "OO")
+
+      )
+  )
+
+})

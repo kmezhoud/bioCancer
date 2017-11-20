@@ -16,23 +16,23 @@
 #'
 #'
 Edges_df <- function(){
-  
+
   if(is.null(r_data$ReactomeFI)){
     shiny::withProgress(message = 'Loading ReactomeFI...', value = 0.1, {
       Sys.sleep(0.25)
-      
+
       if("package:bioCancer" %in% search()) {
         r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"), "/extdata/ReactomeFI2015.RDS", sep=""))
       }else{
         r_data[['ReactomeFI']]  <- readRDS(file.path(paste(getOption("radiant.path.bioCancer"),"/extdata/ReactomeFI2015.RDS", sep="")))
       }
-      
+
     })
   }
-  
+
   #GeneList <- c("DKK3", "NBN", "MYO6", "TP53","PML", "IFI16", "BRCA1")
   GeneList <- whichGeneList(input$GeneListID)
-  
+
   ## Edges Attributes
   shiny::withProgress(message = 'load FI for GeneList...', value = 0.1, {
     Sys.sleep(0.25)
@@ -40,13 +40,13 @@ Edges_df <- function(){
   })
   shiny::withProgress(message = 'load gene relationships...', value = 0.1, {
     Sys.sleep(0.25)
-    
+
     names(fis) <- c("Gene1", "Gene2")
     Edges_obj1 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))
     names(fis) <- c("Gene2", "Gene1")
     Edges_obj2 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))
     Edges_obj <- rbind(Edges_obj1,Edges_obj2)
-    
+
     #     > head(Edges_obj)
     #     from to                                    Annotation Direction Score
     #     1  EGR1  TP53 expression regulated by; expression regulates       <->  1.00
@@ -55,38 +55,38 @@ Edges_df <- function(){
     #     4   PML  TP53       complex; expression regulated by; input        <-  1.00
     #     5  TP53   UBB                  catalyze; complex; predicted        ->  1.00
     #     6 BRCA1  EGR1                       expression regulated by        <-  1.00
-    
+
     ## Filter Annotation interaction
     #  Edges_obj <- Edges_obj[- grep(c("predic",activat), Edges_obj$Annotation),]
     #  Edges_obj <- Edges_obj[!grepl("predict|activat|binding|complex|indirect",Edges_obj$Annotation),]
-    
+
     Edges_obj <- Edges_obj[grepl(paste0(input$FIs_AttId, collapse="|"),Edges_obj$Annotation),] #input$FIs_AttNetworkId
-    
+
     ## skip infinity loop when load Reactome_Genelist
     if(is.null(r_data$Reactome_GeneList)){
       r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
     }else if (all(length(r_data$Reactome_GeneList) == length(union(Edges_obj$Gene1, Edges_obj$Gene2)))
               && all(r_data$Reactome_GeneList == union(Edges_obj$Gene1, Edges_obj$Gene2))
     ){
-      
+
     }else{
       r_data[['Reactome_GeneList']] <- union(Edges_obj$Gene1, Edges_obj$Gene2)
     }
     ## Get interaction Frequency in dataframe FreqIn
-    
+
     FreqIn <- rbind(t(t(table(as.character(Edges_obj$Gene2)))), t(t(table(as.character(Edges_obj$Gene1)))))
     colnames(FreqIn) <- "Freq"
     #FreqIn <- as.data.frame(FreqIn) %>% tibble::rownames_to_column("Genes")
-    
+
     rnames <- rownames(FreqIn)
     rownames(FreqIn) <- NULL
     FreqIn <- as.data.frame(FreqIn)
     FreqIn <- cbind("Genes"= rnames, FreqIn)
     r_data[['FreqIn']] <- plyr::ddply(FreqIn,~Genes, dplyr::summarise,FreqSum=sum(Freq))
-    
-    
+
+
     rownames(Edges_obj) <- NULL
-    
+
     Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\->","from;to", x)))
     Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\|\\->","from;to", x)))
     Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("<\\-\\|","to;from", x)))
@@ -95,9 +95,9 @@ Edges_df <- function(){
     Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\|\\-","from", x)))
     Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("\\-\\|","to", x)))
     Edges_obj <- as.data.frame(lapply(Edges_obj, function(x) gsub("-","none", x)))
-    
+
     colnames(Edges_obj)<- c("from", "to","title","arrows" ,"width")
-    
+
     #Edges_obj <- Edges_obj[1:150,]
   })
   ## add 3 column used with geneset enrichment
@@ -144,16 +144,18 @@ Node_df <- function(genelist, freqIn){
   FreqIn[["label"]] <- FreqIn$id
   GeneFreq <- FreqIn[,c(1,3,4)]
   #GeneFreq <- data.frame(lapply(GeneFreq[,names(GeneFreq)] , as.factor))
-  
-  if(input$NodeAttri_ClassifierID == 'mRNA'|| input$NodeAttri_ClassifierID == 'mRNA/Studies'){
-    colorsVector <- sapply(r_data$GenesClassDetails$exprsMeanDiff, function(x) as.character(attriColorVector(x,r_data$GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
-    colors_df <- data.frame(id = r_data$GenesClassDetails$Genes,color = colorsVector)
-    colors_df <- data.frame(lapply(colors_df, as.character), stringsAsFactors=FALSE)
-    merge1 <- dplyr::inner_join(GeneFreq, colors_df, by="id")
-    merge1 <- data.frame(merge1, value= "1")
-    diff1 <- dplyr::anti_join(GeneFreq, colors_df, by="id")
-    diff1 <- data.frame (diff1, color= "lightgrey", value= "1")
-    GeneFreq <- rbind(merge1, diff1)
+  if(exists("r_data") && !is.null(r_data[['GenesClassDetails']])){
+    if(input$NodeAttri_ClassifierID == 'mRNA'|| input$NodeAttri_ClassifierID == 'mRNA/Studies'){
+      colorsVector <- sapply(r_data$GenesClassDetails$exprsMeanDiff,
+                             function(x) as.character(attriColorVector(x,r_data$GenesClassDetails$exprsMeanDiff ,colors=c("blue","white","red"), feet=1)))
+      colors_df <- data.frame(id = r_data$GenesClassDetails$Genes,color = colorsVector)
+      colors_df <- data.frame(lapply(colors_df, as.character), stringsAsFactors=FALSE)
+      merge1 <- dplyr::inner_join(GeneFreq, colors_df, by="id")
+      merge1 <- data.frame(merge1, value= "1")
+      diff1 <- dplyr::anti_join(GeneFreq, colors_df, by="id")
+      diff1 <- data.frame (diff1, color= "lightgrey", value= "1")
+      GeneFreq <- rbind(merge1, diff1)
+    }
   }else{
     GeneFreq <- cbind(GeneFreq,color="lightgrey", value="1")
   }
@@ -175,10 +177,10 @@ getAnnoGeneSet_df <- function(genelist,type){
   # type = c("Pathway", "BP", "CC", "MF")
   # type <- input$TypeGeneSetID
   #type <- match.arg(type)
-  
+
   ## Query GeneSet Annotation
   AnnoGeneSet <- queryAnnotateGeneSet(2014, t(genelist) ,type)
-  
+
   if(nrow(AnnoGeneSet)== 0){
     GeneSet_df <- data.frame(from = "",
                              to = "",
@@ -191,12 +193,12 @@ getAnnoGeneSet_df <- function(genelist,type){
                              #length = NULL
     )
   }else{
-    
+
     ## Filter significant annotation using FDR
     AnnoGeneSet <- AnnoGeneSet[AnnoGeneSet$fdr < input$GeneSetFDRID,]  #input$GeneSetFDRID
-    
+
     r_data[['AnnoGeneSet']] <- AnnoGeneSet
-    
+
     if(nrow(AnnoGeneSet)== 0){
       GeneSet_df <- data.frame(from = "",
                                to = "",
@@ -209,19 +211,19 @@ getAnnoGeneSet_df <- function(genelist,type){
                                #length = NULL
       )
     } else{
-      
+
       #r_data[['MinGeneSetFDR']] <- min(AnnoGeneSet$fdr, na.rm = TRUE)
-      
+
       ## Split hits to a list
       key0 <- strsplit(AnnoGeneSet$hits, ",")
-      
+
       ## from Martin Morgan  http://stackoverflow.com/questions/12837462/how-to-subset-data-with-advance-string-matching
-      
+
       Index_Gene <- data.frame(index = rep(seq_along(key0), sapply(key0, length)),ID = unlist(key0))
-      
+
       ## Maybe useful add GeneList with index and genes
       #ref_GeneSet  <-  cbind(GeneSet = AnnoGeneSet_hits[subset[,1],2],subset)
-      
+
       GeneSet_df <- data.frame(from = Index_Gene[,1],
                                to = Index_Gene[,2],
                                title= input$TypeGeneSetID,
@@ -232,7 +234,7 @@ getAnnoGeneSet_df <- function(genelist,type){
                                shadow = FALSE
                                #length = NULL
       )
-      
+
     }
   }
   return(GeneSet_df)
@@ -241,10 +243,10 @@ getAnnoGeneSet_df <- function(genelist,type){
 
 output$network <- visNetwork::renderVisNetwork({
   GeneList <- whichGeneList(input$GeneListID)
-  
+
   edges <- Edges_df()
   nodes <-  Node_df(genelist = GeneList, freqIn = r_data$FreqIn)
-  
+
   # if(input$NodeAttri_ReactomeID == 'Freq. Interaction'){ #input$NodeAttri_NetworkID
   #   ## Nodes Frequncy interaction Attributes
   #   value <- Node_df_FreqIn(genelist = GeneList, freqIn = r_data$FreqIn)
@@ -254,10 +256,10 @@ output$network <- visNetwork::renderVisNetwork({
   ## Nodes Attributes
   value <- Node_df_FreqIn(GeneList, freqIn = r_data$FreqIn)
   nodes[['value']] <- value
-  
+
   #if(input$NodeAttri_ReactomeID == 'GeneSet'){
   if(input$TypeGeneSetID =="None"){
-    
+
   }else if(input$TypeGeneSetID =="Pathway" ||
            input$TypeGeneSetID =="BP" ||
            input$TypeGeneSetID =="CC" ||
@@ -265,9 +267,9 @@ output$network <- visNetwork::renderVisNetwork({
   ){
     GeneSetAnno_df <- getAnnoGeneSet_df(GeneList,type = input$TypeGeneSetID)  #input$TypeGeneSetID== BP, Pathway, CC, FN
     GeneSetAnno_df[,1] <- as.factor(GeneSetAnno_df[,1])
-    
+
     edges<- rbind(edges, GeneSetAnno_df)
-    
+
     nodesForGeneSet <- data.frame(id=unique(GeneSetAnno_df[,1]),
                                   shape= "text",
                                   label= paste(input$TypeGeneSetID,unique(GeneSetAnno_df[,1]), sep=""),
@@ -278,14 +280,16 @@ output$network <- visNetwork::renderVisNetwork({
   }
   #}
   #}
-  
+
   ###### Attributes from geNetClassifier
-  
-  if(input$NodeAttri_ClassifierID == 'Studies'|| input$NodeAttri_ClassifierID == 'mRNA/Studies'){
-    nodes <- rbind(nodes, Node_Diseases_obj(genesclassdetails = r_data$GenesClassDetails)) #r_data$GenesClassDetails
-    edges <- rbind(edges, Edges_Diseases_obj(r_data$GenesClassDetails))
+  if(exists("r_data") && !is.null(r_data[['GenesClassDetails']])){
+    if(input$NodeAttri_ClassifierID == 'mRNA/Studies' ||
+       input$NodeAttri_ClassifierID == 'mRNA'  ){
+      nodes <- rbind(nodes, Node_Diseases_obj(genesclassdetails = r_data$GenesClassDetails)) #r_data$GenesClassDetails
+      edges <- rbind(edges, Edges_Diseases_obj(r_data$GenesClassDetails))
+    }
   }
-  
+
   #
   #   lnodes <- data.frame(label = c("Gr A", "Gr B"),
   #                        shape = c( "circle","square"), color = c("red", "blue"),
@@ -293,12 +297,12 @@ output$network <- visNetwork::renderVisNetwork({
   #
   #   ledges <- data.frame(color = c("lightblue", "red"),
   #                        label = c("reverse", "depends"), arrows =c("to", "from"))
-  
-  
-  
-  graphe <- visNetwork::visNetwork(nodes, edges, height = "500%",width = "500%") #%>%
-  
-  
+
+
+
+  graphe <- visNetwork::visNetwork(nodes, edges, height = "100%",width = "100%") #%>%
+
+
   ## resizing nodes is not possible without scaling option. this is useful for circle, box shape
   ## see https://github.com/DataKnowledge/visNetwork/issues/49
   visNetwork::visNodes(graph = graphe, scaling = list(label = list(enabled = TRUE)))#%>%
@@ -307,6 +311,8 @@ output$network <- visNetwork::renderVisNetwork({
   graphe <- visNetwork::visOptions(graph= graphe, manipulation = TRUE,
                                    #selectedBy = "group",
                                    highlightNearest = TRUE )#%>%
+
+  r_data[['graphe']] <- graphe
   # visNetwork::visHierarchicalLayout(graph = graphe,enabled =  as.logical(input$enableHierarchiId),
   #                      direction = input$Hierarchi_AttId,
   #                     sortMethod= input$MethodHierarchiId)#%>%
@@ -314,7 +320,7 @@ output$network <- visNetwork::renderVisNetwork({
   # visNetwork::visPhysics(graph = graphe, solver = input$PhysicLayoutId  ## ’barnesHut’, ’repulsion’, ’hierarchicalRepulsion’, ’forceAtlas2Based’
   #            #,forceAtlas2Based = "avoidOverlap"
   #            )
-  
+
   #     visNodes(color = list(border =  '#2B7CE9',background = '#97C2FC',highlight = "red"),
   #              font = '10px arial red',
   #              labelHighlightBold = NULL,
@@ -326,14 +332,13 @@ output$network <- visNetwork::renderVisNetwork({
   visNetwork::visExport(graph= graphe,type = "png", name = "network",
                         label = paste0("Export as png"), background = "#fff",
                         float = "left", style = NULL, loadDependencies = TRUE)
-  
+
   #visNetwork::visLegend(graph = graphe,
   #                     addNodes= nodes,
   #                    addEdges= edges,
   #useGroups= TRUE,
   #                   position="left")
-  
-  
+
 })
 
 observe({
@@ -347,8 +352,44 @@ observe({
   # }else{
   conditionalPanel("input.enableHierarchiId==false",
                    visNetwork::visPhysics(network, solver = input$PhysicLayoutId )
-                   
+
   )
   #}
-  
+
+})
+
+observeEvent(input$saveVisNetworkWidget, {
+
+  # temporarily switch to the temp dir, in case you do not have write
+  # permission to the current working directory
+  #owd <- setwd(tempdir())
+  #on.exit(setwd(owd))
+
+  if(Sys.info()["sysname"] == "Windows") {
+    setwd(Sys.getenv("R_USER"))
+  }else{
+    setwd('~/')
+  }
+  ###  DO NOT CAPTURE NETWORK
+
+  # widgetThumbnail(r_data$graphe, "visNetwork")
+  # showModal(modalDialog(
+  #   size = "s",
+  #   title = "save success : html, png",
+  #   paste0( " The file is saved successfully in ", getwd(), " folder as visNetwok.png file.", sep = "  ")
+  # ))
+
+  ## BEST SOLUTION
+  htmlwidgets::saveWidget(r_data$graphe, file="graphe.html", selfcontained = F)
+
+  showModal(modalDialog(
+    size = "s",
+    title = "save success : html",
+    paste0( " The file is saved successfully in ", getwd(), " folder as graphe.html file.", sep = "  ")
+  ))
+
+  ##  webshot Not working
+  #webshot::webshot(paste0(getwd(),"/grpahe.html"), file = "Rplot.png", cliprect = "viewport")
+  #file.copy("Rplot.png",file,overwrite = TRUE)
+  #download.file(getwd() , 'graphe.html')
 })

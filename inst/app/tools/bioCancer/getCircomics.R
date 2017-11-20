@@ -473,7 +473,12 @@ observeEvent(input$saveCircosAll, {
   # permission to the current working directory
   #owd <- setwd(tempdir())
   #on.exit(setwd(owd))
-  setwd('~/')
+    if(Sys.info()["sysname"] == "Windows"){
+      setwd(Sys.getenv("R_USER"))
+    }else{
+        setwd('~/')
+    }
+
   widgetThumbnail(wdgt, "CircosAll")
   showModal(modalDialog(
     size = "s",
@@ -492,7 +497,12 @@ observeEvent(input$saveCircosMet, {
                        showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
-  setwd('~/')
+  if(Sys.info()["sysname"] == "Windows"){
+    setwd(Sys.getenv("R_USER"))
+  }else{
+    setwd('~/')
+  }
+
   widgetThumbnail(wdgt, "CircosMet")
   showModal(modalDialog(
     size = "s",
@@ -507,7 +517,12 @@ observeEvent(input$saveCircosCNA, {
                        showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
-  setwd('~/')
+  if(Sys.info()["sysname"] == "Windows"){
+    setwd(Sys.getenv("R_USER"))
+  }else{
+    setwd('~/')
+  }
+
   widgetThumbnail(wdgt, "CircosCNA")
   showModal(modalDialog(
     size = "s",
@@ -522,7 +537,12 @@ observeEvent(input$saveCircosMRNA, {
                        showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
-  setwd('~/')
+  if(Sys.info()["sysname"] == "Windows"){
+    setwd(Sys.getenv("R_USER"))
+  }else{
+    setwd('~/')
+  }
+
   widgetThumbnail(wdgt, "CircosMRNA")
   showModal(modalDialog(
     size = "s",
@@ -537,7 +557,12 @@ observeEvent(input$saveCircosMiRNA, {
                        showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
-  setwd('~/')
+  if(Sys.info()["sysname"] == "Windows"){
+    setwd(Sys.getenv("R_USER"))
+  }else{
+    setwd('~/')
+  }
+
   widgetThumbnail(wdgt, "CircosMiRNA")
   showModal(modalDialog(
     size = "s",
@@ -552,7 +577,12 @@ observeEvent(input$saveCircosRPPA, {
                        showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
-  setwd('~/')
+  if(Sys.info()["sysname"] == "Windows"){
+    setwd(Sys.getenv("R_USER"))
+  }else{
+    setwd('~/')
+  }
+
   widgetThumbnail(wdgt, "CircosRPPA")
   showModal(modalDialog(
     size = "s",
@@ -567,7 +597,12 @@ observeEvent(input$saveCircosMut, {
                        showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
-  setwd('~/')
+  if(Sys.info()["sysname"] == "Windows"){
+    setwd(Sys.getenv("R_USER"))
+  }else{
+    setwd('~/')
+  }
+
   widgetThumbnail(wdgt, "CircosMut")
   showModal(modalDialog(
     size = "s",

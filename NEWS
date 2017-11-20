@@ -1,17 +1,23 @@
-CHANGES IN VERSION 1.6.02 (14 November 2017)
+CHANGES IN VERSION 1.7.03 (20 November 2017)
+------------------------
++ Save network widgets as HTML and png
++ use swithc buttom for Networking Tab.
++ setwd(~)/ for windows system by setwd(Sys.getenv("R_USER"))
+
+CHANGES IN VERSION 1.7.02 (14 November 2017)
 ------------------------
 + resolve conflicts renderMetabologram and renderCoffeewheel. redefine initCoffeewhell in /htmlwidges
 + report circomics widget to markdown document
 + Save static wheel as html and png (low resolution)
 + need  phantomJS to catupe html widget output as png file
 
-CHANGES IN VERSION 1.6.01 (13 November 2017)
+CHANGES IN VERSION 1.7.01 (13 November 2017)
 ------------------------
 + add helps to ? menu
 + change stop message
 + addResourcePath for figures
 
-CHANGES IN VERSION 1.6.00 (30 October 2017)
+CHANGES IN VERSION 1.7.00 (30 October 2017)
 ------------------------
 metamorphosis: bioCancer is a radiant.data extension
 reduce size of package by half 14 -> 7 mb

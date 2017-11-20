@@ -14,9 +14,9 @@ output$coffeewheels <- renderUI({
         ),
         tagList(
           actionButton("saveCircosCNA", "Save as png", style='padding:4px; font-size:80%'),
-        column(12, align="center",
-               coffeewheelOutput('getCoffeeWheel_CNA', width = 600, height = 600)
-        ))
+          column(12, align="center",
+                 coffeewheelOutput('getCoffeeWheel_CNA', width = 600, height = 600)
+          ))
       )
     },
     # if('Methylation' %in% input$CircosDimensionID ){
@@ -32,10 +32,10 @@ output$coffeewheels <- renderUI({
         ),
         tagList(
           actionButton("saveCircosMet", "Save as png", style='padding:4px; font-size:80%'),
-        #  h3("Correlation of silencing gene by Methylation: (0:1)")
-        column(12, align="center",
-               coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
-        ))
+          #  h3("Correlation of silencing gene by Methylation: (0:1)")
+          column(12, align="center",
+                 coffeewheelOutput('getCoffeeWheel_Met', width = 600, height = 600)
+          ))
       )
     },
     #                        if('mRNA' %in% input$CircosDimensionID ){
@@ -51,10 +51,10 @@ output$coffeewheels <- renderUI({
         ),
         tagList(
           actionButton("saveCircosMRNA", "Save as png", style='padding:4px; font-size:80%'),
-        #h3("Gene Expression"),
-        column(12, align="center",
-               coffeewheelOutput('getCoffeeWheel_mRNA', width = 600, height = 600)
-        ))
+          #h3("Gene Expression"),
+          column(12, align="center",
+                 coffeewheelOutput('getCoffeeWheel_mRNA', width = 600, height = 600)
+          ))
       )
     },
     #                        if('Mutation' %in% input$CircosDimensionID ){
@@ -77,9 +77,9 @@ output$coffeewheels <- renderUI({
         tagList(
           actionButton("saveCircosMut", "Save as png", style='padding:4px; font-size:80%'),
 
-        column(12, align="center",
-               coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
-        ))
+          column(12, align="center",
+                 coffeewheelOutput('getCoffeeWheel_Mut', width = 600, height = 600)
+          ))
       )
     },
     #                        if('miRNA' %in% input$CircosDimensionID ){
@@ -89,10 +89,10 @@ output$coffeewheels <- renderUI({
     if('miRNA' %in% input$CircosDimensionID ){
       tagList(
         actionButton("saveCircosMiRNA", "Save as png", style='padding:4px; font-size:80%'),
-      #h3("Protein phosphorylation:")
-      column(12, align="center",
-             coffeewheelOutput('getCoffeeWheel_miRNA', width = 600, height = 600)
-      ))
+        #h3("Protein phosphorylation:")
+        column(12, align="center",
+               coffeewheelOutput('getCoffeeWheel_miRNA', width = 600, height = 600)
+        ))
     },
     #                        if('RPPA' %in% input$CircosDimensionID ){
     #                          plot_downloader("SaveMetabologram_RPPA", pre = "")
@@ -101,10 +101,10 @@ output$coffeewheels <- renderUI({
     if('RPPA' %in% input$CircosDimensionID ){
       tagList(
         actionButton("saveCircosRPPA", "Save as png", style='padding:4px; font-size:80%'),
-      #h3("Protein phosphorylation:")
-      column(12, align="center",
-             coffeewheelOutput('getCoffeeWheel_RPPA', width = 600, height = 600)
-      )
+        #h3("Protein phosphorylation:")
+        column(12, align="center",
+               coffeewheelOutput('getCoffeeWheel_RPPA', width = 600, height = 600)
+        )
       )
     },
     # if('All' %in% input$CircosDimensionID ){
@@ -112,13 +112,13 @@ output$coffeewheels <- renderUI({
     # },
     if('All' %in% input$CircosDimensionID ){
       tagList(
-      actionButton("saveCircosAll", "Save as png", style='padding:4px; font-size:80%'),
-      #h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)")
-      column(12, align="center",
-             #downloadLink("dl_metabologram_All"),
-             #plot_downloader("dl_metabologram_All", pre = ""),
-             coffeewheelOutput('getCoffeeWheel_All', width = 800, height = 800)
-      )
+        actionButton("saveCircosAll", "Save as png", style='padding:4px; font-size:80%'),
+        #h3("Profiles Data: CNA, Exp, RPPA, miRNA: (Up, Down)")
+        column(12, align="center",
+               #downloadLink("dl_metabologram_All"),
+               #plot_downloader("dl_metabologram_All", pre = ""),
+               coffeewheelOutput('getCoffeeWheel_All', width = 800, height = 800)
+        )
       )
     }
   )
@@ -138,7 +138,7 @@ output$Enrichment <- renderUI({
         conditionalPanel("input.tabs_Enrichment == 'Classifier'",
                          uiOutput("ui_Classifier")),
         conditionalPanel("input.tabs_Enrichment == 'Networking'",
-                        uiOutput("ui_Reactome"))
+                         uiOutput("ui_Reactome"))
 
       ),
       mainPanel(
@@ -149,9 +149,9 @@ output$Enrichment <- renderUI({
 
                              uiOutput('coffeewheels'),
                              conditionalPanel("input.CircosDimensionID == 'All'",
-                             column(12, align="center",
+                                              column(12, align="center",
 
-                             metabologramOutput('metabologram_All'))
+                                                     metabologramOutput('metabologram_All'))
                              ),
 
                              conditionalPanel(condition = "input.loadListProfDataCircosId == true",# && input.CircosDimensionID == null ",
@@ -244,13 +244,13 @@ output$Enrichment <- renderUI({
                              )
                              #)
                     ),
-                     tabPanel("Networking",
-                             conditionalPanel(condition = "input.ReacRunId == false",
+                    tabPanel("Networking",
+                             conditionalPanel(condition = "input.plotDiagrammeRSwithButtonId == false",
                                               verbatimTextOutput("ReactomeHowto")
                              ),
-                             conditionalPanel(condition = "input.ReacRunId== true",
+                             conditionalPanel(condition = "input.plotDiagrammeRSwithButtonId== true",
                                               #plot_downloader("ld_diagrammeR_plot", pre=""),
-                                              downloadButton('Save_diagrammeR_plot', 'HTML'),
+                                              downloadButton('Save_diagrammeR_plot', 'HTML',style='padding:4px; font-size:80%'),
                                               #actionLink("ReactomeFI_save_plot", "", class = "fa fa-download alignright", onclick = "window.print();"),
                                               DiagrammeR::grVizOutput('diagrammeR'),
                                               conditionalPanel(condition= "input.TypeGeneSetID == 'Pathway'||
@@ -278,8 +278,9 @@ output$Enrichment <- renderUI({
                                               h3("Available Profiles data in select Studies", align="center"),
                                               DT::dataTableOutput(outputId ="ReactomeAvailability")
                              ),
-                             conditionalPanel( condition = "input.NetworkRunId== true",
-                                               visNetwork::visNetworkOutput("network",height = "600px")
+                             conditionalPanel( condition = "input.plotVisNetworkSwithButtonId == true",
+                                               visNetwork::visNetworkOutput("network",height = "600px"),
+                                               actionButton('saveVisNetworkWidget',  'HTML',style='padding:4px; font-size:80%')
                              ),
                              conditionalPanel(condition = "input.getlistProfDataIDReactome ==true",
                                               h3("Loaded Profiles Data", align="center"),
@@ -289,18 +290,18 @@ output$Enrichment <- renderUI({
 
 
                              )
-                    #
-                    #          #                    conditionalPanel(condition = "input.getlistProfDataID == 'Availability'",
-                    #          #                                     h3("Available Profiles data in select Studies", align="center"),
-                    #          #                                     DT::dataTableOutput(outputId ="ReactomeView")),
-                    #          #
-                    #          #                    conditionalPanel(condition = "input.getlistProfDataID == 'Load'",
-                    #          #                                     h3("Load Profiles Data", align="center"),
-                    #          #                                     verbatimTextOutput("StrListProfData")
-                    #          #                   )
-                    #
-                    #
-                     )
+                             #
+                             #          #                    conditionalPanel(condition = "input.getlistProfDataID == 'Availability'",
+                             #          #                                     h3("Available Profiles data in select Studies", align="center"),
+                             #          #                                     DT::dataTableOutput(outputId ="ReactomeView")),
+                             #          #
+                             #          #                    conditionalPanel(condition = "input.getlistProfDataID == 'Load'",
+                             #          #                                     h3("Load Profiles Data", align="center"),
+                             #          #                                     verbatimTextOutput("StrListProfData")
+                             #          #                   )
+                             #
+                             #
+                    )
                     # # tabPanel("Network",
                     # #          conditionalPanel( condition = "input.NetworkRunId== true",
                     # #          visNetworkOutput("network",height = "600px")
