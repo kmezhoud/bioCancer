@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.7.04 (20 November 2017)
+------------------------
++ export Diagrammer and viNetwork to report
++ reset image size of circomics to 1024px
+
 CHANGES IN VERSION 1.7.03 (20 November 2017)
 ------------------------
 + Save network widgets as HTML and png

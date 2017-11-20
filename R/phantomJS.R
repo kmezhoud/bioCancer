@@ -2,11 +2,11 @@
 #'
 #' @return  3 files .html, .js and .png
 #'
-#' @usage widgetThumbnail(p, thumbName, width = 600, height = 600)
+#' @usage widgetThumbnail(p, thumbName, width = 1024, height = 1024)
 #' @param p is the html widget
 #' @param thumbName is the name of the new png file
-#' @param width 600
-#' @param height 600
+#' @param width 1024
+#' @param height 1024
 #'
 #' @examples
 #' How <- "runManually"
@@ -21,11 +21,11 @@
 #' # Plot
 #' plot = simpleNetwork(networkData)
 #' # Save html as png
-#' widgetThumbnail(p = plot, thumbName = "plot", width = 600, height = 600)
+#' widgetThumbnail(p = plot, thumbName = "plot", width = 1024, height = 1024)
 #' }
 #' @export
 #'
-widgetThumbnail <- function(p, thumbName, width = 600, height = 600){
+widgetThumbnail <- function(p, thumbName, width = 1024, height = 1024){
   phantom <- findPhantom()
 
   success <- FALSE

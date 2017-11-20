@@ -200,7 +200,7 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
     listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
     TreeMutData <- reStrDisease(listMut_df)
     r_data[['TreeMutData']] <- TreeMutData
-    coffeewheel(TreeMutData, width=700, height=600
+    coffeewheel(TreeMutData, width=1024, height=600
                 #,main= paste0("Mutation Frequency: (Min = ", min(r_data$Freq_DfMutData) ,", Max = ", max(r_data$Freq_DfMutData)  ,")", sep="")
     )
   })
@@ -213,7 +213,7 @@ output$metabologram_All <- renderMetabologram({
 
   CoffeewheelTreeData <- reStrDimension(r_data$ListProfData)
 
-  title<- paste("Wheel with selected Studies")
+  title<- paste("All genomic profiles")
 
   metabologram(CoffeewheelTreeData, width=600, height=600, main=title,
                showLegend = FALSE, fontSize = 8, legendBreaks=c("Down", "0", "Up", "NA"),
@@ -466,8 +466,8 @@ wdgt
 
 
 observeEvent(input$saveCircosAll, {
-  wdgt <- metabologram(r_data$TreeListProfData, width=1024, height=1024, main='title',
-                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+  wdgt <- metabologram(r_data$TreeListProfData, width=1024, height=1024, main='All genomic profiles',
+                       showLegend = FALSE, fontSize = 12, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
   # temporarily switch to the temp dir, in case you do not have write
   # permission to the current working directory
@@ -494,7 +494,7 @@ observeEvent(input$saveCircosAll, {
 
 observeEvent(input$saveCircosMet, {
   wdgt <- metabologram(r_data$TreeMetData, width=1024, height=1024, main='Methylation',
-                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       showLegend = FALSE, fontSize = 12, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
   if(Sys.info()["sysname"] == "Windows"){
@@ -514,7 +514,7 @@ observeEvent(input$saveCircosMet, {
 
 observeEvent(input$saveCircosCNA, {
   wdgt <- metabologram(r_data$TreeCNAData, width=1024, height=1024, main='Copy Number Alteration',
-                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       showLegend = FALSE, fontSize = 12, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
   if(Sys.info()["sysname"] == "Windows"){
@@ -534,7 +534,7 @@ observeEvent(input$saveCircosCNA, {
 
 observeEvent(input$saveCircosMRNA, {
   wdgt <- metabologram(r_data$TreeExpData, width=1024, height=1024, main='mRNA Expression',
-                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       showLegend = FALSE, fontSize = 12, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
   if(Sys.info()["sysname"] == "Windows"){
@@ -554,7 +554,7 @@ observeEvent(input$saveCircosMRNA, {
 
 observeEvent(input$saveCircosMiRNA, {
   wdgt <- metabologram(r_data$TreeMiRNAData, width=1024, height=1024, main='Micro RNA expression',
-                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       showLegend = FALSE, fontSize = 12, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
   if(Sys.info()["sysname"] == "Windows"){
@@ -574,7 +574,7 @@ observeEvent(input$saveCircosMiRNA, {
 
 observeEvent(input$saveCircosRPPA, {
   wdgt <- metabologram(r_data$TreeRPPAData, width=1024, height=1024, main='Reverse Phase Protein Activity',
-                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       showLegend = FALSE, fontSize = 12, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
   if(Sys.info()["sysname"] == "Windows"){
@@ -594,7 +594,7 @@ observeEvent(input$saveCircosRPPA, {
 
 observeEvent(input$saveCircosMut, {
   wdgt <- metabologram(r_data$TreeMutData, width=1024, height=1024, main='Mutation',
-                       showLegend = FALSE, fontSize = 8, legendBreaks=c('Down', '0', 'Up', 'NA'),
+                       showLegend = FALSE, fontSize = 12, legendBreaks=c('Down', '0', 'Up', 'NA'),
                        legendColors=c('blue','white','red', 'black') , legendText='Legend')
 
   if(Sys.info()["sysname"] == "Windows"){

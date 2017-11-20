@@ -345,41 +345,41 @@ graph_obj <- reactive({
   # #  }
 
   if(exists("r_data") && !is.null(r_data[['GenesClassDetails']])){
-  if(input$NodeAttri_ClassifierID == 'mRNA'){
+    if(input$NodeAttri_ClassifierID == 'mRNA'){
 
-    ## Nodes Attributes
-    GeneAttri_df1 <- Node_obj_mRNA_Classifier(GeneList, r_data$GenesClassDetails)
-    #GeneAttri_df2 <- Node_obj_FreqIn(GeneList)
-    #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
-    #GeneAttri_df <- rbind(GeneAttri_df1, GeneAttri_df2)
-    #GeneAttri_bkp <<- GeneAttri_df
-    Edges_obj <- rbind(Edges_obj, GeneAttri_df1)
-    #Edges_obj_bkp <<- Edges_obj
-}
+      ## Nodes Attributes
+      GeneAttri_df1 <- Node_obj_mRNA_Classifier(GeneList, r_data$GenesClassDetails)
+      #GeneAttri_df2 <- Node_obj_FreqIn(GeneList)
+      #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
+      #GeneAttri_df <- rbind(GeneAttri_df1, GeneAttri_df2)
+      #GeneAttri_bkp <<- GeneAttri_df
+      Edges_obj <- rbind(Edges_obj, GeneAttri_df1)
+      #Edges_obj_bkp <<- Edges_obj
+    }
 
-  if (input$NodeAttri_ClassifierID =='Studies'){
-    Disease_Net <- Studies_obj(df=r_data$GenesClassDetails)
-    Edges_obj<- rbind(Edges_obj, Disease_Net)
+    if (input$NodeAttri_ClassifierID =='Studies'){
+      Disease_Net <- Studies_obj(df=r_data$GenesClassDetails)
+      Edges_obj<- rbind(Edges_obj, Disease_Net)
 
-  }
+    }
 
-  if (input$NodeAttri_ClassifierID == 'mRNA/Studies'){
+    if (input$NodeAttri_ClassifierID == 'mRNA/Studies'){
 
-    ## Nodes Attributes
-    GeneAttri_mRNA <- Node_obj_mRNA_Classifier(GeneList, r_data$GenesClassDetails)
-    #GeneAttri_FreqIn <- Node_obj_FreqIn(GeneList)
-    Studies_Net <- Studies_obj(df=r_data$GenesClassDetails)
-    #FreqMut_obj <- Mutation_obj()
+      ## Nodes Attributes
+      GeneAttri_mRNA <- Node_obj_mRNA_Classifier(GeneList, r_data$GenesClassDetails)
+      #GeneAttri_FreqIn <- Node_obj_FreqIn(GeneList)
+      Studies_Net <- Studies_obj(df=r_data$GenesClassDetails)
+      #FreqMut_obj <- Mutation_obj()
 
-    #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
-    GeneAttri_df <- rbind(GeneAttri_mRNA, Studies_Net)
-    # GeneAttri_df <- rbind(GeneAttri_df,Studies_Net)
-    #GeneAttri_df <- rbind(GeneAttri_df, FreqMut_obj)
+      #BRCA1[shape = box, style= filled, fillcolor="blue", color=red, penwidth=3, peripheries=2 ]
+      GeneAttri_df <- rbind(GeneAttri_mRNA, Studies_Net)
+      # GeneAttri_df <- rbind(GeneAttri_df,Studies_Net)
+      #GeneAttri_df <- rbind(GeneAttri_df, FreqMut_obj)
 
-    #GeneAttri_bkp <<- GeneAttri_df
-    Edges_obj <- rbind(Edges_obj, GeneAttri_df)
-    #Edges_obj_bkp <<- Edges_obj
-  }
+      #GeneAttri_bkp <<- GeneAttri_df
+      Edges_obj <- rbind(Edges_obj, GeneAttri_df)
+      #Edges_obj_bkp <<- Edges_obj
+    }
   }
   if('Mutation' %in% input$NodeAttri_ProfDataID ){
 
@@ -463,7 +463,7 @@ output$diagrammeR <- DiagrammeR::renderGrViz({
     ## Engine argument do not work in the future (update viz.js)
     ## https://github.com/rich-iannone/DiagrammeR/issues/150
     #engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
-    width = 1200
+    width = 600
   )
 
 })
@@ -486,11 +486,11 @@ output$Save_diagrammeR_plot <- downloadHandler(
       DiagrammeR::grViz(
         graph_obj(),
         #engine =  input$ReacLayoutId,   #dot, neato|twopi|circo|
-        width = 1200
+        width = 600
       ), file)
 
     #webshot::webshot("temp.html", file = "Rplot.png",
-     #       cliprect = "viewport")
+    #       cliprect = "viewport")
 
   }
 
@@ -515,3 +515,35 @@ output$ReactomeLegend <- renderImage({
        alt = paste("Image number"))
 
 }, deleteFile = FALSE)
+
+
+## REPORT
+observeEvent(input$ReactomeHelp_report, {
+
+DiagrammeR_net <- paste0("## Static network \n
+```{r}\n",
+                   paste0(" DiagrammeR::grViz(
+        graph_obj(),
+        width = 600
+                   )
+  ") ,
+                   "\n",
+                   "\n```\n"
+  )
+
+
+visNetwork <- paste0("## Dynamic network \n
+```{r}\n",
+                       paste0("visNetwork::visHierarchicalLayout(r_data$graphe,
+                              enabled= input$enableHierarchiId,     # TRUE, FALSE
+                              direction = input$Hierarchi_AttId,    # 'LR', 'RL', 'UD', 'DU'
+                              sortMethod= input$MethodHierarchiId   # 'directed' or 'hubsize'
+                       )"),
+                       "\n",
+                       "\n```\n"
+                       )
+
+
+  update_report_fun(DiagrammeR_net)
+  update_report_fun(visNetwork)
+})

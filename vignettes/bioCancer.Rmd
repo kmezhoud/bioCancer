@@ -1,20 +1,20 @@
 ---
-title: 'bioCancer: Interactive Multi-OMICS Cancers Data Visualization and Analysis'
-author: \ Karim Mezhoud (<kmezhoud@gmail.com>)\ Nuclear Science Center of Tunisia,
-  Nuclear Safety & Security Department
+title: "bioCancer: Interactive Multi-OMICS Cancers Data Visualization and Analysis"
+author: "\\
+	Karim Mezhoud (<kmezhoud@gmail.com>)\\
+        Nuclear Science Center of Tunisia, Nuclear Safety & Security Department"
 date: "`r Sys.Date()`"
-output:
-  html_document:
-    df_print: paged
-    toc: yes
-  pdf_document:
-    toc: yes
-  #prettydoc::html_pretty:
-    highlight: github
+output: 
+  prettydoc::html_pretty:
+    toc: true
     theme: cayman
-   # toc: yes
-vignette: |
-  %\VignetteEncoding{UTF-8} %\VignetteIndexEntry{bioCancer: Interactive Multi-OMICS Cancers Data Visualization and Analysis} %\VignetteEngine{knitr::rmarkdown}
+    highlight: github
+  pdf_document:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{bioCancer: Interactive Multi-OMICS Cancers Data Visualization and Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 
