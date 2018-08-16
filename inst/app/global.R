@@ -17,7 +17,7 @@ options(radiant.path.bioCancer = system.file(package = "bioCancer"))
 
 ## option to change theme
 options(radiant.nav_ui =
-          list(windowTitle = "bioCancer" ,theme= shinythemes::shinytheme("simplex") , id = "nav_radiant",
+          list(windowTitle = "bioCancer" ,theme= shinythemes::shinytheme("cerulean") , id = "nav_radiant",
                inverse = TRUE, collapsible = TRUE, tabPanel("Workspace", withMathJax(), uiOutput("ui_data"))))
 
 
@@ -60,6 +60,11 @@ ifelse (grepl("bioCancer", getwd()) && file.exists("../../inst") , "..",
 ## loading urls and ui
 source(file.path(getOption("radiant.path.bioCancer"), "app/init.R"),
        encoding = getOption("radiant.encoding"), local = TRUE)
+
+## loading functions no longer used by radiant.data
+source(file.path(getOption("radiant.path.bioCancer"), "app/radiant_old.R"),
+       encoding = getOption("radiant.encoding"), local = TRUE)
+
 
 ## needed to change figures in helps
 addResourcePath("figures", file.path(getOption("radiant.path.bioCancer"), "app/tools/help/figures/"))

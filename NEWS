@@ -1,8 +1,13 @@
-CHANGES IN VERSION 1.8.01 (12 August 2018)
+CHANGES IN VERSION 1.9.01 (16 August 2018)
+------------------------
++ upload and download using Rstudio file browser
+  remove plot_downloader function and replace it by download_link (defined in radiant.R file)
++ add radiant_old.R file for needed functions but not longer used by radiant.data
+
+CHANGES IN VERSION 1.9.01 (12 August 2018)
 ------------------------
   + replace getdata() by get_data()
   + replace factorizer() by lapply(.,factor)
-
 
 CHANGES IN VERSION 1.7.05 (12 April 2018)
 ------------------------

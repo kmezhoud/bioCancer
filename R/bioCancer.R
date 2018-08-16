@@ -21,7 +21,6 @@
 #' @importFrom org.Hs.eg.db org.Hs.egSYMBOL2EG
 #' @import DOSE
 #' @importFrom clusterProfiler enricher
-#' @importFrom clusterProfiler plot
 #' @importFrom clusterProfiler compareCluster
 #' @importFrom clusterProfiler enrichGO
 #' @importFrom clusterProfiler enrichKEGG

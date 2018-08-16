@@ -1,17 +1,17 @@
 ################# Load dataframe (Clinical data, Profile Data, ...) in Datasets
 loadInDatasets <- function(fname, header= TRUE){
-  
+
   objname <- fname
   if(fname=="ProfData"){
     GeneList <- whichGeneList(input$GeneListID)
     dat <- as.data.frame(cgdsr::getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
     r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
-    
-    
+
+
   }else if (fname=="ClinicalData"){
     dat <- as.data.frame(cgdsr::getClinicalData(cgds, input$CasesID))
     r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
-    
+
   }else if (fname=="MutData"){
     GeneList <- whichGeneList(input$GeneListID)
     dat <- as.data.frame((cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)))
@@ -48,7 +48,7 @@ loadInDatasets <- function(fname, header= TRUE){
 
 
 loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, sep = "\t", tab) {
-  
+
   dat <- sshhr(try(
     {if (Sys.info()["sysname"] == "Windows") {
       read.table("clipboard", header = header, sep = sep, as.is = TRUE)
@@ -68,7 +68,7 @@ loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, 
     r_data[[paste0(objname,"_descr")]] <- ret
     r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
   }
-  
+
 }
 
 
@@ -78,18 +78,18 @@ loadUserData <- function(fname, uFile, ext,
                          man_str_as_factor = TRUE,
                          sep = ",",
                          dec = ".") {
-  
+
   filename <- basename(fname)
-  
+
   fext <- tools::file_ext(filename) %>% tolower
-  
+
   ## switch extension if needed
   if (fext == "rds" && ext == "rda") ext <- "rds"
   if (fext == "rda" && ext == "rds") ext <- "rda"
-  
+
   ## objname is used as the name of the data.frame
   objname <- sub(paste0(".",ext,"$"),"", filename)
-  
+
   ## if ext isn't in the filename nothing was replaced and so ...
   if (objname == filename) {
     if (fext %in% c("xls","xlsx")) {
@@ -97,11 +97,11 @@ loadUserData <- function(fname, uFile, ext,
     } else {
       ret <- paste0("### The filename extension (",fext,") does not match the specified file-type (",ext,"). Please specify the file type you are trying to upload (i.e., csv or rda).")
     }
-    
+
     upload_error_handler(objname,ret)
     ext <- "---"
   }
-  
+
   if (ext == 'rda') {
     ## objname will hold the name of the object(s) inside the R datafile
     robjname <- try(load(uFile), silent = TRUE)
@@ -133,34 +133,34 @@ loadUserData <- function(fname, uFile, ext,
     r_data[[objname]] <- loadcsv(uFile, .csv = .csv, header = header, sep = sep, saf = man_str_as_factor) %>%
     {if (is.character(.)) upload_error_handler(objname, mess) else .} %>%
     {set_colnames(., gsub("^\\s+|\\s+$", "", names(.)))}
-    
+
     r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
     r_data[['datasetlist']] <<- c(objname, r_data[['datasetlist']]) %>% unique
-    
+
   } else if (ext != "---") {
-    
+
     ret <- paste0("### The selected filetype is not currently supported (",fext,").")
     upload_error_handler(objname,ret)
-    
+
   }
   if (ext == 'txt') {
     r_data[[objname]] <- try(read.table(uFile, header=header, sep=sep, dec=dec,
                                         stringsAsFactors=FALSE), silent = TRUE) %>%
                                         { if (is(., 'try-error')) upload_error_handler(objname,
-                                                                                       "### There was an error loading the data. 
+                                                                                       "### There was an error loading the data.
                                                                                        Please make sure the data are in either txt format,
                                                                                        one gene by row.")
                                           else . } %>%
-                                          { if (man_str_as_factor) factorizer(.) else . } # %>% tbl_df
+                                          { if (man_str_as_factor) lapply(., factor) else . } # %>% tbl_df
     r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
-    
+
   }
 }
 
 
 ############
 loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, sep = "\t", tab) {
-  
+
   dat <- sshhr(try(
     {if (Sys.info()["sysname"] == "Windows") {
       read.table("clipboard", header = header, sep = sep, as.is = TRUE)
@@ -180,5 +180,5 @@ loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, 
     r_data[[paste0(objname,"_descr")]] <- ret
     r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
   }
-  
+
 }
