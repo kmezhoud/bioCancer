@@ -16,13 +16,14 @@ output$ProfDataTable <- DT::renderDataTable({
     } else if (inherits(try( dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID),
                              silent=FALSE),"try-error")){
       dat <- as.data.frame("There are some Gene Symbols not supported by cbioportal.
+                           Or gene list is empty.
                            Or bioCancer is not connected to cgdsr server (check connection).")
     }else{
       shiny::withProgress(message = 'loading ProfData from cgdsr server...', value = 0.1, {
         Sys.sleep(0.25)
-        
+
       dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
-      
+
       })
       if(dim(dat)[1]==0){
         ## avoide error when GeneList is empty
@@ -53,19 +54,19 @@ output$dl_ProfData_tab <- shiny::downloadHandler(
   filename = function() { paste0("ProfData_tab.csv") },
   content = function(file) {
     #data_filter <- if (input$show_filter) input$data_filter else ""
-    getdata(r_data$ProfData[input$ProfDataTable_rows_all,], vars = NULL, 
+    get_data(r_data$ProfData[input$ProfDataTable_rows_all,], vars = NULL,
             rows = NULL, na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
   }
 )
 
 observeEvent(input$ProfilesHelp_report, {
-  
+
   cmd <- paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
-                paste0(" getdata(r_data$ProfData[input$ProfDataTable_rows_all,], vars = NULL,
+                paste0(" get_data(r_data$ProfData[input$ProfDataTable_rows_all,], vars = NULL,
                        rows= NULL, na.rm = FALSE)"),
                 "\n",
                 "\n```\n"
   )
-  update_report_fun(cmd)  
+  update_report_fun(cmd)
 })

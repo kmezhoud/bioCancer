@@ -36,7 +36,7 @@ output$dl_Studies_tab <- shiny::downloadHandler(
   filename = function() { paste0("Studies_tab.csv") },
   content = function(file) {
     # append _rows_all to StudiesTable ID of the "Studies" dataframe
-    getdata(Studies[input$StudiesTable_rows_all,], vars = NULL,
+    get_data(Studies[input$StudiesTable_rows_all,], vars = NULL,
             rows = NULL,
             na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)

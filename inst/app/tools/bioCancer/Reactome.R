@@ -233,7 +233,7 @@ output$dl_GeneSet_Legend <- shiny::downloadHandler(
   filename = function() { paste0("GeneSet_Legend.csv") },
   content = function(file) {
     data_filter <- if (input$show_filter) input$data_filter else ""
-    getdata(r_data$GeneSet_Legend, vars = NULL, filt = data_filter,
+    get_data(r_data$GeneSet_Legend, vars = NULL, filt = data_filter,
             rows = NULL, na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
   }

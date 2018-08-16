@@ -1,3 +1,13 @@
+CHANGES IN VERSION 1.8.01 (12 August 2018)
+------------------------
+  + replace getdata() by get_data()
+  + replace factorizer() by lapply(.,factor)
+
+
+CHANGES IN VERSION 1.7.05 (12 April 2018)
+------------------------
++ omit importFrom clusterProfiler plot
+
 CHANGES IN VERSION 1.7.04 (20 November 2017)
 ------------------------
 + export Diagrammer and viNetwork to report

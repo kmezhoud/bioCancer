@@ -46,7 +46,7 @@ output$ClassifierHowto <- renderPrint({
 TableCases <- reactive({
   shiny::withProgress(message = 'loading Sample size...', value = 0.1, {
     Sys.sleep(0.25)
-    
+
     checked_Studies <- input$StudiesIDClassifier
     listCases <- lapply(checked_Studies, function(x) cgdsr::getCaseLists(cgds,x)[,3])
     #listGenProf <- lapply(checked_Studies, function(x)getGeneticProfiles(cgds,x)[,2])
@@ -79,25 +79,25 @@ output$viewTableCases <- DT::renderDataTable({
   displayTable(dat) %>% DT::formatStyle(names(dat),
                                         color = DT::styleEqual('Check Cases for selected studies. Some ones do not have samples of mRNA expression.',
                                                                'red'))#, backgroundColor = 'white', fontWeight = 'bold'
-  
+
 })
 
 
 
 
 output$getGenesClassifier <- DT::renderDataTable({
-  
+
   shiny::withProgress(message = 'loading Genetic Profiles...', value = 0.1, {
     Sys.sleep(0.25)
-    
+
     listGenProfs <-  getList_GenProfs(input$StudiesIDClassifier)
   })
-  
+
   shiny::withProgress(message = 'loading Cases...', value = 0.1, {
     Sys.sleep(0.25)
     listCases <- getList_Cases(input$StudiesIDClassifier)
   })
-  
+
   shiny::withProgress(message = 'geNetClassifier is running...', value = 0.1, {
     Sys.sleep(0.25)
     dat <-   getGenesClassification(checked_Studies = input$StudiesIDClassifier,
@@ -118,7 +118,7 @@ output$getGenesClassifier <- DT::renderDataTable({
 output$dl_GenesClassDetails_tab <- shiny::downloadHandler(
   filename = function() { paste0("Classification_tab.csv") },
   content = function(file) {
-    getdata(r_data$GenesClassDetails, vars = NULL, 
+    get_data(r_data$GenesClassDetails, vars = NULL,
             rows = NULL, na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
   }
@@ -127,14 +127,14 @@ output$dl_GenesClassDetails_tab <- shiny::downloadHandler(
 output$Plot_enricher <- renderPlot({
   shiny::withProgress(message = 'Genes Diseases Association...', value = 0.1, {
     Sys.sleep(0.25)
-    
+
     GeneList <- whichGeneList(input$GeneListID)
-    
+
     ## clusterProfile package
     #GeneID = bitr(GeneList, fromType="SYMBOL", toType="ENTREZID", annoDb="org.Hs.eg.db")[,2]
     ## Symbol2GeneID
     GeneID<- unname(unlist(AnnotationFuncs::translate(GeneList, org.Hs.eg.db::org.Hs.egSYMBOL2EG)))
-    
+
     ## download DisGeNet.RDS file from ubuntu/kmezhoud/bioCancer
     if(is.null(r_data$gda)){
       shiny::withProgress(message = 'Loading DisGeNet.RDS...', value = 0.1, {
@@ -142,10 +142,10 @@ output$Plot_enricher <- renderPlot({
         download.file("https://wiki.ubuntu.com/kmezhoud/bioCancer?action=AttachFile&do=get&target=DisGeNet.RDS",tmp <- tempfile())
         gda <- readRDS(tmp)
         r_data[['gda']] <- gda
-        
+
       })
     }
-    
+
     ## from http://www.disgenet.org/ds/DisGeNET/resultsDisGeNet.tar.gz
     # ## downloaded local DisGeNet.RDS
     # if ("package:bioCancer" %in% search()) {
@@ -176,17 +176,17 @@ output$Plot_enricher <- renderPlot({
 Plot_enrich <- function(){
   options(scipen = 0, digits = 2)
   barplot(r_data$x,drop=TRUE, showCategory=10 ,digits=2)
-  
+
 }
 
 ## Disease - Genes - Studies Associations
 output$compareClusterDO <- renderPlot({
   shiny::withProgress(message = 'Disease Ontology enrich...', value = 0.1, {
     Sys.sleep(0.25)
-    
+
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
-    
+
     if (inherits(try(cdo <- clusterProfiler::compareCluster(GroupsID, fun="enrichDO"), silent=TRUE),"try-error"))
     {print("No enrichment found in any of gene cluster, please check your input...")
       plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
@@ -194,7 +194,7 @@ output$compareClusterDO <- renderPlot({
                                    " in any of gene cluster, \n",
                                    "Please check your input..."),
            cex = 1, col = "red")
-      
+
     }else{
       cdo <- clusterProfiler::compareCluster(GroupsID, fun="enrichDO")
       r_data[['cdo']] <- cdo
@@ -205,7 +205,7 @@ output$compareClusterDO <- renderPlot({
 
 compareClusterDO <- function(){
   DOSE::dotplot(r_data$cdo, title="Disease Ontology Enrichment Comparison")
-  
+
 }
 
 
@@ -217,7 +217,7 @@ output$compareClusterReactome <- renderPlot({
     #  require(ReactomePA)
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
-    
+
     if (inherits(try(cdp <- clusterProfiler::compareCluster(GroupsID, fun="enrichPathway"), silent=TRUE),"try-error"))
     { print("No Reactome enrichment found in any of gene cluster, please check your input...")
       text(x = 0.5, y = 0.5, paste("No Reactome Pathway enrichment found\n",
@@ -239,7 +239,7 @@ compareClusterReactome <- function(){
 output$compareClusterGO <- renderPlot({
   shiny::withProgress(message = 'Gene Ontology Enrich...', value = 0.1, {
     Sys.sleep(0.25)
-    
+
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
     if (inherits(try(cgo <- clusterProfiler::compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')),"try-error"))
@@ -258,14 +258,14 @@ output$compareClusterGO <- renderPlot({
 })
 
 compareClusterGO <- function(){
-  
+
   DOSE::dotplot(r_data$cgo, title="GO Enrichment Comparison")
 }
 ## KEGG Pathway Enrichment
 output$compareClusterKEGG <- renderPlot({
   shiny::withProgress(message = 'KEGG Pathway Enrich...', value = 0.1, {
     Sys.sleep(0.25)
-    
+
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
     if (inherits(try(cgo <- clusterProfiler::compareCluster(GroupsID, fun="enrichKEGG")),"try-error"))
@@ -291,7 +291,7 @@ compareClusterKEGG <- function(){
 output$compareClusterCC<- renderPlot({
   shiny::withProgress(message = 'Cellular Component enrichment...', value = 0.1, {
     Sys.sleep(0.25)
-    
+
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
     if (inherits(try(cgo <- clusterProfiler::compareCluster(GroupsID, fun="groupGO", OrgDb='org.Hs.eg.db')),"try-error"))
@@ -314,16 +314,16 @@ compareClusterCC <- function(){
 
 
 observeEvent(input$ClassifierHelp_report, {
-  
+
   cmd1 <- paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
-                 paste0("getdata(r_data$GenesClassDetails, vars = NULL, 
+                 paste0("get_data(r_data$GenesClassDetails, vars = NULL,
             rows = NULL, na.rm = FALSE)"),
                  "\n",
                  "\n```\n"
   )
-  
-  
-  
+
+
+
   cmd2 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$x))
@@ -331,7 +331,7 @@ observeEvent(input$ClassifierHelp_report, {
                 "\n",
                 "\n```\n"
   )
-  
+
   cmd3 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$cdo))
@@ -339,7 +339,7 @@ observeEvent(input$ClassifierHelp_report, {
                 "\n",
                 "\n```\n"
                 )
-  
+
   cmd4 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$cdReactome))
@@ -347,7 +347,7 @@ observeEvent(input$ClassifierHelp_report, {
                 "\n",
                 "\n```\n"
                 )
-  
+
   cmd5 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$cgo))
@@ -355,8 +355,8 @@ observeEvent(input$ClassifierHelp_report, {
                 "\n",
                 "\n```\n"
                 )
-  
-  
+
+
   cmd6 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$ckegg))
@@ -364,8 +364,8 @@ observeEvent(input$ClassifierHelp_report, {
                 "\n",
                 "\n```\n"
                 )
-  
-  
+
+
   cmd7 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$cCC))
@@ -373,10 +373,10 @@ observeEvent(input$ClassifierHelp_report, {
                 "\n",
                 "\n```\n"
                 )
-  
-  update_report_fun(cmd1) 
+
+  update_report_fun(cmd1)
   update_report_fun(cmd2)
-  update_report_fun(cmd3) 
+  update_report_fun(cmd3)
   update_report_fun(cmd4)
   update_report_fun(cmd5)
   update_report_fun(cmd6)
