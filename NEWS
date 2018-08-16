@@ -1,4 +1,9 @@
-CHANGES IN VERSION 1.9.01 (16 August 2018)
+CHANGES IN VERSION 1.9.03 (16 August 2018)
+------------------------
++ modify stop function
++ update paste gene list function
+
+CHANGES IN VERSION 1.9.02 (16 August 2018)
 ------------------------
 + upload and download using Rstudio file browser
   remove plot_downloader function and replace it by download_link (defined in radiant.R file)

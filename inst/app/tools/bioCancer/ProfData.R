@@ -22,7 +22,7 @@ output$ProfDataTable <- DT::renderDataTable({
       shiny::withProgress(message = 'loading ProfData from cgdsr server...', value = 0.1, {
         Sys.sleep(0.25)
 
-      dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
+        dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
 
       })
       if(dim(dat)[1]==0){
@@ -46,7 +46,7 @@ output$ProfDataTable <- DT::renderDataTable({
                                          color = DT::styleEqual("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.",
                                                                 'red'))#, backgroundColor = 'white', fontWeight = 'bold'
 
-  }
+}
 
   })
 
@@ -55,7 +55,7 @@ output$dl_ProfData_tab <- shiny::downloadHandler(
   content = function(file) {
     #data_filter <- if (input$show_filter) input$data_filter else ""
     get_data(r_data$ProfData[input$ProfDataTable_rows_all,], vars = NULL,
-            rows = NULL, na.rm = FALSE) %>%
+             rows = NULL, na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
   }
 )

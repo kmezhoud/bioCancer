@@ -47,29 +47,7 @@ loadInDatasets <- function(fname, header= TRUE){
 
 
 
-loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, sep = "\t", tab) {
 
-  dat <- sshhr(try(
-    {if (Sys.info()["sysname"] == "Windows") {
-      read.table("clipboard", header = header, sep = sep, as.is = TRUE)
-    } else if (Sys.info()["sysname"] == "Darwin") {
-      read.table(pipe("pbpaste"), header = header, sep = sep, as.is = TRUE)
-    } else if (!is_empty(tab)){
-      read.table(text = tab, header = header, sep = sep, as.is = TRUE) #load_cdata
-    }} %>% as.data.frame(check.names = TRUE), silent = TRUE))
-  dat <- t(dat)
-  if (is(dat, 'try-error') || nrow(dat) == 0) {
-    if (ret == "") ret <- c("### Gene List in clipboard was not well formatted.")
-    upload_error_handler(objname,ret)
-    r_data[['genelist']] <- c("DNA_damage_Response",r_data[['genelist']]) %>% unique
-  } else {
-    ret <- paste0("### Clipboard data\nData copied from clipboard on", lubridate::now())
-    r_data[[objname]] <- dat
-    r_data[[paste0(objname,"_descr")]] <- ret
-    r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
-  }
-
-}
 
 
 loadUserData <- function(fname, uFile, ext,
@@ -155,11 +133,10 @@ loadUserData <- function(fname, uFile, ext,
     r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
 
   }
-}
+  }
 
 
-############
-loadClipboard_GeneList <- function(objname = "Genes", ret = "", header = FALSE, sep = "\t", tab) {
+loadClipboard_GeneList <- function(objname = "User_Genes", ret = "", header = FALSE, sep = "\t", tab) {
 
   dat <- sshhr(try(
     {if (Sys.info()["sysname"] == "Windows") {

@@ -32,7 +32,9 @@ output$MutDataTable <- DT::renderDataTable({
         if(dim(dat)[1]==0){
           ## avoide error when GeneList is empty
           ## Error..No.cancer.study..cancer_study_id...or.genetic.profile..genetic_profile_id..or.case.list.or..case_list..case.set..case_set_id..provid
-          dat <- as.data.frame("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.")
+          dat <- as.data.frame("Gene List is empty.
+                               Or The Gene Symbols are not supported by cbioportal.
+                               Copy and paste genes from text file (Gene/line) or use gene list from examples.")
         }else{
           req(input$Mut_varsID)
           # dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
@@ -43,11 +45,11 @@ output$MutDataTable <- DT::renderDataTable({
         }
       })
     }
-  }
+}
   displayTable(dat)%>% DT::formatStyle(names(dat),
                                        color = DT::styleEqual("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.",
                                                               'red'))#, backgroundColor = 'white', fontWeight = 'bold'
-})
+  })
 
 
 output$dl_MutData_tab <- shiny::downloadHandler(
@@ -55,7 +57,7 @@ output$dl_MutData_tab <- shiny::downloadHandler(
   content = function(file) {
     #data_filter <- if (input$show_filter) input$data_filter else ""
     get_data(r_data$MutData[input$MutDataTable_rows_all,], vars = input$Mut_varsID,
-            rows = NULL, na.rm = FALSE) %>%
+             rows = NULL, na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
   }
 )
