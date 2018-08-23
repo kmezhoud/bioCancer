@@ -1,6 +1,6 @@
 output$cBioPortal <- renderUI({
   tagList(
-    includeCSS(file.path(getOption("radiant.path.data"),"app/www/style.css")),
+    includeCSS(file.path(getOption("radiant.path.bioCancer"),"app/www/style.css")),
     sidebarLayout(
       sidebarPanel(
         wellPanel(
@@ -32,7 +32,7 @@ output$cBioPortal <- renderUI({
                          imageOutput("overview")
         ),
 
-        tags$hr(),
+        #tags$hr(),
 
         tabsetPanel(id = "tabs_cbioportal",
 

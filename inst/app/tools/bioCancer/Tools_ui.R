@@ -1,6 +1,6 @@
 output$Tools <- renderUI({
   tagList(
-  #includeCSS(file.path(getOption("radiant.path.data"),"app/www/style.css")),
+  includeCSS(file.path(getOption("radiant.path.bioCancer"),"app/www/style.css")),
   sidebarLayout(
     sidebarPanel(
       wellPanel(

@@ -8,5 +8,6 @@ do.call(navbarPage,
           getOption("radiant.nav_ui"),
           getOption("Tools.nav_ui"),
           getOption("radiant.shared_ui"),
-          help_menu("help_bioCancer_ui"))
+          help_menu("help_bioCancer_ui")
+          )
 )

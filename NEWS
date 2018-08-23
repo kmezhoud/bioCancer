@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.9.04 (22 August 2018)
+------------------------
++ add style.css file: raduce padding-top to 0px
+
 CHANGES IN VERSION 1.9.03 (16 August 2018)
 ------------------------
 + modify stop function

@@ -13,7 +13,7 @@ output$ui_filter_error <- renderUI({
 ## neither are the state_... functions
 output$ui_data <- renderUI({
   tagList(
-    includeCSS(file.path(getOption("radiant.path.data"),"app/www/style.css")),
+    includeCSS(file.path(getOption("radiant.path.bioCancer"),"app/www/style.css")),
     sidebarLayout(
       sidebarPanel(
         wellPanel(

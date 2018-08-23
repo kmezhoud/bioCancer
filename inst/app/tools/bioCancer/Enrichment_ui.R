@@ -127,7 +127,7 @@ output$coffeewheels <- renderUI({
 output$Enrichment <- renderUI({
   tagList(
     includeCSS(file.path(getOption("radiant.path.bioCancer"),"app/www/switchButton.css")),
-    includeCSS(file.path(getOption("radiant.path.data"),"app/www/style.css")),
+    includeCSS(file.path(getOption("radiant.path.bioCancer"),"app/www/style.css")),
     sidebarLayout(
       sidebarPanel(
 

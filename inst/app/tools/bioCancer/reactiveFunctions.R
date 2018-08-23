@@ -1,4 +1,4 @@
-################# Load dataframe (Clinical data, Profile Data, ...) in Datasets
+################# Load dataframe (Clinical data, Profile Data, ...) to Datasets
 loadInDatasets <- function(fname, header= TRUE){
 
   objname <- fname
@@ -125,9 +125,9 @@ loadUserData <- function(fname, uFile, ext,
     r_data[[objname]] <- try(read.table(uFile, header=header, sep=sep, dec=dec,
                                         stringsAsFactors=FALSE), silent = TRUE) %>%
                                         { if (is(., 'try-error')) upload_error_handler(objname,
-                                                                                       "### There was an error loading the data.
-                                                                                       Please make sure the data are in either txt format,
-                                                                                       one gene by row.")
+                                                          "### There was an error loading the data.
+                                                           Please make sure the data are in either txt format,
+                                                           one gene by row.")
                                           else . } %>%
                                           { if (man_str_as_factor) lapply(., factor) else . } # %>% tbl_df
     r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
