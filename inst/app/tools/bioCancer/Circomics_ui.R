@@ -29,43 +29,43 @@ output$CircosLegend <- renderImage({
 # pull user data to r_data$ListProfData
 output$uiPullUserDataCNA <- renderUI({
   selectInput(inputId = "UserData_CNA_id", label='CNA:',
-              choices=  r_data$datasetlist, selected= "", multiple=FALSE,
+              choices=  r_info$datasetlist, selected= "", multiple=FALSE,
               selectize = FALSE
   )
 })
 output$uiPullUserDatamRNA <- renderUI({
   selectInput(inputId = "UserData_mRNA_id", label='mRNA:',
-              choices=  r_data$datasetlist, selected= "", multiple=FALSE,
+              choices=  r_info$datasetlist, selected= "", multiple=FALSE,
               selectize = FALSE
   )
 })
 output$uiPullUserDataMetHM27 <- renderUI({
   selectInput(inputId = "UserData_MetHM27_id", label='Methylation HM27',
-              choices= r_data$datasetlist, selected= NULL, multiple=FALSE,
+              choices= r_info$datasetlist, selected= NULL, multiple=FALSE,
               selectize = FALSE
   )
 })
 output$uiPullUserDataMetHM450 <- renderUI({
   selectInput(inputId = "UserData_MetHM450_id", label='Methylation HM450',
-              choices= r_data$datasetlist, selected= NULL, multiple=FALSE,
+              choices= r_info$datasetlist, selected= NULL, multiple=FALSE,
               selectize = FALSE
   )
 })
 output$uiPullUserDataFreqMut <- renderUI({
   selectInput(inputId = "UserData_FreqMut_id", label='Mutation Frequency',
-              choices= r_data$datasetlist, selected= NULL, multiple=FALSE,
+              choices= r_info$datasetlist, selected= NULL, multiple=FALSE,
               selectize = FALSE
   )
 })
 output$uiPullUserDatamiRNA <- renderUI({
   selectInput(inputId = "UserData_miRNA_id", label='miRNA',
-              choices= r_data$datasetlist, selected= NULL, multiple=FALSE,
+              choices= r_info$datasetlist, selected= NULL, multiple=FALSE,
               selectize = FALSE
   )
 })
 output$uiPullUserDataRPPA <- renderUI({
   selectInput(inputId = "UserData_RPPA_id", label='RPPA',
-              choices= r_data$datasetlist, selected= NULL, multiple=FALSE,
+              choices= r_info$datasetlist, selected= NULL, multiple=FALSE,
               selectize = FALSE
   )
 })
@@ -81,8 +81,8 @@ output$ui_CircosDimension <- renderUI({
 
 output$StrListProfDataCircos <- renderPrint({
 
-  withProgress(message = 'loading Profiles Data from cgdsr server... ', value = 0.1, {
-    Sys.sleep(0.25)
+  withProgress(message = 'loading Profiles Data from cgdsr server... ', value = 1, {
+
     getListProfData(panel='Circomics',input$GeneListID)
   })
 
@@ -164,7 +164,7 @@ output$ui_userDataMergeSwithButton <- renderUI({
 
 output$ui_bad_userData_message <- renderUI({
   # if user data is in ListProfData
-  if(any(grepl('UserData', lapply(r_data$ListProfData, function(x) names(x)))) || any(grepl('UserData', names(r_data$ListMutData)))){
+  if(any(grepl('UserData', lapply(r_info$ListProfData, function(x) names(x)))) || any(grepl('UserData', names(r_info$ListMutData)))){
     h5("+ User data",align="center", style = "color:#428bca;font-size:100%")
   }else{
     h5(" select correct User data",align="center", style = "color:red;font-size:100%")
@@ -175,13 +175,14 @@ output$ui_bad_userData_message <- renderUI({
 output$ui_Circomics <- renderUI({
 
   ## get Studies for Circomics
-  updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies[,1], selected = c("luad_tcga_pub","blca_tcga_pub"))
+  updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies[,1],
+                       selected = c("luad_tcga_pub","blca_tcga_pub"))
   #,"prad_tcga_pub","ucec_tcga_pub"
 
   conditionalPanel("input.tabs_Enrichment == 'Circomics'",
 
                    wellPanel(
-                     selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices=Studies[,1],
+                     selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices= Studies[,1],
                                     selected = c("luad_tcga_pub","blca_tcga_pub"), multiple = TRUE),
                      conditionalPanel(condition = "input.StudiesIDCircos == null",
                                       h5("Select at less two studies",align="center",style = "color:red")

@@ -236,8 +236,8 @@ output$ui_Reactome <- renderUI({
 ## View Available Profile Data
 
 output$ReactomeAvailability <- DT::renderDataTable({
-  withProgress(message = 'Loading Data...', value = 0.1, {
-    Sys.sleep(0.25)
+  withProgress(message = 'Loading Data...', value = 1, {
+
     dat <- checkDimensions(panel = "Networking", StudyID= input$StudiesIDReactome)
     ## remove rownames to column
     dat <- dat %>% tibble::rownames_to_column("Samples")
@@ -251,8 +251,8 @@ output$ReactomeAvailability <- DT::renderDataTable({
 ## print Structure of Profiles data
 
 output$StrListProfDataReactome <- renderPrint({
-  withProgress(message = 'loading Profiles Data... ', value = 0.1, {
-    Sys.sleep(0.25)
+  withProgress(message = 'loading Profiles Data... ', value = 1, {
+
     getListProfData(panel='Networking', input$GeneListID)
   })
   if(is.null(r_data$ListProfData)){

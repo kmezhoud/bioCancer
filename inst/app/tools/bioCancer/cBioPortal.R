@@ -6,26 +6,26 @@ Studies<- cgdsr::getCancerStudies(cgds)
 
 ## get Cases in side bar panel
 output$ui_Cases <- renderUI({
-  shiny::withProgress(message = 'loading Cases from cgdsr server...', value = 0.1, {
-    Sys.sleep(0.25)
-    CaseLists <- cgdsr::getCaseLists(cgds,input$StudiesID)[,1]
-    selectInput("CasesID", "Cases for selected study",
-                choices= CaseLists,
-                selected = CaseLists[2]
-    )
+  shiny::withProgress(message = 'loading Cases from cgdsr server...', value = 1, {
+    #Sys.sleep(0.25)
+  CaseLists <- cgdsr::getCaseLists(cgds,input$StudiesID)[,1]
+  selectInput("CasesID", "Cases for selected study",
+              choices= CaseLists,
+              selected = CaseLists[2]
+  )
   })
 })
 
 ## get Genetic Profiles in side bar panel
 output$ui_GenProfs <- renderUI({
-  shiny::withProgress(message = 'loading Genetic Profiles from cgdsr server...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'loading Genetic Profiles from cgdsr server...', value = 1, {
+    #Sys.sleep(0.25)
 
-    GeneticProfiles <- cgdsr::getGeneticProfiles(cgds,input$StudiesID)[,1]
-    selectInput("GenProfID", "Genetic Profiles",
-                choices = GeneticProfiles,
-                selected = GeneticProfiles[3]
-    )
+  GeneticProfiles <- cgdsr::getGeneticProfiles(cgds,input$StudiesID)[,1]
+  selectInput("GenProfID", "Genetic Profiles",
+              choices = GeneticProfiles,
+              selected = GeneticProfiles[3]
+  )
 
   })
 })
@@ -33,9 +33,9 @@ output$ui_GenProfs <- renderUI({
 ## get Gene List in side bar panel
 
 output$ui_GeneList <- renderUI({
-  shiny::withProgress(message = 'loading default Gene List ...', value = 0.1, {
-    Sys.sleep(0.25)
-    selectInput("GeneListID", "Gene List:", r_data$genelist)
+  shiny::withProgress(message = 'loading default Gene List ...', value = 1, {
+    #Sys.sleep(0.25)
+  selectInput("GeneListID", "Gene List:", r_data$genelist)
   })
 })
 

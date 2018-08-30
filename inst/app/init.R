@@ -36,25 +36,6 @@ plot_height <- function(){
     }
 }
 
-## set default dataset
-# init_data <- function() {
-#
-#   r_data <- reactiveValues()
-#
-#   df_name <- getOption("radiant.init.bioCancer", default = "epiGenomics")
-#   if (file.exists(df_name)) {
-#     df <- load(df_name) %>% get
-#     df_name <- basename(df_name) %>% {gsub(paste0(".",tools::file_ext(.)),"",., fixed = TRUE)}
-#   } else {
-#     df <- data(list = df_name, package = "bioCancer", envir = environment()) %>% get
-#   }
-#
-#   r_data[[df_name]] <- df
-#   r_data[[paste0(df_name, "_descr")]] <- attr(df, "description")
-#   r_data$datasetlist <- df_name
-#   r_data$url <- NULL
-#   r_data
-# }
 
 ## set default dataset
 init_data <- function(env = r_data) {
@@ -68,9 +49,10 @@ init_data <- function(env = r_data) {
 
   ## using a reactiveValues list to keep track of relevant app info
   ## that needs to be reactive
+  r_data <- reactiveValues()
   r_info <- reactiveValues()
 
-  df_names <- getOption("radiant.init.bioCancer", default = "epiGenomics")
+  df_names <- getOption("radiant.init.data", default = "epiGenomics")
   for (dn in df_names) {
     if (file.exists(dn)) {
       df <- load(dn) %>% get()

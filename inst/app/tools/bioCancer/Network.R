@@ -18,8 +18,8 @@
 Edges_df <- function(){
 
   if(is.null(r_data$ReactomeFI)){
-    shiny::withProgress(message = 'Loading ReactomeFI...', value = 0.1, {
-      Sys.sleep(0.25)
+    shiny::withProgress(message = 'Loading ReactomeFI...', value = 1, {
+
 
       if("package:bioCancer" %in% search()) {
         r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"), "/extdata/ReactomeFI2015.RDS", sep=""))
@@ -34,12 +34,12 @@ Edges_df <- function(){
   GeneList <- whichGeneList(input$GeneListID)
 
   ## Edges Attributes
-  shiny::withProgress(message = 'load FI for GeneList...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'load FI for GeneList...', value = 1, {
+
     fis <- getReactomeFI(2014,genes=GeneList, use.linkers = input$UseLinkerId) # input$UseLinkerNetId
   })
-  shiny::withProgress(message = 'load gene relationships...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'load gene relationships...', value = 1, {
+
 
     names(fis) <- c("Gene1", "Gene2")
     Edges_obj1 <- merge(r_data$ReactomeFI, fis, by=c("Gene1","Gene2"))

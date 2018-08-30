@@ -32,7 +32,7 @@ output$cBioPortal <- renderUI({
                          imageOutput("overview")
         ),
 
-        #tags$hr(),
+       # tags$hr(),
 
         tabsetPanel(id = "tabs_cbioportal",
 

@@ -53,8 +53,7 @@ output$ui_Studies <- renderUI({
 })
 
 output$StudiesTable <- DT::renderDataTable({
-  shiny::withProgress(message = 'loading Studies from cgdsr server...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'loading Studies from cgdsr server...', value = 1, {
 
   displayTable(Studies)
   })

@@ -10,17 +10,16 @@ output$ui_clipboard_load_Clinical <- renderUI({
 })
 
 output$ui_Clinical_vars <- renderUI({
-  shiny::withProgress(message = 'loading Clinical Data from cgdsr server...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'loading Clinical Data from cgdsr server...', value = 1, {
   ##### get Clinical Data for selected Case
   dat <- cgdsr::getClinicalData(cgds, input$CasesID)
   ## change rownames in the first column
   #dat <- dat %>% dplyr::add_rownames("Patients")
   dat <- dat %>% tibble::rownames_to_column("Patients")
-  r_data[['ClinicalData']] <- dat
+  r_info[['ClinicalData']] <- dat
 
   Clinical_vars <- names(dat)
-  r_data[['Clinical_vars']] <- Clinical_vars
+  #r_data[['Clinical_vars']] <- Clinical_vars
 
   selectInput("Clinical_varsID", "Select variables to show:", choices  = Clinical_vars,
                multiple = TRUE, selected = state_multiple("Clinical_vars",Clinical_vars, Clinical_vars),
@@ -84,10 +83,10 @@ observe({
     loadInDatasets(fname="ClinicalData", header=TRUE)
 
     # sorting files alphabetically
-    r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
+    r_info[['datasetlist']] <- sort(r_info[['datasetlist']])
 
     updateSelectInput(session, "dataset", label = "Datasets:",
-                      choices = r_data$datasetlist,
+                      choices = r_info$datasetlist,
                       selected = "ClinicalData")
 
   })

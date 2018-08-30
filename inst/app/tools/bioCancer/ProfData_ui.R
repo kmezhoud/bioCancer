@@ -32,11 +32,11 @@ output$ui_ProfData <- renderUI({
     #   conditionalPanel("input.GeneListID == 'DNA_damage_Response' && input.loadClipProf_GeneList%2 == 1",
     #                    p("Gene List is empty!",align="center",style = "color:red")
     #   ),
-    # 
+    #
     #   radioButtons(inputId = "loadGeneListID_ProfData", label = "Load Gene List:",
     #                c( "examples" = "ExampleGeneList_ProfData",  "clipboard" = "clipboard_GeneList_ProfData"),
     #                selected = state_multiple("loadGeneListID_ProfData", "DNA_damage_Response"), inline = TRUE),
-    # 
+    #
     #   conditionalPanel(condition = "input.loadGeneListID_ProfData == 'clipboard_GeneList_ProfData'",
     #                    actionButton('loadClipProf_GeneList', 'Paste Gene List')
     #                    #uiOutput("ui_clipboard_load_ProfData")
@@ -44,7 +44,7 @@ output$ui_ProfData <- renderUI({
     #   conditionalPanel(condition = "input.loadGeneListID_ProfData == 'ExampleGeneList_ProfData'",
     #                    actionButton('loadExampleGeneList_ProfData', 'Load examples')
     #   )
-    # 
+    #
     # ),
 
     wellPanel(
@@ -67,23 +67,23 @@ output$ui_ProfData <- renderUI({
 # observe({
 #   if (not_pressed(input$loadExampleGeneList_ProfData)) return()
 #   isolate({
-# 
+#
 #     # loading gene list
 #     data_path <- file.path( system.file(package = "bioCancer"),"extdata/GeneList")
 #     examples <- list.files(data_path)
-# 
+#
 #     for (ex in examples) loadUserData(ex, file.path(data_path,ex), 'txt')
-# 
+#
 #     # sorting files alphabetically
 #     r_data[['genelist']] <- sort(r_data[['genelist']])
-# 
+#
 #     updateSelectInput(session, "GeneListID", label = "Gene List Examples:",
 #                       choices = r_data$genelist,
 #                       selected = r_data$genelist[1])
 #   })
 #   #  A <<- r_data$genelist
 # })
-# 
+#
 # ## load genelist from clipBoard
 # observe({
 #   # 'reading' data from clipboard
@@ -108,10 +108,10 @@ observe({
     loadInDatasets(fname="ProfData", header=TRUE)
 
     # sorting files alphabetically
-    r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
+    r_info[['datasetlist']] <- sort(r_info[['datasetlist']])
 
     updateSelectInput(session, "dataset", label = "Datasets:",
-                      choices = r_data$datasetlist,
+                      choices = r_info$datasetlist,
                       selected = "ProfData")
 
   })

@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.9.05 (25 August 2018)
+------------------------
++ r_data vs r_info ... https://radiant-rstats.github.io/docs/news.html
++ use r_info for dataset list and r_data for genes list
++ set progress bar
+
 CHANGES IN VERSION 1.9.04 (22 August 2018)
 ------------------------
 + add style.css file: raduce padding-top to 0px

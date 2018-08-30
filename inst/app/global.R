@@ -76,3 +76,27 @@ addResourcePath("imgs", file.path(getOption("radiant.path.bioCancer"), "app/www/
 ## set example data
 options(radiant.example.data = "bioCancer")
 
+
+
+
+## cleanup the global environment if stop button is pressed in Rstudio
+## based on barbara's reply to
+## https://community.rstudio.com/t/rstudio-viewer-window-not-closed-on-shiny-stopapp/4158/7?u=vnijs
+onStop(function() {
+  ## don't run if the stop button was pressed in Radiant
+  if (!exists("r_data")) {
+    unlink("~/r_figures/", recursive = TRUE)
+    clean_up_list <- c(
+      "r_sessions", "help_menu", "make_url_patterns", "import_fs",
+      "init_data", "navbar_proj", "knit_print.data.frame", "withMathJax"
+    )
+    suppressWarnings(
+      suppressMessages({
+        res <- try(sapply(clean_up_list, function(x) if (exists(x, envir = .GlobalEnv)) rm(list = x, envir = .GlobalEnv)), silent = TRUE)
+        rm(res)
+      })
+    )
+    message("Stopped bioCancer\n")
+    stopApp()
+  }
+})

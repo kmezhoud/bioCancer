@@ -44,8 +44,7 @@ output$ClassifierHowto <- renderPrint({
 # )
 
 TableCases <- reactive({
-  shiny::withProgress(message = 'loading Sample size...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'loading Sample size...', value = 1, {
 
     checked_Studies <- input$StudiesIDClassifier
     listCases <- lapply(checked_Studies, function(x) cgdsr::getCaseLists(cgds,x)[,3])
@@ -87,19 +86,18 @@ output$viewTableCases <- DT::renderDataTable({
 
 output$getGenesClassifier <- DT::renderDataTable({
 
-  shiny::withProgress(message = 'loading Genetic Profiles...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'loading Genetic Profiles...', value = 1, {
 
     listGenProfs <-  getList_GenProfs(input$StudiesIDClassifier)
   })
 
-  shiny::withProgress(message = 'loading Cases...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'loading Cases...', value = 1, {
+
     listCases <- getList_Cases(input$StudiesIDClassifier)
   })
 
-  shiny::withProgress(message = 'geNetClassifier is running...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'geNetClassifier is running...', value = 1, {
+
     dat <-   getGenesClassification(checked_Studies = input$StudiesIDClassifier,
                                     GeneList = whichGeneList(input$GeneListID),
                                     samplesize = input$SampleSizeClassifierID,
@@ -125,8 +123,7 @@ output$dl_GenesClassDetails_tab <- shiny::downloadHandler(
 )
 
 output$Plot_enricher <- renderPlot({
-  shiny::withProgress(message = 'Genes Diseases Association...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'Genes Diseases Association...', value = 1, {
 
     GeneList <- whichGeneList(input$GeneListID)
 
@@ -137,8 +134,8 @@ output$Plot_enricher <- renderPlot({
 
     ## download DisGeNet.RDS file from ubuntu/kmezhoud/bioCancer
     if(is.null(r_data$gda)){
-      shiny::withProgress(message = 'Loading DisGeNet.RDS...', value = 0.1, {
-        Sys.sleep(0.25)
+      shiny::withProgress(message = 'Loading DisGeNet.RDS...', value = 1, {
+
         download.file("https://wiki.ubuntu.com/kmezhoud/bioCancer?action=AttachFile&do=get&target=DisGeNet.RDS",tmp <- tempfile())
         gda <- readRDS(tmp)
         r_data[['gda']] <- gda
@@ -181,8 +178,7 @@ Plot_enrich <- function(){
 
 ## Disease - Genes - Studies Associations
 output$compareClusterDO <- renderPlot({
-  shiny::withProgress(message = 'Disease Ontology enrich...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'Disease Ontology enrich...', value = 1, {
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
@@ -211,8 +207,7 @@ compareClusterDO <- function(){
 
 ## Reactome Pathway Cluster Enrichment
 output$compareClusterReactome <- renderPlot({
-  shiny::withProgress(message = 'Reactome Pathway enrich...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'Reactome Pathway enrich...', value = 1, {
     #   require(reactome.db)
     #  require(ReactomePA)
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
@@ -237,8 +232,7 @@ compareClusterReactome <- function(){
 }
 ## Gene Ontology (GO) Studies Associations
 output$compareClusterGO <- renderPlot({
-  shiny::withProgress(message = 'Gene Ontology Enrich...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'Gene Ontology Enrich...', value = 1, {
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
@@ -263,8 +257,7 @@ compareClusterGO <- function(){
 }
 ## KEGG Pathway Enrichment
 output$compareClusterKEGG <- renderPlot({
-  shiny::withProgress(message = 'KEGG Pathway Enrich...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'KEGG Pathway Enrich...', value = 1, {
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))
@@ -289,8 +282,7 @@ compareClusterKEGG <- function(){
 
 ## Cellular Component  Enrichment
 output$compareClusterCC<- renderPlot({
-  shiny::withProgress(message = 'Cellular Component enrichment...', value = 0.1, {
-    Sys.sleep(0.25)
+  shiny::withProgress(message = 'Cellular Component enrichment...', value = 1, {
 
     genesGroups <- lapply(r_data$GenesClassDetailsForPlots, function(x)rownames(x))
     GroupsID <- lapply(genesGroups,function(x) unname(unlist(AnnotationFuncs::translate(x, org.Hs.eg.db::org.Hs.egSYMBOL2EG))))

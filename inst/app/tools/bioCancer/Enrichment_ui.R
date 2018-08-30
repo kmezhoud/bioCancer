@@ -145,7 +145,7 @@ output$Enrichment <- renderUI({
         tabsetPanel(id = "tabs_Enrichment",
 
                     tabPanel("Circomics",
-                             tags$hr(),
+                            # tags$hr(),
 
                              uiOutput('coffeewheels'),
                              conditionalPanel("input.CircosDimensionID == 'All'",

@@ -1,7 +1,6 @@
 output$ui_Mut_vars <- renderUI({
-  
-  shiny::withProgress(message = 'loading Variables of Mutation Data from cgdsr server...', value = 0.1, {
-    Sys.sleep(0.25)
+
+  shiny::withProgress(message = 'loading Variables of Mutation Data from cgdsr server...', value = 1, {
 
   GeneList <- whichGeneList(input$GeneListID)
   dat <- cgdsr::getMutationData(cgds,
@@ -47,15 +46,15 @@ output$ui_MutData <- renderUI({
 
   list(
     # wellPanel(
-    # 
+    #
     #   conditionalPanel("input.GeneListID == 'DNA_damage_Response' && input.loadClipMut_GeneList%2 == 1 ",
     #                    p("Gene List is empty!", align="center",style = "color:red")
     #   ),
-    # 
+    #
     #   radioButtons(inputId = "loadGeneListID_Mut", label = "Load Gene List:",
     #                c( "examples" = "ExampleGeneList",  "clipboard" = "clipboard_GeneList"),
     #                selected = "Genes", inline = TRUE),
-    # 
+    #
     #   conditionalPanel(condition = "input.loadGeneListID_Mut == 'clipboard_GeneList'",
     #                    actionButton('loadClipMut_GeneList', 'Paste Gene List')
     #                    #uiOutput("ui_clipboard_load_MutData")
@@ -63,7 +62,7 @@ output$ui_MutData <- renderUI({
     #   conditionalPanel(condition = "input.loadGeneListID_Mut == 'ExampleGeneList'",
     #                    actionButton('loadExampleGeneList_MutData', 'Load examples')
     #   )
-    # 
+    #
     # ),
     wellPanel(
       if (length(grep("mutation", input$GenProfID))!=0){
@@ -93,23 +92,23 @@ output$ui_MutData <- renderUI({
 # observe({
 #   if (not_pressed(input$loadExampleGeneList_MutData)) return()
 #   isolate({
-# 
+#
 #     # loading data bundled with bioCancer
 #     data_path <- file.path( system.file(package = "bioCancer"),"extdata/GeneList")
 #     examples <- list.files(data_path)
-# 
+#
 #     for (ex in examples) loadUserData(ex, file.path(data_path,ex), 'txt')
-# 
+#
 #     # sorting files alphabetically
 #     r_data[['genelist']] <- sort(r_data[['genelist']])
-# 
+#
 #     updateSelectInput(session, "GeneListID", label = "Gene List Examples:",
 #                       choices = r_data$genelist,
 #                       selected = r_data$genelist[1])
 #   })
-# 
+#
 # })
-# 
+#
 # ## load genelist from clipBoard
 # observe({
 #   # 'reading' data from clipboard
@@ -135,10 +134,10 @@ observe({
     loadInDatasets(fname="MutData", header=TRUE)
 
     # sorting files alphabetically
-    r_data[['datasetlist']] <- sort(r_data[['datasetlist']])
+    r_info[['datasetlist']] <- sort(r_info[['datasetlist']])
 
     updateSelectInput(session, "dataset", label = "Datasets:",
-                      choices = r_data$datasetlist,
+                      choices = r_info$datasetlist,
                       selected = "MutData")
 
   })

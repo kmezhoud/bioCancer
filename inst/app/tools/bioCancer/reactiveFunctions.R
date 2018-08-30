@@ -1,14 +1,22 @@
-################# Load dataframe (Clinical data, Profile Data, ...) to Datasets
+################# Load dataframe (Clinical data, Profile Data, ...) to Workspace
 loadInDatasets <- function(fname, header= TRUE){
 
   objname <- fname
+
   if(fname=="ProfData"){
     GeneList <- whichGeneList(input$GeneListID)
     dat <- as.data.frame(cgdsr::getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
     r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
-
+    #r_data[[objname]] <- data.frame(r_data[[objname]] , stringsAsFactors = TRUE)
 
   }else if (fname=="ClinicalData"){
+
+    ## load only selected column
+    # dat <- get_data(r_data$ClinicalData[input$ClinicalDataTable_rows_all,],
+    #       vars = input$Clinical_varsID, na.rm = FALSE)
+    # r_data[[objname]] <- dat
+
+    ## load all clinical data
     dat <- as.data.frame(cgdsr::getClinicalData(cgds, input$CasesID))
     r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
 
@@ -17,32 +25,33 @@ loadInDatasets <- function(fname, header= TRUE){
     dat <- as.data.frame((cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)))
     r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
   } else if (fname=="xCNA"){
-    dat <- plyr::ldply(r_data$ListProfData$CNA)
+    dat <- plyr::ldply(r_info$ListProfData$CNA)
     r_data[[objname]] <- dat
   } else if(fname =="xmRNA"){
-    dat <- plyr::ldply(r_data$ListProfData$Expression)
+    dat <- plyr::ldply(r_info$ListProfData$Expression)
     r_data[[objname]] <- dat
   }else if(fname == "xMetHM450"){
-    dat <- plyr::ldply(r_data$ListProfData$Met_HM450)
+    dat <- plyr::ldply(r_info$ListProfData$Met_HM450)
     r_data[[objname]] <- dat
   }else if(fname== "xMetHM27"){
-    dat <- plyr::ldply(r_data$ListProfData$Met_HM27)
+    dat <- plyr::ldply(r_info$ListProfData$Met_HM27)
     r_data[[objname]] <- dat
   }else if (fname=="xMut"){
-    dat <- plyr::ldply(r_data$ListMutData)
+    dat <- plyr::ldply(r_info$ListMutData)
     r_data[[objname]] <- dat
   } else if(fname== "xFreqMut"){
-    dat <- r_data$Freq_DfMutData
+    dat <- r_info$Freq_DfMutData
     r_data[[objname]] <- dat %>% tibble::rownames_to_column("Genes")
   }else if (fname== "xmiRNA"){
-    dat <- plyr::ldply(r_data$ListProfData$miRNA)
+    dat <- plyr::ldply(r_info$ListProfData$miRNA)
     r_data[[objname]] <- dat
   }else if (fname== "xRPPA"){
-    dat <- plyr::ldply(r_data$ListProfData$RPPA)
+    dat <- plyr::ldply(r_info$ListProfData$RPPA)
     r_data[[objname]] <- dat
   }
-  r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
-  r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
+  r_info[[paste0(objname,"_descr")]] <- attr(r_info[[objname]], "description")
+  #r_data[['datasetlist']] <- c(objname,r_data[['datasetlist']]) %>% unique
+  r_info[['datasetlist']] <- c(objname,r_info[['datasetlist']]) %>% unique
 }
 
 
@@ -71,9 +80,10 @@ loadUserData <- function(fname, uFile, ext,
   ## if ext isn't in the filename nothing was replaced and so ...
   if (objname == filename) {
     if (fext %in% c("xls","xlsx")) {
-      ret <- "### Radiant does not load xls files directly. Please save the data as a csv file and try again."
+      ret <- "### bioCancer does not load xls files directly. Please save the data as a csv file and try again."
     } else {
-      ret <- paste0("### The filename extension (",fext,") does not match the specified file-type (",ext,"). Please specify the file type you are trying to upload (i.e., csv or rda).")
+      ret <- paste0("### The filename extension (",fext,") does not match the specified file-type (",ext,").
+                    Please specify the file type you are trying to upload (i.e., csv or rda).")
     }
 
     upload_error_handler(objname,ret)
@@ -95,25 +105,25 @@ loadUserData <- function(fname, uFile, ext,
     } else {
       r_data[[objname]] <- as.data.frame(get(robjname)) %>% {set_colnames(., gsub("^\\s+|\\s+$", "", names(.)))}
     }
-    r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
-    r_data[['datasetlist']] <<- c(objname, r_data[['datasetlist']]) %>% unique
+    r_info[[paste0(objname,"_descr")]] <- attr(r_info[[objname]], "description")
+    r_info[['datasetlist']] <<- c(objname, r_info[['datasetlist']]) %>% unique
   } else if (ext == 'rds') {
     ## objname will hold the name of the object(s) inside the R datafile
     robj <- try(readRDS(uFile), silent = TRUE)
     if (is(robj, 'try-error')) {
       upload_error_handler(objname, "### There was an error loading the data. Please make sure the data are in rds.")
     } else {
-      r_data[[objname]] <- as.data.frame(robj) %>% {set_colnames(., gsub("^\\s+|\\s+$", "", names(.)))}
-      r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
-      r_data[['datasetlist']] <<- c(objname, r_data[['datasetlist']]) %>% unique
+      r_info[[objname]] <- as.data.frame(robj) %>% {set_colnames(., gsub("^\\s+|\\s+$", "", names(.)))}
+      r_info[[paste0(objname,"_descr")]] <- attr(r_info[[objname]], "description")
+      r_info[['datasetlist']] <<- c(objname, r_info[['datasetlist']]) %>% unique
     }
   } else if (ext == 'csv') {
-    r_data[[objname]] <- loadcsv(uFile, .csv = .csv, header = header, sep = sep, saf = man_str_as_factor) %>%
+    r_info[[objname]] <- loadcsv(uFile, .csv = .csv, header = header, sep = sep, saf = man_str_as_factor) %>%
     {if (is.character(.)) upload_error_handler(objname, mess) else .} %>%
     {set_colnames(., gsub("^\\s+|\\s+$", "", names(.)))}
 
-    r_data[[paste0(objname,"_descr")]] <- attr(r_data[[objname]], "description")
-    r_data[['datasetlist']] <<- c(objname, r_data[['datasetlist']]) %>% unique
+    r_info[[paste0(objname,"_descr")]] <- attr(r_info[[objname]], "description")
+    r_info[['datasetlist']] <<- c(objname, r_info[['datasetlist']]) %>% unique
 
   } else if (ext != "---") {
 
@@ -124,16 +134,17 @@ loadUserData <- function(fname, uFile, ext,
   if (ext == 'txt') {
     r_data[[objname]] <- try(read.table(uFile, header=header, sep=sep, dec=dec,
                                         stringsAsFactors=FALSE), silent = TRUE) %>%
-                                        { if (is(., 'try-error')) upload_error_handler(objname,
-                                                          "### There was an error loading the data.
-                                                           Please make sure the data are in either txt format,
-                                                           one gene by row.")
-                                          else . } %>%
-                                          { if (man_str_as_factor) lapply(., factor) else . } # %>% tbl_df
+                                        { if(is(., 'try-error')){ upload_error_handler(objname,
+                                                  "### There was an error loading the data.
+                                                  Please make sure the data are in either txt format,
+                                                  one gene by row.")
+                                          }else{.} } %>% {if(man_str_as_factor){
+                                            lapply(., factor)
+                                            } else{.} } # %>% tbl_df
     r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
 
   }
-  }
+}
 
 
 loadClipboard_GeneList <- function(objname = "User_Genes", ret = "", header = FALSE, sep = "\t", tab) {
@@ -159,3 +170,4 @@ loadClipboard_GeneList <- function(objname = "User_Genes", ret = "", header = FA
   }
 
 }
+
