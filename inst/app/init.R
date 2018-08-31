@@ -13,12 +13,12 @@ options(Enrichment.nav_ui =
           )
           )
 
-options(Tools.nav_ui =
-          tagList(
-            tabPanel("Tools", uiOutput("Tools"))
-
-          )
-)
+# options(Tools.nav_ui =
+#           tagList(
+#             tabPanel("Tools", uiOutput("Tools"))
+#
+#           )
+# )
 
 ## set default plots resolution
 plot_width <- function(){

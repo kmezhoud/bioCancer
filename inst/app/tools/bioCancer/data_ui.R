@@ -32,36 +32,46 @@ output$ui_data <- renderUI({
         ),
         conditionalPanel("input.tabs_data == 'Datasets'",
                          ## needed to modify radiant helps
-                         help_modal("Datasets","manage_help",author = "Karim Mezhoud",
-                                    inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/manage.md"))),
+                         # help_modal("Datasets","manage_help",author = "Karim Mezhoud",
+                         #           inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/manage.md"))),
 
                          uiOutput("ui_Manage")),
         conditionalPanel("input.tabs_data == 'View'",
                          ## needed to modify radiant helps
-                         help_modal("View","view_help",author = "Karim Mezhoud",
-                                    inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/view.md"))),
+                         # help_modal("View","view_help",author = "Karim Mezhoud",
+                         #           inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/view.md"))),
 
                          uiOutput("ui_View")),
         conditionalPanel("input.tabs_data == 'Plots'",
                          ## needed to modify radiant helps
-                         help_modal("Plots","visualize_help",author = "Karim Mezhoud",
-                                    inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/Plots.md"))),
+                         #help_modal("Plots","visualize_help",author = "Karim Mezhoud",
+                         #          inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/Plots.md"))),
 
                          uiOutput("ui_Visualize")),
         conditionalPanel("input.tabs_data == 'Regroup'",
                          ## needed to modify radiant helps
-        help_modal("Regroup","pivotr_help",author = "Karim Mezhoud",
-                   inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/Regroup.Rmd"))),
+                         #help_modal("Regroup","pivotr_help",author = "Karim Mezhoud",
+                         #          inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/Regroup.Rmd"))),
 
                          uiOutput("ui_Pivotr")),
         conditionalPanel("input.tabs_data == 'Statistics'",
                          ## needed to modify radiant helps
-                         help_modal("Statistics","explore_help",author = "Karim Mezhoud",
-                                    inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/Statistics.md"))),
+                         #help_modal("Statistics","explore_help",author = "Karim Mezhoud",
+                         #          inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/Statistics.md"))),
 
-                         uiOutput("ui_Explore"))
-        #conditionalPanel("input.tabs_data == 'Transform'", uiOutput("ui_Transform")),
-        #conditionalPanel("input.tabs_data == 'Combine'", uiOutput("ui_Combine"))
+                         uiOutput("ui_Explore")),
+        conditionalPanel("input.tabs_data == 'Transform'",
+                         ## needed to modify radiant helps
+                         #help_modal("Transform","transform_help",author = "Karim Mezhoud",
+                         #          inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/transform.md"))),
+
+                         uiOutput("ui_Transform")),
+        conditionalPanel("input.tabs_data == 'Combine'",
+                         # needed to modify radiant helps
+                         #help_modal("Combine","combine_help",author = "Karim Mezhoud",
+                         #          inclMD(file.path(getOption("radiant.path.bioCancer"),"app/tools/help/combine.md"))),
+
+                         uiOutput("ui_Combine"))
       ),
       mainPanel(
         ## add logo to the page
@@ -100,20 +110,20 @@ output$ui_data <- renderUI({
                     tabPanel("Statistics",
                              download_link("dl_explore_tab"),
                              DT::dataTableOutput("explore")
+                    ),
+                    tabPanel("Transform",
+                             htmlOutput("transform_data"),
+                             verbatimTextOutput("transform_summary"),
+                             uiOutput("ui_tr_log")
+                    ),
+                    tabPanel("Combine",
+                             htmlOutput("cmb_data1"),
+                             htmlOutput("cmb_data2"),
+                             htmlOutput("cmb_possible"),
+                             htmlOutput("cmb_data")
                     )
-                    # tabPanel("Transform",
-                    #          htmlOutput("transform_data"),
-                    #          verbatimTextOutput("transform_summary"),
-                    #          uiOutput("ui_tr_log")
-                    # ),
-                    # tabPanel("Combine",
-                    #          htmlOutput("cmb_data1"),
-                    #          htmlOutput("cmb_data2"),
-                    #          htmlOutput("cmb_possible"),
-                    #          htmlOutput("cmb_data")
-                    # )
         )
       )
     )
-)
+  )
 })

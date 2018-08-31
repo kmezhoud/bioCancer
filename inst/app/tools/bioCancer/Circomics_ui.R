@@ -84,7 +84,12 @@ output$StrListProfDataCircos <- renderPrint({
   withProgress(message = 'loading Profiles Data from cgdsr server... ', value = 1, {
 
     getListProfData(panel='Circomics',input$GeneListID)
-  })
+
+    #print("Start getting Frequency of Mutation ...")
+    r_info[['Freq_DfMutData']] <- getFreqMutData(list = r_info$ListMutData, geneListLabel = input$GeneListID)
+    #print("End getting Mutation Frequency...")
+
+    })
 
   ## don't use r_data$ListProfData => cause réinitiate wheel
   #      if(is.null(r_data$ListProfData)){
@@ -386,7 +391,21 @@ observe({
   })
 })
 
-
+observe({
+  if (not_pressed(input$pushListProfData)) #return()
+    isolate({
+      r_data[['xCNA']] <- NULL
+      r_data[['xmRNA']] <- NULL
+      r_data[['xMetHM27']] <- NULL
+      #r_data$ListMetData[['xMetHM27']] <- NULL
+      r_data[['xMetHM450']] <- NULL
+      #r_data$ListMetData[['xMetHM450']] <- NULL
+      r_data[['xmiRNA']] <- NULL
+      r_data[['xRPPA']] <- NULL
+      r_data[['xMut']] <- NULL
+      r_data[['xFreqMut']] <- NULL
+    })
+})
 
 # observe({
 #

@@ -283,10 +283,6 @@ getFreqMutData <- function(list, geneListLabel){
     Freq_DfMutData <- data.frame(round(Freq_DfMutData,digits=2))
   }
 
-
-
-
-  r_data[['Freq_DfMutData']] <- Freq_DfMutData
   #Freq_DfMutData <<- Freq_DfMutData
   return(Freq_DfMutData)
 }

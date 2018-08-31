@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.9.06 (30 August 2018)
+------------------------
++ rm warning message for min and max functions
++ run getFreqMutData() when getListProfData() instead getCoffeeWheel_Mut(). Avoid error when loading x profiles data to workspace.
++ include Tools panel into Workspace panel.
++ update Overview image
+
 CHANGES IN VERSION 1.9.05 (25 August 2018)
 ------------------------
 + r_data vs r_info ... https://radiant-rstats.github.io/docs/news.html

@@ -187,11 +187,11 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
   shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 1, {
 
     ## get Gene Mutation Frequency
-    print("Start getting Frequency of Mutation ...")
-    Freq_DfMutData <- getFreqMutData(list = r_info$ListMutData, geneListLabel = input$GeneListID)
-    r_info[['Freq_DfMutData']] <- Freq_DfMutData
-    print("End getting Mutation Frequency...")
-    listMut_df <- apply(Freq_DfMutData,2,function(x)as.data.frame(t(x)))
+    #print("Start getting Frequency of Mutation ...")
+    #Freq_DfMutData <- getFreqMutData(list = r_info$ListMutData, geneListLabel = input$GeneListID)
+    #r_info[['Freq_DfMutData']] <- Freq_DfMutData
+    #print("End getting Mutation Frequency...")
+    listMut_df <- apply(r_info$Freq_DfMutData,2,function(x)as.data.frame(t(x)))
     TreeMutData <- reStrDisease(listMut_df)
     r_info[['TreeMutData']] <- TreeMutData
     coffeewheel(TreeMutData, width=1024, height=600

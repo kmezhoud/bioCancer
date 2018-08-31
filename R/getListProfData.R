@@ -40,8 +40,8 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
         ########################
         #ProfData_X <- ProfData_X[,as.factor(GeneList)]
         #ProfData_X <- ProfData_X[GeneList,,drop=FALSE]
-        
-        
+
+
         #                     > GeneList[c(179,306,338,400)]
         #                     [1] "HBXIP"     "C16orf5"   "SELS"      "MAGI2-IT1"
         #                     > colnames(ProfData)[c(82,198,205,404)]
@@ -54,7 +54,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
             ProfData_X <- as.data.frame(setNames(replicate(length(GeneList),numeric(1),
                                                            simplify = FALSE), GeneList[order(GeneList)]))
             return(ProfData_X)
-            
+
           }else{
             ProfData_X <- as.data.frame(setNames(replicate(length(SubMegaGeneList),numeric(1),
                                                            simplify = FALSE), SubMegaGeneList[order(SubMegaGeneList)]))
@@ -63,7 +63,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
         }else{
           return(ProfData_X)
         }
-        
+
       }else if(Mut==1){
         #print(paste("Getting Mutation Data of ",checked_Studies[s],"...",sep=""))
         MutData <- cgdsr::getMutationData(cgds,regex1, regex2, GeneList)
@@ -82,12 +82,12 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
           return(MutData)
         }
         #return(MutData)
-        
+
       }
     }else{
       shiny::withProgress(message=
                             paste("There is no genetic Profiles: ",
-                                  regex2 ), value = 0.1,
+                                  regex2 ), value = 1,
                           {p1 <- proc.time()
                           Sys.sleep(2) # wait 2 seconds
                           proc.time() - p1 })
@@ -107,7 +107,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
   }else{
     shiny::withProgress(message=
                           paste("There is no Cases: ",
-                                regex1 ), value = 0.1,
+                                regex1 ), value = 1,
                         {p1 <- proc.time()
                         Sys.sleep(2)
                         proc.time() - p1 })
@@ -126,8 +126,8 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
       return(ProfData_X)
     }
     return(ProfData_X)
-    
-    
+
+
   }
 }
 
@@ -162,12 +162,12 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #' }
 #' @export
 getListProfData <- function(panel, geneListLabel){
-  
-  
+
+
   GeneList <- whichGeneList(geneListLabel)
   cgds <-  cgdsr::CGDS("http://www.cbioportal.org/")
   dat <- cgdsr::getProfileData(cgds,GeneList, "gbm_tcga_pub_mrna","gbm_tcga_pub_all")
-  
+
   if(all(dim(dat)==c(0,1))== TRUE){
     ## avoide error when GeneList is empty
     ## Error..No.cancer.study..cancer_study_id...or.genetic.profile..genetic_profile_id..or.case.list.or..case_list..case.set..case_set_id..provid
@@ -176,16 +176,16 @@ getListProfData <- function(panel, geneListLabel){
     r_data[['ListProfData']] <- NULL
     #r_data[['ListMetData']] <- NULL
     #r_data[['ListMutData']] <- NULL
-    
+
   }else{
-    
+
     if (panel=="Circomics"){
       checked_Studies <- input$StudiesIDCircos
       Lchecked_Studies <- length(checked_Studies)
     }else if (panel=="Networking"){
       checked_Studies <- input$StudiesIDReactome
       Lchecked_Studies <- length(checked_Studies)
-      
+
     }
     ## get Cases for selected Studies
     CasesRefStudies <- unname(unlist(apply(
@@ -195,8 +195,8 @@ getListProfData <- function(panel, geneListLabel){
     GenProfsRefStudies <- unname(unlist(apply(
       as.data.frame(checked_Studies), 1,
       function(x) cgdsr::getGeneticProfiles(cgds,x)[1])))
-    
-    
+
+
     LengthGenProfs <- 0
     LengthCases <- 0
     ListProfData <- NULL
@@ -205,34 +205,34 @@ getListProfData <- function(panel, geneListLabel){
     ListMutData <- NULL
     for (s in 1: Lchecked_Studies){
       #Si = myGlobalEnv$checked_StudyIndex[s]
-      shiny::withProgress(message= paste(checked_Studies[s],":"), value = 0, {
-        
+      shiny::withProgress(message= paste(checked_Studies[s],":"), value = 1, {
+
         incProgress(0.1, detail=paste(round((s/Lchecked_Studies)*100, 0),"% of Profiles Data"))
         Sys.sleep(0.1)
-        
+
         ### get Cases and Genetic Profiles  with cgdsr references
         GenProf_CNA<- paste(checked_Studies[s],"_gistic", sep="")
         Case_CNA   <- paste(checked_Studies[s],"_cna", sep="")
-        
+
         GenProf_Exp<- paste(checked_Studies[s],"_rna_seq_v2_mrna", sep="")
         Case_Exp   <- paste(checked_Studies[s],"_rna_seq_v2_mrna", sep="")
-        
+
         GenProf_Met_HM450<- paste(checked_Studies[s],"_methylation_hm450", sep="")
         Case_Met_HM450   <- paste(checked_Studies[s],"_methylation_hm450", sep="")
-        
+
         GenProf_Met_HM27<- paste(checked_Studies[s],"_methylation_hm27", sep="")
         Case_Met_HM27   <- paste(checked_Studies[s],"_methylation_hm27", sep="")
-        
+
         GenProf_RPPA<- paste(checked_Studies[s],"_RPPA_protein_level", sep="")
         Case_RPPA   <- paste(checked_Studies[s],"_rppa", sep="")
-        
+
         GenProf_miRNA<- paste(checked_Studies[s],"_mirna", sep="")
         Case_miRNA   <- paste(checked_Studies[s],"_microrna", sep="")
-        
+
         GenProf_Mut<- paste(checked_Studies[s],"_mutations", sep="")
         Case_Mut   <- paste(checked_Studies[s],"_sequenced", sep="")
-        
-        
+
+
         ## Subsettint of Gene List if bigger than 500
         if(length(GeneList)>500){
           MegaGeneList <- GeneList
@@ -241,7 +241,7 @@ getListProfData <- function(panel, geneListLabel){
           }else{
             G <- as.integer(length(MegaGeneList)/500) + 1
           }
-          
+
           MegaProfData_CNA <- 0
           MegaProfData_Exp <- 0
           MegaProfData_Met_HM450 <- 0
@@ -252,14 +252,14 @@ getListProfData <- function(panel, geneListLabel){
           SubMegaGeneList <- 0
           LastSubMegaGeneList <- 0
           for(g in 1: G){
-            
+
             if (length(MegaGeneList) - LastSubMegaGeneList > 500){
               SubMegaGeneList <- MegaGeneList[((g-1)*(500)+1):((g)*500)]
               LastSubMegaGeneList <- LastSubMegaGeneList + length(SubMegaGeneList)
             } else{
-              
+
               SubMegaGeneList <- MegaGeneList[LastSubMegaGeneList:length(MegaGeneList)]
-              
+
             }
             ProfData_CNA<-grepRef(Case_CNA, CasesRefStudies, GenProf_CNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
             ProfData_Exp<-grepRef(Case_Exp, CasesRefStudies, GenProf_Exp, GenProfsRefStudies, SubMegaGeneList, Mut=0)
@@ -268,21 +268,21 @@ getListProfData <- function(panel, geneListLabel){
             ProfData_RPPA<-grepRef(Case_RPPA, CasesRefStudies, GenProf_RPPA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
             ProfData_miRNA<-grepRef(Case_miRNA, CasesRefStudies, GenProf_miRNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
             MutData <- grepRef(Case_Mut,CasesRefStudies ,GenProf_Mut, GenProfsRefStudies,SubMegaGeneList, Mut=1)
-            
-            
+
+
             MegaProfData_CNA <- cbind(MegaProfData_CNA, ProfData_CNA)
-            
+
             MegaProfData_Exp <- cbind(MegaProfData_Exp, ProfData_Exp)
-            
+
             MegaProfData_Met_HM450 <- cbind(MegaProfData_Met_HM450, ProfData_Met_HM450)
-            
+
             MegaProfData_Met_HM27 <- cbind(MegaProfData_Met_HM27, ProfData_Met_HM27)
-            
+
             MegaProfData_RPPA <- cbind(MegaProfData_RPPA, ProfData_RPPA)
-            
+
             MegaProfData_miRNA <- cbind(MegaProfData_miRNA, ProfData_miRNA)
             MegaMutData <- rbind(MegaMutData, MutData)
-            
+
           }
           ProfData_CNA <- MegaProfData_CNA[,-1]
           ProfData_Exp <- MegaProfData_Exp[,-1]
@@ -291,11 +291,11 @@ getListProfData <- function(panel, geneListLabel){
           ProfData_RPPA <- MegaProfData_RPPA[,-1]
           ProfData_miRNA <- MegaProfData_miRNA[,-1]
           MutData <- MegaMutData[-1,]
-          
-          
+
+
         } else if (length(GeneList) > 0){
-          
-          
+
+
           ProfData_CNA<- grepRef(Case_CNA, CasesRefStudies, GenProf_CNA, GenProfsRefStudies, GeneList, Mut=0)
           ProfData_Exp<- grepRef(Case_Exp, CasesRefStudies, GenProf_Exp, GenProfsRefStudies, GeneList, Mut=0)
           ProfData_Met_HM450 <- grepRef(Case_Met_HM450, CasesRefStudies, GenProf_Met_HM450, GenProfsRefStudies, GeneList, Mut=0)
@@ -303,9 +303,9 @@ getListProfData <- function(panel, geneListLabel){
           ProfData_RPPA<- grepRef(Case_RPPA, CasesRefStudies, GenProf_RPPA, GenProfsRefStudies, GeneList,Mut=0)
           ProfData_miRNA<- grepRef(Case_miRNA, CasesRefStudies, GenProf_miRNA, GenProfsRefStudies, GeneList,Mut=0)
           MutData <- grepRef(Case_Mut,CasesRefStudies ,GenProf_Mut, GenProfsRefStudies,GeneList, Mut=1)
-          
+
         }
-        
+
         ListProfData$CNA[[checked_Studies[s]]] <- ProfData_CNA
         ListProfData$Expression[[checked_Studies[s]]] <- ProfData_Exp
         ListProfData$Met_HM450[[checked_Studies[s]]] <- ProfData_Met_HM450
@@ -315,22 +315,27 @@ getListProfData <- function(panel, geneListLabel){
         ListProfData$RPPA[[checked_Studies[s]]] <- ProfData_RPPA
         ListProfData$miRNA[[checked_Studies[s]]] <- ProfData_miRNA
         ListMutData[[checked_Studies[s]]] <- MutData
-        
+
         #print(" End Getting Profiles Data... ")
         #close(progressBar_ProfilesData)
       })
     }
-    r_data[['ListProfData']] <- ListProfData
-    r_data[['ListMetData']] <- ListMetData
-    r_data[['ListMutData']] <- ListMutData
+    r_info[['ListProfData']] <- ListProfData
+    r_info[['ListMetData']] <- ListMetData
+    r_info[['ListMutData']] <- ListMutData
+
+
+    #r_info[['TreeMetData']] <- reStrDimension(r_info$ListMetData)
+
+
     ## cooffeWheel Mutation is initiated without userData
     #r_data[['Freq_DfMutData']] <- getFreqMutData(list = r_data$ListMutData,input$GeneListID)
-    
+
     #   ListProfData_bkp <<- ListProfData
     #   ListMetData_bkp <<- ListMetData
     #   ListMutData_bkp <<- ListMutData
     #   ListCNAData_bkp <<- ListProfData$CNA
-    
+
     #     print("Start Ordering ...")
     ## range matrices by the same order
     #     myGlobalEnv$ListProfData$CNA <- myGlobalEnv$ListProfData$CNA[order(names(myGlobalEnv$ListProfData$CNA))]
@@ -339,7 +344,7 @@ getListProfData <- function(panel, geneListLabel){
     #     myGlobalEnv$ListMetData$HM27 <- myGlobalEnv$ListMetData$HM27[order(names(myGlobalEnv$ListMetData$HM27))]
     #     myGlobalEnv$ListProfData$RPPA <- myGlobalEnv$ListProfData$RPPA[order(names(myGlobalEnv$ListProfData$RPPA))]
     #     myGlobalEnv$ListMutData <- myGlobalEnv$ListMutData[order(names(myGlobalEnv$ListMutData))]
-    
+
     #    print("End Ordering ...")
   }
 }
