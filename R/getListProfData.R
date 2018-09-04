@@ -173,7 +173,7 @@ getListProfData <- function(panel, geneListLabel){
     ## Error..No.cancer.study..cancer_study_id...or.genetic.profile..genetic_profile_id..or.case.list.or..case_list..case.set..case_set_id..provid
     #dat <- as.list(as.data.frame("Gene List is empty. copy and paste genes from text file (Gene/line)
     #                    or use gene list from examples."))
-    r_data[['ListProfData']] <- NULL
+    r_info[['ListProfData']] <- NULL
     #r_data[['ListMetData']] <- NULL
     #r_data[['ListMutData']] <- NULL
 
@@ -200,7 +200,7 @@ getListProfData <- function(panel, geneListLabel){
     LengthGenProfs <- 0
     LengthCases <- 0
     ListProfData <- NULL
-    r_data$ListProfData <- NULL #reinit tree for circomics
+    r_info$ListProfData <- NULL #reinit tree for circomics
     ListMetData <- NULL
     ListMutData <- NULL
     for (s in 1: Lchecked_Studies){

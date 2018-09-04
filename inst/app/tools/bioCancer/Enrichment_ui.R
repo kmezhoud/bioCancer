@@ -72,8 +72,8 @@ output$coffeewheels <- renderUI({
         ),
 
 
-        h3(paste0("Mutation Percentage: (Min = ", suppressWarnings(min(r_data$Freq_DfMutData, na.rm = TRUE)) ,
-                  "%, Max = ", suppressWarnings(max(r_data$Freq_DfMutData, na.rm = TRUE))  ,"%)", sep=""),  align="center"),
+        h3(paste0("Mutation Percentage: (Min = ", suppressWarnings(min(r_info$Freq_DfMutData, na.rm = TRUE)) ,
+                  "%, Max = ", suppressWarnings(max(r_info$Freq_DfMutData, na.rm = TRUE))  ,"%)", sep=""),  align="center"),
         tagList(
           actionButton("saveCircosMut", "Save as png", style='padding:4px; font-size:80%'),
 

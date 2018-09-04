@@ -117,7 +117,7 @@ output$dl_GenesClassDetails_tab <- shiny::downloadHandler(
   filename = function() { paste0("Classification_tab.csv") },
   content = function(file) {
     get_data(r_data$GenesClassDetails, vars = NULL,
-            rows = NULL, na.rm = FALSE) %>%
+             rows = NULL, na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
   }
 )
@@ -132,11 +132,20 @@ output$Plot_enricher <- renderPlot({
     ## Symbol2GeneID
     GeneID<- unname(unlist(AnnotationFuncs::translate(GeneList, org.Hs.eg.db::org.Hs.egSYMBOL2EG)))
 
+
+    ## How to create DisGeNet.RDS file
+    # download all_gene_disease_associations.tsv.gz from  http://www.disgenet.org/web/DisGeNET/menu/downloads
+    # db <- read.delim("all_gene_disease_associations.tsv.gz")
+    # saveRDS(db, "DisGeNet0918.RDS")
+    # str(readRDS("DisGeNet0918.RDS))
+
+
     ## download DisGeNet.RDS file from ubuntu/kmezhoud/bioCancer
     if(is.null(r_data$gda)){
       shiny::withProgress(message = 'Loading DisGeNet.RDS...', value = 1, {
 
-        download.file("https://wiki.ubuntu.com/kmezhoud/bioCancer?action=AttachFile&do=get&target=DisGeNet.RDS",tmp <- tempfile())
+        #download.file("https://wiki.ubuntu.com/kmezhoud/bioCancer?action=AttachFile&do=get&target=DisGeNet.RDS",tmp <- tempfile())
+        download.file("https://github.com/kmezhoud/bioCancer/raw/master/inst/extdata/DisGeNet0918.RDS",tmp <- tempfile())
         gda <- readRDS(tmp)
         r_data[['gda']] <- gda
 
@@ -194,13 +203,13 @@ output$compareClusterDO <- renderPlot({
     }else{
       cdo <- clusterProfiler::compareCluster(GroupsID, fun="enrichDO")
       r_data[['cdo']] <- cdo
-      DOSE::dotplot(cdo)
+      clusterProfiler::dotplot(cdo)
     }
   })
 })
 
 compareClusterDO <- function(){
-  DOSE::dotplot(r_data$cdo, title="Disease Ontology Enrichment Comparison")
+  clusterProfiler::dotplot(r_data$cdo, title="Disease Ontology Enrichment Comparison")
 
 }
 
@@ -222,13 +231,13 @@ output$compareClusterReactome <- renderPlot({
     }else{
       cdReactome <- clusterProfiler::compareCluster(GroupsID, fun="enrichPathway")
       r_data[['cdReactome']] <- cdReactome
-      DOSE::dotplot(cdReactome)
+      clusterProfiler::dotplot(cdReactome)
     }
   })
 })
 
 compareClusterReactome <- function(){
-  DOSE::dotplot(r_data$cdReactome, title="Reactome Pathway Enrichment Comparison")
+  clusterProfiler::dotplot(r_data$cdReactome, title="Reactome Pathway Enrichment Comparison")
 }
 ## Gene Ontology (GO) Studies Associations
 output$compareClusterGO <- renderPlot({
@@ -246,14 +255,14 @@ output$compareClusterGO <- renderPlot({
     }else{
       cgo <- clusterProfiler::compareCluster(GroupsID, fun="enrichGO",OrgDb='org.Hs.eg.db')
       r_data[['cgo']] <- cgo
-      DOSE::dotplot(r_data$cgo)
+      clusterProfiler::dotplot(r_data$cgo)
     }
   })
 })
 
 compareClusterGO <- function(){
 
-  DOSE::dotplot(r_data$cgo, title="GO Enrichment Comparison")
+  clusterProfiler::dotplot(r_data$cgo, title="GO Enrichment Comparison")
 }
 ## KEGG Pathway Enrichment
 output$compareClusterKEGG <- renderPlot({
@@ -271,13 +280,13 @@ output$compareClusterKEGG <- renderPlot({
     }else{
       ckegg <- clusterProfiler::compareCluster(GroupsID, fun="enrichKEGG")
       r_data[['ckegg']] <- ckegg
-      DOSE::dotplot(ckegg)
+      clusterProfiler::dotplot(ckegg)
     }
   })
 })
 
 compareClusterKEGG <- function(){
-  DOSE::dotplot(r_data$ckegg, title="KEGG Enrichment Comparison")
+  clusterProfiler::dotplot(r_data$ckegg, title="KEGG Enrichment Comparison")
 }
 
 ## Cellular Component  Enrichment
@@ -296,12 +305,12 @@ output$compareClusterCC<- renderPlot({
     }else{
       cCC <- clusterProfiler::compareCluster(GroupsID, fun="groupGO", OrgDb='org.Hs.eg.db')
       r_data[['cCC']] <- cCC
-      DOSE::dotplot(cCC)
+      clusterProfiler::dotplot(cCC)
     }
   })
 })
 compareClusterCC <- function(){
-  DOSE::dotplot(r_data$cCC, title="Cellular Component Enrichment Comparison")
+  clusterProfiler::dotplot(r_data$cCC, title="Cellular Component Enrichment Comparison")
 }
 
 
@@ -309,7 +318,7 @@ observeEvent(input$ClassifierHelp_report, {
 
   cmd1 <- paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                  paste0("get_data(r_data$GenesClassDetails, vars = NULL,
-            rows = NULL, na.rm = FALSE)"),
+                        rows = NULL, na.rm = FALSE)"),
                  "\n",
                  "\n```\n"
   )
@@ -322,12 +331,12 @@ observeEvent(input$ClassifierHelp_report, {
                        barplot(r_data$x,drop=TRUE, title= 'Genes Diseases Association', showCategory=10 ,digits=2)"),
                 "\n",
                 "\n```\n"
-  )
+                )
 
   cmd3 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$cdo))
-                       DOSE::dotplot(r_data$cdo, title='Disease Ontology Enrichment Comparison')"),
+                       clusterProfiler::dotplot(r_data$cdo, title='Disease Ontology Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
                 )
@@ -335,7 +344,7 @@ observeEvent(input$ClassifierHelp_report, {
   cmd4 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$cdReactome))
-                       DOSE::dotplot(r_data$cdReactome, title= 'Reactome Pathway Enrichment Comparison')"),
+                       clusterProfiler::dotplot(r_data$cdReactome, title= 'Reactome Pathway Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
                 )
@@ -343,7 +352,7 @@ observeEvent(input$ClassifierHelp_report, {
   cmd5 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$cgo))
-                       DOSE::dotplot(r_data$cgo, title= 'Gene Ontology Enrichment Comparison')"),
+                       clusterProfiler::dotplot(r_data$cgo, title= 'Gene Ontology Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
                 )
@@ -352,7 +361,7 @@ observeEvent(input$ClassifierHelp_report, {
   cmd6 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$ckegg))
-                      DOSE::dotplot(r_data$ckegg, title='KEGG Enrichment Comparison')"),
+                       clusterProfiler::dotplot(r_data$ckegg, title='KEGG Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
                 )
@@ -361,7 +370,7 @@ observeEvent(input$ClassifierHelp_report, {
   cmd7 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$cCC))
-                       DOSE::dotplot(r_data$cCC, title='Cellular Component Enrichment Comparison')"),
+                       clusterProfiler::dotplot(r_data$cCC, title='Cellular Component Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
                 )

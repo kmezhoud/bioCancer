@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.9.07 (04 September 2018)
+------------------------
++ replace DOSE::dotplot by clusterProfiler::dotplot
++ replace r_data by r_info in reports
++ not need to define genelist in r_data
++ update ReactomeFI.RDS file (version 2017)
++ update DisGeNet0918.RDS file (version September 2018), move it from wiki.ubuntu.com to github/kmezhoud
+
 CHANGES IN VERSION 1.9.06 (30 August 2018)
 ------------------------
 + rm warning message for min and max functions

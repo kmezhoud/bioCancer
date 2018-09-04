@@ -255,12 +255,12 @@ output$StrListProfDataReactome <- renderPrint({
 
     getListProfData(panel='Networking', input$GeneListID)
   })
-  if(is.null(r_data$ListProfData)){
+  if(is.null(r_info$ListProfData)){
     c("Gene List is empty. copy and paste genes from text file (Gene/line)
       or use gene list from examples.")
   }else{
-    cat("STUDIES:\n", names(r_data$ListMutData), "\n")
-    cat("PROFILES DATA:\n",names(r_data$ListProfData) ,"and Mutation", sep = " " )
+    cat("STUDIES:\n", names(r_info$ListMutData), "\n")
+    cat("PROFILES DATA:\n",names(r_info$ListProfData) ,"and Mutation", sep = " " )
     #str(r_data$ListProfData)
     #str(r_data$ListMutData)
   }

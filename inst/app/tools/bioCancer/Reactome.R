@@ -24,7 +24,7 @@ output$ReactomeHowto <- renderPrint({
 #'  link <- curl::curl(paste0(string1,string2, sep=""))
 #'  load(link)
 #' ##load(paste(system.file(package="bioCancer"),"/extdata/ListProfData.RData", sep=""))
-#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/DisGeNet.RDS"))
+#' ReactomeFI <- readRDS(paste0(system.file(package = "bioCancer"),"/extdata/ReactomeFI2017.RDS"))
 #' Ed_obj <- Edges_obj()
 #'}
 #'
@@ -37,15 +37,20 @@ Edges_obj <- reactive({
       #r_data[['ReactomeFI']] <- read.csv("https://raw.githubusercontent.com/kmezhoud/ReactomeFI/master/FIsInGene_121514_with_annotations.txt", header=TRUE, sep="\t")
       #r_data[['ReactomeFI']]  <- read.delim("inst/extdata/FIsInGene_121514_with_annotations.txt")
 
-      #download.file("http://reactomews.oicr.on.ca:8080/caBigR3WebApp2014/FIsInGene_121514_with_annotations.txt.zip", tmp <- tempfile())
-      #xx = read.delim(unzip(tmp))
+      ## How to create RDS file
+      # download.file("http://reactomews.oicr.on.ca:8080/caBigR3WebApp2017/FIsInGene_071718_with_annotations.txt.zip", tmp <- tempfile())
+      # db = read.delim(unzip(tmp))
+      # OR
+      # db <- read.delim("FIsInGene_071718_with_annotations.txt", header = T)
+      # saveRDS(db, "ReactomeFI2017.RDS");
+      # file.size("xxx.RDS")
 
       if ("package:bioCancer" %in% search()) {
         r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"),
-                                                  "/extdata/ReactomeFI2015.RDS", sep=""))
+                                                  "/extdata/ReactomeFI2017.RDS", sep=""))
       }else{
         r_data[['ReactomeFI']]  <- readRDS(file.path(paste(getOption("radiant.path.bioCancer"),
-                                                           "/extdata/ReactomeFI2015.RDS", sep="")))
+                                                           "/extdata/ReactomeFI2017.RDS", sep="")))
       }
 
     })
@@ -381,27 +386,27 @@ graph_obj <- reactive({
   }
   if('Mutation' %in% input$NodeAttri_ProfDataID ){
 
-    FreqMut_obj <- Mutation_obj(list = r_data$ListMutData, FreqMutThreshold=input$FreqMutSliderID, geneListLabel = input$GeneListID)
+    FreqMut_obj <- Mutation_obj(list = r_info$ListMutData, FreqMutThreshold=input$FreqMutSliderID, geneListLabel = input$GeneListID)
     Edges_obj <- rbind(Edges_obj, FreqMut_obj)
 
   }
   if('CNA' %in% input$NodeAttri_ProfDataID){
 
-    CNA_obj <- Node_obj_CNA_ProfData(list=r_data$ListProfData$CNA)
+    CNA_obj <- Node_obj_CNA_ProfData(list=r_info$ListProfData$CNA)
     Edges_obj <- rbind(Edges_obj, CNA_obj)
 
   }
 
   if('Met_HM450' %in% input$NodeAttri_ProfDataID){
 
-    Met_obj <- Node_obj_Met_ProfData(list= r_data$ListProfData$Met_HM450, type ='HM450',input$ThresholdMetHM450ID )
+    Met_obj <- Node_obj_Met_ProfData(list= r_info$ListProfData$Met_HM450, type ='HM450',input$ThresholdMetHM450ID )
     Edges_obj <- rbind(Edges_obj, Met_obj)
 
   }
 
   if('Met_HM27' %in% input$NodeAttri_ProfDataID ){
 
-    Met_obj <- Node_obj_Met_ProfData(list= r_data$ListProfData$Met_HM27, type='HM27', input$ThresholdMetHM27ID)
+    Met_obj <- Node_obj_Met_ProfData(list= r_info$ListProfData$Met_HM27, type='HM27', input$ThresholdMetHM27ID)
     Edges_obj <- rbind(Edges_obj, Met_obj)
 
   }

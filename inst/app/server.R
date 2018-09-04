@@ -84,8 +84,8 @@ shinyServer(function(input, output, session) {
 
   ## add Gene List
   #r_data[["DNA_damage_Response"]] <- as.data.frame("CHEK1", "CHEK2", "RAD51", "BRCA1", "BRCA2", "MLH1", "MSH2","ATM", "ATR", "MDC1", "PARP1", "FANCF")
-  data_path <- file.path( system.file(package = "bioCancer"),"extdata/GeneList")
-  r_data[["DNA_damage_Response"]] <- loadUserData("DNA_damage_Response", file.path(data_path,"DNA_damage_Response"), 'txt')
+  #data_path <- file.path( system.file(package = "bioCancer"),"extdata/GeneList")
+  #r_data[["DNA_damage_Response"]] <- loadUserData("DNA_damage_Response", file.path(data_path,"DNA_damage_Response"), 'txt')
   r_data$genelist <- "DNA_damage_Response"
 
   ## save state on refresh or browser close
