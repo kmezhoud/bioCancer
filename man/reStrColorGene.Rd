@@ -16,7 +16,7 @@ Hierarchical color attribute: gene > color
 Restructure the list of color attributed to the genes in every dimenssion for every studies
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
 geneList <- whichGeneList("73")
 ProfData <- getProfileData(cgds,

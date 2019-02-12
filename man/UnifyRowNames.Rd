@@ -18,7 +18,7 @@ a data frame having the gene in row name ordered as in gene list.
 Unify row names in data frame with the same order of gene list.
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
 geneList <- whichGeneList("73")
 ProfData <- getProfileData(cgds,

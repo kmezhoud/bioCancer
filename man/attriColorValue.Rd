@@ -22,7 +22,7 @@ Hex Color Code
 Attribute Color to Value
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
 geneList <- whichGeneList("73")
 ProfData <- getProfileData(cgds,

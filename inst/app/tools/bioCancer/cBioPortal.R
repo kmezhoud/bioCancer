@@ -1,6 +1,6 @@
 # for cgdsr
 
-cgds <- cgdsr::CGDS("http://www.cbioportal.org/public-portal/")
+cgds <- cgdsr::CGDS("http://www.cbioportal.org/")
 Studies<- cgdsr::getCancerStudies(cgds)
 #updateSelectizeInput(session, 'StudiesID', choices = Studies[,1], selected = "gbm_tcga_pub")
 

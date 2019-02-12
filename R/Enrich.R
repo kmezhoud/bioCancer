@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
 #' geneList <- whichGeneList("73")
 #' ProfData <- getProfileData(cgds,
@@ -48,7 +48,7 @@ attriColorValue <- function(Value, df, colors=c(a,b,c),feet){
 #' @return A list colors for every gene
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
 #' geneList <- whichGeneList("73")
 #' ProfData <- getProfileData(cgds,
@@ -100,7 +100,7 @@ attriColorGene <- function(df){
 #' @export
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
 #' geneList <- whichGeneList("73")
 #' ProfData <- getProfileData(cgds,
@@ -128,7 +128,7 @@ reStrColorGene <- function(df){
 #' @return  Hierarchy of dimensions in the same study: dimensions > gene > color
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
 #' geneList <- whichGeneList("73")
 #' ProfData <- getProfileData(cgds,
@@ -157,7 +157,7 @@ reStrDisease <- function(List){
 #' @return Hierarchical structure of: Study > dimensions > gene > color
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
 #' geneList <- whichGeneList("73")
 #' ProfData <- getProfileData(cgds,
@@ -187,7 +187,7 @@ reStrDimension <- function(LIST){
 #' @return a data frame having the gene in row name ordered as in gene list.
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
 #' geneList <- whichGeneList("73")
 #' ProfData <- getProfileData(cgds,
@@ -228,7 +228,7 @@ UnifyRowNames <- function(x, geneList){
 #' @export
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
 #' geneList <- whichGeneList("73")
 #' r_data <- new.env()
@@ -297,7 +297,7 @@ getFreqMutData <- function(list, geneListLabel){
 #'
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
 #' df <- checkDimensions(panel='Networking', StudyID= "gbm_tcga_pub")
 #' }

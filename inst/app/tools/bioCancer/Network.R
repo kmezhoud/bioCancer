@@ -22,9 +22,9 @@ Edges_df <- function(){
 
 
       if("package:bioCancer" %in% search()) {
-        r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"), "/extdata/ReactomeFI2015.RDS", sep=""))
+        r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"), "/extdata/ReactomeFI2017.RDS", sep=""))
       }else{
-        r_data[['ReactomeFI']]  <- readRDS(file.path(paste(getOption("radiant.path.bioCancer"),"/extdata/ReactomeFI2015.RDS", sep="")))
+        r_data[['ReactomeFI']]  <- readRDS(file.path(paste(getOption("radiant.path.bioCancer"),"/extdata/ReactomeFI2017.RDS", sep="")))
       }
 
     })
@@ -36,7 +36,7 @@ Edges_df <- function(){
   ## Edges Attributes
   shiny::withProgress(message = 'load FI for GeneList...', value = 1, {
 
-    fis <- getReactomeFI(2014,genes=GeneList, use.linkers = input$UseLinkerId) # input$UseLinkerNetId
+    fis <- getReactomeFI(2018,genes=GeneList, use.linkers = input$UseLinkerId) # input$UseLinkerNetId
   })
   shiny::withProgress(message = 'load gene relationships...', value = 1, {
 

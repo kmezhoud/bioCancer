@@ -27,7 +27,7 @@ A table with genes classed by study
 get genes classification
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+cgds <- CGDS("http://www.cbioportal.org/")
 listStudies <-  cgdsr::getCancerStudies(cgds)
 \dontrun{
 checked_Stdudies <- listStudies[3:5]

@@ -22,7 +22,7 @@ A vetor of colors
 Attribute color to a vector of numeric values
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
 geneList <- whichGeneList("73")
 ProfData <- getProfileData(cgds,

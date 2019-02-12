@@ -20,7 +20,7 @@ A dat frame with mutation frequency. Ech column corresponds to a study.
 Atribute mutation frequency to nodes
 }
 \examples{
- cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+ cgds <- CGDS("http://www.cbioportal.org/")
  \dontrun{
  geneList <- whichGeneList("73")
  MutData <- getMutationData(cgds,"gbm_tcga_pub_all",

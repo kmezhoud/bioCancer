@@ -16,7 +16,7 @@ listes of genetics profiles
 get list of genetic profiles of each selected study in Classifier panel
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+cgds <- CGDS("http://www.cbioportal.org/")
 listStudies <-  cgdsr::getCancerStudies(cgds)
 \dontrun{
 listGenProfs <- getList_GenProfs(listStudies[1:3])

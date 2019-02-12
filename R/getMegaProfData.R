@@ -13,7 +13,7 @@
 #' @examples
 #' GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
 #' \dontrun{
-#' cgds <- cgdsr::CGDS("http://www.cbioportal.org/public-portal/")
+#' cgds <- cgdsr::CGDS("http://www.cbioportal.org/")
 #' listCase_gbm_tcga_pub <- cgdsr::getCaseLists(cgds,"gbm_tcga_pub")[,1]
 #' listGenProf_gbm_tcga_pub <- cgdsr::getGeneticProfiles(cgds,"gbm_tcga_pub")[,1]
 #'

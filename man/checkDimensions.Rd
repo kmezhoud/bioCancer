@@ -19,7 +19,7 @@ The data frame is filled with yes/no response.
 Chech wich Cases and genetic profiles are available for every seleted study
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
 df <- checkDimensions(panel='Networking', StudyID= "gbm_tcga_pub")
 }

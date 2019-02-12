@@ -17,7 +17,7 @@ Display dataframe in table using DT package
 }
 \examples{
 session <- NULL
-cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+cgds <- CGDS("http://www.cbioportal.org/")
 Studies<- getCancerStudies(cgds)
 \dontrun{
 displayTable(Studies)

@@ -62,7 +62,7 @@ Edges_obj <- reactive({
   ## Edges Attributes
   shiny::withProgress(message = 'load FI for GeneList...', value = 1, {
 
-    fis <- getReactomeFI(2014,genes=GeneList, use.linkers = input$UseLinkerId)
+    fis <- getReactomeFI(2018,genes=GeneList, use.linkers = input$UseLinkerId)
   })
   shiny::withProgress(message = 'load gene relationships...', value = 1, {
 

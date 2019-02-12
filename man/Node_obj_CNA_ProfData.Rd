@@ -16,7 +16,7 @@ A data frame with node border attributes
 Attribute CNA data to node border
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/public-portal/")
+cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
 GeneList <- whichGeneList("DNA_damage_Response")
 ProfDataCNA <- cgdsr::getProfileData(cgds,GeneList, "brca_tcga_pub_gistic","brca_tcga_pub_all")
