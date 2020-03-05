@@ -2,14 +2,17 @@
 
 serviceURL <- function(version){
 
-  base.url = "http://reactomews.oicr.on.ca:8080/"
+  #base.url = "http://reactomews.oicr.on.ca:8080/"
+  base.url = "http://cpws.reactome.org/"
 
-  if (version == "2009") {
-    serv.url <- paste0(base.url, "caBigR3WebApp/FIService/network/")
-  } else if (version == "2012") {
-    serv.url <- paste0(base.url, "caBigR3WebApp2012/FIService/network/")
+  if (version == "2005") {
+    serv.url <- paste0(base.url, "caBigR3WebApp2015/FIService/network/")
+  } else if (version == "2016") {
+    serv.url <- paste0(base.url, "caBigR3WebApp2016/FIService/network/")
+  } else  if (version == "2017"){
+    serv.url <- paste0(base.url, "caBigR3WebApp2017/FIService/network/")
   } else {
-    serv.url <- paste0(base.url, "caBigR3WebApp2013/FIService/network/")
+    serv.url <- paste0(base.url, "caBigR3WebApp2018/FIService/network/")
   }
   return(serv.url)
 }

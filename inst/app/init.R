@@ -52,7 +52,7 @@ init_data <- function(env = r_data) {
   r_data <- reactiveValues()
   r_info <- reactiveValues()
 
-  df_names <- getOption("radiant.init.data", default = "epiGenomics")
+  df_names <- getOption("radiant.init.bioCancer", default = "epiGenomics")
   for (dn in df_names) {
     if (file.exists(dn)) {
       df <- load(dn) %>% get()

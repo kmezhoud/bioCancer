@@ -117,11 +117,12 @@ output$dl_GenesClassDetails_tab <- shiny::downloadHandler(
   filename = function() { paste0("Classification_tab.csv") },
   content = function(file) {
     get_data(r_data$GenesClassDetails, vars = NULL,
-             rows = NULL, na.rm = FALSE) %>%
+            rows = NULL, na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
   }
 )
 
+## Render Gene-Disease Association using DisGeNet database
 output$Plot_enricher <- renderPlot({
   shiny::withProgress(message = 'Genes Diseases Association...', value = 1, {
 
@@ -160,7 +161,7 @@ output$Plot_enricher <- renderPlot({
     # }else{
     #   gda <- readRDS(file.path(paste(r_path,"/extdata/DisGeNet.RDS", sep="")))
     # }
-    # for Local RDC filr
+    # for Local RDC file
     disease2gene=r_data$gda[, c("diseaseId", "geneId")]
     disease2name=r_data$gda[, c("diseaseId", "diseaseName")]
     ###
@@ -172,16 +173,17 @@ output$Plot_enricher <- renderPlot({
     # disease2gene = gda[,c("c1.cui","c2.geneId")]
     # disease2name = gda[, c("c1.cui", "c1.name")]
     ####
-    x <- clusterProfiler::enricher(GeneID, pvalueCutoff = 0.05,TERM2GENE=disease2gene, TERM2NAME=disease2name)
-    r_data[['x']] <- x
+    GDA_enricher <- clusterProfiler::enricher(GeneID, pvalueCutoff = 0.05,TERM2GENE=disease2gene, TERM2NAME=disease2name)
+    r_data[['GDA_enricher']] <- GDA_enricher
     options(scipen = 0, digits = 2)
-    barplot(x,drop=TRUE,showCategory=10 ,digits=2)
+    barplot(GDA_enricher,drop=TRUE,showCategory=10 ,digits=2)
   })
 })
 
+## function used to download the plot using plot_downloader
 Plot_enrich <- function(){
   options(scipen = 0, digits = 2)
-  barplot(r_data$x,drop=TRUE, showCategory=10 ,digits=2)
+  barplot(r_data$GDA_enricher,drop=TRUE, showCategory=10 ,digits=2)
 
 }
 
@@ -318,7 +320,7 @@ observeEvent(input$ClassifierHelp_report, {
 
   cmd1 <- paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                  paste0("get_data(r_data$GenesClassDetails, vars = NULL,
-                        rows = NULL, na.rm = FALSE)"),
+            rows = NULL, na.rm = FALSE)"),
                  "\n",
                  "\n```\n"
   )
@@ -331,7 +333,7 @@ observeEvent(input$ClassifierHelp_report, {
                        barplot(r_data$x,drop=TRUE, title= 'Genes Diseases Association', showCategory=10 ,digits=2)"),
                 "\n",
                 "\n```\n"
-                )
+  )
 
   cmd3 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
@@ -361,7 +363,7 @@ observeEvent(input$ClassifierHelp_report, {
   cmd6 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
                        if(!is.null(r_data$ckegg))
-                       clusterProfiler::dotplot(r_data$ckegg, title='KEGG Enrichment Comparison')"),
+                      clusterProfiler::dotplot(r_data$ckegg, title='KEGG Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
                 )

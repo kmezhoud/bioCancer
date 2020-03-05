@@ -60,8 +60,7 @@ getMegaProfData <- function(MegaGeneList,GenProf, Case, Class){
 
     }else if(Class=="MutData"){
       if (inherits(try(ProfData <- cgdsr:: getMutationData(cgds,Case, GenProf, SubMegaGeneList), silent=FALSE),"try-error")){
-        msgbadGeneList <- "There are some Gene Symbols not supported by cbioportal server.
-                          Or the gene list is empty."
+        msgbadGeneList <- "There are some Gene Symbols not supported by cbioportal server"
         #tkmessageBox(message=msgbadGeneList, icon="warning")
 
       }else{

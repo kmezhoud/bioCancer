@@ -19,17 +19,17 @@ displayTable <- function(df){
 
   #DT::datatable(dat, filter = "top", rownames =FALSE, server = TRUE,
   table <- DT::datatable(df, filter = list(position = "top", clear = FALSE, plain = TRUE),
-                         rownames = FALSE, style = "bootstrap", escape = FALSE,
-                         # class = "compact",
-                         options = list(
-                           ajax = list(url = action),
-                           search = list(search = "",regex = TRUE),
-                           columnDefs = list(list(className = 'dt-center', targets = "_all")),
-                           autoWidth = FALSE,
-                           processing = FALSE,
-                           pageLength = 10,
-                           lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
-                         )
+                rownames = FALSE, style = "bootstrap", escape = FALSE,
+                # class = "compact",
+                options = list(
+                  ajax = list(url = action),
+                  search = list(search = "",regex = TRUE),
+                  columnDefs = list(list(className = 'dt-center', targets = "_all")),
+                  autoWidth = FALSE,
+                  processing = FALSE,
+                  pageLength = 10,
+                  lengthMenu = list(c(10, 25, 50, -1), c('10','25','50','All'))
+                )
   )
   return(table)
 }
@@ -56,9 +56,9 @@ whichGeneList <- function(geneListLabel){
     GeneList <- r_data$User_Genes
   }else if(geneListLabel == "Reactome_GeneList"){
     GeneList <- t(r_data$Reactome_GeneList)
-    #}else if(r_path == "inst"){
+  #}else if(r_path == "inst"){
     ## For server
-    # GeneList <- t(unique(read.table(paste0(r_path,"/base/data/GeneList/",geneListLabel,".txt" ,sep=""))))
+   # GeneList <- t(unique(read.table(paste0(r_path,"/base/data/GeneList/",geneListLabel,".txt" ,sep=""))))
   } else{
     ## For R package
     #GeneList <- t(unique(read.table(paste0(path.package('bioCancer'),"/base/data/GeneList/",geneListLabel,".txt" ,sep=""))))
