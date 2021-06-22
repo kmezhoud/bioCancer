@@ -12,12 +12,12 @@
 #' @name bioCancer
 #' @docType package
 #' @import radiant.data
-#' @importFrom utils capture.output read.table tail
+#' @importFrom utils capture.output read.table tail stack
 #' @importFrom geNetClassifier calculateGenesRanking
 #' @importFrom geNetClassifier genesDetails
 #' @importFrom Biobase ExpressionSet
 #' @importFrom Biobase exprs
-#' @importFrom AnnotationFuncs translate
+#' @importFrom AnnotationDbi mget dbmeta dbconn
 #' @importFrom org.Hs.eg.db org.Hs.egSYMBOL2EG
 #' @import DOSE
 #' @importFrom clusterProfiler enricher

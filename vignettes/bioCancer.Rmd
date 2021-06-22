@@ -1,8 +1,7 @@
 ---
 title: "bioCancer: Interactive Multi-OMICS Cancers Data Visualization and Analysis"
-author: "\\
-	Karim Mezhoud (<kmezhoud@gmail.com>)\\
-        Nuclear Science Center of Tunisia, Nuclear Safety & Security Department"
+author: "\\ Karim Mezhoud \\
+         \\ Nuclear Science Center of Tunisia, Nuclear Safety & Security Department "
 date: "`r Sys.Date()`"
 output: 
   prettydoc::html_pretty:
