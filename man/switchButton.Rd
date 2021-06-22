@@ -6,8 +6,7 @@
 into a nice true/false or on/off switch button
 No javascript involved. Only CSS code.}
 \usage{
-switchButton(inputId, label = NULL, value = FALSE, col = "GB",
-  type = "TF")
+switchButton(inputId, label = NULL, value = FALSE, col = "GB", type = "TF")
 }
 \arguments{
 \item{inputId}{The input slot that will be used to access the value.}

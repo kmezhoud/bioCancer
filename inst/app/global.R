@@ -48,7 +48,7 @@ help_menu <- function(hlp) {
   )
 }
 ## needed to change author in the helps of the Menu help
-options(radiant.help.cc = "&copy; Karim Mezhoud (2017) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/'
+options(radiant.help.cc = "&copy; Karim Mezhoud (2020) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/'
         target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a></br>")
 
 
@@ -68,7 +68,7 @@ source(file.path(getOption("radiant.path.bioCancer"), "app/radiant_old.R"),
 
 ## needed to change figures in helps
 addResourcePath("figures", file.path(getOption("radiant.path.bioCancer"), "app/tools/help/figures/"))
-addResourcePath("imgs", file.path(getOption("radiant.path.bioCancer"), "app/www/imgs/"))
+addResourcePath("imgs", file.path(getOption("radiant.path.bioCancer"), "app/www/logo/"))
 #addResourcePath("js", file.path(getOption("radiant.path.bioCancer"), "app/www/js/"))
 #addResourcePath("js", file.path(getOption("radiant.path.bioCancer"), "htmlwidgets/"))
 #addResourcePath("js", file.path(getOption("radiant.path.bioCancer"), "htmlwidgets/tooltipster/"))

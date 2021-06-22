@@ -4,7 +4,9 @@
 \name{user_Mut}
 \alias{user_Mut}
 \title{Example of Mutation dataset}
-\format{An object of class \code{data.frame} with 37 rows and 23 columns.}
+\format{
+An object of class \code{data.frame} with 37 rows and 23 columns.
+}
 \usage{
 user_Mut
 }

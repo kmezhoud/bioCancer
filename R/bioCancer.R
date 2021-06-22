@@ -34,6 +34,7 @@
 #' @importFrom XML xmlValue
 #' @importFrom visNetwork renderVisNetwork visNetwork visNodes visEdges visOptions
 #' @importFrom visNetwork visHierarchicalLayout visExport visLegend visPhysics visNetworkOutput visExport
+#' @importFrom dplyr select
 #' @export
 
 bioCancer <- function(){

@@ -4,7 +4,9 @@
 \name{user_mRNA}
 \alias{user_mRNA}
 \title{Example of mRNA expression dataset}
-\format{An object of class \code{data.frame} with 307 rows and 13 columns.}
+\format{
+An object of class \code{data.frame} with 307 rows and 13 columns.
+}
 \usage{
 user_mRNA
 }

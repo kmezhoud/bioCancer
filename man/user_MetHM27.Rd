@@ -4,7 +4,9 @@
 \name{user_MetHM27}
 \alias{user_MetHM27}
 \title{Example of Methylation HM27 dataset}
-\format{An object of class \code{data.frame} with 600 rows and 13 columns.}
+\format{
+An object of class \code{data.frame} with 600 rows and 13 columns.
+}
 \usage{
 user_MetHM27
 }

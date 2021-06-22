@@ -4,12 +4,12 @@
 \alias{renderCoffeewheel}
 \title{Widget render function for use in Shiny}
 \usage{
-renderCoffeewheel(expr, env = parent.frame(), quoted = FALSE)
+renderCoffeewheel(expr,env =  parent.frame(),  quoted = FALSE)
 }
 \arguments{
 \item{expr}{id}
 
-\item{env}{parent.frame}
+\item{env}{parent.frame()}
 
 \item{quoted}{FALSE}
 }

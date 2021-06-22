@@ -56,9 +56,9 @@ coffeewheelOutput <- function(outputId, width=700, height=700) {
 #' Widget render function for use in Shiny
 #'@return  A circular layout with genetic profile in Shiny App.
 #'
-#' @usage renderCoffeewheel(expr, env = parent.frame(), quoted = FALSE)
+#' @usage renderCoffeewheel(expr,env =  parent.frame(),  quoted = FALSE)
 #' @param expr id
-#' @param env parent.frame
+#' @param env parent.frame()
 #' @param quoted FALSE
 #'
 #' @examples
@@ -70,11 +70,11 @@ coffeewheelOutput <- function(outputId, width=700, height=700) {
 #'
 renderCoffeewheel <- function(expr, env = parent.frame(), quoted = FALSE){
   if (!quoted) { expr <- substitute(expr) } # force quoted
-  htmlwidgets::shinyRenderWidget(expr, coffeewheelOutput, env, quoted = TRUE)
+  htmlwidgets::shinyRenderWidget(expr, coffeewheelOutput, env = parent.frame(),  quoted = TRUE)
 }
 
 #' @title  Sample data for wheel initialization
-#' 
+#'
 #' @description Example of data structure
 #'
 #' @format lists of lists hierarchical data

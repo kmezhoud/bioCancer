@@ -4,7 +4,9 @@
 \name{user_CNA}
 \alias{user_CNA}
 \title{Example of Copy Number Alteration (CNA) dataset}
-\format{An object of class \code{data.frame} with 579 rows and 13 columns.}
+\format{
+An object of class \code{data.frame} with 579 rows and 13 columns.
+}
 \usage{
 user_CNA
 }

@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.14.02 (13 March 2020)
+------------------------
++ update ReactomeFI2018 version
++ update help page
++ rename www/imgs to www/logo: confict with www/imgs of rediant.data package.
+
 CHANGES IN VERSION 1.14.01 (07 February 2020)
 ------------------------
 + Change the address of reactomeFI from "http://reactomews.oicr.on.ca:8080/" to  "http://cpws.reactome.org/"

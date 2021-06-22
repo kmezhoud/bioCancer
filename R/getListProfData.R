@@ -163,7 +163,6 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #' @export
 getListProfData <- function(panel, geneListLabel){
 
-
   GeneList <- whichGeneList(geneListLabel)
   cgds <-  cgdsr::CGDS("http://www.cbioportal.org/")
   dat <- cgdsr::getProfileData(cgds,GeneList, "gbm_tcga_pub_mrna","gbm_tcga_pub_all")

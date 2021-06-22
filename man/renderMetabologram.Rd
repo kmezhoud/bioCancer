@@ -4,7 +4,7 @@
 \alias{renderMetabologram}
 \title{Widget render function for use in Shiny}
 \usage{
-renderMetabologram(expr, env = parent.frame(), quoted = FALSE)
+renderMetabologram(expr, env= parent.frame(),  quoted = FALSE)
 }
 \arguments{
 \item{expr}{expression}

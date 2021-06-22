@@ -86,7 +86,7 @@ metabologramOutput <- function(outputId, width = 600, height = 500) {
 #' @param expr expression
 #' @param env parent.frame()
 #' @param quoted FALSE
-#' @usage renderMetabologram(expr, env = parent.frame(), quoted = FALSE)
+#' @usage renderMetabologram(expr, env= parent.frame(),  quoted = FALSE)
 #' @examples
 #' \dontrun{
 #' library(bioCancer)
@@ -95,7 +95,7 @@ metabologramOutput <- function(outputId, width = 600, height = 500) {
 #' @export
 renderMetabologram <- function(expr, env = parent.frame(), quoted = FALSE){
    if (!quoted) { expr <- substitute(expr) } # force quoted
-  htmlwidgets::shinyRenderWidget(expr, metabologramOutput, env, quoted = TRUE)
+  htmlwidgets::shinyRenderWidget(expr, metabologramOutput, env = parent.frame() ,  quoted = TRUE)
 }
 
 # #' Sample data for wheel initialization
