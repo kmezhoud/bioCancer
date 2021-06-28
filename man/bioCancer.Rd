@@ -10,10 +10,12 @@ bioCancer()
 \value{
 web page of bioCancer Shiny App
 }
+\description{
+The Main function to run bioCancer App
+}
 \examples{
 ShinyApp <-  1
 \dontrun{
 bioCancer()
 }
-
 }

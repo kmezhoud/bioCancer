@@ -5,9 +5,10 @@ author: "\\ Karim Mezhoud \\
 date: "`r Sys.Date()`"
 output: 
   prettydoc::html_pretty:
+  #html_document:
     toc: true
-    theme: cayman
-    highlight: github
+    theme: cayman # “default”, “cerulean”, “journal”, “flatly”, “darkly”, “readable”, “spacelab”, “united”, “cosmo”, “lumen”, “paper”, “sandstone”, “simplex”, “yeti”
+    highlight: github  #“default”, “tango”, “pygments”, “kate”, “monochrome”, “espresso”, “zenburn”, “haddock”, “breezedark”, “textmate”
   pdf_document:
     toc: true
 vignette: >

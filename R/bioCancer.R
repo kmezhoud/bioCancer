@@ -2,13 +2,13 @@
 #'
 #' @return  web page of bioCancer Shiny App
 #' @usage bioCancer()
+#' @description The Main function to run bioCancer App
 #'
 #' @examples
 #' ShinyApp <-  1
 #' \dontrun{
 #' bioCancer()
 #' }
-#'
 #' @name bioCancer
 #' @docType package
 #' @import radiant.data
