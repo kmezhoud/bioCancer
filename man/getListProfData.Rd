@@ -22,11 +22,11 @@ A LIST of profiles data (CNA, mRNA, Methylation, Mutation, miRNA, RPPA).
 get list of data frame with profiles data (CNA,mRNA, Methylation, Mutation...)
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/")
  \dontrun{
+ cgds <- CGDS("http://www.cbioportal.org/")
 geneList <- whichGeneList("73")
 r_data <- new.env()
-MutData <- cgdsr::getMutationData(cgds,"gbm_tcga_pub_all",
+MutData <- getMutationData(cgds,"gbm_tcga_pub_all",
  "gbm_tcga_pub_mutations", geneList )
 FreqMut <- getFreqMutData(list(ls1=MutData, ls2=MutData), "73")
 input <- NULL

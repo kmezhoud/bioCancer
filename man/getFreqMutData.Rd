@@ -18,8 +18,8 @@ a data frame with mutation frequency. gene is in rows and study is in column
 get mutation frequency
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
+cgds <- CGDS("http://www.cbioportal.org/")
 geneList <- whichGeneList("73")
 r_data <- new.env()
 MutData <- getMutationData(cgds,"gbm_tcga_pub_all",

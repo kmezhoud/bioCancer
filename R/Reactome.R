@@ -10,8 +10,8 @@
 #' @return A vetor of colors
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' geneList <- whichGeneList("73")
 #' ProfData <- getProfileData(cgds,
 #'  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
@@ -102,8 +102,8 @@ Studies_obj <- function(df= df){
 #' @export
 #'
 #' @examples
-#'  cgds <- CGDS("http://www.cbioportal.org/")
 #'  \dontrun{
+#'  cgds <- CGDS("http://www.cbioportal.org/")
 #'  geneList <- whichGeneList("73")
 #'  MutData <- getMutationData(cgds,"gbm_tcga_pub_all",
 #'  "gbm_tcga_pub_mutations", geneList )
@@ -289,10 +289,10 @@ Node_obj_mRNA_Classifier <- function(geneList,genesclassdetails){
 #' @export
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' GeneList <- whichGeneList("DNA_damage_Response")
-#' ProfDataCNA <- cgdsr::getProfileData(cgds,GeneList, "brca_tcga_pub_gistic","brca_tcga_pub_all")
+#' ProfDataCNA <- getProfileData(cgds,GeneList, "brca_tcga_pub_gistic","brca_tcga_pub_all")
 #' ListProfDataCNA <- list(ls1=ProfDataCNA, ls2=ProfDataCNA)
 #' nodeObj <- Node_obj_CNA_ProfData(ListProfDataCNA)
 #'}
@@ -331,10 +331,10 @@ Node_obj_CNA_ProfData <- function(list){
 #' @export
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/")
 #' \dontrun{
+#' cgds <- CGDS("http://www.cbioportal.org/")
 #' GeneList <- whichGeneList("DNA_damage_Response")
-#' ProfDataMET <- cgdsr::getProfileData(cgds,GeneList, "gbm_tcga_pub_methylation","gbm_tcga_pub_all")
+#' ProfDataMET <- getProfileData(cgds,GeneList, "gbm_tcga_pub_methylation","gbm_tcga_pub_all")
 #' ListProfDataMET <- list(ls1=ProfDataMET, ls2=ProfDataMET)
 #' nodeObj <- Node_obj_Met_ProfData(ListProfDataMET, "HM450",0.1)
 #'}

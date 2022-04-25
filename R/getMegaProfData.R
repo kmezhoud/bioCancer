@@ -13,9 +13,9 @@
 #' @examples
 #' GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
 #' \dontrun{
-#' cgds <- cgdsr::CGDS("http://www.cbioportal.org/")
-#' listCase_gbm_tcga_pub <- cgdsr::getCaseLists(cgds,"gbm_tcga_pub")[,1]
-#' listGenProf_gbm_tcga_pub <- cgdsr::getGeneticProfiles(cgds,"gbm_tcga_pub")[,1]
+#' cgds <- CGDS("http://www.cbioportal.org/")
+#' listCase_gbm_tcga_pub <- getCaseLists(cgds,"gbm_tcga_pub")[,1]
+#' listGenProf_gbm_tcga_pub <- getGeneticProfiles(cgds,"gbm_tcga_pub")[,1]
 #'
 #' ProfData_Mut <- grepRef("gbm_tcga_pub_all", listCase_gbm_tcga_pub,
 #'  "gbm_tcga_pub_mutations", listGenProf_gbm_tcga_pub, GeneList, Mut=1)
@@ -55,16 +55,16 @@ getMegaProfData <- function(MegaGeneList,GenProf, Case, Class){
     print(paste("Getting Profile Data of Genes from: ", (((g-1)*500)+1), "to",((g)*500), sep= " "))
 
     if(Class=="ProfData"){
-      ProfData<-cgdsr::getProfileData(cgds,SubMegaGeneList, GenProf,Case)
+      ProfData<-getProfileData(cgds,SubMegaGeneList, GenProf,Case)
       MegaProfData <- cbind(MegaProfData, ProfData)
 
     }else if(Class=="MutData"){
-      if (inherits(try(ProfData <- cgdsr:: getMutationData(cgds,Case, GenProf, SubMegaGeneList), silent=FALSE),"try-error")){
+      if (inherits(try(ProfData <-  getMutationData(cgds,Case, GenProf, SubMegaGeneList), silent=FALSE),"try-error")){
         msgbadGeneList <- "There are some Gene Symbols not supported by cbioportal server"
         #tkmessageBox(message=msgbadGeneList, icon="warning")
 
       }else{
-        ProfData <- cgdsr::getMutationData(cgds,Case, GenProf, SubMegaGeneList)
+        ProfData <- getMutationData(cgds,Case, GenProf, SubMegaGeneList)
       }
       MegaProfData <- rbind(MegaProfData, ProfData)
     }

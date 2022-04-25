@@ -16,8 +16,8 @@ A list colors for every gene
 Attribute Color to Gene
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
+cgds <- CGDS("http://www.cbioportal.org/")
 geneList <- whichGeneList("73")
 ProfData <- getProfileData(cgds,
  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")

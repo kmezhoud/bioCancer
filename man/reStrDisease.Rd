@@ -16,8 +16,8 @@ Hierarchy of dimensions in the same study: dimensions > gene > color
 Restructure the list of color attributed to the genes in every disease
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
+cgds <- CGDS("http://www.cbioportal.org/")
 geneList <- whichGeneList("73")
 ProfData <- getProfileData(cgds,
  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")

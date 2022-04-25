@@ -5,10 +5,10 @@ context("bioCancer functions\n")
 #expect_equal(3 %>% foo %>% class,c("foo","numeric"))
 #})
 
-testthat::test_that("cgdsr connection",
+testthat::test_that("cBioPortal connection",
                     {
-                      mycgds <- cgdsr::CGDS("http://www.cbioportal.org/")
-                      cgdsr::test(mycgds)
+                      mycgds <- CGDS("http://www.cbioportal.org/")
+                      test(mycgds)
                     })
 
 testthat::test_that("ReactomeFI connection",

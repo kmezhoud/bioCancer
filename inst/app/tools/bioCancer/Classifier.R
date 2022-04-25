@@ -13,7 +13,7 @@ output$ClassifierHowto <- renderPrint({
 #   shiny::withProgress(message = 'loading Cases...', value = 0.1, {
 #     Sys.sleep(0.25)
 #     checked_Studies <- input$StudiesIDClassifier
-#     listCases <- lapply(checked_Studies, function(x) cgdsr::getCaseLists(cgds,x)[,1])
+#     listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,1])
 #     names(listCases) <- checked_Studies
 #     listCases <- lapply(listCases, function(x) x[grep("v2_mrna", x)])
 #     listCases <- listCases[lapply(listCases,length)>0]
@@ -28,7 +28,7 @@ output$ClassifierHowto <- renderPrint({
 #   shiny::withProgress(message = 'loading Genetic Profiles...', value = 0.1, {
 #     Sys.sleep(0.25)
 #     checked_Studies <- input$StudiesIDClassifier
-#     listGenProfs <- lapply(checked_Studies, function(x) cgdsr::getGeneticProfiles(cgds,x)[,1])
+#     listGenProfs <- lapply(checked_Studies, function(x) getGeneticProfiles(cgds,x)[,1])
 #     names(listGenProfs) <- checked_Studies
 #     listGenProfs <- lapply(listGenProfs, function(x) x[grep("v2_mrna$", x)])
 #     listGenProfs <- listGenProfs[lapply(listGenProfs,length)>0]
@@ -47,7 +47,7 @@ TableCases <- reactive({
   shiny::withProgress(message = 'loading Sample size...', value = 1, {
 
     checked_Studies <- input$StudiesIDClassifier
-    listCases <- lapply(checked_Studies, function(x) cgdsr::getCaseLists(cgds,x)[,3])
+    listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,3])
     #listGenProf <- lapply(checked_Studies, function(x)getGeneticProfiles(cgds,x)[,2])
     matchedCases <- lapply(listCases, function(x) x[grep("mRNA expression", x)])
     #matchedGenProf <- lapply(listGenProf, function(x)x[grep("mRNA expression",x)])
@@ -117,7 +117,7 @@ output$dl_GenesClassDetails_tab <- shiny::downloadHandler(
   filename = function() { paste0("Classification_tab.csv") },
   content = function(file) {
     get_data(r_data$GenesClassDetails, vars = NULL,
-             rows = NULL, na.rm = FALSE) %>%
+            rows = NULL, na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
   }
 )
@@ -341,7 +341,7 @@ observeEvent(input$ClassifierHelp_report, {
                        clusterProfiler::dotplot(r_data$cdo, title='Disease Ontology Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
-  )
+                )
 
   cmd4 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
@@ -349,7 +349,7 @@ observeEvent(input$ClassifierHelp_report, {
                        clusterProfiler::dotplot(r_data$cdReactome, title= 'Reactome Pathway Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
-  )
+                )
 
   cmd5 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
                 paste0("options(scipen = 0, digits = 2)
@@ -357,7 +357,7 @@ observeEvent(input$ClassifierHelp_report, {
                        clusterProfiler::dotplot(r_data$cgo, title= 'Gene Ontology Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
-  )
+                )
 
 
   cmd6 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
@@ -366,7 +366,7 @@ observeEvent(input$ClassifierHelp_report, {
                       clusterProfiler::dotplot(r_data$ckegg, title='KEGG Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
-  )
+                )
 
 
   cmd7 <-paste0("```{r fig.width=10.46, fig.height=5.54, dpi =72}\n",
@@ -375,7 +375,7 @@ observeEvent(input$ClassifierHelp_report, {
                        clusterProfiler::dotplot(r_data$cCC, title='Cellular Component Enrichment Comparison')"),
                 "\n",
                 "\n```\n"
-  )
+                )
 
   update_report_fun(cmd1)
   update_report_fun(cmd2)

@@ -18,8 +18,8 @@ a data frame having the gene in row name ordered as in gene list.
 Unify row names in data frame with the same order of gene list.
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
+cgds <- CGDS("http://www.cbioportal.org/")
 geneList <- whichGeneList("73")
 ProfData <- getProfileData(cgds,
  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")

@@ -1,13 +1,28 @@
-CHANGES IN VERSION 1.14.02 (13 March 2020)
+CHANGES IN VERSION 1.23.03 (25 April 2022)
+--------------------------------------------
++ host cgdsr
+
+CHANGES IN VERSION 1.23.02 (19 April 2022)
+--------------------------------------------
++ Update NEWS
+
+CHANGES IN VERSION 1.23.01 (14 April 2022)
+--------------------------------------------
++ get cgdsr from github
+
+CHANGES IN VERSION 1.15.03 (18 March 2020)
 ------------------------
-+ update ReactomeFI2018 version
++ Downgrade DiegrammeR from 1.05 to 1.01. Unable to run a Shiny App using grVizOutput() and renderGrViz()
+
+CHANGES IN VERSION 1.15.02 (17 March 2020)
+------------------------
 + update help page
 + rename www/imgs to www/logo: confict with www/imgs of rediant.data package.
 
-CHANGES IN VERSION 1.14.01 (07 February 2020)
+CHANGES IN VERSION 1.15.01 (16 March 2020)
 ------------------------
 + Change the address of reactomeFI from "http://reactomews.oicr.on.ca:8080/" to  "http://cpws.reactome.org/"
-+ update ReactomeFI2018.RDS to "FIsInGene_122718_with_annotations.txt.zip"
++ update ReactomeFI2018.RDS
 
 CHANGES IN VERSION 1.11.00 (12 February 2019)
 ------------------------

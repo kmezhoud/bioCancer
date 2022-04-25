@@ -16,9 +16,9 @@ listes of cases
 get list of cases of each selected study in Classifier panel
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/")
-listStudies <-  cgdsr::getCancerStudies(cgds)
 \dontrun{
+cgds <- CGDS("http://www.cbioportal.org/")
+listStudies <-  getCancerStudies(cgds)
 listCases <- getList_Cases(listStudies[1:3])
 }
 

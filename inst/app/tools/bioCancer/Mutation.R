@@ -11,20 +11,20 @@ output$MutDataTable <- DT::renderDataTable({
     ##### Get Mutation Data for selected Case and Genetic Profile
     if(length(GeneList)>500){
 
-      shiny::withProgress(message = 'loading Mega Mutation Data from cgdsr server...', value = 1, {
+      shiny::withProgress(message = 'loading Mega Mutation Data from cBioPortal server...', value = 1, {
 
         dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="MutData")
       })
 
-    } else if (inherits(try(dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList), silent=FALSE),"try-error")){
+    } else if (inherits(try(dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList), silent=FALSE),"try-error")){
 
       dat <- as.data.frame("There are some Gene Symbols not supported by cbioportal.
                            Or the gene list is empty.
-                           Or bioCancer is not connected to cgdsr server (check connection).")
+                           Or bioCancer is not connected to cBioPortal server (check connection).")
     }else{
-      shiny::withProgress(message = 'loading Mutation Data from cgdsr server...', value = 1, {
+      shiny::withProgress(message = 'loading Mutation Data from cBioPortal server...', value = 1, {
 
-        dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
+        dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
 
 
         if(dim(dat)[1]==0){
@@ -35,7 +35,7 @@ output$MutDataTable <- DT::renderDataTable({
                                Copy and paste genes from text file (Gene/line) or use gene list from examples.")
         }else{
           req(input$Mut_varsID)
-          # dat <- cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
+          # dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
           ## change rownames in the first column
           dat <- as.data.frame(dat %>% tibble::rownames_to_column("Patients"))
           dat <- dat[input$Mut_varsID]

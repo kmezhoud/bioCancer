@@ -5,7 +5,7 @@ loadInDatasets <- function(fname, header= TRUE){
 
   if(fname=="ProfData"){
     GeneList <- whichGeneList(input$GeneListID)
-    dat <- as.data.frame(cgdsr::getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
+    dat <- as.data.frame(getProfileData(cgds, GeneList, input$GenProfID,input$CasesID))
     r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
     #r_data[[objname]] <- data.frame(r_data[[objname]] , stringsAsFactors = TRUE)
 
@@ -17,12 +17,12 @@ loadInDatasets <- function(fname, header= TRUE){
     # r_data[[objname]] <- dat
 
     ## load all clinical data
-    dat <- as.data.frame(cgdsr::getClinicalData(cgds, input$CasesID))
+    dat <- as.data.frame(getClinicalData(cgds, input$CasesID))
     r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
 
   }else if (fname=="MutData"){
     GeneList <- whichGeneList(input$GeneListID)
-    dat <- as.data.frame((cgdsr::getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)))
+    dat <- as.data.frame((getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)))
     r_data[[objname]] <- dat %>% tibble::rownames_to_column("Patients")
   } else if (fname=="xCNA"){
     dat <- plyr::ldply(r_info$ListProfData$CNA)
@@ -161,12 +161,12 @@ loadClipboard_GeneList <- function(objname = "User_Genes", ret = "", header = FA
   if (is(dat, 'try-error') || nrow(dat) == 0) {
     if (ret == "") ret <- c("### Gene List in clipboard was not well formatted.")
     upload_error_handler(objname,ret)
-    r_data[['genelist']] <- c("DNA_damage_Response",r_data[['genelist']]) %>% unique
+    r_data[['genelist']] <- c("DNA_damage_Response", r_data[['genelist']]) %>% unique
   } else {
     ret <- paste0("### Clipboard data\nData copied from clipboard on", lubridate::now())
     r_data[[objname]] <- dat
     r_data[[paste0(objname,"_descr")]] <- ret
-    r_data[['genelist']] <- c(objname,r_data[['genelist']]) %>% unique
+    r_data[['genelist']] <- c(objname, r_data[['genelist']]) %>% unique
   }
 
 }

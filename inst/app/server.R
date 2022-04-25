@@ -4,7 +4,7 @@ shinyServer(function(input, output, session) {
    #options(warn=2, shiny.error= recover)
 
 
-  ## connect to cgdsr server
+  ## connect to cBioPortal server
   source(file.path(getOption("radiant.path.bioCancer"),"app/tools/bioCancer/cBioPortal.R"),
          encoding = getOption("radiant.encoding"), local = TRUE)
 

@@ -7,20 +7,20 @@ output$ProfDataTable <- DT::renderDataTable({
   }else{
     if(length(GeneList)>500){
 
-      shiny::withProgress(message = 'loading MegaProfData from cgdsr server...', value = 1, {
+      shiny::withProgress(message = 'loading MegaProfData from cBioPortal server...', value = 1, {
 
         ##### Get Profile Data for selected Case and Genetic Profile
         dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="ProfData")
       })
-    } else if (inherits(try( dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID),
+    } else if (inherits(try( dat <- getProfileData(cgds,GeneList, input$GenProfID,input$CasesID),
                              silent=FALSE),"try-error")){
       dat <- as.data.frame("There are some Gene Symbols not supported by cbioportal.
                            Or gene list is empty.
-                           Or bioCancer is not connected to cgdsr server (check connection).")
+                           Or bioCancer is not connected to cBioPortal server (check connection).")
     }else{
-      shiny::withProgress(message = 'loading ProfData from cgdsr server...', value = 1, {
+      shiny::withProgress(message = 'loading ProfData from cBioPortal server...', value = 1, {
 
-      dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
+      dat <- getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
 
       })
       if(dim(dat)[1]==0){
@@ -28,7 +28,7 @@ output$ProfDataTable <- DT::renderDataTable({
         ## Error..No.cancer.study..cancer_study_id...or.genetic.profile..genetic_profile_id..or.case.list.or..case_list..case.set..case_set_id..provid
         dat <- as.data.frame("Gene List is empty. copy and paste genes from text file (Gene/line) or use gene list from examples.")
       }else{
-        #dat <- cgdsr::getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
+        #dat <- getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
         ## remove empty row
         dat <-  dat[which(apply(!(apply(dat,1,is.na) ),2,sum)!=0 ),]
 

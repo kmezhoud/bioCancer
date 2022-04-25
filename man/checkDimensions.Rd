@@ -9,7 +9,7 @@ checkDimensions(panel,StudyID)
 \arguments{
 \item{panel}{panel can take to strings 'Circomics' or 'Networking'}
 
-\item{StudyID}{Study reference using cgdsr index}
+\item{StudyID}{Study reference using cBioPortal index}
 }
 \value{
 A data frame with two column (Cases, Genetic profiles). Every row has a dimension (CNA, mRNA...).
@@ -19,8 +19,8 @@ The data frame is filled with yes/no response.
 Chech wich Cases and genetic profiles are available for every seleted study
 }
 \examples{
-cgds <- CGDS("http://www.cbioportal.org/")
 \dontrun{
+cgds <- CGDS("http://www.cbioportal.org/")
 df <- checkDimensions(panel='Networking', StudyID= "gbm_tcga_pub")
 }
 }

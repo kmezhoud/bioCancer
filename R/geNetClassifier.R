@@ -6,14 +6,14 @@
 #' @export
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' listStudies <-  cgdsr::getCancerStudies(cgds)
 #' \dontrun{
+#' cgds <- CGDS("http://www.cbioportal.org/")
+#' listStudies <-  getCancerStudies(cgds)
 #' listCases <- getList_Cases(listStudies[1:3])
 #'}
 #'
 getList_Cases <- function(checked_Studies){
-  listCases <- lapply(checked_Studies, function(x) cgdsr::getCaseLists(cgds,x)[,1])
+  listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,1])
   names(listCases) <- checked_Studies
   listCases <- lapply(listCases, function(x) x[grep("v2_mrna", x)])
   listCases <- listCases[lapply(listCases,length)>0]
@@ -30,15 +30,15 @@ getList_Cases <- function(checked_Studies){
 #' @export
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' listStudies <-  cgdsr::getCancerStudies(cgds)
 #' \dontrun{
+#' cgds <- CGDS("http://www.cbioportal.org/")
+#' listStudies <-  getCancerStudies(cgds)
 #' listGenProfs <- getList_GenProfs(listStudies[1:3])
 #'}
 #'
 getList_GenProfs <- function(checked_Studies){
 
-  listGenProfs <- lapply(checked_Studies, function(x) cgdsr::getGeneticProfiles(cgds,x)[,1])
+  listGenProfs <- lapply(checked_Studies, function(x) getGeneticProfiles(cgds,x)[,1])
   names(listGenProfs) <- checked_Studies
   listGenProfs <- lapply(listGenProfs, function(x) x[grep("v2_mrna$", x)])
   listGenProfs <- listGenProfs[lapply(listGenProfs,length)>0]
@@ -60,9 +60,9 @@ getList_GenProfs <- function(checked_Studies){
 #' @export
 #'
 #' @examples
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' listStudies <-  cgdsr::getCancerStudies(cgds)
 #' \dontrun{
+#' cgds <- CGDS("http://www.cbioportal.org/")
+#' listStudies <-  getCancerStudies(cgds)
 #' checked_Stdudies <- listStudies[3:5]
 #' listCases <- getList_Cases(listStudies[1:3])
 #' listGenProfs <- getList_GenProfs(listStudies[1:3])
@@ -101,7 +101,7 @@ getGenesClassification <- function(checked_Studies,
           ProfData <- getMegaProfData(GeneList,GenProf,Case, Class="ProfData" )
         })
       } else{
-        ProfData<- cgdsr::getProfileData(cgds,GeneList, GenProf,Case)
+        ProfData<- getProfileData(cgds,GeneList, GenProf,Case)
       }
 
       ProfData <- t(ProfData)

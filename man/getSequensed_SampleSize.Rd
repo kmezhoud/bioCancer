@@ -7,7 +7,7 @@
 getSequensed_SampleSize(StudyID)
 }
 \arguments{
-\item{StudyID}{Study reference using cgdsr index}
+\item{StudyID}{Study reference using cBioPortal index}
 }
 \value{
 dataframe with sample size for each selected study.
