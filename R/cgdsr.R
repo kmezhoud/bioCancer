@@ -3,7 +3,18 @@ library(R.oo)
 # .onAttach <- function(libname, pkgname){
 #     packageStartupMessage('Please send questions to cbioportal@googlegroups.com')
 # }
+#
 
+#' CGDS  connect object to cBioPortal
+#' @description Creates a CGDS connection object from a CGDS endpoint URL. This object must be passed on to the methods which query the server.
+#' @param url  A CGDS URL (required).
+#' @param token An optional 'Authorization: Bearer' token to connect to cBioPortal instances that require authentication (default NULL)
+#' @param verbose A boolean variable specifying verbose output (default FALSE)
+#' @param ploterrormsg An optional message to display in plots if an error occurs (default ”)
+#'
+#' @usage CGDS(url,verbose=FALSE,ploterrormsg='',token=NULL)
+#'
+#' @export
 setConstructorS3("CGDS", function(url='',verbose=FALSE,ploterrormsg='',token=NULL) {
   R.oo::extend(R.oo::Object(), "CGDS",
          .url=url,
@@ -12,6 +23,19 @@ setConstructorS3("CGDS", function(url='',verbose=FALSE,ploterrormsg='',token=NUL
          .ploterrormsg='')
 })
 
+#' S3 method to process URL
+#'
+#' @description These methods should not be invoked by the user.
+#'
+#' @usage processURL.CGDS(x, url, force.comment.char.blank, ...)
+#'
+#' @param x A connection object
+#' @param url URL
+#' @param force.comment.char.blank a boolean param to force comment
+#' @param ... not used
+#'
+#' @export processURL.CGDS
+#'
 setMethodS3("processURL","CGDS", private=TRUE, function(x, url, force.comment.char.blank=FALSE, ...) {
   if (x$.verbose) cat(url,"\n")
 
@@ -32,43 +56,152 @@ setMethodS3("processURL","CGDS", private=TRUE, function(x, url, force.comment.ch
   }
 })
 
-setMethodS3("setPlotErrorMsg","CGDS", function(x, msg, ...) {
-  x$.ploterrormsg = msg
-  return(msg)
-})
+#setMethodS3("setPlotErrorMsg","CGDS", function(x, msg, ...) {
+#  x$.ploterrormsg = msg
+#  return(msg)
+#})
 
+#' S3 method to set verbose
+#' @description Sets verbose logging level for CGDS function calls.
+#'
+#' @usage setVerbose.CGDS(x, verbose, ...)
+#'
+#' @param x A connection object
+#' @param verbose Activate verbose logging (boolean)
+#' @param ... not used
+#'
+#' @examples
+#' # Create CGDS object
+#' mycgds <- CGDS("http://www.cbioportal.org/")
+#' # Activate verbose logging
+#' setVerbose.CGDS(mycgds, TRUE)
+#'
+#' @export setVerbose.CGDS
 setMethodS3("setVerbose","CGDS", function(x, verbose, ...) {
   x$.verbose = verbose
   return(verbose)
 })
 
+#' S3 method to get Cancer Studies
+#'
+#' @usage getCancerStudies.CGDS(x, ...)
+#' @param x connection object
+#' @param ... not used
+#'
+#' @examples
+#' # Create CGDS object
+#' mycgds <- CGDS("http://www.cbioportal.org/")
+#' # Get available case lists (collection of samples) for a given cancer study
+#' mycancerstudy <- getCancerStudies.CGDS(mycgds)[2,1]
+#'
+#' @export getCancerStudies.CGDS
 setMethodS3("getCancerStudies","CGDS", function(x, ...) {
   url = paste(x$.url, "webservice.do?cmd=getCancerStudies&",sep="")
   df = processURL(x,url)
   return(df)
 })
 
+
+#' S3 method to get Cases Lists
+#'
+#' @usage getCaseLists.CGDS(x, cancerStudy,...)
+#' @param x connection object
+#' @param cancerStudy cancer study ID
+#' @param ... Not used
+#'
+#' @examples
+#' # Create CGDS object
+#' mycgds <- CGDS("http://www.cbioportal.org/")
+#' # Get list of cancer studies at server
+#' mycancerstudy <- getCancerStudies.CGDS(mycgds)[2,1]
+#' # Get available case lists (collection of samples) for a given cancer study
+#' mycaselist <- getCaseLists.CGDS(mycgds,mycancerstudy)[1,1]
+#'
+#' @export getCaseLists.CGDS
 setMethodS3("getCaseLists","CGDS", function(x, cancerStudy, ...) {
   url = paste(x$.url, "webservice.do?cmd=getCaseLists&cancer_study_id=", cancerStudy, sep="")
-  df = processURL(x,url)
+  df <- processURL(x,url)
   return(df)
 })
 
+#' S3 method to get Genetic Profiles
+#'
+#' @usage getGeneticProfiles.CGDS(x, cancerStudy, ...)
+#' @param x connection object
+#' @param cancerStudy cancer study ID
+#' @param ... not used
+#'
+#' @examples
+#' # Create CGDS object
+#' mycgds <- CGDS("http://www.cbioportal.org/")
+#' # Get list of cancer studies at server
+#' mycancerstudy <- getCancerStudies.CGDS(mycgds)[2,1]
+#' # Get available case lists (collection of samples) for a given cancer study
+#' mycaselist <- getCaseLists.CGDS(mycgds,mycancerstudy)[1,1]
+#' # Get available genetic profiles
+#' mygeneticprofile <- getGeneticProfiles.CGDS(mycgds,mycancerstudy)[1,1]
+#' # Get data slices for a specified list of genes, genetic profile and case list
+#' myProfileData <- getProfileData.CGDS(mycgds,c('BRCA1','BRCA2'),mygeneticprofile,mycaselist)
+#'
+#' @export getGeneticProfiles.CGDS
 setMethodS3("getGeneticProfiles","CGDS", function(x, cancerStudy, ...) {
   url = paste(x$.url, "webservice.do?cmd=getGeneticProfiles&cancer_study_id=", cancerStudy, sep="")
-  df = processURL(x,url)
+  df <- processURL(x,url)
   return(df)
 })
 
+#' S3 method to ge Mutation Data
+#'
+#' @usage getMutationData.CGDS(x, caseList, geneticProfile, genes, ...)
+#' @param x connection object
+#' @param caseList A case list ID
+#' @param geneticProfile A genetic profile ID with mutation data
+#' @param genes A vector of genes list
+#' @param ... not used
+#'
+#'
+#' @examples
+#' #Create CGDS object
+#' mycgds <- CGDS("http://www.cbioportal.org/")
+#' # Get Extended Mutation Data for EGFR and PTEN in TCGA GBM
+#' myMutationData <- getMutationData.CGDS(mycgds,"gbm_tcga_all","gbm_tcga_mutations", c('EGFR','PTEN'))
+#'
+#' @export getMutationData.CGDS
 setMethodS3("getMutationData","CGDS", function(x, caseList, geneticProfile, genes, ...) {
   url = paste(x$.url, "webservice.do?cmd=getMutationData",
     "&case_set_id=", caseList,
     "&genetic_profile_id=", geneticProfile,
     "&gene_list=", paste(genes,collapse=","), sep="")
-  df = processURL(x,url)
+  df <- processURL(x,url)
   return(df)
 })
 
+#' S3 method to get Profile Data
+#'
+#' @usage getProfileData.CGDS(x, genes, geneticProfiles, caseList, cases, caseIdsKey, ...)
+#' @param x connection object
+#' @param genes A genes list
+#' @param geneticProfiles A genetic Profile ID
+#' @param caseList A cases list ID
+#' @param cases A vector of cases ID
+#' @param caseIdsKey Only used by web portal
+#' @param ... not used
+#'
+#' @examples
+#' # Create CGDS object
+#' mycgds <- CGDS("http://www.cbioportal.org/")
+#' # Get list of cancer studies at server
+#' mycancerstudy <- getCancerStudies.CGDS(mycgds)[2,1]
+#' # Get available case lists (collection of samples) for a given cancer study
+#' mycaselist <- getCaseLists.CGDS(mycgds,mycancerstudy)[1,1]
+#' # Get available genetic profiles
+#' mygeneticprofile <- getGeneticProfiles.CGDS(mycgds,mycancerstudy)[1,1]
+#' # Get data slices for a specified list of genes, genetic profile and case list
+#' myProfileData <- getProfileData.CGDS(mycgds,c('BRCA1','BRCA2'),mygeneticprofile,mycaselist)
+#' # Get data slice for a single gene
+#' mysigneProfileData <- getProfileData.CGDS(mycgds,'HMGA2',mygeneticprofile,mycaselist)
+#'
+#' @export getProfileData.CGDS
 setMethodS3("getProfileData","CGDS", function(x, genes, geneticProfiles, caseList='', cases=c(), caseIdsKey = '', ...) {
   url = paste(x$.url, "webservice.do?cmd=getProfileData",
     "&gene_list=", paste(genes,collapse=","),
@@ -99,6 +232,26 @@ setMethodS3("getProfileData","CGDS", function(x, genes, geneticProfiles, caseLis
   return(data.frame(m))
 })
 
+
+#' S3 method to get Clinical Data
+#'
+#' @usage getClinicalData.CGDS(x, caseList, cases, caseIdsKey, ...)
+#' @param x connection object
+#' @param caseList A list of cases ID
+#' @param cases A vector of case IDs
+#' @param caseIdsKey only used by web portal
+#' @param ... not used
+#'
+#' @examples
+#' #Create CGDS object
+#' mycgds <- CGDS("http://www.cbioportal.org/")
+#' # Get available case lists (collection of samples) for a given cancer study
+#' mycancerstudy <- getCancerStudies.CGDS(mycgds)[2,1]
+#' mycaselist <- getCaseLists.CGDS(mycgds,mycancerstudy)[1,1]
+#  # Get clinical data for caselist
+#  myClinicalData <- getClinicalData.CGDS(mycgds,mycaselist)
+#
+#' @export getClinicalData.CGDS
 setMethodS3("getClinicalData","CGDS", function(x, caseList='', cases=c(), caseIdsKey = '', ...) {
   url = paste(x$.url, "webservice.do?cmd=getClinicalData",sep="")
 
@@ -400,6 +553,15 @@ setMethodS3("getClinicalData","CGDS", function(x, caseList='', cases=c(), caseId
 #
 # })
 
+#' S3 method to test cBioPortal connection
+#'
+#' @usage test.CGDS(x, ...)
+#'
+#' @param x connection object
+#' @param ... not used
+#'
+#'
+#' @export test.CGDS
 setMethodS3("test","CGDS", function(x, ...) {
   checkEq = function(a,b) { if (identical(a,b)) "OK\n" else "FAILED!\n" }
   checkGrt = function(a,b) { if (a > b) "OK\n" else "FAILED!\n" }

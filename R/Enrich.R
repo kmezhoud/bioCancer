@@ -12,7 +12,7 @@
 #' \dontrun{
 #' cgds <- CGDS("http://www.cbioportal.org/")
 #' geneList <- whichGeneList("73")
-#' ProfData <- getProfileData(cgds,
+#' ProfData <- getProfileData.CGDS(cgds,
 #'  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
 #' rownames(ProfData) <- NULL
 #' clrRef <- attriColorValue(1.2,
@@ -51,7 +51,7 @@ attriColorValue <- function(Value, df, colors=c(a,b,c),feet){
 #' \dontrun{
 #' cgds <- CGDS("http://www.cbioportal.org/")
 #' geneList <- whichGeneList("73")
-#' ProfData <- getProfileData(cgds,
+#' ProfData <- getProfileData.CGDS(cgds,
 #'  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
 #' rownames(ProfData) <- NULL
 #' clr <- attriColorGene(ProfData)
@@ -103,7 +103,7 @@ attriColorGene <- function(df){
 #' \dontrun{
 #' cgds <- CGDS("http://www.cbioportal.org/")
 #' geneList <- whichGeneList("73")
-#' ProfData <- getProfileData(cgds,
+#' ProfData <- getProfileData.CGDS(cgds,
 #'  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
 #' rownames(ProfData) <- NULL
 #' ls <- reStrColorGene(ProfData)
@@ -131,7 +131,7 @@ reStrColorGene <- function(df){
 #' \dontrun{
 #' cgds <- CGDS("http://www.cbioportal.org/")
 #' geneList <- whichGeneList("73")
-#' ProfData <- getProfileData(cgds,
+#' ProfData <- getProfileData.CGDS(cgds,
 #'  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
 #' rownames(ProfData) <- NULL
 #' tree <- reStrDisease(list(df1=ProfData,df2=ProfData))
@@ -160,7 +160,7 @@ reStrDisease <- function(List){
 #' \dontrun{
 #' cgds <- CGDS("http://www.cbioportal.org/")
 #' geneList <- whichGeneList("73")
-#' ProfData <- getProfileData(cgds,
+#' ProfData <- getProfileData.CGDS(cgds,
 #'  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
 #' rownames(ProfData) <- NULL
 #' TREE <- reStrDimension(list(
@@ -190,7 +190,7 @@ reStrDimension <- function(LIST){
 #' \dontrun{
 #' cgds <- CGDS("http://www.cbioportal.org/")
 #' geneList <- whichGeneList("73")
-#' ProfData <- getProfileData(cgds,
+#' ProfData <- getProfileData.CGDS(cgds,
 #'  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
 #' rownames(ProfData) <- NULL
 #' geneListOrder <- UnifyRowNames(list(
@@ -232,7 +232,7 @@ UnifyRowNames <- function(x, geneList){
 #' cgds <- CGDS("http://www.cbioportal.org/")
 #' geneList <- whichGeneList("73")
 #' r_data <- new.env()
-#' MutData <- getMutationData(cgds,"gbm_tcga_pub_all",
+#' MutData <- getMutationData.CGDS(cgds,"gbm_tcga_pub_all",
 #'  "gbm_tcga_pub_mutations", geneList )
 #' FreqMut <- getFreqMutData(list(ls1=MutData, ls2=MutData), "73")
 #'}
@@ -308,17 +308,17 @@ checkDimensions<- function(panel, StudyID){
   if(panel == "Circomics"){
     checked_Studies <- StudyID #input$StudiesIDCircos
     # get Cases for selected Studies
-    CasesRefStudies <- unname(unlist(apply(as.data.frame(StudyID), 1,function(x) getCaseLists(cgds,x)[1])))
+    CasesRefStudies <- unname(unlist(apply(as.data.frame(StudyID), 1,function(x) getCaseLists.CGDS(cgds,x)[1])))
     ## ger Genetics Profiles for selected Studies
-    GenProfsRefStudies <- unname(unlist(apply(as.data.frame(StudyID), 1,function(x) getGeneticProfiles(cgds,x)[1])))
+    GenProfsRefStudies <- unname(unlist(apply(as.data.frame(StudyID), 1,function(x) getGeneticProfiles.CGDS(cgds,x)[1])))
 
   }else if (panel== "Networking"){
 
     checked_Studies <- StudyID #input$StudiesIDReactome
     # get Cases for selected Studies
-    CasesRefStudies <- unname(unlist(apply(as.data.frame(StudyID), 1,function(x) getCaseLists(cgds,x)[1])))
+    CasesRefStudies <- unname(unlist(apply(as.data.frame(StudyID), 1,function(x) getCaseLists.CGDS(cgds,x)[1])))
     ## ger Genetics Profiles for selected Studies
-    GenProfsRefStudies <- unname(unlist(apply(as.data.frame(StudyID), 1,function(x) getGeneticProfiles(cgds,x)[1])))
+    GenProfsRefStudies <- unname(unlist(apply(as.data.frame(StudyID), 1,function(x) getGeneticProfiles.CGDS(cgds,x)[1])))
 
   }
 
@@ -468,7 +468,7 @@ getSequensed_SampleSize <- function(StudyID){
   dat <-
     unname(
       as.data.frame(apply(as.data.frame(paste(checked_Studies, "_sequenced", sep="")), 1,
-                          function(x) nrow(getClinicalData(cgds,x))))
+                          function(x) nrow(getClinicalData.CGDS(cgds,x))))
     )
 
   rownames(dat) <-  StudyID

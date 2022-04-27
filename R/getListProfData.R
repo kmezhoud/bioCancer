@@ -16,8 +16,8 @@
 #' GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
 #' \dontrun{
 #' cgds <- CGDS("http://www.cbioportal.org/")
-#' listCase_gbm_tcga_pub <- getCaseLists(cgds,"gbm_tcga_pub")[,1]
-#' listGenProf_gbm_tcga_pub <- getGeneticProfiles(cgds,"gbm_tcga_pub")[,1]
+#' listCase_gbm_tcga_pub <- getCaseLists.CGDS(cgds,"gbm_tcga_pub")[,1]
+#' listGenProf_gbm_tcga_pub <- getGeneticProfiles.CGDS(cgds,"gbm_tcga_pub")[,1]
 #'
 #' ProfData_Mut <- grepRef("gbm_tcga_pub_all", listCase_gbm_tcga_pub,
 #'  "gbm_tcga_pub_mutations", listGenProf_gbm_tcga_pub, GeneList, Mut=1)
@@ -31,7 +31,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
     if(length(grep(regex2,listRef2))!= 0){
       if(Mut== 0){
         #print(paste("Getting Profile Data of ",regex2,"...",sep=""))
-        ProfData_X <- getProfileData(cgds,GeneList, regex2,regex1)
+        ProfData_X <- getProfileData.CGDS(cgds,GeneList, regex2,regex1)
         ########################
         #ProfData_X <- ProfData_X[,as.factor(GeneList)]
         #ProfData_X <- ProfData_X[GeneList,,drop=FALSE]
@@ -61,7 +61,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 
       }else if(Mut==1){
         #print(paste("Getting Mutation Data of ",checked_Studies[s],"...",sep=""))
-        MutData <- getMutationData(cgds,regex1, regex2, GeneList)
+        MutData <- getMutationData.CGDS(cgds,regex1, regex2, GeneList)
         #print(paste("MutData: ",dim(MutData)))
         if(length(MutData)==0 || nrow(MutData)==0){
           ## built emty data.frame as the same form of MutData
@@ -147,7 +147,7 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 #'  cgds <- CGDS("http://www.cbioportal.org/")
 #' geneList <- whichGeneList("73")
 #' r_data <- new.env()
-#' MutData <- getMutationData(cgds,"gbm_tcga_pub_all",
+#' MutData <- getMutationData.CGDS(cgds,"gbm_tcga_pub_all",
 #'  "gbm_tcga_pub_mutations", geneList )
 #' FreqMut <- getFreqMutData(list(ls1=MutData, ls2=MutData), "73")
 #' input <- NULL
@@ -160,7 +160,7 @@ getListProfData <- function(panel, geneListLabel){
 
   GeneList <- whichGeneList(geneListLabel)
   cgds <-  CGDS("http://www.cbioportal.org/")
-  dat <- getProfileData(cgds,GeneList, "gbm_tcga_pub_mrna","gbm_tcga_pub_all")
+  dat <- getProfileData.CGDS(cgds,GeneList, "gbm_tcga_pub_mrna","gbm_tcga_pub_all")
 
   if(all(dim(dat)==c(0,1))== TRUE){
     ## avoide error when GeneList is empty
@@ -184,11 +184,11 @@ getListProfData <- function(panel, geneListLabel){
     ## get Cases for selected Studies
     CasesRefStudies <- unname(unlist(apply(
       as.data.frame(checked_Studies), 1,
-      function(x) getCaseLists(cgds,x)[1])))
-    ## ger Genetics Profiles for selected Studies
+      function(x) getCaseLists.CGDS(cgds,x)[1])))
+    ## get Genetics Profiles for selected Studies
     GenProfsRefStudies <- unname(unlist(apply(
       as.data.frame(checked_Studies), 1,
-      function(x) getGeneticProfiles(cgds,x)[1])))
+      function(x) getGeneticProfiles.CGDS(cgds,x)[1])))
 
 
     LengthGenProfs <- 0

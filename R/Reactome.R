@@ -13,7 +13,7 @@
 #' \dontrun{
 #' cgds <- CGDS("http://www.cbioportal.org/")
 #' geneList <- whichGeneList("73")
-#' ProfData <- getProfileData(cgds,
+#' ProfData <- getProfileData.CGDS(cgds,
 #'  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
 #' rownames(ProfData) <- NULL
 #' clrVec <- attriColorVector(1.2,
@@ -105,7 +105,7 @@ Studies_obj <- function(df= df){
 #'  \dontrun{
 #'  cgds <- CGDS("http://www.cbioportal.org/")
 #'  geneList <- whichGeneList("73")
-#'  MutData <- getMutationData(cgds,"gbm_tcga_pub_all",
+#'  MutData <- getMutationData.CGDS(cgds,"gbm_tcga_pub_all",
 #'  "gbm_tcga_pub_mutations", geneList )
 #'  listMutData <- list(ls1=MutData, ls2=MutData)
 #'  FreqMutThreshold <- 10
@@ -292,7 +292,7 @@ Node_obj_mRNA_Classifier <- function(geneList,genesclassdetails){
 #' \dontrun{
 #' cgds <- CGDS("http://www.cbioportal.org/")
 #' GeneList <- whichGeneList("DNA_damage_Response")
-#' ProfDataCNA <- getProfileData(cgds,GeneList, "brca_tcga_pub_gistic","brca_tcga_pub_all")
+#' ProfDataCNA <- getProfileData.CGDS(cgds,GeneList, "brca_tcga_pub_gistic","brca_tcga_pub_all")
 #' ListProfDataCNA <- list(ls1=ProfDataCNA, ls2=ProfDataCNA)
 #' nodeObj <- Node_obj_CNA_ProfData(ListProfDataCNA)
 #'}

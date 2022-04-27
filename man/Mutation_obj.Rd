@@ -23,7 +23,7 @@ Atribute mutation frequency to nodes
  \dontrun{
  cgds <- CGDS("http://www.cbioportal.org/")
  geneList <- whichGeneList("73")
- MutData <- getMutationData(cgds,"gbm_tcga_pub_all",
+ MutData <- getMutationData.CGDS(cgds,"gbm_tcga_pub_all",
  "gbm_tcga_pub_mutations", geneList )
  listMutData <- list(ls1=MutData, ls2=MutData)
  FreqMutThreshold <- 10

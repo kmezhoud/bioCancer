@@ -19,7 +19,7 @@ Restructure the list of color attributed to the genes in every disease
 \dontrun{
 cgds <- CGDS("http://www.cbioportal.org/")
 geneList <- whichGeneList("73")
-ProfData <- getProfileData(cgds,
+ProfData <- getProfileData.CGDS(cgds,
  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
 rownames(ProfData) <- NULL
 tree <- reStrDisease(list(df1=ProfData,df2=ProfData))

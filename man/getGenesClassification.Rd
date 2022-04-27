@@ -29,7 +29,7 @@ get genes classification
 \examples{
 \dontrun{
 cgds <- CGDS("http://www.cbioportal.org/")
-listStudies <-  getCancerStudies(cgds)
+listStudies <-  getCancerStudies.CGDS(cgds)
 checked_Stdudies <- listStudies[3:5]
 listCases <- getList_Cases(listStudies[1:3])
 listGenProfs <- getList_GenProfs(listStudies[1:3])

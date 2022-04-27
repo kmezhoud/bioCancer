@@ -19,7 +19,7 @@ Attribute CNA data to node border
 \dontrun{
 cgds <- CGDS("http://www.cbioportal.org/")
 GeneList <- whichGeneList("DNA_damage_Response")
-ProfDataCNA <- getProfileData(cgds,GeneList, "brca_tcga_pub_gistic","brca_tcga_pub_all")
+ProfDataCNA <- getProfileData.CGDS(cgds,GeneList, "brca_tcga_pub_gistic","brca_tcga_pub_all")
 ListProfDataCNA <- list(ls1=ProfDataCNA, ls2=ProfDataCNA)
 nodeObj <- Node_obj_CNA_ProfData(ListProfDataCNA)
 }

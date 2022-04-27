@@ -9,7 +9,7 @@
 #' \dontrun{
 #' session <- NULL
 #' cgds <- CGDS("http://www.cbioportal.org/")
-#' Studies<- getCancerStudies(cgds)
+#' Studies<- getCancerStudies.CGDS(cgds)
 #' displayTable(Studies)
 #' }
 #'@export

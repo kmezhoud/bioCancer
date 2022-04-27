@@ -26,7 +26,7 @@ get list of data frame with profiles data (CNA,mRNA, Methylation, Mutation...)
  cgds <- CGDS("http://www.cbioportal.org/")
 geneList <- whichGeneList("73")
 r_data <- new.env()
-MutData <- getMutationData(cgds,"gbm_tcga_pub_all",
+MutData <- getMutationData.CGDS(cgds,"gbm_tcga_pub_all",
  "gbm_tcga_pub_mutations", geneList )
 FreqMut <- getFreqMutData(list(ls1=MutData, ls2=MutData), "73")
 input <- NULL
