@@ -10,9 +10,9 @@ output$ui_clipboard_load_Clinical <- renderUI({
 })
 
 output$ui_Clinical_vars <- renderUI({
-  shiny::withProgress(message = 'loading Clinical Data from cgdsr server...', value = 1, {
+  shiny::withProgress(message = 'loading Clinical Data from server...', value = 1, {
   ##### get Clinical Data for selected Case
-  dat <- cgdsr::getClinicalData(cgds, input$CasesID)
+  dat <- getClinicalData(cgds, input$CasesID)
   ## change rownames in the first column
   #dat <- dat %>% dplyr::add_rownames("Patients")
   dat <- dat %>% tibble::rownames_to_column("Patients")

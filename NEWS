@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.24.02 (01 Februry 2023)
+--------------------------------------------
++ remove cgdsr
+
 CHANGES IN VERSION 1.23.03 (25 April 2022)
 --------------------------------------------
 + host cgdsr

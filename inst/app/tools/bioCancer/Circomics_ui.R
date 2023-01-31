@@ -81,7 +81,7 @@ output$ui_CircosDimension <- renderUI({
 
 output$StrListProfDataCircos <- renderPrint({
 
-  withProgress(message = 'loading Profiles Data from cgdsr server... ', value = 1, {
+  withProgress(message = 'loading Profiles Data from server... ', value = 1, {
 
     getListProfData(panel='Circomics',input$GeneListID)
 
