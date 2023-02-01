@@ -1,6 +1,6 @@
 Package: bioCancer
 Title: Interactive Multi-Omics Cancers Data Visualization and Analysis
-Version: 1.26.01
+Version: 1.26.03
 Date: 2023-02-01
 Authors@R: person("Karim", "Mezhoud", role=c("aut", "cre"), email="kmezhoud@gmail.com")
 Description: bioCancer is a Shiny App to visualize and analyse interactively

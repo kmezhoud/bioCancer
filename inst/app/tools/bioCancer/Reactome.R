@@ -47,10 +47,10 @@ Edges_obj <- reactive({
 
       if ("package:bioCancer" %in% search()) {
         r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"),
-                                                  "/extdata/ReactomeFI2018.RDS", sep=""))
+                                                  "/extdata/ReactomeFI2021.RDS", sep=""))
       }else{
         r_data[['ReactomeFI']]  <- readRDS(file.path(paste(getOption("radiant.path.bioCancer"),
-                                                           "/extdata/ReactomeFI2018.RDS", sep="")))
+                                                           "/extdata/ReactomeFI2021.RDS", sep="")))
       }
 
     })
@@ -62,7 +62,7 @@ Edges_obj <- reactive({
   ## Edges Attributes
   shiny::withProgress(message = 'load FI for GeneList...', value = 1, {
 
-    fis <- getReactomeFI(2018,genes=GeneList, use.linkers = input$UseLinkerId)
+    fis <- getReactomeFI(2021,genes=GeneList, use.linkers = input$UseLinkerId)
   })
   shiny::withProgress(message = 'load gene relationships...', value = 1, {
 
@@ -176,7 +176,7 @@ getAnnoGeneSet_obj <- function(genelist,type, fdr){
     GeneSet_obj <- NULL
   }else{
     ## Query GeneSet Annotation
-    AnnoGeneSet <- queryAnnotateGeneSet(2018, t(genelist) ,type)
+    AnnoGeneSet <- queryAnnotateGeneSet(2021, t(genelist) ,type)
     #AnnoGeneSet_bkp <<- AnnoGeneSet
     if(nrow(AnnoGeneSet)== 0){
       GeneSet_obj <- data.frame(Gene1 = "",
@@ -237,7 +237,7 @@ output$dl_GeneSet_Legend <- shiny::downloadHandler(
   content = function(file) {
     data_filter <- if (input$show_filter) input$data_filter else ""
     get_data(r_data$GeneSet_Legend, vars = NULL, filt = data_filter,
-            rows = NULL, na.rm = FALSE) %>%
+             rows = NULL, na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
   }
 )
@@ -523,19 +523,19 @@ output$ReactomeLegend <- renderImage({
 ## REPORT
 observeEvent(input$ReactomeHelp_report, {
 
-DiagrammeR_net <- paste0("## Static network \n
+  DiagrammeR_net <- paste0("## Static network \n
 ```{r}\n",
-                   paste0(" DiagrammeR::grViz(
+                           paste0(" DiagrammeR::grViz(
         graph_obj(),
         width = 600
                    )
   ") ,
-                   "\n",
-                   "\n```\n"
+                           "\n",
+                           "\n```\n"
   )
 
 
-visNetwork <- paste0("## Dynamic network \n
+  visNetwork <- paste0("## Dynamic network \n
 ```{r}\n",
                        paste0("visNetwork::visHierarchicalLayout(r_data$graphe,
                               enabled= input$enableHierarchiId,     # TRUE, FALSE
@@ -544,7 +544,7 @@ visNetwork <- paste0("## Dynamic network \n
                        )"),
                        "\n",
                        "\n```\n"
-                       )
+  )
 
 
   update_report_fun(DiagrammeR_net)

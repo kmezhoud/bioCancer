@@ -11,8 +11,10 @@ serviceURL <- function(version){
     serv.url <- paste0(base.url, "caBigR3WebApp2016/FIService/network/")
   } else  if (version == "2017"){
     serv.url <- paste0(base.url, "caBigR3WebApp2017/FIService/network/")
-  } else {
+  } else if (version == "2018") {
     serv.url <- paste0(base.url, "caBigR3WebApp2018/FIService/network/")
+  } else {
+    serv.url <- paste0(base.url, "caBigR3WebApp2021/FIService/network/")
   }
   return(serv.url)
 }
@@ -43,7 +45,7 @@ getPostXML <- function(url, body) {
   opts <- list(httpheader = c("Content-Type" = "text/plain;charset=UTF-8",
                               "Accept" = "application/xml"))
   RCurl::curlPerform(postfields = body, url = url, .opts = opts,
-              .encoding = "UTF-8", writefunction = text.gatherer$update)
+                     .encoding = "UTF-8", writefunction = text.gatherer$update)
   xml <- XML::xmlInternalTreeParse(text.gatherer$value())
   return(xml)
 }
@@ -186,12 +188,12 @@ queryAnnotateModules <- function(object, module.nodes,type = c("Pathway", "BP", 
   query <- df2tsv(module.nodes)
   doc <- getPostXML(service.url, query)
   module.annotations <- XML::xpathApply(doc, "//moduleGeneSetAnnotation",
-                                   function(x) {
-                                     module <- XML::xmlValue(XML::xmlChildren(x)$module)
-                                     annotations <- extractAnnotations(x)
-                                     if (all(is.na(annotations))) return(annotations)
-                                     cbind(data.frame(module = module), annotations)
-                                   })
+                                        function(x) {
+                                          module <- XML::xmlValue(XML::xmlChildren(x)$module)
+                                          annotations <- extractAnnotations(x)
+                                          if (all(is.na(annotations))) return(annotations)
+                                          cbind(data.frame(module = module), annotations)
+                                        })
   module.annotations <- module.annotations[!is.na(module.annotations)]
   module.annotations <- do.call(rbind, module.annotations)
   module.annotations$module <- as.numeric(module.annotations$module)
