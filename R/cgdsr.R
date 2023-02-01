@@ -14,13 +14,13 @@ library(R.oo)
 #'
 #' @usage CGDS(url,verbose=FALSE,ploterrormsg='',token=NULL)
 #'
-#' @export
+#' @export CGDS
 setConstructorS3("CGDS", function(url='',verbose=FALSE,ploterrormsg='',token=NULL) {
   R.oo::extend(R.oo::Object(), "CGDS",
-         .url=url,
-         .token=token,
-         .verbose=verbose,
-         .ploterrormsg='')
+               .url=url,
+               .token=token,
+               .verbose=verbose,
+               .ploterrormsg='')
 })
 
 #' S3 method to process URL
@@ -169,9 +169,9 @@ setMethodS3("getGeneticProfiles","CGDS", function(x, cancerStudy, ...) {
 #' @export getMutationData.CGDS
 setMethodS3("getMutationData","CGDS", function(x, caseList, geneticProfile, genes, ...) {
   url = paste(x$.url, "webservice.do?cmd=getMutationData",
-    "&case_set_id=", caseList,
-    "&genetic_profile_id=", geneticProfile,
-    "&gene_list=", paste(genes,collapse=","), sep="")
+              "&case_set_id=", caseList,
+              "&genetic_profile_id=", geneticProfile,
+              "&gene_list=", paste(genes,collapse=","), sep="")
   df <- processURL(x,url)
   return(df)
 })
@@ -204,10 +204,10 @@ setMethodS3("getMutationData","CGDS", function(x, caseList, geneticProfile, gene
 #' @export getProfileData.CGDS
 setMethodS3("getProfileData","CGDS", function(x, genes, geneticProfiles, caseList='', cases=c(), caseIdsKey = '', ...) {
   url = paste(x$.url, "webservice.do?cmd=getProfileData",
-    "&gene_list=", paste(genes,collapse=","),
-    "&genetic_profile_id=", paste(geneticProfiles,collapse=","),
-    "&id_type=", 'gene_symbol',
-    sep="")
+              "&gene_list=", paste(genes,collapse=","),
+              "&genetic_profile_id=", paste(geneticProfiles,collapse=","),
+              "&id_type=", 'gene_symbol',
+              sep="")
 
   if (length(cases)>0) { url = paste(url,"&case_list=", paste(cases,collapse=","),sep='')
   } else if (caseIdsKey != '') { url = paste(url,"&case_ids_key=", caseIdsKey,sep='')

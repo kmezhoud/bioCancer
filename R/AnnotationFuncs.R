@@ -26,6 +26,7 @@
 #' @keywords  package
 #' @seealso  \code{\link{translate}}, \code{\link{getOrthologs}}
 #' @examples
+#' \dontrun{
 #' library(org.Bt.eg.db)
 #' gene.symbols <- c('DRBP1','SERPINA1','FAKE','BLABLA')
 #' # Find entrez identifiers of these genes.
@@ -36,6 +37,7 @@
 #' refseq <- translate(gene.symbols, from=org.Bt.egSYMBOL2EG, to=org.Bt.egREFSEQ)
 #' # Pick the proteins:
 #'  pickRefSeq(refseq, priorities=c('NP','XP'), reduce='all')
+#'  }
 NULL
 
 #' Translate between different identifiers
@@ -83,6 +85,7 @@ NULL
 #' @seealso \code{\link{pickRefSeq}}, \code{\link{pickGO}}
 #' @export
 #' @examples
+#' \dontrun{
 #' library(org.Bt.eg.db)
 #' genes <- c(280705, 280706, 100327208)
 #' translate(genes, org.Bt.egSYMBOL)
@@ -101,6 +104,7 @@ NULL
 #' pickGO(GO, category='BP')
 #' # Get all ontologies with experimental evidence:
 #' pickGO(GO, evidence=c('IMP','IGI','IPI','ISS','IDA','IEP','IEA'))
+#' }
 translate <- function(values, from, to=NULL,
                       reduce=c('all','first','last'),
                       return.list = TRUE,
@@ -246,11 +250,13 @@ translate <- function(values, from, to=NULL,
 #' @author Stefan McKinnon Edwards \email{stefan.hoj-edwards@@agrsci.dk}
 #' @export
 #' @examples
+#' \dontrun{
 #' library(org.Bt.eg.db)
 #' symbols <- c("SERPINA1","KERA","CD5")
 #' refseq <- translate(symbols, from=org.Bt.egSYMBOL2EG, to=org.Bt.egREFSEQ)
 #' mRNA <- pickRefSeq(refseq, priorities=c('NM','XM'))
 #' proteins <- pickRefSeq(refseq, priorities=c('NP','XP'))
+#' }
 pickRefSeq <- function(l, priorities=c('NP','XP','NM','XM'),
                        reduce=c('all','first','last')) {
   if (is.list(l)) {
@@ -363,6 +369,7 @@ removeNAs <- function(l) { return(l[!is.na(l)]) }
 #' @seealso \code{\link{pickRefSeq}}, \code{\link{getEvidenceCodes}}, \code{\link{translate}}
 #' @export
 #' @examples
+#' \dontrun{
 #' library(org.Bt.eg.db)
 #' genes <- c(280705, 280706, 100327208)
 #' GO <- translate(genes, org.Bt.egGO)
@@ -370,7 +377,8 @@ removeNAs <- function(l) { return(l[!is.na(l)]) }
 #' pickGO(GO, category='BP')
 #' # Get all ontologies with experimental evidence:
 #' pickGO(GO, evidence=c('IMP','IGI','IPI','ISS','IDA','IEP','IEA'))
-#pickGO <- function(l, evidence=c('IMP','IGI','IPI','ISS','IDA','IEP','IEA','TAS','NAS','ND','IC'), category=c('BP','CC','MF')) {
+#' pickGO <- function(l, evidence=c('IMP','IGI','IPI','ISS','IDA','IEP','IEA','TAS','NAS','ND','IC'), category=c('BP','CC','MF'))
+#' }
 pickGO <- function(l, evidence=NA, category=NA) {
   evidence <- toupper(evidence)
   category <- toupper(category)
