@@ -1,4 +1,8 @@
-CHANGES IN VERSION 1.24.02 (01 Februry 2023)
+CHANGES IN VERSION 1.26.04 (03 Februry 2023)
+--------------------------------------------
++ update DisGeNet.db
+
+CHANGES IN VERSION 1.26.02 (01 Februry 2023)
 --------------------------------------------
 + remove cgdsr
 
