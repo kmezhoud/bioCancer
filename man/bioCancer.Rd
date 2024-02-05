@@ -2,6 +2,7 @@
 % Please edit documentation in R/bioCancer.R
 \docType{package}
 \name{bioCancer}
+\alias{-package}
 \alias{bioCancer}
 \title{Launch bioCancer with default browser}
 \usage{

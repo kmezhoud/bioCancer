@@ -27,17 +27,18 @@ A table with genes classed by study
 get genes classification
 }
 \examples{
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-cgds <- CGDS("http://www.cbioportal.org/")
-listStudies <-  getCancerStudies.CGDS(cgds)
-checked_Stdudies <- listStudies[3:5]
-listCases <- getList_Cases(listStudies[1:3])
-listGenProfs <- getList_GenProfs(listStudies[1:3])
-GeneList <- c('P53', 'IFI16', 'BRCA1')
-samplesize <- 50
-threshold <- 0.95
-table <- getGenesClassification(checked_Studies, GeneList,
-samplesize  ,threshold  ,listGenProfs, listCases)
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 
 }

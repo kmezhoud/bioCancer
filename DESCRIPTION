@@ -1,25 +1,31 @@
 Package: bioCancer
 Title: Interactive Multi-Omics Cancers Data Visualization and Analysis
-Version: 1.26.04
-Date: 2023-02-03
+Version: 1.30.4
+Date: 2024-02-05
 Authors@R: person("Karim", "Mezhoud", role=c("aut", "cre"), email="kmezhoud@gmail.com")
-Description: bioCancer is a Shiny App to visualize and analyse interactively
+Description: This package is a Shiny App to visualize and analyse interactively
     Multi-Assays of Cancer Genomic Data.
 Depends:
     R (>= 3.6.0),
     radiant.data (>= 0.9.1),
+    cBioPortalData,
     XML(>= 3.98)
 Imports:
     R.oo,
-    httr,
+    R.methodsS3,
     DT (>= 0.3),
     dplyr (>= 0.7.2),
+    tidyr,
     shiny (>= 1.0.5),
-    AnnotationDbi,
+    AlgDesign (>= 1.1.7.3),
+    import (>= 1.1.0),
     methods,
+    AnnotationDbi,
+    shinythemes,
     Biobase,
     geNetClassifier,
     org.Hs.eg.db,
+    org.Bt.eg.db,
     DOSE,
     clusterProfiler,
     reactome.db,
@@ -28,7 +34,8 @@ Imports:
     visNetwork,
     htmlwidgets,
     plyr,
-    tibble
+    tibble,
+    GO.db
 Suggests:
     BiocStyle,
     prettydoc,
@@ -37,10 +44,10 @@ Suggests:
     testthat (>= 0.10.0)
 VignetteBuilder: 
     knitr
-URL: http://kmezhoud.github.io/bioCancer
+URL: https://kmezhoud.github.io/bioCancer/
 BugReports: https://github.com/kmezhoud/bioCancer/issues
 License: AGPL-3 | file LICENSE
 LazyData: true
 biocViews: GUI, DataRepresentation, Network, MultipleComparison, Pathways, Reactome, Visualization,GeneExpression,GeneTarget
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Encoding: UTF-8

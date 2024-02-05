@@ -34,7 +34,7 @@ If vector given, returns vector.  If list given, returns list without element wh
 When translating to RefSeq, typically multiple identifiers are returned,
 referring to different types of products, such as genomic molecule, mature
 mRNA or the protein, and they can be predicted, properties that can be read
-from the prefix (\url{http://www.ncbi.nlm.nih.gov/refseq/key.html}).  E.g. "XM_" is
+from the prefix (\url{https://www.ncbi.nlm.nih.gov/refseq/}).  E.g. "XM_" is
 predicted mRNA and "NP_" is a protein. Run \code{?org.Bt.egREFSEQ}.
 }
 \examples{

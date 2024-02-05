@@ -81,10 +81,6 @@ pickRefSeq(refseq, priorities=c('NP','XP'), reduce='all')
 
 library(GO.db)
 GO <- translate(genes, org.Bt.egGO)
-# Get all biological processes:
-pickGO(GO, category='BP')
-# Get all ontologies with experimental evidence:
-pickGO(GO, evidence=c('IMP','IGI','IPI','ISS','IDA','IEP','IEA'))
 }
 \seealso{
 \code{\link{pickRefSeq}}, \code{\link{pickGO}}

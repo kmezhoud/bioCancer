@@ -2,12 +2,14 @@
 % Please edit documentation in R/getMegaProfData.R
 \name{getMegaProfData}
 \alias{getMegaProfData}
-\title{search and get genetic profiles (CNA,mRNA, Methylation, Mutation...) of gene list upper than 500}
+\title{Search and get genetic profiles (CNA,mRNA, Methylation, Mutation...) of gene list upper than 500}
 \usage{
-getMegaProfData(MegaGeneList, GenProf, Case, Class)
+getMegaProfData(MegaGeneList, Study, GenProf, Case, Class)
 }
 \arguments{
 \item{MegaGeneList}{A list of genes upper than 500}
+
+\item{Study}{Study ID}
 
 \item{GenProf}{genetic profile reference}
 
@@ -19,19 +21,23 @@ getMegaProfData(MegaGeneList, GenProf, Case, Class)
 A data frame with Genetic profile
 }
 \description{
-search and get genetic profiles (CNA,mRNA, Methylation, Mutation...) of gene list upper than 500
+Search and get genetic profiles (CNA,mRNA, Methylation, Mutation...) of gene list upper than 500
 }
 \details{
 See \url{https://github.com/kmezhoud/bioCancer/wiki}
 }
 \examples{
-GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-cgds <- CGDS("http://www.cbioportal.org/")
-listCase_gbm_tcga_pub <- getCaseLists.CGDS(cgds,"gbm_tcga_pub")[,1]
-listGenProf_gbm_tcga_pub <- getGeneticProfiles.CGDS(cgds,"gbm_tcga_pub")[,1]
-
-ProfData_Mut <- grepRef("gbm_tcga_pub_all", listCase_gbm_tcga_pub,
- "gbm_tcga_pub_mutations", listGenProf_gbm_tcga_pub, GeneList, Mut=1)
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 }

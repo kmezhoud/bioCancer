@@ -8,8 +8,8 @@ output$cBioPortal <- renderUI({
                            uiOutput("Welcome"),
                            uiOutput("ui_Studies")),
           conditionalPanel("input.tabs_cbioportal != 'Studies'",
-                           selectizeInput(
-                             'StudiesID', 'Select a study', choices = Studies, selected = "gbm_tcga_pub" ,multiple = FALSE
+                           selectizeInput('StudiesID', 'Select a Study',
+                              choices = Studies %>% pull(studyId), selected = "gbm_tcga_pub", multiple = FALSE
                            ),
                            uiOutput("ui_Cases"),
                            conditionalPanel("input.tabs_cbioportal != 'Clinical'",

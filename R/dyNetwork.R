@@ -1,7 +1,7 @@
 #' get Edges dataframe for Gene/Disease association from geNetClassifier
 #'
 #' @return A data frame with egdes attributes
-#'
+#' @export
 #'
 #' @usage Edges_Diseases_obj(genesclassdetails)
 #' @param genesclassdetails  a dataframe from geNetClassifier
@@ -19,7 +19,6 @@
 #'
 #' Ed_Diseases_obj <- Edges_Diseases_obj(genesclassdetails=GenesClassDetails)
 #'
-#'@export Edges_Diseases_obj
 Edges_Diseases_obj <- function(genesclassdetails){
 
   Ed_Diseases_obj <- data.frame(from = genesclassdetails$class,

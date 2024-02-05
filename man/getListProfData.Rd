@@ -4,15 +4,19 @@
 \alias{getListProfData}
 \title{get list of data frame with profiles data (CNA,mRNA, Methylation, Mutation...)}
 \usage{
-getListProfData(panel, geneListLabel)
+getListProfData(panel, study, geneListLabel, genProf)
 }
 \arguments{
 \item{panel}{Panel name (string) in which Studies are selected. There are two panels ("Circomics" or "Networking")}
+
+\item{study}{ID}
 
 \item{geneListLabel}{The label of GeneList. There are three cases:
  "Genes" user gene list,
  "Reactome_GeneList" GeneList plus genes from reactomeFI
 "file name" from Examples}
+
+\item{genProf}{genetic/molecular profile ID}
 }
 \value{
 A LIST of profiles data (CNA, mRNA, Methylation, Mutation, miRNA, RPPA).
@@ -22,16 +26,17 @@ A LIST of profiles data (CNA, mRNA, Methylation, Mutation, miRNA, RPPA).
 get list of data frame with profiles data (CNA,mRNA, Methylation, Mutation...)
 }
 \examples{
- \dontrun{
- cgds <- CGDS("http://www.cbioportal.org/")
-geneList <- whichGeneList("73")
-r_data <- new.env()
-MutData <- getMutationData.CGDS(cgds,"gbm_tcga_pub_all",
- "gbm_tcga_pub_mutations", geneList )
-FreqMut <- getFreqMutData(list(ls1=MutData, ls2=MutData), "73")
-input <- NULL
-input[['StudiesIDCircos']] <- c("luad_tcga_pub","blca_tcga_pub")
-
-ListProfData <- getListProfData(panel= "Circomics","73")
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
+\dontrun{
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 }

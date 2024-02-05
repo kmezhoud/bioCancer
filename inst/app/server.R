@@ -14,12 +14,12 @@ shinyServer(function(input, output, session) {
                       ############################################
 
   ## source shared functions
-  source(file.path(getOption("radiant.path.data"),"app/init.R"),
-         encoding = getOption("radiant.encoding"), local = TRUE)
-
-  ## source shared functions
   source(file.path(getOption("radiant.path.data"),"app/global.R"),
          encoding = getOption("radiant.encoding"), local = TRUE)
+
+  # source shared functions
+  source(file.path(getOption("radiant.path.data"),"app/init.R"),
+        encoding = getOption("radiant.encoding"), local = TRUE)
 
   source(file.path(getOption("radiant.path.data"),"app/radiant.R"),
          encoding = getOption("radiant.encoding"), local = TRUE)

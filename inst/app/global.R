@@ -6,14 +6,9 @@
 options(radiant.path.data = system.file(package = "radiant.data"))
 source(file.path(getOption("radiant.path.data"), "app/global.R"),
        encoding = getOption("radiant.encoding", default = "UTF-8"), local = TRUE)
-## sourcing functions from radiant.data radiant.R file
-#source(file.path(getOption("radiant.path.bioCancer"), "app/radiant.R"),
-#      encoding = getOption("radiant.encoding"), local = TRUE)
-
 
 ## Setting bioCancer package path
 options(radiant.path.bioCancer = system.file(package = "bioCancer"))
-
 
 ## option to change theme
 options(radiant.nav_ui =
@@ -30,10 +25,10 @@ help_menu <- function(hlp) {
                tabPanel("Help", uiOutput(hlp), icon = icon("question")),
                #tabPanel("Videos", uiOutput("help_videos"), icon = icon("film")),
                tabPanel("About", uiOutput("help_about"), icon = icon("info")),
-               #tabPanel(tags$a("", href = "http://kmezhoud.github.io/bioCancer/", target = "_blank",
-                #               list(icon("globe"), "Radiant docs"))),
-               tabPanel(tags$a("", href = "https://github.com/kmezhoud/bioCancer/issues", target = "_blank",
-                               list(icon("github"), "Report issue")))
+               tabPanel(tags$a("", href = "http://kmezhoud.github.io/bioCancer/", target = "_blank",
+                               list(icon("globe"), "BioCancer docs"))),
+               #tabPanel(tags$a("", href = "https://github.com/kmezhoud/bioCancer/issues", target = "_blank",
+                #               list(icon("github"), "Report issue")))
     ),
     tags$head(
       tags$script(src = "js/session.js"),
@@ -48,12 +43,12 @@ help_menu <- function(hlp) {
   )
 }
 ## needed to change author in the helps of the Menu help
-options(radiant.help.cc = "&copy; Karim Mezhoud (2020) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/'
+options(radiant.help.cc = "&copy; Karim Mezhoud (2024) <a rel='license' href='http://creativecommons.org/licenses/by-nc-sa/4.0/'
         target='_blank'><img alt='Creative Commons License' style='border-width:0' src ='imgs/80x15.png' /></a></br>")
 
 
 ## set path for package
-ifelse (grepl("bioCancer", getwd()) && file.exists("../../inst") , "..",
+ifelse(grepl("bioCancer", getwd()) && file.exists("../../inst") , "..",
         system.file(package = "bioCancer")) %>%
   options(radiant.path.bioCancer = .)
 

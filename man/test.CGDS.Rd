@@ -4,7 +4,7 @@
 \alias{test.CGDS}
 \title{S3 method to test cBioPortal connection}
 \usage{
-test.CGDS(x, ...)
+\method{test}{CGDS}(x, ...)
 }
 \arguments{
 \item{x}{connection object}

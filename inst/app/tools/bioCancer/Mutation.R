@@ -16,7 +16,13 @@ output$MutDataTable <- DT::renderDataTable({
         dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="MutData")
       })
 
-    } else if (inherits(try(dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList), silent=FALSE),"try-error")){
+    } else if (inherits(try(#dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
+                            dat <- cBioPortalData::getDataByGenes(api = cgds,
+                                                  studyId = input$StudiesID,
+                                                  genes = GeneList,
+                                                  by = "hugoGeneSymbol",
+                                                  molecularProfileIds = input$GenProfID
+                            ), silent=FALSE),"try-error")){
 
       dat <- as.data.frame("There are some Gene Symbols not supported by cbioportal.
                            Or the gene list is empty.
@@ -24,7 +30,14 @@ output$MutDataTable <- DT::renderDataTable({
     }else{
       shiny::withProgress(message = 'loading Mutation Data from cBioPortal server...', value = 1, {
 
-        dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
+        #dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
+        dat <- cBioPortalData::getDataByGenes(api = cgds,
+                              studyId = input$StudiesID,
+                              genes = GeneList,
+                              by = "hugoGeneSymbol",
+                              molecularProfileIds = input$GenProfID
+        ) %>% .[[1]] |>
+          select(-c(uniqueSampleKey, uniquePatientKey, molecularProfileId, sampleId, studyId))
 
 
         if(dim(dat)[1]==0){
@@ -35,9 +48,7 @@ output$MutDataTable <- DT::renderDataTable({
                                Copy and paste genes from text file (Gene/line) or use gene list from examples.")
         }else{
           req(input$Mut_varsID)
-          # dat <- getMutationData(cgds,input$CasesID, input$GenProfID, GeneList)
-          ## change rownames in the first column
-          dat <- as.data.frame(dat %>% tibble::rownames_to_column("Patients"))
+
           dat <- dat[input$Mut_varsID]
           r_data[['MutData']] <- dat
         }

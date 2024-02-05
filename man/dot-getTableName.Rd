@@ -16,7 +16,7 @@ Table name for genus.
 Gets the table name from the INPARANOID style genus names.
 }
 \references{
-\url{http://www.bioconductor.org/packages/release/bioc/html/AnnotationDbi.html}
+\url{https://www.bioconductor.org/packages/release/bioc/html/AnnotationDbi.html}
 }
 \author{
 Stefan McKinnon Edwards \email{stefanm.edwards@agrsci.dk}

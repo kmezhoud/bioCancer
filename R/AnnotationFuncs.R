@@ -16,17 +16,15 @@
 #' using the Inparanoid databases.
 #' Other functions include functions for selecting Refseqs or Gene Ontologies (GO).
 #'
-#' @name  AnnotationFuncs-package
+#' @name  AnnotationFuncs
 #' @aliases  AnnotationFuncs
-#' @docType  package
 #' @title Annotation translation functions
 #' @author  Stefan McKinnon Edwards  \email{stefan.hoj-edwards@@agrsci.dk}
 #' @references
-#' \url{http://www.iysik.com/index.php?page=annotation-functions}
+#' \url{https://www.iysik.com/index.php?page=annotation-functions}
 #' @keywords  package
 #' @seealso  \code{\link{translate}}, \code{\link{getOrthologs}}
 #' @examples
-#' \dontrun{
 #' library(org.Bt.eg.db)
 #' gene.symbols <- c('DRBP1','SERPINA1','FAKE','BLABLA')
 #' # Find entrez identifiers of these genes.
@@ -37,7 +35,6 @@
 #' refseq <- translate(gene.symbols, from=org.Bt.egSYMBOL2EG, to=org.Bt.egREFSEQ)
 #' # Pick the proteins:
 #'  pickRefSeq(refseq, priorities=c('NP','XP'), reduce='all')
-#'  }
 NULL
 
 #' Translate between different identifiers
@@ -85,7 +82,6 @@ NULL
 #' @seealso \code{\link{pickRefSeq}}, \code{\link{pickGO}}
 #' @export
 #' @examples
-#' \dontrun{
 #' library(org.Bt.eg.db)
 #' genes <- c(280705, 280706, 100327208)
 #' translate(genes, org.Bt.egSYMBOL)
@@ -100,11 +96,6 @@ NULL
 #'
 #' library(GO.db)
 #' GO <- translate(genes, org.Bt.egGO)
-#' # Get all biological processes:
-#' pickGO(GO, category='BP')
-#' # Get all ontologies with experimental evidence:
-#' pickGO(GO, evidence=c('IMP','IGI','IPI','ISS','IDA','IEP','IEA'))
-#' }
 translate <- function(values, from, to=NULL,
                       reduce=c('all','first','last'),
                       return.list = TRUE,
@@ -230,7 +221,7 @@ translate <- function(values, from, to=NULL,
 #' When translating to RefSeq, typically multiple identifiers are returned,
 #' referring to different types of products, such as genomic molecule, mature
 #' mRNA or the protein, and they can be predicted, properties that can be read
-#' from the prefix (\url{http://www.ncbi.nlm.nih.gov/refseq/key.html}).  E.g. "XM_" is
+#' from the prefix (\url{https://www.ncbi.nlm.nih.gov/refseq/}).  E.g. "XM_" is
 #' predicted mRNA and "NP_" is a protein. Run \code{?org.Bt.egREFSEQ}.
 #'
 #' @param l  Vector or list of RefSeqs accessions to pick from.  If list given, applies the
@@ -250,13 +241,11 @@ translate <- function(values, from, to=NULL,
 #' @author Stefan McKinnon Edwards \email{stefan.hoj-edwards@@agrsci.dk}
 #' @export
 #' @examples
-#' \dontrun{
 #' library(org.Bt.eg.db)
 #' symbols <- c("SERPINA1","KERA","CD5")
 #' refseq <- translate(symbols, from=org.Bt.egSYMBOL2EG, to=org.Bt.egREFSEQ)
 #' mRNA <- pickRefSeq(refseq, priorities=c('NM','XM'))
 #' proteins <- pickRefSeq(refseq, priorities=c('NP','XP'))
-#' }
 pickRefSeq <- function(l, priorities=c('NP','XP','NM','XM'),
                        reduce=c('all','first','last')) {
   if (is.list(l)) {
@@ -358,7 +347,7 @@ removeNAs <- function(l) { return(l[!is.na(l)]) }
 #' biological process (BP), cellular component (CC), or molecular function (MF).
 #' Can be used on list of GOs from \code{\link{translate}}, or a single list of GOs from an annotation package.
 #' May reduce list, if the (sub)list does not contain the chosen class!
-#' @param l Character vector, or list of, og GO identifiers.
+#' @param l Character vector, or list of GO identifiers.
 #' @param evidence Character vector, filters on which kind of evidence to return; for a larger list see \code{\link{getEvidenceCodes}}. \\*
 #'                 Evidence codes may be: \code{c('IMP','IGI','IPI','ISS','IDA','IEP','IEA','TAS','NAS','ND','IC')}. \\*
 #'				   Leave as \code{NA} to ignore filtering on this part.
@@ -369,15 +358,33 @@ removeNAs <- function(l) { return(l[!is.na(l)]) }
 #' @seealso \code{\link{pickRefSeq}}, \code{\link{getEvidenceCodes}}, \code{\link{translate}}
 #' @export
 #' @examples
-#' \dontrun{
 #' library(org.Bt.eg.db)
 #' genes <- c(280705, 280706, 100327208)
+#' translate(genes, org.Bt.egSYMBOL)
+#'
+#' symbols <- c("SERPINA1","KERA","CD5")
+#' refseq <- translate(symbols, from=org.Bt.egSYMBOL2EG, to=org.Bt.egREFSEQ)
+#' # Pick the proteins:
+#' pickRefSeq(refseq, priorities=c('NP','XP'), reduce='all')
+#'
+#' # If you wanted do do some further mapping on the result from
+#' # translate, simply use lapply.
+#'
+#' library(GO.db)
 #' GO <- translate(genes, org.Bt.egGO)
 #' # Get all biological processes:
+#' \dontrun{
 #' pickGO(GO, category='BP')
+#'  # $`280705`
+#'  # [1] "GO:0006826" "GO:0006879"
+#'  # $`280706`
+#' # [1] "GO:0006590" "GO:0007165" "GO:0042446"
 #' # Get all ontologies with experimental evidence:
 #' pickGO(GO, evidence=c('IMP','IGI','IPI','ISS','IDA','IEP','IEA'))
-#' pickGO <- function(l, evidence=c('IMP','IGI','IPI','ISS','IDA','IEP','IEA','TAS','NAS','ND','IC'), category=c('BP','CC','MF'))
+#'  # $`280705`
+#'  # [1] "GO:0006826" "GO:0006879" "GO:0005615" "GO:0008199"
+#'  # $`280706`
+#'  # [1] "GO:0006590" "GO:0007165" "GO:0042446" "GO:0005615" "GO:0005179" "GO:0042393"
 #' }
 pickGO <- function(l, evidence=NA, category=NA) {
   evidence <- toupper(evidence)
@@ -454,7 +461,7 @@ getEvidenceCodes <- function() {
 #' @param ... Additional arguments sent to \code{\link{translate}}.
 #' @return List. Names of list corresponds to \code{values}, except those that could not be mapped nor translated.
 #'               Entries are character vectors.
-#' @references \code{?hom.Hs.inp.db} - \url{http://inparanoid.sbc.su.se/}
+#' @references \code{?hom.Hs.inp.db} - \url{https://inparanoidb.sbc.su.se/}
 #'
 #'  Berglund, A.C., Sjolund, E., Ostlund, G., Sonnhammer, E.L.L. (2008)
 #'  InParanoid 6: eukaryotic ortholog clusters with inparalogs
@@ -541,7 +548,7 @@ getOrthologs <- function(values, mapping, genus, threshold=1,
 #'  Gets the table name from the INPARANOID style genus names.
 #' @param genus 5 character INPARANOID genus name, such as "BOSTA", "HOMSA" or "MUSMU".
 #' @return Table name for genus.
-#' @references \url{http://www.bioconductor.org/packages/release/bioc/html/AnnotationDbi.html}
+#' @references \url{https://www.bioconductor.org/packages/release/bioc/html/AnnotationDbi.html}
 #' @author Stefan McKinnon Edwards \email{stefanm.edwards@@agrsci.dk}
 .getTableName <- function(genus) {
   # Find the AnnotationDbi source

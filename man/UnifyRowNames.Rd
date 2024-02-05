@@ -18,15 +18,17 @@ a data frame having the gene in row name ordered as in gene list.
 Unify row names in data frame with the same order of gene list.
 }
 \examples{
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-cgds <- CGDS("http://www.cbioportal.org/")
-geneList <- whichGeneList("73")
-ProfData <- getProfileData.CGDS(cgds,
- geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
-rownames(ProfData) <- NULL
-geneListOrder <- UnifyRowNames(list(
-list1=list(df1=ProfData,df2=ProfData),
- list2=list(df3=ProfData,df4=ProfData)),
-  geneList)
-  }
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
+}
 }

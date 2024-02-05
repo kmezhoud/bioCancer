@@ -4,12 +4,10 @@
 \alias{grepRef}
 \title{search and get genetic profiles (CNA,mRNA, Methylation, Mutation...)}
 \usage{
-grepRef(regex1, listRef1,regex2, listRef2, GeneList,Mut)
+grepRef(study,regex2, listRef2, GeneList, Mut)
 }
 \arguments{
-\item{regex1}{Case id (cancer_study_id_[mutations, cna, methylation, mrna ]).}
-
-\item{listRef1}{A list of cases for one study.}
+\item{study}{Study ID}
 
 \item{regex2}{Genetic Profile id (cancer_study_id_[mutations, cna, methylation, mrna ]).}
 
@@ -29,13 +27,17 @@ search and get genetic profiles (CNA,mRNA, Methylation, Mutation...)
 See \url{https://github.com/kmezhoud/bioCancer/wiki}
 }
 \examples{
-GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-cgds <- CGDS("http://www.cbioportal.org/")
-listCase_gbm_tcga_pub <- getCaseLists.CGDS(cgds,"gbm_tcga_pub")[,1]
-listGenProf_gbm_tcga_pub <- getGeneticProfiles.CGDS(cgds,"gbm_tcga_pub")[,1]
-
-ProfData_Mut <- grepRef("gbm_tcga_pub_all", listCase_gbm_tcga_pub,
- "gbm_tcga_pub_mutations", listGenProf_gbm_tcga_pub, GeneList, Mut=1)
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 }

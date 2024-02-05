@@ -52,7 +52,10 @@ init_data <- function(env = r_data) {
   r_data <- reactiveValues()
   r_info <- reactiveValues()
 
-  df_names <- getOption("radiant.init.bioCancer", default = "epiGenomics")
+  #r_info[["datasetlist"]] <- c(epiGenomics, user_CNA, user_MetHM27, user_MetHM450, user_mRNA, user_Mut)
+
+  df_names <- "epigenomics"
+
   for (dn in df_names) {
     if (file.exists(dn)) {
       df <- load(dn) %>% get()
@@ -68,6 +71,7 @@ init_data <- function(env = r_data) {
     }
     r_info[[paste0(dn, "_descr")]] <- attr(df, "description")
   }
+
   r_info[["datasetlist"]] <- basename(df_names)
   r_info[["url"]] <- NULL
   r_info

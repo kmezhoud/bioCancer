@@ -1,3 +1,13 @@
+## How to create RDS file reactomeFI.RDS
+
+# download.file("http://cpws.reactome.org/caBigR3WebApp2018/FIsInGene_122718_with_annotations.txt.zip", tmp <- tempfile())
+# db = read.delim(unzip(tmp))
+# OR
+# db <- read.delim("FIsInGene_122718_with_annotations.txt", header = T)
+# saveRDS(db, "ReactomeFI2018.RDS");
+# file.size("xxx.RDS")
+
+
 output$ReactomeHowto <- renderPrint({
   cat("
       1 - Select Gene list from `Portal/Profiles`
@@ -37,14 +47,6 @@ Edges_obj <- reactive({
       #r_data[['ReactomeFI']] <- read.csv("https://raw.githubusercontent.com/kmezhoud/ReactomeFI/master/FIsInGene_121514_with_annotations.txt", header=TRUE, sep="\t")
       #r_data[['ReactomeFI']]  <- read.delim("inst/extdata/FIsInGene_121514_with_annotations.txt")
 
-      ## How to create RDS file
-      # download.file("http://cpws.reactome.org/caBigR3WebApp2018/FIsInGene_122718_with_annotations.txt.zip", tmp <- tempfile())
-      # db = read.delim(unzip(tmp))
-      # OR
-      # db <- read.delim("FIsInGene_122718_with_annotations.txt", header = T)
-      # saveRDS(db, "ReactomeFI2018.RDS");
-      # file.size("xxx.RDS")
-
       if ("package:bioCancer" %in% search()) {
         r_data[['ReactomeFI']]  <- readRDS(paste0(system.file(package = "bioCancer"),
                                                   "/extdata/ReactomeFI2021.RDS", sep=""))
@@ -62,7 +64,7 @@ Edges_obj <- reactive({
   ## Edges Attributes
   shiny::withProgress(message = 'load FI for GeneList...', value = 1, {
 
-    fis <- getReactomeFI(2021,genes=GeneList, use.linkers = input$UseLinkerId)
+    fis <- getReactomeFI(2018,genes=GeneList, use.linkers = input$UseLinkerId)
   })
   shiny::withProgress(message = 'load gene relationships...', value = 1, {
 
@@ -237,7 +239,7 @@ output$dl_GeneSet_Legend <- shiny::downloadHandler(
   content = function(file) {
     data_filter <- if (input$show_filter) input$data_filter else ""
     get_data(r_data$GeneSet_Legend, vars = NULL, filt = data_filter,
-             rows = NULL, na.rm = FALSE) %>%
+            rows = NULL, na.rm = FALSE) %>%
       write.csv(file, row.names = FALSE)
   }
 )
@@ -523,19 +525,19 @@ output$ReactomeLegend <- renderImage({
 ## REPORT
 observeEvent(input$ReactomeHelp_report, {
 
-  DiagrammeR_net <- paste0("## Static network \n
+DiagrammeR_net <- paste0("## Static network \n
 ```{r}\n",
-                           paste0(" DiagrammeR::grViz(
+                   paste0(" DiagrammeR::grViz(
         graph_obj(),
         width = 600
                    )
   ") ,
-                           "\n",
-                           "\n```\n"
+                   "\n",
+                   "\n```\n"
   )
 
 
-  visNetwork <- paste0("## Dynamic network \n
+visNetwork <- paste0("## Dynamic network \n
 ```{r}\n",
                        paste0("visNetwork::visHierarchicalLayout(r_data$graphe,
                               enabled= input$enableHierarchiId,     # TRUE, FALSE
@@ -544,7 +546,7 @@ observeEvent(input$ReactomeHelp_report, {
                        )"),
                        "\n",
                        "\n```\n"
-  )
+                       )
 
 
   update_report_fun(DiagrammeR_net)

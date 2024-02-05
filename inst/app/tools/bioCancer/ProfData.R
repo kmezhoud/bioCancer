@@ -12,7 +12,12 @@ output$ProfDataTable <- DT::renderDataTable({
         ##### Get Profile Data for selected Case and Genetic Profile
         dat <- getMegaProfData(GeneList,input$GenProfID,input$CasesID, Class="ProfData")
       })
-    } else if (inherits(try( dat <- getProfileData(cgds,GeneList, input$GenProfID,input$CasesID),
+    } else if (inherits(try( #dat <- getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
+                             dat <- cBioPortalData::getDataByGenes(api =  cgds,
+                                                   studyId = input$StudiesID,
+                                     genes = GeneList,by = "hugoGeneSymbol",
+                                     molecularProfileIds = input$GenProfID
+                             ),
                              silent=FALSE),"try-error")){
       dat <- as.data.frame("There are some Gene Symbols not supported by cbioportal.
                            Or gene list is empty.
@@ -20,7 +25,12 @@ output$ProfDataTable <- DT::renderDataTable({
     }else{
       shiny::withProgress(message = 'loading ProfData from cBioPortal server...', value = 1, {
 
-      dat <- getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
+      #dat <- getProfileData(cgds,GeneList, input$GenProfID,input$CasesID)
+      dat <- cBioPortalData::getDataByGenes(api =  cgds,studyId = input$StudiesID,
+                            genes = GeneList,by = "hugoGeneSymbol",molecularProfileIds = input$GenProfID)%>%
+             .[[1]] |>
+              select(-c(uniqueSampleKey, uniquePatientKey, molecularProfileId, sampleId, studyId))
+              #tidyr::spread(hugoGeneSymbol, value)
 
       })
       if(dim(dat)[1]==0){
@@ -35,7 +45,7 @@ output$ProfDataTable <- DT::renderDataTable({
         if(is.numeric(dat[2,2])){
           dat <- round(dat, digits = 3)
         }
-        dat <- dat %>% tibble::rownames_to_column("Patients")
+        #dat <- dat %>% tibble::rownames_to_column("Patients")
         r_info[['ProfData']] <- dat
       }
     }

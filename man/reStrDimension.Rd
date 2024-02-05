@@ -16,14 +16,17 @@ Hierarchical structure of: Study > dimensions > gene > color
 Restructure the list of color attributed to the genes in every study for every dimensions
 }
 \examples{
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-cgds <- CGDS("http://www.cbioportal.org/")
-geneList <- whichGeneList("73")
-ProfData <- getProfileData.CGDS(cgds,
- geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
-rownames(ProfData) <- NULL
-TREE <- reStrDimension(list(
-list1=list(df1=ProfData,df2=ProfData),
- list2=list(df3=ProfData,df4=ProfData)))
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 }

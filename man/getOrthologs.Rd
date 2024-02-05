@@ -52,7 +52,7 @@ tmp <-1
 
 }
 \references{
-\code{?hom.Hs.inp.db} - \url{http://inparanoid.sbc.su.se/}
+\code{?hom.Hs.inp.db} - \url{https://inparanoidb.sbc.su.se/}
 
  Berglund, A.C., Sjolund, E., Ostlund, G., Sonnhammer, E.L.L. (2008)
  InParanoid 6: eukaryotic ortholog clusters with inparalogs

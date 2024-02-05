@@ -6,14 +6,22 @@
 #' @export
 #'
 #' @examples
+#' cgds <- cBioPortal(
+#' hostname = "www.cbioportal.org",
+#' protocol = "https",
+#' api = "/api/v2/api-docs"
+#' )
 #' \dontrun{
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' listStudies <-  getCancerStudies.CGDS(cgds)
-#' listCases <- getList_Cases(listStudies[1:3])
+#' getDataByGenes( api =  cgds,
+#' studyId = "gbm_tcga_pub",
+#' genes = c("NF1", "TP53", "ABL1"),
+#' by = "hugoGeneSymbol",
+#' molecularProfileIds = "gbm_tcga_pub_mrna"
+#' )
 #'}
 #'
 getList_Cases <- function(checked_Studies){
-  listCases <- lapply(checked_Studies, function(x) getCaseLists.CGDS(cgds,x)[,1])
+  listCases <- lapply(checked_Studies, function(x) cBioPortalData::sampleLists(cgds,x)[,"sampleListId"])
   names(listCases) <- checked_Studies
   listCases <- lapply(listCases, function(x) x[grep("v2_mrna", x)])
   listCases <- listCases[lapply(listCases,length)>0]
@@ -30,15 +38,23 @@ getList_Cases <- function(checked_Studies){
 #' @export
 #'
 #' @examples
+#' cgds <- cBioPortal(
+#' hostname = "www.cbioportal.org",
+#' protocol = "https",
+#' api = "/api/v2/api-docs"
+#' )
 #' \dontrun{
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' listStudies <-  getCancerStudies.CGDS(cgds)
-#' listGenProfs <- getList_GenProfs(listStudies[1:3])
+#' getDataByGenes( api =  cgds,
+#' studyId = "gbm_tcga_pub",
+#' genes = c("NF1", "TP53", "ABL1"),
+#' by = "hugoGeneSymbol",
+#' molecularProfileIds = "gbm_tcga_pub_mrna"
+#' )
 #'}
 #'
 getList_GenProfs <- function(checked_Studies){
 
-  listGenProfs <- lapply(checked_Studies, function(x) getGeneticProfiles.CGDS(cgds,x)[,1])
+  listGenProfs <- lapply(checked_Studies, function(x) cBioPortalData::molecularProfiles(cgds,x)[,"molecularProfileId"])
   names(listGenProfs) <- checked_Studies
   listGenProfs <- lapply(listGenProfs, function(x) x[grep("v2_mrna$", x)])
   listGenProfs <- listGenProfs[lapply(listGenProfs,length)>0]
@@ -60,17 +76,18 @@ getList_GenProfs <- function(checked_Studies){
 #' @export
 #'
 #' @examples
+#' cgds <- cBioPortal(
+#' hostname = "www.cbioportal.org",
+#' protocol = "https",
+#' api = "/api/v2/api-docs"
+#' )
 #' \dontrun{
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' listStudies <-  getCancerStudies.CGDS(cgds)
-#' checked_Stdudies <- listStudies[3:5]
-#' listCases <- getList_Cases(listStudies[1:3])
-#' listGenProfs <- getList_GenProfs(listStudies[1:3])
-#' GeneList <- c('P53', 'IFI16', 'BRCA1')
-#' samplesize <- 50
-#' threshold <- 0.95
-#' table <- getGenesClassification(checked_Studies, GeneList,
-#' samplesize  ,threshold  ,listGenProfs, listCases)
+#' getDataByGenes( api =  cgds,
+#' studyId = "gbm_tcga_pub",
+#' genes = c("NF1", "TP53", "ABL1"),
+#' by = "hugoGeneSymbol",
+#' molecularProfileIds = "gbm_tcga_pub_mrna"
+#' )
 #'}
 #'
 getGenesClassification <- function(checked_Studies,
@@ -88,7 +105,7 @@ getGenesClassification <- function(checked_Studies,
   }else{
     SamplingProfsData <- 0
     DiseasesType <- 0
-    for (s in 1:length(checked_Studies)){
+    for (s in checked_Studies){
 
       #GenProf <- input$GenProfsIDClassifier[s]
       #Case <- input$CasesIDClassifier[s]
@@ -98,10 +115,21 @@ getGenesClassification <- function(checked_Studies,
       if(length(GeneList)>500){
         shiny::withProgress(message = 'loading MegaProfData...', value = 0.1, {
           Sys.sleep(0.25)
-          ProfData <- getMegaProfData(GeneList,GenProf,Case, Class="ProfData" )
+          ProfData <- getMegaProfData(GeneList, s, GenProf,Case, Class="ProfData")
+          ProfData <- ProfData |>
+          select("hugoGeneSymbol","patientId", "value") |>
+          tidyr::spread("hugoGeneSymbol", "value")
         })
       } else{
-        ProfData<- getProfileData.CGDS(cgds,GeneList, GenProf,Case)
+        #ProfData<- getProfileData.CGDS(cgds,GeneList, GenProf,Case)
+        ProfData <- cBioPortalData::getDataByGenes(api =  cgds,
+                                                studyId = s,
+                                                genes = GeneList,
+                                                by = "hugoGeneSymbol",
+                                                molecularProfileIds = GenProf
+        )  %>% .[[1]] |>
+          select("hugoGeneSymbol","patientId", "value") |>
+          tidyr::spread("hugoGeneSymbol", "value")
       }
 
       ProfData <- t(ProfData)

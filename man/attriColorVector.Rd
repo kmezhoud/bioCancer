@@ -22,15 +22,17 @@ A vetor of colors
 Attribute color to a vector of numeric values
 }
 \examples{
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-cgds <- CGDS("http://www.cbioportal.org/")
-geneList <- whichGeneList("73")
-ProfData <- getProfileData.CGDS(cgds,
- geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
-rownames(ProfData) <- NULL
-clrVec <- attriColorVector(1.2,
-ProfData[1,],
- colors = c("blue", "white","red"),
-  feet=1)
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 }

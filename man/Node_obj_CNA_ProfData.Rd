@@ -16,11 +16,17 @@ A data frame with node border attributes
 Attribute CNA data to node border
 }
 \examples{
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-cgds <- CGDS("http://www.cbioportal.org/")
-GeneList <- whichGeneList("DNA_damage_Response")
-ProfDataCNA <- getProfileData.CGDS(cgds,GeneList, "brca_tcga_pub_gistic","brca_tcga_pub_all")
-ListProfDataCNA <- list(ls1=ProfDataCNA, ls2=ProfDataCNA)
-nodeObj <- Node_obj_CNA_ProfData(ListProfDataCNA)
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 }

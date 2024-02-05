@@ -3,10 +3,14 @@ output$ui_Mut_vars <- renderUI({
   shiny::withProgress(message = 'loading Variables of Mutation Data from cgdsr server...', value = 1, {
 
   GeneList <- whichGeneList(input$GeneListID)
-  dat <- getMutationData(cgds,
-                                input$CasesID,
-                                input$GenProfID,
-                                GeneList)
+
+  dat <- cBioPortalData::getDataByGenes(api = cgds,
+                        studyId = input$StudiesID,
+                        genes = GeneList,
+                        by = "hugoGeneSymbol",
+                        molecularProfileIds = input$GenProfID
+  ) %>% .[[1]] |>
+    select(-c(uniqueSampleKey, uniquePatientKey, molecularProfileId, sampleId, studyId))
 
   ## avoid error when geneList is empty
   if(dim(dat)[1]==0){
@@ -21,14 +25,6 @@ output$ui_Mut_vars <- renderUI({
                 size = min(2)
     )
   }else{
-
-    # dat <- getMutationData(cgds,
-    #                               input$CasesID,
-    #                               input$GenProfID,
-    #                               GeneList)
-
-    ## change rownames in the first column
-    dat <- as.data.frame(dat %>% tibble::rownames_to_column("Patients"))
 
     Mut_vars <- names(dat)
 

@@ -16,10 +16,17 @@ A table
 Display dataframe in table using DT package
 }
 \examples{
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-session <- NULL
-cgds <- CGDS("http://www.cbioportal.org/")
-Studies<- getCancerStudies.CGDS(cgds)
-displayTable(Studies)
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 }

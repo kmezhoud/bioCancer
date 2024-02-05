@@ -47,7 +47,7 @@ TableCases <- reactive({
   shiny::withProgress(message = 'loading Sample size...', value = 1, {
 
     checked_Studies <- input$StudiesIDClassifier
-    listCases <- lapply(checked_Studies, function(x) getCaseLists(cgds,x)[,3])
+    listCases <- lapply(checked_Studies, function(x)  sampleLists(cgds, x) |>pull(sampleListId))
     #listGenProf <- lapply(checked_Studies, function(x)getGeneticProfiles(cgds,x)[,2])
     matchedCases <- lapply(listCases, function(x) x[grep("mRNA expression", x)])
     #matchedGenProf <- lapply(listGenProf, function(x)x[grep("mRNA expression",x)])

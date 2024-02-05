@@ -16,10 +16,18 @@ listes of genetics profiles
 get list of genetic profiles of each selected study in Classifier panel
 }
 \examples{
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-cgds <- CGDS("http://www.cbioportal.org/")
-listStudies <-  getCancerStudies.CGDS(cgds)
-listGenProfs <- getList_GenProfs(listStudies[1:3])
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 
 }

@@ -20,12 +20,18 @@ a data frame with node shape attributes
 Attribute gene Methylation to Nodes
 }
 \examples{
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-cgds <- CGDS("http://www.cbioportal.org/")
-GeneList <- whichGeneList("DNA_damage_Response")
-ProfDataMET <- getProfileData(cgds,GeneList, "gbm_tcga_pub_methylation","gbm_tcga_pub_all")
-ListProfDataMET <- list(ls1=ProfDataMET, ls2=ProfDataMET)
-nodeObj <- Node_obj_Met_ProfData(ListProfDataMET, "HM450",0.1)
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 
 }

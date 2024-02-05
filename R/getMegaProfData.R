@@ -1,28 +1,32 @@
-#' search and get genetic profiles (CNA,mRNA, Methylation, Mutation...) of gene list upper than 500
+#' Search and get genetic profiles (CNA,mRNA, Methylation, Mutation...) of gene list upper than 500
 #'
 #' @details See \url{https://github.com/kmezhoud/bioCancer/wiki}
 #'
 #' @return A data frame with Genetic profile
 #'
-#' @usage getMegaProfData(MegaGeneList, GenProf, Case, Class)
+#' @usage getMegaProfData(MegaGeneList, Study, GenProf, Case, Class)
 #' @param MegaGeneList A list of genes upper than 500
+#' @param Study Study ID
 #' @param GenProf genetic profile reference
 #' @param Case  Case reference
 #' @param Class indicates the panel ProfData or Mutdata
 #'
 #' @examples
-#' GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
+#' cgds <- cBioPortal(
+#' hostname = "www.cbioportal.org",
+#' protocol = "https",
+#' api = "/api/v2/api-docs"
+#' )
 #' \dontrun{
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' listCase_gbm_tcga_pub <- getCaseLists.CGDS(cgds,"gbm_tcga_pub")[,1]
-#' listGenProf_gbm_tcga_pub <- getGeneticProfiles.CGDS(cgds,"gbm_tcga_pub")[,1]
-#'
-#' ProfData_Mut <- grepRef("gbm_tcga_pub_all", listCase_gbm_tcga_pub,
-#'  "gbm_tcga_pub_mutations", listGenProf_gbm_tcga_pub, GeneList, Mut=1)
+#' getDataByGenes( api =  cgds,
+#' studyId = "gbm_tcga_pub",
+#' genes = c("NF1", "TP53", "ABL1"),
+#' by = "hugoGeneSymbol",
+#' molecularProfileIds = "gbm_tcga_pub_mrna"
+#' )
 #'}
 #'@export
-
-getMegaProfData <- function(MegaGeneList,GenProf, Case, Class){
+getMegaProfData <- function(MegaGeneList, Study, GenProf, Case, Class){
 
 
   if(is.integer(length(MegaGeneList)/500)){
@@ -55,16 +59,37 @@ getMegaProfData <- function(MegaGeneList,GenProf, Case, Class){
     print(paste("Getting Profile Data of Genes from: ", (((g-1)*500)+1), "to",((g)*500), sep= " "))
 
     if(Class=="ProfData"){
-      ProfData<-getProfileData.CGDS(cgds,SubMegaGeneList, GenProf,Case)
+      #ProfData<-getProfileData.CGDS(cgds,SubMegaGeneList, GenProf,Case)
+
+      ProfData <- cBioPortalData::getDataByGenes(api =  cgds, studyId = Study,
+                                            genes = SubMegaGeneList, by = "hugoGeneSymbol",
+                                            molecularProfileIds = GenProf)%>%
+        .[[1]] |>
+        select(-c("uniqueSampleKey", "uniquePatientKey", "molecularProfileId", "sampleId", "studyId"))
+
       MegaProfData <- cbind(MegaProfData, ProfData)
 
     }else if(Class=="MutData"){
-      if (inherits(try(ProfData <-  getMutationData.CGDS(cgds,Case, GenProf, SubMegaGeneList), silent=FALSE),"try-error")){
+      if (inherits(try(#ProfData <-  getMutationData.CGDS(cgds,Case, GenProf, SubMegaGeneList)
+                       ProfData <- getDataByGenes(
+                                   api = cgds,
+                                   studyId = Study,
+                                   genes = SubMegaGeneList,
+                                   by = "hugoGeneSymbol",
+                                   molecularProfileIds = GenProf
+                       ) , silent=FALSE),"try-error")){
         msgbadGeneList <- "There are some Gene Symbols not supported by cbioportal server"
         #tkmessageBox(message=msgbadGeneList, icon="warning")
 
       }else{
-        ProfData <- getMutationData.CGDS(cgds,Case, GenProf, SubMegaGeneList)
+        #ProfData <- getMutationData.CGDS(cgds,Case, GenProf, SubMegaGeneList)
+        ProfData <- getDataByGenes(api = cgds,
+                                    studyId = Study,
+                                    genes = SubMegaGeneList,
+                                    by = "hugoGeneSymbol",
+                                    molecularProfileIds = GenProf) %>%
+          .[[1]] |>
+          select(-c("uniqueSampleKey", "uniquePatientKey", "molecularProfileId", "sampleId", "studyId"))
       }
       MegaProfData <- rbind(MegaProfData, ProfData)
     }

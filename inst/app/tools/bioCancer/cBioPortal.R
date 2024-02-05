@@ -1,14 +1,24 @@
 # for cBioPortal
 
-cgds <- CGDS("http://www.cbioportal.org/")
-Studies<- getCancerStudies.CGDS(cgds)
+cgds <- cBioPortalData::cBioPortal(
+        hostname = "www.cbioportal.org",
+        protocol = "https",
+        api = "/api/v2/api-docs"
+)
+#Studies<- getCancerStudies.CGDS(cgds)
+Studies <- cBioPortalData::getStudies(cgds)[c("name", "description", "studyId")]
+
+
 #updateSelectizeInput(session, 'StudiesID', choices = Studies[,1], selected = "gbm_tcga_pub")
 
 ## get Cases in side bar panel
 output$ui_Cases <- renderUI({
   shiny::withProgress(message = 'loading Cases from cBioPortal server...', value = 1, {
     #Sys.sleep(0.25)
-  CaseLists <- getCaseLists.CGDS(cgds,input$StudiesID)[,1]
+  #CaseLists <- getCaseLists.CGDS(cgds,input$StudiesID)[,1]
+  CaseLists <- cBioPortalData::sampleLists(cgds, studyId = input$StudiesID) |>
+               pull(sampleListId)
+
   selectInput("CasesID", "Cases for selected study",
               choices= CaseLists,
               selected = CaseLists[2]
@@ -21,7 +31,9 @@ output$ui_GenProfs <- renderUI({
   shiny::withProgress(message = 'loading Genetic Profiles from cBioPortal server...', value = 1, {
     #Sys.sleep(0.25)
 
-  GeneticProfiles <- getGeneticProfiles.CGDS(cgds,input$StudiesID)[,1]
+  #GeneticProfiles <- getGeneticProfiles.CGDS(cgds,input$StudiesID)[,1]
+  GeneticProfiles <- cBioPortalData::molecularProfiles(api = cgds, studyId = input$StudiesID) |>
+                     pull(molecularProfileId)
   selectInput("GenProfID", "Genetic Profiles",
               choices = GeneticProfiles,
               selected = GeneticProfiles[3]

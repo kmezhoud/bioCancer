@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.30.03 (03 February 2024)
+--------------------------------------------
++ update documentatio with new webapi
++ progress in migration
+
+CHANGES IN VERSION 1.30.02 (02 February 2024)
+--------------------------------------------
++ Start migration  of cBioportal tab with the new cBioPortal webAPI
+
 CHANGES IN VERSION 1.26.04 (03 Februry 2023)
 --------------------------------------------
 + update DisGeNet.db
@@ -107,123 +116,121 @@ CHANGES IN VERSION 1.7.01 (13 November 2017)
 
 CHANGES IN VERSION 1.7.00 (30 October 2017)
 ------------------------
-metamorphosis: bioCancer is a radiant.data extension
-reduce size of package by half 14 -> 7 mb
++ metamorphosis: bioCancer is a radiant.data extension
++ reduce size of package by half 14 -> 7 mb
 
 CHANGES IN VERSION 1.5.12 (16 October 2017)
 ------------------------
-improve Reactome_ui functions
++ improve Reactome_ui functions
 
 CHANGES IN VERSION 1.5.11 (16 October 2017)
 ------------------------
-add switch button to ui_circomics
-improve circomics functions
++ add switch button to ui_circomics
++ improve circomics functions
 
 CHANGES IN VERSION 1.5.09 (08 September 2017)
 ------------------------
-delete commented files and figures
++ delete commented files and figures
 
 CHANGES IN VERSION 1.5.09 (07 September 2017)
 ------------------------
-cleanup ui_radiant, /Rbis, /quant, /bioCancer
++ cleanup ui_radiant, /Rbis, /quant, /bioCancer
 
 CHANGES IN VERSION 1.5.08 (1 September 2017)
 ------------------------
-switchButton
++ switchButton
 
 CHANGES IN VERSION 1.5.07 (1 September 2017)
 ------------------------
-data.row.names(row.names, rowsi, i) :
-some row.names duplicated: 11,12,13,14 --> row.names NOT used
++ data.row.names(row.names, rowsi, i) :
++ some row.names duplicated: 11,12,13,14 --> row.names NOT used
 
 CHANGES IN VERSION 1.5.06 (1 September 2017)
 ------------------------
-dplyr::mutate_each() is deprecated
-dply::summarise_each() is deprecated
-replace BiocStyle by prettydoc
++ dplyr::mutate_each() is deprecated
++ dply::summarise_each() is deprecated
++ replace BiocStyle by prettydoc
 
 CHANGES IN VERSION 1.5.05 (1 September 2017)
 ------------------------
-Warning in formals(fun) : argument is not a function
-Warning in body(fun) : argument is not a function
++ Warning in formals(fun) : argument is not a function
++ Warning in body(fun) : argument is not a function
 
 CHANGES IN VERSION 1.5.04 (02 July 2017)
 ------------------------
-Fix setting plot size
++ Fix setting plot size
 
 CHANGES IN VERSION 1.5.03 (31 May 2017)
 ------------------------
-Change the color rang of Circular layout plot as in standards
++ Change the color rang of Circular layout plot as in standards
 
 CHANGES IN VERSION 1.5.02 (30 May 2017)
 ------------------------
-update Correlation Methods
++ update Correlation Methods
 
 CHANGES IN VERSION 1.5.01 (29 May 2017)
 ------------------------
-replace .libPath() by path.package('bioCancer') in portal.R file
++ replace .libPath() by path.package('bioCancer') in portal.R file
 
 CHANGES IN VERSION 1.0.16 (03 January 2017)
 ------------------------
-o update documents
++ update documents
 
 CHANGES IN VERSION 1.0.13 (28 December 2016)
 ------------------------
-o Reactome tab update
++ Reactome tab update
 
 CHANGES IN VERSION 1.0.12 (27 December 2016)
 ------------------------
-o Simplify genes classification
++ Simplify genes classification
 
 CHANGES IN VERSION 1.0.10 (25 December 2016)
 ------------------------
-o clarify interface: Pipeline Overview
-o remove Cluster and Factor Menus
++ clarify interface: Pipeline Overview
++ remove Cluster and Factor Menus
 
 CHANGES IN VERSION 1.0.07 (14 December 2016)
 ------------------------
-o add argument to whichGeneLits(input$GeneListID)
-o Use the SUM of mutation cases and NOT SUM/TOTAL_SUM (ratio)
-o replace dplyr::add_rownames() by tibble::rownames_to_column()
-o replace stopping process (stop function) by warning message. stop function disconnect session in server version.
-o resolve error message when Gene list is empty (paste empty gene list).
-  getListProfData, getFreqMutData, ProfData, MutData, Classifier, geNetClassifier, Circomics_ui, getCircomics,     Reactome_ui.
-o Make it possible to get Circomics only for one study. Essentially resolve data structure in processing of mutation data frame.
++ add argument to whichGeneLits(input$GeneListID)
++ Use the SUM of mutation cases and NOT SUM/TOTAL_SUM (ratio)
++ replace dplyr::add_rownames() by tibble::rownames_to_column()
++ replace stopping process (stop function) by warning message. stop function disconnect session in server version.
++ resolve error message when Gene list is empty (paste empty gene list).
++ getListProfData, getFreqMutData, ProfData, MutData, Classifier, geNetClassifier, Circomics_ui, getCircomics,  Reactome_ui.
++ Make it possible to get Circomics only for one study. Essentially resolve data structure in processing of mutation data frame.
 
 CHANGES IN VERSION 1.0.03 (29 Septembre 2016)
 ------------------------
-o update pivotr from radiant.data
++ update pivotr from radiant.data
 
 CHANGES IN VERSION 1.0.02 (29 Septembre 2016)
 ------------------------
-o replace dplyr::add_rownames() by tibble::rownames_to_column()
++ replace dplyr::add_rownames() by tibble::rownames_to_column()
 
 
 CHANGES IN VERSION 1.0.01 (29 Septembre 2016)
 ------------------------
-o rm "id=" from navbarMenu - shiny update
++ rm "id=" from navbarMenu - shiny update
 
 CHANGES IN VERSION 1.0.0 (07 July 2016)
 ------------------------
-o built vignette with knitr
-o modify whichGeneList(GeneListLabel)
++ built vignette with knitr
++ modify whichGeneList(GeneListLabel)
   resolve difference between bioCancer server and package
 
 FIRST RELEASE
-    o Package released
-    o Omit R/code menu: request shinyAce (>=0.2.1)
-      - Omit help_and_report function
-    o Various issues request DT (>=0.1.39)
-      - Omit Show Plot in Pivot sidebar menu
-      - Can not download/Store correctly  filtered table in Handle/View
++ Package released
++  Omit R/code menu: request shinyAce (>=0.2.1)
+   - Omit help_and_report function
++ Various issues request DT (>=0.1.39)
+    - Omit Show Plot in Pivot sidebar menu
+    - Can not download/Store correctly  filtered table in Handle/View
 
 
 
 PERSPECTIVE
-    o Release R 3.4 import(shiny, except= c("dataTableOutput", "renderDataTable"))
-    o use DisGeNet server despite /extdata/disGeNet file (DONE Not Working)
-    o clusterProfiler GMT file:
-    http://www.r-bloggers.com/go-analysis-using-clusterprofiler/
-    o gene classification using rpart,ggplot2, ggtree:
-    http://guangchuangyu.github.io/2016/01/annotate-a-phylogenetic-tree-with-insets/
-    o Specify the range of mutation frequency in circos plot [Min, Max]
++ Release R 3.4 import(shiny, except= c("dataTableOutput", "renderDataTable"))
++ use DisGeNet server despite /extdata/disGeNet file (DONE Not Working)
++ clusterProfiler GMT file: http://www.r-bloggers.com/go-analysis-using-clusterprofiler/
++ gene classification using rpart,ggplot2, ggtree: http://guangchuangyu.github.io/2016/01/annotate-a-phylogenetic-tree-with-insets/
++  Specify the range of mutation frequency in circos plot [Min, Max]

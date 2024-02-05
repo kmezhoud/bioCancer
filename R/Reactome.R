@@ -10,16 +10,18 @@
 #' @return A vetor of colors
 #'
 #' @examples
+#' cgds <- cBioPortal(
+#' hostname = "www.cbioportal.org",
+#' protocol = "https",
+#' api = "/api/v2/api-docs"
+#' )
 #' \dontrun{
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' geneList <- whichGeneList("73")
-#' ProfData <- getProfileData.CGDS(cgds,
-#'  geneList, "gbm_tcga_pub_mrna", "gbm_tcga_pub_all")
-#' rownames(ProfData) <- NULL
-#' clrVec <- attriColorVector(1.2,
-#' ProfData[1,],
-#'  colors = c("blue", "white","red"),
-#'   feet=1)
+#' getDataByGenes( api =  cgds,
+#' studyId = "gbm_tcga_pub",
+#' genes = c("NF1", "TP53", "ABL1"),
+#' by = "hugoGeneSymbol",
+#' molecularProfileIds = "gbm_tcga_pub_mrna"
+#' )
 #'}
 #' @export
 #' @importFrom grDevices colorRampPalette colors
@@ -102,16 +104,19 @@ Studies_obj <- function(df= df){
 #' @export
 #'
 #' @examples
-#'  \dontrun{
-#'  cgds <- CGDS("http://www.cbioportal.org/")
-#'  geneList <- whichGeneList("73")
-#'  MutData <- getMutationData.CGDS(cgds,"gbm_tcga_pub_all",
-#'  "gbm_tcga_pub_mutations", geneList )
-#'  listMutData <- list(ls1=MutData, ls2=MutData)
-#'  FreqMutThreshold <- 10
-#'  r_data <- new.env()
-#'  MutObj <- Mutation_obj(listMutData, 10, "73")
-#'  }
+#' cgds <- cBioPortal(
+#' hostname = "www.cbioportal.org",
+#' protocol = "https",
+#' api = "/api/v2/api-docs"
+#' )
+#' \dontrun{
+#' getDataByGenes( api =  cgds,
+#' studyId = "gbm_tcga_pub",
+#' genes = c("NF1", "TP53", "ABL1"),
+#' by = "hugoGeneSymbol",
+#' molecularProfileIds = "gbm_tcga_pub_mrna"
+#' )
+#'}
 #'
 Mutation_obj <- function(list, FreqMutThreshold, geneListLabel){
 
@@ -289,12 +294,18 @@ Node_obj_mRNA_Classifier <- function(geneList,genesclassdetails){
 #' @export
 #'
 #' @examples
+#' cgds <- cBioPortal(
+#' hostname = "www.cbioportal.org",
+#' protocol = "https",
+#' api = "/api/v2/api-docs"
+#' )
 #' \dontrun{
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' GeneList <- whichGeneList("DNA_damage_Response")
-#' ProfDataCNA <- getProfileData.CGDS(cgds,GeneList, "brca_tcga_pub_gistic","brca_tcga_pub_all")
-#' ListProfDataCNA <- list(ls1=ProfDataCNA, ls2=ProfDataCNA)
-#' nodeObj <- Node_obj_CNA_ProfData(ListProfDataCNA)
+#' getDataByGenes( api =  cgds,
+#' studyId = "gbm_tcga_pub",
+#' genes = c("NF1", "TP53", "ABL1"),
+#' by = "hugoGeneSymbol",
+#' molecularProfileIds = "gbm_tcga_pub_mrna"
+#' )
 #'}
 Node_obj_CNA_ProfData <- function(list){
 
@@ -331,12 +342,18 @@ Node_obj_CNA_ProfData <- function(list){
 #' @export
 #'
 #' @examples
+#' cgds <- cBioPortal(
+#' hostname = "www.cbioportal.org",
+#' protocol = "https",
+#' api = "/api/v2/api-docs"
+#' )
 #' \dontrun{
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' GeneList <- whichGeneList("DNA_damage_Response")
-#' ProfDataMET <- getProfileData(cgds,GeneList, "gbm_tcga_pub_methylation","gbm_tcga_pub_all")
-#' ListProfDataMET <- list(ls1=ProfDataMET, ls2=ProfDataMET)
-#' nodeObj <- Node_obj_Met_ProfData(ListProfDataMET, "HM450",0.1)
+#' getDataByGenes( api =  cgds,
+#' studyId = "gbm_tcga_pub",
+#' genes = c("NF1", "TP53", "ABL1"),
+#' by = "hugoGeneSymbol",
+#' molecularProfileIds = "gbm_tcga_pub_mrna"
+#' )
 #'}
 #'
 Node_obj_Met_ProfData <- function(list, type, threshold){

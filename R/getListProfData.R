@@ -4,34 +4,46 @@
 #'
 #' @return A data frame with Genetic profile
 #'
-#' @usage grepRef(regex1, listRef1,regex2, listRef2, GeneList,Mut)
-#' @param regex1 Case id (cancer_study_id_[mutations, cna, methylation, mrna ]).
-#' @param listRef1 A list of cases for one study.
+#' @usage grepRef(study,regex2, listRef2, GeneList, Mut)
+#' @param study  Study ID
 #' @param regex2 Genetic Profile id (cancer_study_id_[mutations, cna, methylation, mrna ]).
 #' @param listRef2 A list of Genetic Profiles for one study.
 #' @param GeneList A list of genes
 #' @param Mut Condition to set if the genetic profile is mutation or not (0,1)
 #'
 #' @examples
-#' GeneList <- c("ALK", "JAK3", "SHC3","TP53","MYC","PARP")
+#' cgds <- cBioPortal(
+#' hostname = "www.cbioportal.org",
+#' protocol = "https",
+#' api = "/api/v2/api-docs"
+#' )
 #' \dontrun{
-#' cgds <- CGDS("http://www.cbioportal.org/")
-#' listCase_gbm_tcga_pub <- getCaseLists.CGDS(cgds,"gbm_tcga_pub")[,1]
-#' listGenProf_gbm_tcga_pub <- getGeneticProfiles.CGDS(cgds,"gbm_tcga_pub")[,1]
-#'
-#' ProfData_Mut <- grepRef("gbm_tcga_pub_all", listCase_gbm_tcga_pub,
-#'  "gbm_tcga_pub_mutations", listGenProf_gbm_tcga_pub, GeneList, Mut=1)
+#' getDataByGenes( api =  cgds,
+#' studyId = "gbm_tcga_pub",
+#' genes = c("NF1", "TP53", "ABL1"),
+#' by = "hugoGeneSymbol",
+#' molecularProfileIds = "gbm_tcga_pub_mrna"
+#' )
 #'}
 #'@export
 #'
 #'
 #'
-grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
-  if(length(grep(regex1,listRef1)) != 0){
+grepRef<-function(study, regex2, listRef2, GeneList, Mut){
+  #if(length(grep(regex1,listRef1)) != 0){
     if(length(grep(regex2,listRef2))!= 0){
       if(Mut== 0){
         #print(paste("Getting Profile Data of ",regex2,"...",sep=""))
-        ProfData_X <- getProfileData.CGDS(cgds,GeneList, regex2,regex1)
+        #ProfData_X <- getProfileData.CGDS(cgds,GeneList, regex2,regex1)
+
+        ProfData_x <- getDataByGenes(api =  cgds,
+                                     studyId = study,
+                                      genes = GeneList,
+                                      by = "hugoGeneSymbol",
+                                      molecularProfileIds = regex2
+        )  %>% .[[1]] |>
+          select("patientId", "hugoGeneSymbol", "value") |>
+          spread("patientId", "hugoGeneSymbol")
         ########################
         #ProfData_X <- ProfData_X[,as.factor(GeneList)]
         #ProfData_X <- ProfData_X[GeneList,,drop=FALSE]
@@ -61,14 +73,22 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
 
       }else if(Mut==1){
         #print(paste("Getting Mutation Data of ",checked_Studies[s],"...",sep=""))
-        MutData <- getMutationData.CGDS(cgds,regex1, regex2, GeneList)
+        #MutData <- getMutationData.CGDS(cgds,regex1, regex2, GeneList)
+        MutData <- getDataByGenes(api =  cgds,
+                                  studyId = study,
+                                  genes = GeneList,
+                                  by = "hugoGeneSymbol",
+                                  molecularProfileIds = regex2
+        )  %>% .[[1]] |>
+          select("hugoGeneSymbol", "proteinChange", "variantType")
+
         #print(paste("MutData: ",dim(MutData)))
         if(length(MutData)==0 || nrow(MutData)==0){
           ## built emty data.frame as the same form of MutData
-          gene_symbol <- as.vector(GeneList)
-          mutation_type <- rep(character(1), length(GeneList))
-          amino_acid_change <- rep(character(1), length(GeneList))
-          MutData <- data.frame(gene_symbol, mutation_type, amino_acid_change)
+          hugoGeneSymbol <- as.vector(GeneList)
+          proteinChange <- rep(character(1), length(GeneList))
+          variantType <- rep(character(1), length(GeneList))
+          MutData <- data.frame(hugoGeneSymbol, proteinChange, variantType)
           #          MutData <- data.frame("gene_symbol"=character(1),"mutation_type"=character(1), "amino_acid_change"= character(1))
           return(MutData)
         }else{
@@ -99,68 +119,84 @@ grepRef<-function(regex1, listRef1,regex2, listRef2, GeneList,Mut){
       }
       return( ProfData_X)
     }
-  }else{
-    shiny::withProgress(message=
-                          paste("There is no Cases: ",
-                                regex1 ), value = 1,
-                        {p1 <- proc.time()
-                        Sys.sleep(2)
-                        proc.time() - p1 })
-    if(length(GeneList) <500){
-      ProfData_X <-as.data.frame(setNames(replicate
-                                          (length(GeneList),
-                                            numeric(1),
-                                            simplify = FALSE),
-                                          GeneList[order(GeneList)]))
-      return(ProfData_X)
-    }else{
-      ProfData_X <-as.data.frame(setNames(replicate
-                                          (length(SubMegaGeneList),
-                                            numeric(1), simplify = FALSE),
-                                          SubMegaGeneList[order(SubMegaGeneList)]))
-      return(ProfData_X)
-    }
-    return(ProfData_X)
-
-
-  }
+  # }else{
+  #   shiny::withProgress(message=
+  #                         paste("There is no genetic profile: ",
+  #                               regex2 ), value = 1,
+  #                       {p1 <- proc.time()
+  #                       Sys.sleep(2)
+  #                       proc.time() - p1 })
+  #   if(length(GeneList) <500){
+  #     ProfData_X <-as.data.frame(setNames(replicate
+  #                                         (length(GeneList),
+  #                                           numeric(1),
+  #                                           simplify = FALSE),
+  #                                         GeneList[order(GeneList)]))
+  #     return(ProfData_X)
+  #   }else{
+  #     ProfData_X <-as.data.frame(setNames(replicate
+  #                                         (length(SubMegaGeneList),
+  #                                           numeric(1), simplify = FALSE),
+  #                                         SubMegaGeneList[order(SubMegaGeneList)]))
+  #     return(ProfData_X)
+  #   }
+  #   return(ProfData_X)
+  #
+  #
+  # }
 }
 
 
 
 #' get list of data frame with profiles data (CNA,mRNA, Methylation, Mutation...)
 #'
-#' @usage getListProfData(panel, geneListLabel)
+#' @usage getListProfData(panel, study, geneListLabel, genProf)
 #'
 #' @param panel Panel name (string) in which Studies are selected. There are two panels ("Circomics" or "Networking")
+#' @param study ID
 #' @param geneListLabel The label of GeneList. There are three cases:
 #'        "Genes" user gene list,
 #'        "Reactome_GeneList" GeneList plus genes from reactomeFI
 #'       "file name" from Examples
+#' @param genProf genetic/molecular profile ID
+#'
 #'
 #' @return A LIST of profiles data (CNA, mRNA, Methylation, Mutation, miRNA, RPPA).
 #'         Each dimension content a list of studies.
 #'
 #'
-#'@examples
-#'  \dontrun{
-#'  cgds <- CGDS("http://www.cbioportal.org/")
-#' geneList <- whichGeneList("73")
-#' r_data <- new.env()
-#' MutData <- getMutationData.CGDS(cgds,"gbm_tcga_pub_all",
-#'  "gbm_tcga_pub_mutations", geneList )
-#' FreqMut <- getFreqMutData(list(ls1=MutData, ls2=MutData), "73")
-#' input <- NULL
-#' input[['StudiesIDCircos']] <- c("luad_tcga_pub","blca_tcga_pub")
 #'
-#' ListProfData <- getListProfData(panel= "Circomics","73")
-#' }
+#'@examples
+#' cgds <- cBioPortal(
+#' hostname = "www.cbioportal.org",
+#' protocol = "https",
+#' api = "/api/v2/api-docs"
+#' )
+#' \dontrun{
+#' getDataByGenes( api =  cgds,
+#' studyId = "gbm_tcga_pub",
+#' genes = c("NF1", "TP53", "ABL1"),
+#' by = "hugoGeneSymbol",
+#' molecularProfileIds = "gbm_tcga_pub_mrna"
+#' )
+#'}
 #' @export
-getListProfData <- function(panel, geneListLabel){
+getListProfData <- function(panel, study, geneListLabel, genProf){
 
   GeneList <- whichGeneList(geneListLabel)
-  cgds <-  CGDS("http://www.cbioportal.org/")
-  dat <- getProfileData.CGDS(cgds,GeneList, "gbm_tcga_pub_mrna","gbm_tcga_pub_all")
+  #cgds <-  CGDS("http://www.cbioportal.org/")
+  #dat <- getProfileData.CGDS(cgds,GeneList, "gbm_tcga_pub_mrna","gbm_tcga_pub_all")
+
+  dat <- getDataByGenes(
+                api =  cgds,
+                studyId = study,
+                genes = GeneList,
+                by = "hugoGeneSymbol",
+                molecularProfileIds = genProf)%>%
+    "."[[1]]  |>
+    select("hugoGeneSymbol","patientId", "value") |>
+    tidyr::spread("hugoGeneSymbol", "value")
+
 
   if(all(dim(dat)==c(0,1))== TRUE){
     ## avoide error when GeneList is empty
@@ -181,14 +217,15 @@ getListProfData <- function(panel, geneListLabel){
       Lchecked_Studies <- length(checked_Studies)
 
     }
-    ## get Cases for selected Studies
-    CasesRefStudies <- unname(unlist(apply(
-      as.data.frame(checked_Studies), 1,
-      function(x) getCaseLists.CGDS(cgds,x)[1])))
+    # ## get Cases for selected Studies
+    # CasesRefStudies <- unname(unlist(apply(
+    #   as.data.frame(checked_Studies), 1,
+    #   function(x) sampleLists(cgds, x)|> pull(sampleListId)))) #getCaseLists.CGDS(cgds,x)[1]
     ## get Genetics Profiles for selected Studies
     GenProfsRefStudies <- unname(unlist(apply(
       as.data.frame(checked_Studies), 1,
-      function(x) getGeneticProfiles.CGDS(cgds,x)[1])))
+      function(x) molecularProfiles(api = cgds, studyId = x)[,"molecularProfileId"]))) #getGeneticProfiles.CGDS(cgds,x)[1]
+
 
 
     LengthGenProfs <- 0
@@ -206,25 +243,25 @@ getListProfData <- function(panel, geneListLabel){
 
         ### get Cases and Genetic Profiles  with cBioportal references
         GenProf_CNA<- paste(checked_Studies[s],"_gistic", sep="")
-        Case_CNA   <- paste(checked_Studies[s],"_cna", sep="")
+        #Case_CNA   <- paste(checked_Studies[s],"_cna", sep="")
 
         GenProf_Exp<- paste(checked_Studies[s],"_rna_seq_v2_mrna", sep="")
-        Case_Exp   <- paste(checked_Studies[s],"_rna_seq_v2_mrna", sep="")
+        #Case_Exp   <- paste(checked_Studies[s],"_rna_seq_v2_mrna", sep="")
 
         GenProf_Met_HM450<- paste(checked_Studies[s],"_methylation_hm450", sep="")
-        Case_Met_HM450   <- paste(checked_Studies[s],"_methylation_hm450", sep="")
+        #Case_Met_HM450   <- paste(checked_Studies[s],"_methylation_hm450", sep="")
 
         GenProf_Met_HM27<- paste(checked_Studies[s],"_methylation_hm27", sep="")
-        Case_Met_HM27   <- paste(checked_Studies[s],"_methylation_hm27", sep="")
+        #Case_Met_HM27   <- paste(checked_Studies[s],"_methylation_hm27", sep="")
 
         GenProf_RPPA<- paste(checked_Studies[s],"_RPPA_protein_level", sep="")
-        Case_RPPA   <- paste(checked_Studies[s],"_rppa", sep="")
+        #Case_RPPA   <- paste(checked_Studies[s],"_rppa", sep="")
 
         GenProf_miRNA<- paste(checked_Studies[s],"_mirna", sep="")
-        Case_miRNA   <- paste(checked_Studies[s],"_microrna", sep="")
+        #Case_miRNA   <- paste(checked_Studies[s],"_microrna", sep="")
 
         GenProf_Mut<- paste(checked_Studies[s],"_mutations", sep="")
-        Case_Mut   <- paste(checked_Studies[s],"_sequenced", sep="")
+        #Case_Mut   <- paste(checked_Studies[s],"_sequenced", sep="")
 
 
         ## Subsettint of Gene List if bigger than 500
@@ -255,13 +292,14 @@ getListProfData <- function(panel, geneListLabel){
               SubMegaGeneList <- MegaGeneList[LastSubMegaGeneList:length(MegaGeneList)]
 
             }
-            ProfData_CNA<-grepRef(Case_CNA, CasesRefStudies, GenProf_CNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
-            ProfData_Exp<-grepRef(Case_Exp, CasesRefStudies, GenProf_Exp, GenProfsRefStudies, SubMegaGeneList, Mut=0)
-            ProfData_Met_HM450<-grepRef(Case_Met_HM450, CasesRefStudies, GenProf_Met_HM450, GenProfsRefStudies, SubMegaGeneList, Mut=0)
-            ProfData_Met_HM27<-grepRef(Case_Met_HM27, CasesRefStudies, GenProf_Met_HM27, GenProfsRefStudies, SubMegaGeneList, Mut=0)
-            ProfData_RPPA<-grepRef(Case_RPPA, CasesRefStudies, GenProf_RPPA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
-            ProfData_miRNA<-grepRef(Case_miRNA, CasesRefStudies, GenProf_miRNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
-            MutData <- grepRef(Case_Mut,CasesRefStudies ,GenProf_Mut, GenProfsRefStudies,SubMegaGeneList, Mut=1)
+
+            ProfData_CNA<-grepRef(input$studiesID, GenProf_CNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+            ProfData_Exp<-grepRef(input$studiesID, GenProf_Exp, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+            ProfData_Met_HM450<-grepRef(input$studiesID, GenProf_Met_HM450, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+            ProfData_Met_HM27<-grepRef(input$studiesID, GenProf_Met_HM27, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+            ProfData_RPPA<-grepRef(input$studiesID, GenProf_RPPA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+            ProfData_miRNA<-grepRef(input$studiesID, GenProf_miRNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+            MutData <- grepRef(input$studiesID ,GenProf_Mut, GenProfsRefStudies,SubMegaGeneList, Mut=1)
 
 
             MegaProfData_CNA <- cbind(MegaProfData_CNA, ProfData_CNA)
@@ -288,15 +326,21 @@ getListProfData <- function(panel, geneListLabel){
 
 
         } else if (length(GeneList) > 0){
+          #ProfData_CNA<- grepRef(Case_CNA, CasesRefStudies, GenProf_CNA, GenProfsRefStudies, GeneList, Mut=0)
+          #ProfData_Exp<- grepRef(Case_Exp, CasesRefStudies, GenProf_Exp, GenProfsRefStudies, GeneList, Mut=0)
+          #ProfData_Met_HM450 <- grepRef(Case_Met_HM450, CasesRefStudies, GenProf_Met_HM450, GenProfsRefStudies, GeneList, Mut=0)
+          #ProfData_Met_HM27 <- grepRef(Case_Met_HM27, CasesRefStudies, GenProf_Met_HM27, GenProfsRefStudies, GeneList,Mut=0)
+          #ProfData_RPPA<- grepRef(Case_RPPA, CasesRefStudies, GenProf_RPPA, GenProfsRefStudies, GeneList,Mut=0)
+          #ProfData_miRNA<- grepRef(Case_miRNA, CasesRefStudies, GenProf_miRNA, GenProfsRefStudies, GeneList,Mut=0)
+          #MutData <- grepRef(Case_Mut,CasesRefStudies ,GenProf_Mut, GenProfsRefStudies,GeneList, Mut=1)
 
-
-          ProfData_CNA<- grepRef(Case_CNA, CasesRefStudies, GenProf_CNA, GenProfsRefStudies, GeneList, Mut=0)
-          ProfData_Exp<- grepRef(Case_Exp, CasesRefStudies, GenProf_Exp, GenProfsRefStudies, GeneList, Mut=0)
-          ProfData_Met_HM450 <- grepRef(Case_Met_HM450, CasesRefStudies, GenProf_Met_HM450, GenProfsRefStudies, GeneList, Mut=0)
-          ProfData_Met_HM27 <- grepRef(Case_Met_HM27, CasesRefStudies, GenProf_Met_HM27, GenProfsRefStudies, GeneList,Mut=0)
-          ProfData_RPPA<- grepRef(Case_RPPA, CasesRefStudies, GenProf_RPPA, GenProfsRefStudies, GeneList,Mut=0)
-          ProfData_miRNA<- grepRef(Case_miRNA, CasesRefStudies, GenProf_miRNA, GenProfsRefStudies, GeneList,Mut=0)
-          MutData <- grepRef(Case_Mut,CasesRefStudies ,GenProf_Mut, GenProfsRefStudies,GeneList, Mut=1)
+          ProfData_CNA<-grepRef(input$studiesID, GenProf_CNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+          ProfData_Exp<-grepRef(input$studiesID, GenProf_Exp, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+          ProfData_Met_HM450<-grepRef(input$studiesID, GenProf_Met_HM450, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+          ProfData_Met_HM27<-grepRef(input$studiesID, GenProf_Met_HM27, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+          ProfData_RPPA<-grepRef(input$studiesID, GenProf_RPPA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+          ProfData_miRNA<-grepRef(input$studiesID, GenProf_miRNA, GenProfsRefStudies, SubMegaGeneList, Mut=0)
+          MutData <- grepRef(input$studiesID,GenProf_Mut, GenProfsRefStudies,SubMegaGeneList, Mut=1)
 
         }
 

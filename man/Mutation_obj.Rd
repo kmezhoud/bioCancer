@@ -20,15 +20,18 @@ A dat frame with mutation frequency. Ech column corresponds to a study.
 Atribute mutation frequency to nodes
 }
 \examples{
- \dontrun{
- cgds <- CGDS("http://www.cbioportal.org/")
- geneList <- whichGeneList("73")
- MutData <- getMutationData.CGDS(cgds,"gbm_tcga_pub_all",
- "gbm_tcga_pub_mutations", geneList )
- listMutData <- list(ls1=MutData, ls2=MutData)
- FreqMutThreshold <- 10
- r_data <- new.env()
- MutObj <- Mutation_obj(listMutData, 10, "73")
- }
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
+\dontrun{
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
+}
 
 }

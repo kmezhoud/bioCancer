@@ -18,12 +18,17 @@ a data frame with mutation frequency. gene is in rows and study is in column
 get mutation frequency
 }
 \examples{
+cgds <- cBioPortal(
+hostname = "www.cbioportal.org",
+protocol = "https",
+api = "/api/v2/api-docs"
+)
 \dontrun{
-cgds <- CGDS("http://www.cbioportal.org/")
-geneList <- whichGeneList("73")
-r_data <- new.env()
-MutData <- getMutationData.CGDS(cgds,"gbm_tcga_pub_all",
- "gbm_tcga_pub_mutations", geneList )
-FreqMut <- getFreqMutData(list(ls1=MutData, ls2=MutData), "73")
+getDataByGenes( api =  cgds,
+studyId = "gbm_tcga_pub",
+genes = c("NF1", "TP53", "ABL1"),
+by = "hugoGeneSymbol",
+molecularProfileIds = "gbm_tcga_pub_mrna"
+)
 }
 }
