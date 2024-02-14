@@ -105,7 +105,7 @@ output$ui_MetSliderHM27 <- renderUI({
 
 
 output$ui_Reactome <- renderUI({
-  updateSelectizeInput(session, 'StudiesIDReactome', choices = Studies[,1],
+  updateSelectizeInput(session, 'StudiesIDReactome', choices = Studies["studyId"],
                        selected = c("brca_tcga","gbm_tcga","lihc_tcga","lusc_tcga"))
 
   tagList(
@@ -139,11 +139,11 @@ output$ui_Reactome <- renderUI({
         #conditionalPanel(condition = "input.runClassificationBox==true",
         uiOutput("ui_NodeAttri_Classifier"),
         #),
-        conditionalPanel("input.NodeAttri_ClassifierID != 'None'",
+        conditionalPanel(" input.runClassificationBox == false",
+                         # input.NodeAttri_ClassifierID != 'None' &&
         #                  input.runSamplingBox == false ||
         #                  input.NodeAttri_ClassifierID != 'None' &&
         #                  input.runSamplingBox == true &&
-        #                  input.runClassificationBox == false",
                          uiOutput('ui_No_Classifier_Run_message')
         )
       ),
@@ -238,7 +238,7 @@ output$ui_Reactome <- renderUI({
 output$ReactomeAvailability <- DT::renderDataTable({
   withProgress(message = 'Loading Data...', value = 1, {
 
-    dat <- checkDimensions(panel = "Networking", StudyID= input$StudiesIDReactome)
+    dat <- checkDimensions(StudyID= input$StudiesIDReactome)
     ## remove rownames to column
     dat <- dat %>% tibble::rownames_to_column("Samples")
     # action = DT::dataTableAjax(session, dat, rownames = FALSE, toJSONfun = my_dataTablesJSON)
@@ -253,7 +253,7 @@ output$ReactomeAvailability <- DT::renderDataTable({
 output$StrListProfDataReactome <- renderPrint({
   withProgress(message = 'loading Profiles Data... ', value = 1, {
 
-    getListProfData(panel='Networking', input$GeneListID)
+    getListProfData(checked_Studies = input$StudiesIDReactome , geneListLabel =  input$GeneListID)
   })
   if(is.null(r_info$ListProfData)){
     c("Gene List is empty. copy and paste genes from text file (Gene/line)

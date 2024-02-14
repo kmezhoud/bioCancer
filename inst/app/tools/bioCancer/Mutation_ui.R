@@ -1,31 +1,57 @@
 output$ui_Mut_vars <- renderUI({
-
-  shiny::withProgress(message = 'loading Variables of Mutation Data from cgdsr server...', value = 1, {
+  req(input$GenProfID)
+  req(input$CasesID)
+  #shiny::withProgress(message = 'loading Variables of Mutation Data from cgdsr server...', value = 1, {
 
   GeneList <- whichGeneList(input$GeneListID)
 
-  dat <- cBioPortalData::getDataByGenes(api = cgds,
-                        studyId = input$StudiesID,
-                        genes = GeneList,
-                        by = "hugoGeneSymbol",
-                        molecularProfileIds = input$GenProfID
-  ) %>% .[[1]] |>
-    select(-c(uniqueSampleKey, uniquePatientKey, molecularProfileId, sampleId, studyId))
+  if (ncol(GeneList)==0){
+    dat <- as.data.frame("Gene List is empty!")
+  }else{
 
+    if(inherits(try(
+      dat <- cBioPortalData::getDataByGenes(api =  cgds,
+                                            studyId = input$StudiesID,
+                                            genes = GeneList,
+                                            by = "hugoGeneSymbol",
+                                            molecularProfileIds = input$GenProfID,
+                                            sampleListId = input$CasesID),
+      silent=FALSE),"try-error")){
+      dat <- as.data.frame("There is no data for selected Genetic profile.")
+    }else{
+      shiny::withProgress(message = 'loading ProfData from cBioPortal server...', value = 1, {
+        #Sys.sleep(time = 1)
+        #req(input$StudiesID)
+        #req(input$GenProfID)
+
+        dat <- cBioPortalData::getDataByGenes(api =  cgds,
+                                              studyId = input$StudiesID,
+                                              genes = GeneList,
+                                              by = "hugoGeneSymbol",
+                                              molecularProfileIds = input$GenProfID,
+                                              sampleListId = input$CasesID) |>
+          #.[[1]] |>
+          unname() |>
+          as.data.frame()
+        #select(-c(uniqueSampleKey, uniquePatientKey, molecularProfileId, patientId, studyId))
+        #tidyr::spread(hugoGeneSymbol, value)
+
+      })
   ## avoid error when geneList is empty
-  if(dim(dat)[1]==0){
+  if(nrow(dat)==0){
 
-    #dat <- as.data.frame("Gene List is empty. copy and paste genes from text file (Gene/line)")
+    dat <- as.data.frame(paste0("There is no ", input$GenProfID ," for selected Gene list."))
 
     selectInput("Mut_varsID", "Select variables to show:",
-                choices  = "Patients",
+                choices  = "No Data Available for this Genetic Profile",
                 #selected = state_multiple("Mut_vars",Mut_vars, Mut_vars),
                 multiple = FALSE,
                 selectize = FALSE,
                 size = min(2)
-    )
+                )
   }else{
 
+    r_info[["MutData"]] <- dat
     Mut_vars <- names(dat)
 
     selectInput("Mut_varsID", "Select variables to show:",
@@ -35,7 +61,10 @@ output$ui_Mut_vars <- renderUI({
                 selectize = FALSE,
                 size = min(6, length(Mut_vars)))
   }
-  })
+    }
+  }
+  #})
+
 })
 
 output$ui_MutData <- renderUI({
@@ -61,9 +90,9 @@ output$ui_MutData <- renderUI({
     #
     # ),
     wellPanel(
-      if (length(grep("mutation", input$GenProfID))!=0){
+      #if (length(grep("mutation", input$GenProfID))!=0){
         uiOutput("ui_Mut_vars")
-      }
+      #}
     ),
 
     wellPanel(

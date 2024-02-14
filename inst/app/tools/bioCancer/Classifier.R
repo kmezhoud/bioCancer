@@ -47,10 +47,13 @@ TableCases <- reactive({
   shiny::withProgress(message = 'loading Sample size...', value = 1, {
 
     checked_Studies <- input$StudiesIDClassifier
-    listCases <- lapply(checked_Studies, function(x)  sampleLists(cgds, x) |>pull(sampleListId))
-    #listGenProf <- lapply(checked_Studies, function(x)getGeneticProfiles(cgds,x)[,2])
-    matchedCases <- lapply(listCases, function(x) x[grep("mRNA expression", x)])
-    #matchedGenProf <- lapply(listGenProf, function(x)x[grep("mRNA expression",x)])
+    ## get cases for checked studies and pull only description and sampleLitsId column
+    listCases <- lapply(checked_Studies, function(x)  sampleLists(cgds, x)[,c("description", "sampleListId")] |>
+                          unite(description_sampleListId, c("description", "sampleListId"), sep = "-") |>
+                          pull(description_sampleListId))
+    ## extract only cases with mrna
+    matchedCases <- lapply(listCases, function(x) x[grepl("mrna", x ,ignore.case = TRUE)])
+
     ## remove emply list
     matchedCases <- matchedCases[lapply(matchedCases,length)>0]
     #matchedGenProf <- matchedGenProf[lapply(matchedGenProf,length)>0]
@@ -61,11 +64,13 @@ TableCases <- reactive({
     }else if (length(checked_Studies) > length(matchedCases)){
       dat <- as.data.frame('Some selected study does not have mRNA data. Select only study with mRNA data.')
     }else{
-      #  dat <- data.frame(Studies=NA,Case=NA, GenProf=NA)
-      dat <- data.frame(Studies=NA,Cases=NA)
-      for(s in 1:length(matchedCases)){
-        dat <- rbind(dat, c(checked_Studies[s], matchedCases[[s]]))
-        #dat[s,] <- c(checked_Studies[s], matchedCases[[s]], matchedGenProf[[s]])
+      dat <- NULL
+      for(s in seq(matchedCases)){
+
+        samples <- paste(checked_Studies[s], matchedCases[[s]], sep="-")|>
+          as_tibble() |>
+          separate(col = value, into = c("Study", "description", "sampleListId"),sep =  "-")
+        dat <- rbind(dat, samples)
       }
     }
     return(dat)
@@ -76,8 +81,8 @@ TableCases <- reactive({
 output$viewTableCases <- DT::renderDataTable({
   dat <-   TableCases()
   displayTable(dat) %>% DT::formatStyle(names(dat),
-                                        color = DT::styleEqual('Check Cases for selected studies. Some ones do not have samples of mRNA expression.',
-                                                               'red'))#, backgroundColor = 'white', fontWeight = 'bold'
+                  color = DT::styleEqual('Check Cases for selected studies. Some ones do not have samples of mRNA expression.',
+                                        'red'))#, backgroundColor = 'white', fontWeight = 'bold'
 
 })
 

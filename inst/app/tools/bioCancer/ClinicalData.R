@@ -2,7 +2,7 @@ output$ClinicalDataTable <- DT::renderDataTable({
 
   ##  needed to make silence the error
   if (inherits(try( dat <- r_info$ClinicalData[input$Clinical_varsID], silent=TRUE),"try-error")){
-    dat <- r_data$ClinicalData
+    dat <- r_info$ClinicalData
   }else{
     dat <- r_info$ClinicalData[input$Clinical_varsID]
   }

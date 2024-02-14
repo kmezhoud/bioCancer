@@ -33,6 +33,7 @@ output$uiPullUserDataCNA <- renderUI({
               selectize = FALSE
   )
 })
+
 output$uiPullUserDatamRNA <- renderUI({
   selectInput(inputId = "UserData_mRNA_id", label='mRNA:',
               choices=  r_info$datasetlist, selected= "", multiple=FALSE,
@@ -81,12 +82,14 @@ output$ui_CircosDimension <- renderUI({
 
 output$StrListProfDataCircos <- renderPrint({
 
-  withProgress(message = 'loading Profiles Data from cgdsr server... ', value = 1, {
+  withProgress(message = 'loading Profiles Data from cBioPortal server... ', value = 1, {
 
-    getListProfData(panel='Circomics',input$GeneListID)
+    getListProfData(checked_Studies= input$StudiesIDCircos,
+                    geneListLabel = input$GeneListID)
 
     #print("Start getting Frequency of Mutation ...")
-    r_info[['Freq_DfMutData']] <- getFreqMutData(list = r_info$ListMutData, geneListLabel = input$GeneListID)
+    # r_info[['Freq_DfMutData']] <- getFreqMutData(list = r_info$ListMutData,
+    #                                               geneListLabel = input$GeneListID)
     #print("End getting Mutation Frequency...")
 
     })
@@ -180,14 +183,14 @@ output$ui_bad_userData_message <- renderUI({
 output$ui_Circomics <- renderUI({
 
   ## get Studies for Circomics
-  updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies[,1],
+  updateSelectizeInput(session, 'StudiesIDCircos', choices = Studies["studyId"],
                        selected = c("luad_tcga_pub","blca_tcga_pub"))
   #,"prad_tcga_pub","ucec_tcga_pub"
 
   conditionalPanel("input.tabs_Enrichment == 'Circomics'",
 
                    wellPanel(
-                     selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices= Studies[,1],
+                     selectizeInput('StudiesIDCircos', 'Studies in Wheel', choices= Studies["studyId"],
                                     selected = c("luad_tcga_pub","blca_tcga_pub"), multiple = TRUE),
                      conditionalPanel(condition = "input.StudiesIDCircos == null",
                                       h5("Select at less two studies",align="center",style = "color:red")

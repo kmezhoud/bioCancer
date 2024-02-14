@@ -1,3 +1,21 @@
+CHANGES IN VERSION 1.30.07 (14 February 2024)
+--------------------------------------------
++ fix issues in Networking Tab
+
+CHANGES IN VERSION 1.30.06 (11 February 2024)
+--------------------------------------------
++ Merge mutation and Genetic Ptofile tabs
+
+CHANGES IN VERSION 1.30.05 (09 February 2024)
+--------------------------------------------
++ rewrite the function getListProfData
++ Omit function getMegaProfData user for genlist upper that 500.
+
+CHANGES IN VERSION 1.30.04 (05 February 2024)
+--------------------------------------------
++ update ReactomeFI2021.RDS
++ update DisGeNet0223.RDS
+
 CHANGES IN VERSION 1.30.03 (03 February 2024)
 --------------------------------------------
 + update documentatio with new webapi
@@ -7,13 +25,20 @@ CHANGES IN VERSION 1.30.02 (02 February 2024)
 --------------------------------------------
 + Start migration  of cBioportal tab with the new cBioPortal webAPI
 
-CHANGES IN VERSION 1.26.04 (03 Februry 2023)
+CHANGES IN VERSION 1.30.01 (20 January 2024)
 --------------------------------------------
-+ update DisGeNet.db
++ Update api link
 
-CHANGES IN VERSION 1.26.02 (01 Februry 2023)
+CHANGES IN VERSION 1.29.05 (19 October 2023)
 --------------------------------------------
-+ remove cgdsr
++ Comment pickGO during running examples: It works manually.
+
+CHANGES IN VERSION 1.29.01 (28 September 2023)
+--------------------------------------------
++ Correct items format in  NEWS file
++ Import needed packages
++ Add @method section in documentation of cgdsr methods
++ Update links and reference in the vignette
 
 CHANGES IN VERSION 1.23.03 (25 April 2022)
 --------------------------------------------
@@ -29,7 +54,7 @@ CHANGES IN VERSION 1.23.01 (14 April 2022)
 
 CHANGES IN VERSION 1.15.03 (18 March 2020)
 ------------------------
-+ Downgrade DiegrammeR from 1.05 to 1.01. Unable to run a Shiny App using grVizOutput() and renderGrViz()
++ Downgrade DiagrammeR from 1.05 to 1.01. Unable to run a Shiny App using grVizOutput() and renderGrViz()
 
 CHANGES IN VERSION 1.15.02 (17 March 2020)
 ------------------------
@@ -149,7 +174,7 @@ CHANGES IN VERSION 1.5.06 (1 September 2017)
 ------------------------
 + dplyr::mutate_each() is deprecated
 + dply::summarise_each() is deprecated
-+ replace BiocStyle by prettydoc
+replace BiocStyle by prettydoc
 
 CHANGES IN VERSION 1.5.05 (1 September 2017)
 ------------------------
@@ -196,7 +221,7 @@ CHANGES IN VERSION 1.0.07 (14 December 2016)
 + replace dplyr::add_rownames() by tibble::rownames_to_column()
 + replace stopping process (stop function) by warning message. stop function disconnect session in server version.
 + resolve error message when Gene list is empty (paste empty gene list).
-+ getListProfData, getFreqMutData, ProfData, MutData, Classifier, geNetClassifier, Circomics_ui, getCircomics,  Reactome_ui.
+  getListProfData, getFreqMutData, ProfData, MutData, Classifier, geNetClassifier, Circomics_ui, getCircomics,     Reactome_ui.
 + Make it possible to get Circomics only for one study. Essentially resolve data structure in processing of mutation data frame.
 
 CHANGES IN VERSION 1.0.03 (29 Septembre 2016)
@@ -220,17 +245,26 @@ CHANGES IN VERSION 1.0.0 (07 July 2016)
 
 FIRST RELEASE
 + Package released
-+  Omit R/code menu: request shinyAce (>=0.2.1)
-   - Omit help_and_report function
++ Omit R/code menu: request shinyAce (>=0.2.1)
+  - Omit help_and_report function
 + Various issues request DT (>=0.1.39)
-    - Omit Show Plot in Pivot sidebar menu
-    - Can not download/Store correctly  filtered table in Handle/View
+  - Omit Show Plot in Pivot sidebar menu
+  - Can not download/Store correctly  filtered table in Handle/View
 
 
 
 PERSPECTIVE
-+ Release R 3.4 import(shiny, except= c("dataTableOutput", "renderDataTable"))
++ Check add interesting genes in networking Tab
++ Visualize all cases and genetic profiles for studies
+  - Visualize samples SIZE for each cases/genetic profile
+  - for gbm_tcga there are 3 samples size for mRNA expression:
+      o "Samples with mRNA expression data (166 samples)"
+      o "Samples with mRNA expression data (401 samples)"
+      o Samples with mRNA expression data (528 samples)"
+
 + use DisGeNet server despite /extdata/disGeNet file (DONE Not Working)
-+ clusterProfiler GMT file: http://www.r-bloggers.com/go-analysis-using-clusterprofiler/
-+ gene classification using rpart,ggplot2, ggtree: http://guangchuangyu.github.io/2016/01/annotate-a-phylogenetic-tree-with-insets/
-+  Specify the range of mutation frequency in circos plot [Min, Max]
++ clusterProfiler GMT file:
+  - http://www.r-bloggers.com/go-analysis-using-clusterprofiler/
++ gene classification using rpart,ggplot2, ggtree:
+  - http://guangchuangyu.github.io/2016/01/annotate-a-phylogenetic-tree-with-insets/
++ Specify the range of mutation frequency in circos plot [Min, Max]

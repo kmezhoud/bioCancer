@@ -107,8 +107,6 @@ observe({
 output$getCoffeeWheel_All <- renderCoffeewheel({
   shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 1, {
 
-    #getListProfData(panel="Circomics")
-    #Shiny.unbindAll()
     CoffeewheelTreeProfData <- reStrDimension(r_info$ListProfData)
     r_info[['TreeListProfData']] <- CoffeewheelTreeProfData
     title<- paste("Profiles Data: CNA, Met,Exp, RPPA, miRNA")
@@ -134,7 +132,6 @@ output$getCoffeeWheel_Met <- renderCoffeewheel({
 output$getCoffeeWheel_CNA <- renderCoffeewheel({
   shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 1, {
 
-    #getListProfData()
     CoffeewheelTreeCNAData <- reStrDisease(r_info$ListProfData$CNA)
     r_info[['TreeCNAData']] <- CoffeewheelTreeCNAData
     title<- paste("Copy Number Alteration [-2, +2]")
@@ -147,7 +144,6 @@ output$getCoffeeWheel_CNA <- renderCoffeewheel({
 output$getCoffeeWheel_mRNA <- renderCoffeewheel({
   shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 1, {
 
-    #getListProfData()
     CoffeewheelTreeExpData <- reStrDisease(r_info$ListProfData$Expression)
     r_info[['TreeMRNAData']] <- CoffeewheelTreeExpData
     title<- paste("mRNA expression")
@@ -160,7 +156,6 @@ output$getCoffeeWheel_mRNA <- renderCoffeewheel({
 output$getCoffeeWheel_miRNA <- renderCoffeewheel({
   shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 1, {
 
-    #getListProfData()
     CoffeewheelTreeMiRNAData <- reStrDisease(r_info$ListProfData$miRNA)
     r_info[['TreeMiRNAData']] <- CoffeewheelTreeMiRNAData
     title<- paste("miRNA Expression")
@@ -173,7 +168,6 @@ output$getCoffeeWheel_miRNA <- renderCoffeewheel({
 output$getCoffeeWheel_RPPA <- renderCoffeewheel({
   shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 1, {
 
-    #getListProfData()
     CoffeewheelTreeRPPAData <- reStrDisease(r_info$ListProfData$RPPA)
     r_info[['TreeRPPAData']] <- CoffeewheelTreeRPPAData
     title<- paste("Reverse Phase Protein Arrays")
@@ -187,10 +181,10 @@ output$getCoffeeWheel_Mut <- renderCoffeewheel({
   shiny::withProgress(message = 'Creating Wheel. Waiting...', value = 1, {
 
     ## get Gene Mutation Frequency
-    #print("Start getting Frequency of Mutation ...")
-    #Freq_DfMutData <- getFreqMutData(list = r_info$ListMutData, geneListLabel = input$GeneListID)
-    #r_info[['Freq_DfMutData']] <- Freq_DfMutData
-    #print("End getting Mutation Frequency...")
+    print("Start getting Frequency of Mutation ...")
+    Freq_DfMutData <- getFreqMutData(list = r_info$ListMutData, geneListLabel = input$GeneListID)
+    r_info[['Freq_DfMutData']] <- Freq_DfMutData
+    print("End getting Mutation Frequency...")
     listMut_df <- apply(r_info$Freq_DfMutData,2,function(x)as.data.frame(t(x)))
     TreeMutData <- reStrDisease(listMut_df)
     r_info[['TreeMutData']] <- TreeMutData
@@ -220,7 +214,7 @@ output$CircosAvailability <- DT::renderDataTable({
 
   shiny::withProgress(message = 'Loading Data...', value = 1, {
 
-    dat <- checkDimensions(panel="Circomics", StudyID= input$StudiesIDCircos )
+    dat <- checkDimensions(StudyID= input$StudiesIDCircos )
     ## remove rownames to column
     dat <- dat %>% tibble::rownames_to_column("Samples")
 
@@ -252,7 +246,7 @@ output$Sequenced_SampleSize <- DT::renderDataTable({
 
   shiny::withProgress(message = 'Computing Sample sizes...', value = 1, {
 
-    dat <- getSequensed_SampleSize(StudyID = input$StudiesIDCircos)
+    dat <- getSequensed_SampleSize(StudiesID = input$StudiesIDCircos)
 
     DT::datatable(dat,
                   caption= "Table 1: Sample Sizes by study",
@@ -298,7 +292,7 @@ output$CNA_Max <- DT::renderDataTable({
   WhichMax <- lapply(WhichMax, function(x) as.numeric(as.matrix(x)))
   WhichMax <-   as.data.frame(do.call(cbind, WhichMax))  # as.data.frame(WhichMax)
   dat <- cbind(Genes= genes_names , WhichMax )
-  DT::datatable(dat,
+  DT::datatable(dat, rownames = FALSE,
                 caption="Table 2: The most frequent CNA prolife",
                 autoHideNavigation = getOption("DT.autoHideNavigation")
   )

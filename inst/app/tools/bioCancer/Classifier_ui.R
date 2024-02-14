@@ -7,16 +7,16 @@ updateSelectizeInput(session, 'ClassID',
                      selected = "None")
 
 output$ui_Classifier <- renderUI({
-  
-  updateSelectizeInput(session, 'StudiesIDClassifier', choices = Studies[,1],
+
+  updateSelectizeInput(session, 'StudiesIDClassifier', choices = Studies["studyId"],
                        selected = c("brca_tcga","gbm_tcga","lihc_tcga","lusc_tcga"))
-  
+
   wellPanel(
-    
+
     #conditionalPanel("input.tabs_Enrichment == 'Classifier'",
-    
+
     selectizeInput('StudiesIDClassifier', 'Studies  to Classify', choices=NULL, multiple = TRUE),
-    
+
     # selectizeInput(inputId = "ClassID", label="Sampling",
     #                choices= c("None"="None","Samples"="Samples"), #,"Classifier" = "Classifier"
     #                multiple=FALSE
@@ -47,12 +47,12 @@ output$ui_Classifier <- renderUI({
                           numericInput("ClassifierThresholdID",
                                        "PostProb",
                                        "0.95",min = 0.9, max = 1 , step = 0.01)),
-                      
+
                       conditionalPanel("input.runSamplingBox == true",
                                        #div(class="col-xs-12",
                                       #     checkboxInput('runClassificationBox', 'Classification')
                                       # ),
-                                       
+
                                        div(class="row",
                                            div(class="col-xs-8",
                                                conditionalPanel("input.runSamplingBox == true  && input.runClassificationBox==false",
@@ -68,18 +68,18 @@ output$ui_Classifier <- renderUI({
                                            )
                                        )
                       )
-                      
+
     ),
     br(),
-    
+
     #  ),
     #conditionalPanel("input.ClassID=='Classifier'",
     conditionalPanel("input.runClassificationBox == true",
-                     
+
                      selectizeInput('ClusterPlotsID', 'Biological terms clusters',
                                     choices=c("None","GeneList/Diseases","Disease Ontology","Reactome","GO","KEGG", "Cellular Component"),
                                     multiple= FALSE)
-                     
+
     ),
     br(),
     help_and_report(modal_title = "Classifier", fun_name = "ClassifierHelp",

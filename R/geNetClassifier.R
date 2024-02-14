@@ -2,7 +2,7 @@
 #' @usage getList_Cases(checked_Studies)
 #' @param checked_Studies checked studies
 #'
-#' @return listes of cases
+#' @return A list of cases
 #' @export
 #'
 #' @examples
@@ -21,7 +21,8 @@
 #'}
 #'
 getList_Cases <- function(checked_Studies){
-  listCases <- lapply(checked_Studies, function(x) cBioPortalData::sampleLists(cgds,x)[,"sampleListId"])
+  listCases <- lapply(checked_Studies, function(x) cBioPortalData::sampleLists(cgds,x) |>
+                                                    pull("sampleListId"))
   names(listCases) <- checked_Studies
   listCases <- lapply(listCases, function(x) x[grep("v2_mrna", x)])
   listCases <- listCases[lapply(listCases,length)>0]
@@ -34,7 +35,7 @@ getList_Cases <- function(checked_Studies){
 #' @usage getList_GenProfs(checked_Studies)
 #' @param checked_Studies checked studies
 #'
-#' @return listes of genetics profiles
+#' @return A list of genetics profiles
 #' @export
 #'
 #' @examples
@@ -54,7 +55,8 @@ getList_Cases <- function(checked_Studies){
 #'
 getList_GenProfs <- function(checked_Studies){
 
-  listGenProfs <- lapply(checked_Studies, function(x) cBioPortalData::molecularProfiles(cgds,x)[,"molecularProfileId"])
+  listGenProfs <- lapply(checked_Studies, function(x) cBioPortalData::molecularProfiles(cgds,x)|>
+                                                        pull("molecularProfileId"))
   names(listGenProfs) <- checked_Studies
   listGenProfs <- lapply(listGenProfs, function(x) x[grep("v2_mrna$", x)])
   listGenProfs <- listGenProfs[lapply(listGenProfs,length)>0]
@@ -109,40 +111,38 @@ getGenesClassification <- function(checked_Studies,
 
       #GenProf <- input$GenProfsIDClassifier[s]
       #Case <- input$CasesIDClassifier[s]
-      GenProf <- listGenProfs[s]
-      Case <- listCases[s]
+      GenProf <- listGenProfs[[s]]
+      Case <- listCases[[s]]
 
-      if(length(GeneList)>500){
-        shiny::withProgress(message = 'loading MegaProfData...', value = 0.1, {
-          Sys.sleep(0.25)
-          ProfData <- getMegaProfData(GeneList, s, GenProf,Case, Class="ProfData")
-          ProfData <- ProfData |>
-          select("hugoGeneSymbol","patientId", "value") |>
-          tidyr::spread("hugoGeneSymbol", "value")
-        })
-      } else{
-        #ProfData<- getProfileData.CGDS(cgds,GeneList, GenProf,Case)
-        ProfData <- cBioPortalData::getDataByGenes(api =  cgds,
-                                                studyId = s,
-                                                genes = GeneList,
-                                                by = "hugoGeneSymbol",
-                                                molecularProfileIds = GenProf
-        )  %>% .[[1]] |>
-          select("hugoGeneSymbol","patientId", "value") |>
-          tidyr::spread("hugoGeneSymbol", "value")
-      }
+      ProfData <- cBioPortalData::getDataByGenes(api =  cgds,
+                                                 studyId = s,
+                                                 genes = GeneList,
+                                                 by = "hugoGeneSymbol",
+                                                 molecularProfileIds = GenProf,
+                                                 sampleListId = Case) |>
+        unname() |>
+        as.data.frame() |>
+        dplyr::select("hugoGeneSymbol","sampleId", "value") |>
+        tidyr::spread("hugoGeneSymbol", "value") |>
+        tibble::column_to_rownames("sampleId")
+
 
       ProfData <- t(ProfData)
       ##remove all NAs rows
-      if (inherits(try(ProfData<- ProfData[which(apply( !( apply(ProfData,1,is.na) ),2,sum)!=0 ),] , silent=FALSE),"try-error"))
+      if (inherits(try(ProfData<- ProfData[which(apply( !( apply(ProfData,1,is.na) ),2,sum)!=0 ),] ,
+                       silent=FALSE),"try-error"))
       {
         print("Reselect Cases and Genetic Profiles from Samples. Maybe some studies do not have mRNA data.")
       } else{
         ProfData<- ProfData[which( apply( !( apply(ProfData,1,is.na) ),2,sum)!=0 ),]
-
       }
+
       if(ncol(ProfData) < input$SampleSizeClassifierID){
-        msgBigSampl <- paste(checked_Studies[s], "has only", ncol(ProfData),"samples.","\nSelect at Max: ",ncol(ProfData), "samples")
+
+        msgBigSampl <- paste(s, "has only",
+                             ncol(ProfData),"samples.",
+                             "\nSelect at Max: ",ncol(ProfData), "samples")
+
         shiny::withProgress(message= msgBigSampl, value = 0.1,
                             {p1 <- proc.time()
                             Sys.sleep(2) # wait 2 seconds
@@ -159,12 +159,13 @@ getGenesClassification <- function(checked_Studies,
       SamplingProfsData <- cbind.na(SamplingProfsData,SamplingProfData)
       print(paste("Sampling from ",Case))
       ##Extracting Disease Type
-      DiseaseType  <- as.matrix(rep(checked_Studies[s],times=input$SampleSizeClassifierID))
+      DiseaseType  <- as.matrix(rep(s,times=input$SampleSizeClassifierID))
       DiseasesType <- c(DiseasesType, DiseaseType)
 
     }
-    SamplingProfsData<- SamplingProfsData[,-1]
-    DiseasesType <-DiseasesType[-1]
+
+    SamplingProfsData <- SamplingProfsData[,-1]
+    DiseasesType <- DiseasesType[-1]
     DiseasesType <- as.data.frame(DiseasesType)
     print("converting DiseaseType as DataFrame...")
 
@@ -193,11 +194,9 @@ getGenesClassification <- function(checked_Studies,
     print("getting metaData...")
     ##that conveniently stores and manipulates
     ##the phenotypic data and its metadata in a coordinated fashion.
-    phenoData<-new("AnnotatedDataFrame", data=DiseasesType, varMetadata=metaData)
+    phenoData <- new("AnnotatedDataFrame", data=DiseasesType, varMetadata=metaData)
     print("getting phenoData...")
     ##Assembling an ExpressionSet
-
-
     eSetClassifier <- Biobase::ExpressionSet(assayData=SamplingProfsData, phenoData=phenoData, annotation="GO")
     print("getting eSetClassifier...")
     if(min(Biobase::exprs(eSetClassifier), na.rm=TRUE)<0){
@@ -234,7 +233,8 @@ getGenesClassification <- function(checked_Studies,
     #GenesClassDetails_bkp1 <<- GenesClassDetails
 
     print("getting Genes Details...")
-    GenesClassDetails_ls <- lapply(GenesClassDetails, function(x) x %>% tibble::rownames_to_column("Genes"))
+    GenesClassDetails_ls <- lapply(GenesClassDetails, function(x) x %>%
+                                     tibble::rownames_to_column("Genes"))
     GenesClassDetails_df <- plyr::ldply(GenesClassDetails_ls)
     #r_data[['GenesClassDetails']] <- GenesClassDetails_df[,-1]
 

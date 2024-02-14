@@ -10,7 +10,7 @@ getList_GenProfs(checked_Studies)
 \item{checked_Studies}{checked studies}
 }
 \value{
-listes of genetics profiles
+A list of genetics profiles
 }
 \description{
 get list of genetic profiles of each selected study in Classifier panel

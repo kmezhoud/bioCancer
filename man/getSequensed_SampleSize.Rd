@@ -4,10 +4,10 @@
 \alias{getSequensed_SampleSize}
 \title{get samples size of sequensed genes}
 \usage{
-getSequensed_SampleSize(StudyID)
+getSequensed_SampleSize(StudiesID)
 }
 \arguments{
-\item{StudyID}{Study reference using cBioPortal index}
+\item{StudiesID}{Studies ID as a vector}
 }
 \value{
 dataframe with sample size for each selected study.

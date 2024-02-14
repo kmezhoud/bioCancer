@@ -4,19 +4,15 @@
 \alias{getListProfData}
 \title{get list of data frame with profiles data (CNA,mRNA, Methylation, Mutation...)}
 \usage{
-getListProfData(panel, study, geneListLabel, genProf)
+getListProfData(checked_Studies, geneListLabel)
 }
 \arguments{
-\item{panel}{Panel name (string) in which Studies are selected. There are two panels ("Circomics" or "Networking")}
-
-\item{study}{ID}
+\item{checked_Studies}{checked studies in corresponding panel (input$StudiesIDCircos, input$StudiesIDReactome).}
 
 \item{geneListLabel}{The label of GeneList. There are three cases:
  "Genes" user gene list,
  "Reactome_GeneList" GeneList plus genes from reactomeFI
 "file name" from Examples}
-
-\item{genProf}{genetic/molecular profile ID}
 }
 \value{
 A LIST of profiles data (CNA, mRNA, Methylation, Mutation, miRNA, RPPA).

@@ -12,6 +12,7 @@ output$ui_clipboard_load_Clinical <- renderUI({
 output$ui_Clinical_vars <- renderUI({
   shiny::withProgress(message = 'loading Clinical Data from cBioPortal server...', value = 1, {
   ##### get Clinical Data for selected Study
+  req(input$StudiesID)
   r_info[['ClinicalData']] <- cBioPortalData::clinicalData(api = cgds, studyId = input$StudiesID)
 
   Clinical_vars <- names(r_info[['ClinicalData']])

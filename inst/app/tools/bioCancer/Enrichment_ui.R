@@ -155,7 +155,7 @@ output$Enrichment <- renderUI({
                              ),
 
                              conditionalPanel(condition = "input.loadListProfDataCircosId == true",# && input.CircosDimensionID == null ",
-                                              h3("Loaded Profiles Data", align="center"),
+                                              h3("Profiles Data Information", align="center"),
                                               verbatimTextOutput("StrListProfDataCircos")
 
                              ),

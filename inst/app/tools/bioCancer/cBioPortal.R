@@ -14,14 +14,14 @@ Studies <- cBioPortalData::getStudies(cgds)[c("name", "description", "studyId")]
 ## get Cases in side bar panel
 output$ui_Cases <- renderUI({
   shiny::withProgress(message = 'loading Cases from cBioPortal server...', value = 1, {
-    #Sys.sleep(0.25)
-  #CaseLists <- getCaseLists.CGDS(cgds,input$StudiesID)[,1]
+  #Sys.sleep(0.25)
+  req(input$StudiesID)
   CaseLists <- cBioPortalData::sampleLists(cgds, studyId = input$StudiesID) |>
                pull(sampleListId)
 
   selectInput("CasesID", "Cases for selected study",
               choices= CaseLists,
-              selected = CaseLists[2]
+              selected = "" #CaseLists[1]
   )
   })
 })
@@ -29,14 +29,15 @@ output$ui_Cases <- renderUI({
 ## get Genetic Profiles in side bar panel
 output$ui_GenProfs <- renderUI({
   shiny::withProgress(message = 'loading Genetic Profiles from cBioPortal server...', value = 1, {
-    #Sys.sleep(0.25)
-
-  #GeneticProfiles <- getGeneticProfiles.CGDS(cgds,input$StudiesID)[,1]
-  GeneticProfiles <- cBioPortalData::molecularProfiles(api = cgds, studyId = input$StudiesID) |>
+  #Sys.sleep(0.25)
+  req(input$StudiesID)
+  GeneticProfiles <- cBioPortalData::molecularProfiles(api = cgds,
+                                                       studyId = input$StudiesID) |>
                      pull(molecularProfileId)
-  selectInput("GenProfID", "Genetic Profiles",
+
+  selectInput("GenProfID", "Genetic Profiles:",
               choices = GeneticProfiles,
-              selected = GeneticProfiles[3]
+              selected = "" #GeneticProfiles[1]
   )
 
   })

@@ -10,7 +10,7 @@ getList_Cases(checked_Studies)
 \item{checked_Studies}{checked studies}
 }
 \value{
-listes of cases
+A list of cases
 }
 \description{
 get list of cases of each selected study in Classifier panel

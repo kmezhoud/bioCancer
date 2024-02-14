@@ -9,7 +9,9 @@ output$cBioPortal <- renderUI({
                            uiOutput("ui_Studies")),
           conditionalPanel("input.tabs_cbioportal != 'Studies'",
                            selectizeInput('StudiesID', 'Select a Study',
-                              choices = Studies %>% pull(studyId), selected = "gbm_tcga_pub", multiple = FALSE
+                              choices = Studies %>% pull(studyId),
+                              selected = "gbm_tcga_pub",
+                              multiple = FALSE
                            ),
                            uiOutput("ui_Cases"),
                            conditionalPanel("input.tabs_cbioportal != 'Clinical'",
@@ -21,8 +23,8 @@ output$cBioPortal <- renderUI({
           ),
 
           conditionalPanel("input.tabs_cbioportal == 'Clinical'", uiOutput("ui_ClinicalData")),
-          conditionalPanel("input.tabs_cbioportal == 'ProfData'", uiOutput("ui_ProfData")),
-          conditionalPanel("input.tabs_cbioportal == 'Mutation'", uiOutput("ui_MutData"))
+          #conditionalPanel("input.tabs_cbioportal == 'ProfData'", uiOutput("ui_ProfData")),
+          conditionalPanel("input.tabs_cbioportal == 'Profiles'", uiOutput("ui_MutData"))
 
         )
       ),
@@ -45,12 +47,12 @@ output$cBioPortal <- renderUI({
                              DT::dataTableOutput(outputId="ClinicalDataTable")
 
                     ),
-                    tabPanel("ProfData",
-                             downloadLink("dl_ProfData_tab", "", class = "fa fa-download alignright"),
-                             DT::dataTableOutput(outputId ="ProfDataTable")
-
-                    ),
-                    tabPanel("Mutation",
+                    # tabPanel("ProfData",
+                    #          downloadLink("dl_ProfData_tab", "", class = "fa fa-download alignright"),
+                    #          DT::dataTableOutput(outputId ="ProfDataTable")
+                    #
+                    # ),
+                    tabPanel("Profiles",
                              downloadLink("dl_MutData_tab", "", class = "fa fa-download alignright"),
                              DT::dataTableOutput(outputId ="MutDataTable")
                     )

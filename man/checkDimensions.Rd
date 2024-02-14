@@ -2,13 +2,11 @@
 % Please edit documentation in R/Enrich.R
 \name{checkDimensions}
 \alias{checkDimensions}
-\title{Chech wich Cases and genetic profiles are available for every seleted study}
+\title{Check wich Cases and genetic profiles are available for selected study}
 \usage{
-checkDimensions(panel,StudyID)
+checkDimensions(StudyID)
 }
 \arguments{
-\item{panel}{panel can take to strings 'Circomics' or 'Networking'}
-
 \item{StudyID}{Study reference using cBioPortal index}
 }
 \value{
@@ -16,7 +14,7 @@ A data frame with two column (Cases, Genetic profiles). Every row has a dimensio
 The data frame is filled with yes/no response.
 }
 \description{
-Chech wich Cases and genetic profiles are available for every seleted study
+Check wich Cases and genetic profiles are available for selected study
 }
 \examples{
 cgds <- cBioPortal(

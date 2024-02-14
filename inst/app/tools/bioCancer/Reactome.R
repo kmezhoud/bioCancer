@@ -401,14 +401,18 @@ graph_obj <- reactive({
 
   if('Met_HM450' %in% input$NodeAttri_ProfDataID){
 
-    Met_obj <- Node_obj_Met_ProfData(list= r_info$ListProfData$Met_HM450, type ='HM450',input$ThresholdMetHM450ID )
+    Met_obj <- Node_obj_Met_ProfData(list= r_info$ListProfData$Met_HM450,
+                                     type ='HM450',
+                                     input$ThresholdMetHM450ID )
     Edges_obj <- rbind(Edges_obj, Met_obj)
 
   }
 
   if('Met_HM27' %in% input$NodeAttri_ProfDataID ){
 
-    Met_obj <- Node_obj_Met_ProfData(list= r_info$ListProfData$Met_HM27, type='HM27', input$ThresholdMetHM27ID)
+    Met_obj <- Node_obj_Met_ProfData(list= r_info$ListProfData$Met_HM27,
+                                     type='HM27',
+                                     input$ThresholdMetHM27ID)
     Edges_obj <- rbind(Edges_obj, Met_obj)
 
   }

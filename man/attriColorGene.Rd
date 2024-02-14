@@ -7,7 +7,7 @@
 attriColorGene(df)
 }
 \arguments{
-\item{df}{data frame with mRNA or CNA or mutation frequency or methylation (numeric).}
+\item{df}{data frame with mRNA or CNA or mutation frequency or methylation (numeric). Without sampleID column.}
 }
 \value{
 A list colors for every gene

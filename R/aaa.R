@@ -4,4 +4,4 @@ globalVariables(c("r_data", "V1", "input", "p", "incProgress", "setNames", "tags
                   "setNames", "stats", "SubMegaGeneList","getMegaProfData", "cbind.na",
                   "saveWidget", "downloadLink", "dbListTables", "dbConnect", "dbDriver",
                   "dbSendQuery", "dbfile", "dbClearResult", "dbWriteTable", "direction",
-                  "dbGetQuery", "dbDisconnect", "."))
+                  "dbGetQuery", "dbDisconnect", ".", "pull"))
